@@ -125,9 +125,22 @@ body::before {
   text-shadow:0 0 20px #f3d98b, 0 0 40px #b8860b;
   line-height: 1.1;
   cursor: pointer;
-  transition: font-size 0.3s ease;
+  transition: all 0.3s ease;
 }
 .subtitle{font-size:18px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease;}
+
+/* ANIMAÇÃO DE RECOLHER LOGO NO MOBILE AO ROLAR */
+body.logo-recolhida .logo {
+  font-size: 32px !important;
+  text-shadow: 0 0 10px #f3d98b;
+}
+body.logo-recolhida .subtitle {
+  font-size: 11px !important;
+  letter-spacing: 1px;
+  margin-top: 2px;
+  opacity: 0.6;
+}
+
 .layout{display:grid; grid-template-columns:300px 1fr 300px; gap:14px; margin-top:14px; align-items:start; transition: all 0.3s ease;}
 .card{
   background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(14px);
@@ -143,69 +156,106 @@ select option { background: #121829; color: #fff; }
 border-radius:999px; display:inline-block;}
 
 /* ==================================== */
-/* NOVO MOBILE REESTRUTURADO */
+/* NOVO MOBILE REESTRUTURADO (STORIES IG) */
 /* ==================================== */
 #bloco-topo-mobile { display: none; }
 
-.topo-mobile-fixo {
+.stories-mobile-container {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 4px 12px 4px;
   margin-bottom: 12px;
+  scroll-snap-type: x mandatory;
 }
-
-/* PÓDIO MOBILE (1º, 2º e 3º fixados à esquerda) */
-.podio-mobile-container {
+.story-item-mob {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  background: rgba(0,0,0,0.3);
-  padding: 10px;
-  border-radius: 14px;
-  border: 1px solid rgba(243,217,139,0.3);
+  align-items: center;
+  flex-shrink: 0;
+  width: 76px;
+  cursor: pointer;
+  scroll-snap-align: start;
+  text-align: center;
 }
-.item-podio-mobile {
+/* TAMANHO EXACTO DE STATUS DO INSTAGRAM (70px x 70px) COM ANEL DE DESTAQUE */
+.story-avatar-mob {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  margin-bottom: 5px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 6px 10px;
-  border-radius: 8px;
-  cursor: pointer;
+  justify-content: center;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
-.avatar-podio-mob {
-  width: 38px; height: 38px;
+.story-avatar-inner {
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   overflow: hidden;
   background: #111;
-  flex-shrink: 0;
+  border: 2px solid #060a1e;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-.avatar-podio-mob img { width: 100%; height: 100%; object-fit: cover; }
-
-/* BALÕES DE ATALHO MOBILE */
-.baloes-mobile-container {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding: 4px 0;
-}
-.balao-atalho-mob {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(243,217,139,0.4);
-  padding: 8px 14px;
-  border-radius: 999px;
-  cursor: pointer;
+.story-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
+.story-nome-mob {
+  font-size: 0.68rem;
+  color: #fff;
+  font-weight: bold;
   white-space: nowrap;
-  flex-shrink: 0;
-  transition: background 0.2s;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 74px;
 }
-.balao-atalho-mob:hover { background: rgba(243,217,139,0.2); }
-.balao-atalho-mob span { font-size: 0.8rem; font-weight: bold; color: #f3d98b; }
+.story-arroba-mob {
+  font-size: 0.58rem;
+  color: #f3d98b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 74px;
+}
+
+/* BALÃO DO DESAFIO DO DIA NO MOBILE (EXATAMENTE A ALTURA DA BOLINHA E 3 LINHAS DE TEXTO) */
+.story-balao-mob {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(156, 39, 176, 0.2);
+  border: 1px solid #9c27b0;
+  border-radius: 16px;
+  padding: 8px 12px;
+  width: 210px;
+  height: 70px; /* Mesma altura da bolinha do IG */
+  flex-shrink: 0;
+  cursor: pointer;
+  scroll-snap-align: start;
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+}
+.story-balao-mob span.titulo-b {
+  font-size: 0.72rem;
+  font-weight: bold;
+  color: #f3d98b;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.story-balao-mob p.texto-b {
+  font-size: 0.65rem;
+  color: #fff;
+  margin: 2px 0 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Exatamente 2 a 3 linhas */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.15;
+}
 
 /* GAVETA MOBILE DE TELA CHEIA */
 #gaveta-mobile-overlay {
@@ -387,7 +437,7 @@ border-radius:999px; display:inline-block;}
       </div>
 
       <div class="grupo-input"><label>Nome do Oppa / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Ex: Nome do Artista"></div>
-      <div class="grupo-input"><label>Categoria:</label><input type="text" id="bias-categoria" placeholder="Ex: Dorama, Atriz"></div>
+      <div class="grupo-input"><label>Categoria (Dorama, Grupo, Filme):</label><input type="text" id="bias-categoria" placeholder="Ex: EXO, Dorama Mine"></div>
       <div class="grupo-input">
         <label>Foto Oficial de Referência:</label>
         <label for="bias-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-bias">Escolher Foto Oficial</label>
@@ -438,76 +488,69 @@ border-radius:999px; display:inline-block;}
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
 
-  <!-- BLOCO EXCLUSIVO MOBILE: REESTRUTURADO CONFORME PEDIDO -->
+  <!-- BLOCO EXCLUSIVO MOBILE: STORIES / CARROSSEL HORIZONTAL -->
   <div id="bloco-topo-mobile">
-    <div class="topo-mobile-fixo">
+    <div class="stories-mobile-container">
       
-      <!-- PÓDIO FIXO NO TOPO (1º, 2º E 3º LUGAR À ESQUERDA COM FOTOS E ARROBAS) -->
-      <div class="podio-mobile-container">
-        
-        <!-- 1º LUGAR (OURO) -->
-        <div class="item-podio-mobile" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')" style="background: rgba(243,217,139,0.15); border: 1px solid #ffd700;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="avatar-podio-mob" style="border: 2px solid #ffd700;">
-              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Ouro">
-            </div>
-            <div>
-              <span style="font-size: 0.7rem; font-weight: bold; color: #ffd700; display: block;">🥇 1º Lugar (Ouro)</span>
-              <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Park Chanyeol</span>
-            </div>
+      <!-- 1. PÓDIO 1º LUGAR (OURO) -->
+      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')">
+        <div class="story-avatar-mob">
+          <div class="story-avatar-inner">
+            <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Ouro">
           </div>
-          <span style="font-size: 0.7rem; color: #f3d98b; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px;">@admin_luana</span>
         </div>
-
-        <!-- 2º LUGAR (PRATA) -->
-        <div class="item-podio-mobile" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')" style="background: rgba(255,255,255,0.05); border: 1px solid #c0c0c0;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="avatar-podio-mob" style="border: 2px solid #c0c0c0;">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" alt="Prata">
-            </div>
-            <div>
-              <span style="font-size: 0.7rem; font-weight: bold; color: #c0c0c0; display: block;">🥈 2º Lugar (Prata)</span>
-              <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Lee Dong-wook</span>
-            </div>
-          </div>
-          <span style="font-size: 0.7rem; color: #ccc; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px;">@colega_ari</span>
-        </div>
-
-        <!-- 3º LUGAR (BRONZE) -->
-        <div class="item-podio-mobile" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')" style="background: rgba(255,255,255,0.05); border: 1px solid #cd7f32;">
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <div class="avatar-podio-mob" style="border: 2px solid #cd7f32;">
-              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" alt="Bronze">
-            </div>
-            <div>
-              <span style="font-size: 0.7rem; font-weight: bold; color: #cd7f32; display: block;">🥉 3º Lugar (Bronze)</span>
-              <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Choi Si-won</span>
-            </div>
-          </div>
-          <span style="font-size: 0.7rem; color: #cd7f32; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px;">@colega_danny</span>
-        </div>
-
+        <span class="story-nome-mob">Chanyeol</span>
+        <span class="story-arroba-mob">@admin_luana</span>
       </div>
 
-      <!-- BALÕES DE ATALHO MOBILE (SEQUÊNCIA PEDIDA) -->
-      <div class="baloes-mobile-container">
-        <!-- 1. Balão Desafio do Dia (Conectado aos Bias e Envio Direto) -->
-        <div class="balao-atalho-mob" onclick="abrirGavetaMobile('desafio')">
-          <span>🎯</span>
-          <span>Desafio do Dia</span>
+      <!-- 2. PÓDIO 2º LUGAR (PRATA) -->
+      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')">
+        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #c0c0c0, #888);">
+          <div class="story-avatar-inner">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" alt="Prata">
+          </div>
         </div>
+        <span class="story-nome-mob">Dong-wook</span>
+        <span class="story-arroba-mob">@colega_ari</span>
+      </div>
 
-        <!-- 2. Balão Minha Gaveta -->
-        <div class="balao-atalho-mob" onclick="abrirGavetaMobile('gaveta')">
-          <span>📂</span>
-          <span>Minha Gaveta</span>
+      <!-- 3. PÓDIO 3º LUGAR (BRONZE) -->
+      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')">
+        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #cd7f32, #8b4513);">
+          <div class="story-avatar-inner">
+            <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" alt="Bronze">
+          </div>
         </div>
+        <span class="story-nome-mob">Si-won</span>
+        <span class="story-arroba-mob">@colega_danny</span>
+      </div>
 
-        <!-- 3. Balão Comunidade -->
-        <div class="balao-atalho-mob" onclick="abrirGavetaMobile('fandoms')">
-          <span>🌐</span>
-          <span>Comunidade</span>
+      <!-- 4. BALÃO DO DESAFIO DO DIA (ALTURA DE BOLINHA E 3 LINHAS) -->
+      <div class="story-balao-mob" onclick="abrirGavetaMobile('desafio')">
+        <span class="titulo-b">🎯 Desafio do Dia</span>
+        <p class="texto-b" id="texto-resumo-desafio-mob">Carregando tema de hoje...</p>
+      </div>
+
+      <!-- 5. BOTÃO MINHA GAVETA -->
+      <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
+        <div class="story-avatar-mob" style="background: #9c27b0;">
+          <div class="story-avatar-inner" style="background: #121829; color: #f3d98b; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">
+            📂
+          </div>
         </div>
+        <span class="story-nome-mob">Minha Gaveta</span>
+        <span class="story-arroba-mob">Privado</span>
+      </div>
+
+      <!-- 6. BOTÃO COMUNIDADE / FANDOMS -->
+      <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
+        <div class="story-avatar-mob" style="background: #2196f3;">
+          <div class="story-avatar-inner" style="background: #121829; color: #2196f3; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">
+            🌐
+          </div>
+        </div>
+        <span class="story-nome-mob">Comunidade</span>
+        <span class="story-arroba-mob">Fandoms</span>
       </div>
 
     </div>
@@ -822,6 +865,7 @@ function abrirGavetaMobile(tipo) {
         <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">Desafio do Dia</h4>
         <input type="text" id="inputBuscaBiasDesafioMob" placeholder="Buscar bias por nº ou nome..." oninput="filtrarBuscaBiasDesafio(this.value)" style="margin-bottom: 10px;">
         <div id="bloco-envio-desafio-mob" style="margin-bottom: 10px;"></div>
+        <button onclick="fecharGavetaMobile(); abrirDesafioNoCentroMobile()" class="btn-tema-bg" style="width: 100%; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-top: 5px;">🔍 Ver Fotos das Colegas (Votar)</button>
       </div>
       <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(243,217,139,0.3); padding: 15px; border-radius: 14px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -886,6 +930,12 @@ function obterDesafioDoDiaAtual() {
   if (diaSemana === 5) return desafio_sexta || "Desafio de Sexta-Feira";
   if (diaSemana === 6) return desafio_sabado || "Desafio de Sábado";
   return "Domingo de Descanso - Campeão no Trono 👑";
+}
+
+function atualizarResumoDesafioMob() {
+  let t = obterDesafioDoDiaAtual();
+  let el = document.getElementById('texto-resumo-desafio-mob');
+  if(el) el.innerText = t;
 }
 
 function abrirFotoPinterest(urlSrc) {
@@ -1069,7 +1119,6 @@ function renderizarCardDesafioEsquerda() {
   if (!bloco) return;
   let desafioAtivoHoje = obterDesafioDoDiaAtual();
   if(document.getElementById('sub-titulo-desafio-esq')) document.getElementById('sub-titulo-desafio-esq').innerText = desafioAtivoHoje;
-  if(document.getElementById('sub-titulo-desafio-mob')) document.getElementById('sub-titulo-desafio-mob').innerText = desafioAtivoHoje;
   let hojeStr = new Date().toLocaleDateString();
   let envioSalvo = JSON.parse(localStorage.getItem('meu_envio_desafio_hoje') || 'null');
   let formEnviado = envioSalvo && envioSalvo.data === hojeStr;
@@ -1169,6 +1218,11 @@ function abrirDesafioNoCentro() {
       </div>
     </div>
   `;
+}
+
+function abrirDesafioNoCentroMobile() {
+  abrirDesafioNoCentro();
+  window.scrollTo({ top: 300, behavior: 'smooth' });
 }
 
 function alternarGavetaNoCentro(event) {
@@ -1697,6 +1751,7 @@ window.addEventListener('DOMContentLoaded', () => {
   carregarMeusBiasNaInterface();
   carregarHistoricoNaGaveta();
   renderizarCardDesafioEsquerda();
+  atualizarResumoDesafioMob();
   iniciarVitrine();
 });
 
