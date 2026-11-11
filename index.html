@@ -142,83 +142,70 @@ select option { background: #121829; color: #fff; }
 .contador{font-size:13px; background:rgba(243,217,139,0.15); border:1px solid #f3d98b; padding:6px 10px;
 border-radius:999px; display:inline-block;}
 
-/* BOLINHAS DE ATALHO GAVETA MOBILE */
-#barra-bolinhas-celular {
-  display: none;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  margin: 8px 0;
-  overflow-x: auto;
-  padding: 4px;
-}
-.bolinha-atalho {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(243,217,139,0.35);
-  border-radius: 50%;
-  width: 54px; height: 54px;
-  justify-content: center;
-  cursor: pointer;
-  transition: transform 0.2s, background 0.2s;
-  flex-shrink: 0;
-}
-.bolinha-atalho:hover {
-  transform: scale(1.08);
-  background: rgba(243,217,139,0.25);
-}
-.bolinha-atalho span {
-  font-size: 0.55rem;
-  color: #f3d98b;
-  margin-top: 1px;
-  font-weight: bold;
-  text-align: center;
-}
-
-/* PÓDIO KWAI MOBILE & DESKTOP */
-.podio-kwai-container {
-  display: none;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin: 6px 0 10px 0;
-  padding: 6px;
-  background: rgba(0,0,0,0.25);
-  border-radius: 14px;
-  border: 1px solid rgba(243,217,139,0.2);
-}
-.circulo-podio-kwai {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  cursor: pointer;
-}
-.circulo-avatar {
-  width: 48px; height: 48px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #111;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-  transition: transform 0.2s;
-}
-.circulo-avatar:hover { transform: scale(1.05); }
-.circulo-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.circulo-ouro { border: 3px solid #ffd700; box-shadow: 0 0 12px rgba(255,215,0,0.6); }
-.circulo-prata { border: 3px solid #c0c0c0; box-shadow: 0 0 12px rgba(192,192,192,0.6); }
-.circulo-bronze { border: 3px solid #cd7f32; box-shadow: 0 0 12px rgba(205,127,50,0.6); }
-.tag-podio-label { font-size: 0.58rem; font-weight: bold; margin-top: 2px; text-align: center; }
-
+/* ==================================== */
+/* NOVO MOBILE REESTRUTURADO */
+/* ==================================== */
 #bloco-topo-mobile { display: none; }
 
-/* LOGO RECOLHIDA AO ROLAR */
-.logo-recolhida .logo { font-size: 22px !important; text-shadow: 0 0 8px #f3d98b; }
-.logo-recolhida .subtitle { display: none; }
-.logo-recolhida header { padding: 3px 0 !important; }
+.topo-mobile-fixo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+/* PÓDIO MOBILE (1º, 2º e 3º fixados à esquerda) */
+.podio-mobile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  background: rgba(0,0,0,0.3);
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(243,217,139,0.3);
+}
+.item-podio-mobile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.avatar-podio-mob {
+  width: 38px; height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #111;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.avatar-podio-mob img { width: 100%; height: 100%; object-fit: cover; }
+
+/* BALÕES DE ATALHO MOBILE */
+.baloes-mobile-container {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0;
+}
+.balao-atalho-mob {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(243,217,139,0.4);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+.balao-atalho-mob:hover { background: rgba(243,217,139,0.2); }
+.balao-atalho-mob span { font-size: 0.8rem; font-weight: bold; color: #f3d98b; }
 
 /* GAVETA MOBILE DE TELA CHEIA */
 #gaveta-mobile-overlay {
@@ -235,8 +222,7 @@ border-radius:999px; display:inline-block;}
 
 @media (max-width:1000px){
   .layout{display:block;}
-  #bloco-topo-mobile { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
-  .podio-kwai-container { display: flex; }
+  #bloco-topo-mobile { display: block; }
   #coluna-esquerda, #coluna-direita { display: none !important; }
 }
 </style>
@@ -452,47 +438,78 @@ border-radius:999px; display:inline-block;}
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
 
-  <!-- BLOCO EXCLUSIVO MOBILE: 4 BOLINHAS DE ATALHO PARA ABRIR GAVETAS -->
+  <!-- BLOCO EXCLUSIVO MOBILE: REESTRUTURADO CONFORME PEDIDO -->
   <div id="bloco-topo-mobile">
-    <div id="barra-bolinhas-celular" style="display: flex;">
-      <div class="bolinha-atalho" onclick="abrirGavetaMobile('desafio')">
-        <span style="font-size: 1rem;">🎯</span>
-        <span>Desafio</span>
-      </div>
-      <div class="bolinha-atalho" onclick="abrirGavetaMobile('bias')">
-        <span style="font-size: 1rem;">⭐</span>
-        <span>Meus Bias</span>
-      </div>
-      <div class="bolinha-atalho" onclick="abrirGavetaMobile('gaveta')">
-        <span style="font-size: 1rem;">📂</span>
-        <span>Gaveta</span>
-      </div>
-      <div class="bolinha-atalho" onclick="abrirGavetaMobile('fandoms')">
-        <span style="font-size: 1rem;">🌐</span>
-        <span>Fandoms</span>
-      </div>
-    </div>
+    <div class="topo-mobile-fixo">
+      
+      <!-- PÓDIO FIXO NO TOPO (1º, 2º E 3º LUGAR À ESQUERDA COM FOTOS E ARROBAS) -->
+      <div class="podio-mobile-container">
+        
+        <!-- 1º LUGAR (OURO) -->
+        <div class="item-podio-mobile" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')" style="background: rgba(243,217,139,0.15); border: 1px solid #ffd700;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="avatar-podio-mob" style="border: 2px solid #ffd700;">
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Ouro">
+            </div>
+            <div>
+              <span style="font-size: 0.7rem; font-weight: bold; color: #ffd700; display: block;">🥇 1º Lugar (Ouro)</span>
+              <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Park Chanyeol</span>
+            </div>
+          </div>
+          <span style="font-size: 0.7rem; color: #f3d98b; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px;">@admin_luana</span>
+        </div>
 
-    <!-- PÓDIO COM CÍRCULOS ESTILO KWAI -->
-    <div class="podio-kwai-container">
-      <div class="circulo-podio-kwai" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')">
-        <div class="circulo-avatar circulo-prata">
-          <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" alt="Prata">
+        <!-- 2º LUGAR (PRATA) -->
+        <div class="item-podio-mobile" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')" style="background: rgba(255,255,255,0.05); border: 1px solid #c0c0c0;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="avatar-podio-mob" style="border: 2px solid #c0c0c0;">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" alt="Prata">
+            </div>
+            <div>
+              <span style="font-size: 0.7rem; font-weight: bold; color: #c0c0c0; display: block;">🥈 2º Lugar (Prata)</span>
+              <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Lee Dong-wook</span>
+            </div>
+          </div>
+          <span style="font-size: 0.7rem; color: #ccc; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px;">@colega_ari</span>
         </div>
-        <span class="tag-podio-label" style="color: #c0c0c0;">🥈 Prata</span>
-      </div>
-      <div class="circulo-podio-kwai" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')">
-        <div class="circulo-avatar circulo-ouro">
-          <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Ouro">
+
+        <!-- 3º LUGAR (BRONZE) -->
+        <div class="item-podio-mobile" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')" style="background: rgba(255,255,255,0.05); border: 1px solid #cd7f32;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="avatar-podio-mob" style="border: 2px solid #cd7f32;">
+              <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" alt="Bronze">
+            </div>
+            <div>
+              <span style="font-size: 0.7rem; font-weight: bold; color: #cd7f32; display: block;">🥉 3º Lugar (Bronze)</span>
+              <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Choi Si-won</span>
+            </div>
+          </div>
+          <span style="font-size: 0.7rem; color: #cd7f32; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px;">@colega_danny</span>
         </div>
-        <span class="tag-podio-label" style="color: #ffd700;">🥇 Ouro</span>
+
       </div>
-      <div class="circulo-podio-kwai" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')">
-        <div class="circulo-avatar circulo-bronze">
-          <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" alt="Bronze">
+
+      <!-- BALÕES DE ATALHO MOBILE (SEQUÊNCIA PEDIDA) -->
+      <div class="baloes-mobile-container">
+        <!-- 1. Balão Desafio do Dia (Conectado aos Bias e Envio Direto) -->
+        <div class="balao-atalho-mob" onclick="abrirGavetaMobile('desafio')">
+          <span>🎯</span>
+          <span>Desafio do Dia</span>
         </div>
-        <span class="tag-podio-label" style="color: #cd7f32;">🥉 Bronze</span>
+
+        <!-- 2. Balão Minha Gaveta -->
+        <div class="balao-atalho-mob" onclick="abrirGavetaMobile('gaveta')">
+          <span>📂</span>
+          <span>Minha Gaveta</span>
+        </div>
+
+        <!-- 3. Balão Comunidade -->
+        <div class="balao-atalho-mob" onclick="abrirGavetaMobile('fandoms')">
+          <span>🌐</span>
+          <span>Comunidade</span>
+        </div>
       </div>
+
     </div>
   </div>
 
@@ -791,7 +808,7 @@ function tirarFotoWebcamPC() {
   alert("✅ Foto capturada com sucesso pela webcam do computador!");
 }
 
-// SISTEMA DE GAVETA MOBILE (UNIFICANDO DESAFIO E MEUS BIAS)
+// SISTEMA DE GAVETA MOBILE (UNIFICANDO DESAFIO, MEUS BIAS, GAVETA E FANDOMS)
 function abrirGavetaMobile(tipo) {
   let overlay = document.getElementById('gaveta-mobile-overlay');
   let container = document.getElementById('conteudo-dinamico-gaveta-mobile');
@@ -819,19 +836,8 @@ function abrirGavetaMobile(tipo) {
       renderizarCardDesafioEsquerda();
       carregarMeusBiasNaInterfaceMobile();
     }, 50);
-  } else if (tipo === 'bias') {
-    titulo.innerText = "⭐ Gerenciar Meus Bias (1 a 1000)";
-    container.innerHTML = `
-      <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
-        <button onclick="abrirModalBias()" class="btn-tema-bg" style="width: 100%; padding: 12px; background: #ff4757; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Adicionar ou Editar Bias</button>
-        <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">Lista de Bias cadastrados:</p>
-        <div id="lista-bias-container-mob" style="display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto;"></div>
-      </div>
-    `;
-    setTimeout(() => carregarMeusBiasNaInterfaceMobile(), 50);
   } else if (tipo === 'gaveta') {
     titulo.innerText = "📂 Minha Gaveta Privada & Histórico";
-    let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
     let htmlGav = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
         <textarea id="campoGavetaTextoMob" placeholder="Escreva nota ou adicione algo na gaveta..." style="border-radius: 10px; height: 50px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;"></textarea>
@@ -847,7 +853,7 @@ function abrirGavetaMobile(tipo) {
     container.innerHTML = htmlGav;
     setTimeout(() => carregarHistoricoNaGavetaMobile(), 50);
   } else if (tipo === 'fandoms') {
-    titulo.innerText = "🌐 Fandoms & Comunidades";
+    titulo.innerText = "🌐 Comunidade & Fandoms";
     container.innerHTML = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
         <button onclick="abrirModalNovoTema()" style="width: 100%; padding: 12px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Gerenciar / Criar Fandom</button>
@@ -1251,7 +1257,6 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
     return; 
   }
   
-  // Verifica se o usuário possui senha/perfil autenticado na sessão
   let senhaSalva = localStorage.getItem('usuario_senha');
   let nomeSalvo = localStorage.getItem('usuario_nome');
   
@@ -1262,7 +1267,6 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
     return;
   }
 
-  // Se tem senha, abre modal de confirmação de senha de ADM/Acesso
   fandomAtualSelecionado = nomeComunidade;
   corAtualSelecionada = corTema;
   document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Insira sua solicitação de acesso:`;
