@@ -90,7 +90,7 @@
 .grupo-input label { display: block; font-size: 0.8rem; color: #f3d98b; margin-bottom: 4px; }
 *{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', Arial, sans-serif}
 body {
-  background: #060a1e url('img/fundo.jpg') no-repeat center center fixed;
+  background: #060a1e url('fundo.jpeg') no-repeat center center fixed;
   background-size: cover;
   image-rendering: -webkit-optimize-contrast;
   color: #fff;
@@ -156,7 +156,7 @@ select option { background: #121829; color: #fff; }
 border-radius:999px; display:inline-block;}
 
 /* ==================================== */
-/* NOVO MOBILE REESTRUTURADO (STORIES IG) */
+/* NOVO MOBILE REESTRUTURADO (STORIES IG - TAMANHO GRANDE 110px) */
 /* ==================================== */
 #bloco-topo-mobile { display: none; }
 
@@ -173,14 +173,14 @@ border-radius:999px; display:inline-block;}
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  width: 90px;
+  width: 116px; /* Ajustado para acomodar os 110px */
   cursor: pointer;
   scroll-snap-align: start;
   text-align: center;
 }
 .story-avatar-mob {
-  width: 85px;
-  height: 85px;
+  width: 110px;  /* Aumentado para 110px conforme solicitado */
+  height: 110px; /* Aumentado para 110px conforme solicitado */
   border-radius: 50%;
   padding: 3px;
   background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
@@ -188,7 +188,7 @@ border-radius:999px; display:inline-block;}
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
 }
 .story-avatar-inner {
   width: 100%;
@@ -196,67 +196,68 @@ border-radius:999px; display:inline-block;}
   border-radius: 50%;
   overflow: hidden;
   background: #111;
-  border: 2px solid #060a1e;
+  border: 3px solid #060a1e;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .story-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
 .story-nome-mob {
-  font-size: 0.68rem;
+  font-size: 0.78rem;
   color: #fff;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 88px;
+  max-width: 112px;
 }
 .story-arroba-mob {
-  font-size: 0.58rem;
+  font-size: 0.65rem;
   color: #f3d98b;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 88px;
+  max-width: 112px;
 }
 
-/* BALÃO DO DESAFIO DO DIA NO MOBILE (ALTURA DA BOLINHA E 3 LINHAS) */
+/* BALÃO DO DESAFIO DO DIAS TAMANHO PROPORCIONAL (110px de altura) */
 .story-balao-mob {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  background: rgba(156, 39, 176, 0.2);
+  background: rgba(156, 39, 176, 0.25);
   border: 1px solid #9c27b0;
-  border-radius: 16px;
-  padding: 8px 12px;
-  width: 210px;
-  height: 85px;
+  border-radius: 20px;
+  padding: 10px 14px;
+  width: 260px;  /* Aumentado proporcionalmente para não cortar */
+  height: 110px; /* Mesma altura das novas bolinhas de 110px */
   flex-shrink: 0;
   cursor: pointer;
   scroll-snap-align: start;
-  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
 }
 .story-balao-mob span.titulo-b {
-  font-size: 0.72rem;
+  font-size: 0.85rem;
   font-weight: bold;
   color: #f3d98b;
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  margin-bottom: 3px;
 }
 .story-balao-mob p.texto-b {
-  font-size: 0.65rem;
+  font-size: 0.72rem;
   color: #fff;
-  margin: 2px 0 0 0;
+  margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
+  -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.15;
+  line-height: 1.2;
 }
 
-/* GAVETA MOBILE DE TELA CHEIA (SEM BOTÃO FECHAR INÚTIL) */
+/* GAVETA MOBILE DE TELA CHEIA */
 #gaveta-mobile-overlay {
   position: fixed;
   inset: 0;
@@ -286,10 +287,10 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- GAVETA MOBILE EXCLUSIVA (USA O BOTÃO DE VOLTAR DO CELULAR) -->
+<!-- GAVETA MOBILE EXCLUSIVA (CLIQUE NO TÍTULO PARA FECHAR/VOLTAR) -->
 <div id="gaveta-mobile-overlay">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
-    <h3 id="titulo-gaveta-mobile" style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Gaveta de Recursos</h3>
+    <h3 id="titulo-gaveta-mobile" onclick="fecharGavetaMobile()" style="color: #f3d98b; font-size: 1.1rem; margin: 0; cursor: pointer;" title="Toque aqui para voltar">Gaveta de Recursos (Toque aqui para voltar)</h3>
   </div>
   <div id="conteudo-dinamico-gaveta-mobile" style="display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px;"></div>
 </div>
@@ -486,7 +487,7 @@ border-radius:999px; display:inline-block;}
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
 
-  <!-- BLOCO EXCLUSIVO MOBILE: STORIES / CARROSSEL HORIZONTAL -->
+  <!-- BLOCO EXCLUSIVO MOBILE: STORIES / CARROSSEL HORIZONTAL (TAMANHO 110px) -->
   <div id="bloco-topo-mobile">
     <div class="stories-mobile-container">
       
@@ -523,7 +524,7 @@ border-radius:999px; display:inline-block;}
         <span class="story-arroba-mob">@colega_danny</span>
       </div>
 
-      <!-- 4. BALÃO DO DESAFIO DO DIA (CLICOU ABRE DIRETO COM POSTAGEM E BIAS INTEGRADOS) -->
+      <!-- 4. BALÃO DO DESAFIO DO DIA -->
       <div class="story-balao-mob" onclick="abrirGavetaMobile('desafio')">
         <span class="titulo-b">🎯 Desafio do Dia</span>
         <p class="texto-b" id="texto-resumo-desafio-mob">Carregando tema de hoje...</p>
@@ -532,7 +533,7 @@ border-radius:999px; display:inline-block;}
       <!-- 5. BOTÃO MINHA GAVETA -->
       <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
         <div class="story-avatar-mob" style="background: #9c27b0;">
-          <div class="story-avatar-inner" style="background: #121829; color: #f3d98b; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">
+          <div class="story-avatar-inner" style="background: #121829; color: #f3d98b; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
             📂
           </div>
         </div>
@@ -543,7 +544,7 @@ border-radius:999px; display:inline-block;}
       <!-- 6. BOTÃO COMUNIDADE / FANDOMS -->
       <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
         <div class="story-avatar-mob" style="background: #2196f3;">
-          <div class="story-avatar-inner" style="background: #121829; color: #2196f3; font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">
+          <div class="story-avatar-inner" style="background: #121829; color: #2196f3; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
             🌐
           </div>
         </div>
@@ -849,7 +850,7 @@ function tirarFotoWebcamPC() {
   alert("✅ Foto capturada com sucesso pela webcam do computador!");
 }
 
-// SISTEMA DE GAVETA MOBILE (UNIFICANDO DESAFIO, MEUS BIAS, GAVETA E FANDOMS COM INTEGRACAO TOTAL)
+// SISTEMA DE GAVETA MOBILE COM CLIQUE NO TÍTULO PARA FECHAR
 function abrirGavetaMobile(tipo) {
   let overlay = document.getElementById('gaveta-mobile-overlay');
   let container = document.getElementById('conteudo-dinamico-gaveta-mobile');
@@ -857,7 +858,7 @@ function abrirGavetaMobile(tipo) {
   container.innerHTML = "";
 
   if (tipo === 'desafio') {
-    titulo.innerText = "🎯 Desafio do Dia & Envio Integrado";
+    titulo.innerText = "🎯 Desafio do Dia & Envio Integrado (Toque aqui para voltar)";
     container.innerHTML = `
       <div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px; margin-bottom: 12px;">
         <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">Desafio do Dia</h4>
@@ -883,7 +884,7 @@ function abrirGavetaMobile(tipo) {
       carregarMeusBiasNaInterfaceMobile();
     }, 50);
   } else if (tipo === 'gaveta') {
-    titulo.innerText = "📂 Minha Gaveta Privada & Histórico";
+    titulo.innerText = "📂 Minha Gaveta Privada & Histórico (Toque aqui para voltar)";
     let htmlGav = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
         <textarea id="campoGavetaTextoMob" placeholder="Escreva nota ou adicione algo na gaveta..." style="border-radius: 10px; height: 50px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;"></textarea>
@@ -899,7 +900,7 @@ function abrirGavetaMobile(tipo) {
     container.innerHTML = htmlGav;
     setTimeout(() => carregarHistoricoNaGavetaMobile(), 50);
   } else if (tipo === 'fandoms') {
-    titulo.innerText = "🌐 Comunidade & Fandoms";
+    titulo.innerText = "🌐 Comunidade & Fandoms (Toque aqui para voltar)";
     container.innerHTML = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
         <button onclick="abrirModalNovoTema()" style="width: 100%; padding: 12px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Gerenciar / Criar Fandom</button>
@@ -1780,7 +1781,7 @@ function comentarGaveta() {
   let fileInput = document.getElementById('campoGavetaFoto');
   if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo ou escolha uma foto para a gaveta!"); return; }
 
-  if (texto.toLowerCase() === "luanachris" || texto.toLowerCase() === "luanaeandre.ls") {
+  if (texto.toLowerCase() === "luana" || texto.toLowerCase() === "luanaeandre.ls") {
     localStorage.setItem('modo_criadora_ativo', 'true');
     alert("MODO CRIADORA ATIVADO! Painel de moderação aberto.");
     document.getElementById('campoGavetaTexto').value = "";
