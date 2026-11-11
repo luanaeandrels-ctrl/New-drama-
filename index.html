@@ -146,10 +146,10 @@ select option { background: #121829; color: #fff; }
 .contador{font-size:13px; background:rgba(243,217,139,0.15); border:1px solid #f3d98b; padding:6px 10px;
 border-radius:999px; display:inline-block;}
 
-/* BARRA DE BOLINHAS DO CELULAR (OCULTA NO PC) */
+/* 4 BOLINHAS DE ATALHO DO CELULAR */
 #barra-bolinhas-celular {
   display: none;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
   align-items: center;
   margin: 12px 0;
@@ -163,7 +163,7 @@ border-radius:999px; display:inline-block;}
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(243,217,139,0.3);
   border-radius: 50%;
-  width: 58px; height: 58px;
+  width: 60px; height: 60px;
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
@@ -174,20 +174,23 @@ border-radius:999px; display:inline-block;}
   background: rgba(243,217,139,0.2);
 }
 .bolinha-atalho span {
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   color: #f3d98b;
   margin-top: 2px;
   font-weight: bold;
+  text-align: center;
 }
+
+/* CONTAINER MOBILE ESPECÍFICO PARA A ORDEM SOLICITADA */
+#bloco-topo-mobile { display: none; }
 
 /* ADAPTAÇÃO AUTOMÁTICA PARA CELULAR (< 1000px) */
 @media (max-width:1000px){
   .layout{display:block;}
-  .logo{font-size:48px}
-  #barra-bolinhas-celular { display: flex; }
-  /* NO MOBILE, AS COLUNAS COMEÇAM OCULTAS E SÃO CONTROLADAS POR ABA */
-  .coluna-mobile { display: none !important; }
-  .coluna-mobile.ativa-mobile { display: flex !important; flex-direction: column; gap: 14px; }
+  .logo{font-size:42px}
+  #bloco-topo-mobile { display: flex; flex-direction: column; gap: 14px; margin-bottom: 14px; }
+  /* NO MOBILE, ESCONDEMOS AS COLUNAS LATERAIS DO GRID E USAMOS O FLUXO LINEAR TOPO -> BOLINHAS -> FEED */
+  #coluna-esquerda, #coluna-direita { display: none !important; }
 }
 </style>
 </head>
@@ -297,7 +300,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE CADASTRO (COM SENHA DE ACESSO INCLUÍDA) -->
+  <!-- MODAL DE CADASTRO -->
   <div id="modal-cadastro" class="modal-custom">
     <div class="caixa-modal">
       <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;" id="titulo-modal-cadastro">Dados Cadastrais & Senha</h3>
@@ -318,7 +321,6 @@ border-radius:999px; display:inline-block;}
       <div class="grupo-input"><label>4. E-mail (Privado para Recuperação):</label><input type="email" id="input-email" placeholder="seu@email.com"></div>
       <div class="grupo-input"><label>5. Telefone / WhatsApp (Privado / Suporte):</label><input type="text" id="input-tel" placeholder="(31) 9xxxx-xxxx"></div>
       
-      <!-- CAMPOS DE SENHA -->
       <div class="grupo-input"><label>6. Cadastrar / Alterar Senha de Acesso:</label><input type="password" id="input-senha" placeholder="Sua senha secreta..."></div>
       
       <div class="grupo-input">
@@ -368,7 +370,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE ADICIONAR / EDITAR BIAS INTERATIVO (COM TRAVA DE 30 DIAS) -->
+  <!-- MODAL DE ADICIONAR / EDITAR BIAS INTERATIVO -->
   <div id="modal-bias" class="modal-custom">
     <div class="caixa-modal">
       <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Gerenciar Meus Bias (1 a 1000)</h3>
@@ -435,19 +437,71 @@ border-radius:999px; display:inline-block;}
     <div class="subtitle" style="font-size: 22px; letter-spacing: 3px; opacity:.8; text-transform: uppercase; margin-top: 6px;">doramas k-pop animes</div>
   </header>
 
-  <!-- BARRA DE BOLINHAS DO CELULAR (ATALHOS RÁPIDOS NO TOPO) -->
-  <div id="barra-bolinhas-celular">
-    <div class="bolinha-atalho" onclick="mudarAbaMobile('esquerda')">
-      <span style="font-size: 1.1rem;">🎯</span>
-      <span>Desafio</span>
+  <!-- BLOCO EXCLUSIVO MOBILE: RANKING COM AS 3 FOTOS PEQUENAS E AS 4 BOLINHAS ABAIXO -->
+  <div id="bloco-topo-mobile">
+    <!-- RANKING / PÓDIO DA SEMANA NO TOPO (MOBILE) -->
+    <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
+      <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;">Campeão da Semana</h3>
+      <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono (Atualizado aos domingos!)</p>
+      
+      <!-- Pódio com as 3 fotos pequenas (clicáveis para zoom) -->
+      <div style="display: flex; flex-direction: column; gap: 8px; padding: 6px; background: rgba(0,0,0,0.3); border-radius: 8px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(243,217,139,0.15); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #f3d98b;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534447677768-be436bb09401')">
+              <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div>
+              <span style="font-size: 0.75rem; font-weight: bold; color: #f3d98b; display: block;">🥇 Ouro (1º Lugar)</span>
+              <span id="mobile-podio-1" style="font-size: 0.7rem; color: #fff;">Aguardando...</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #cccccc;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1518709268805-4e9042af9f23')">
+              <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div>
+              <span style="font-size: 0.75rem; font-weight: bold; color: #ccc; display: block;">🥈 Prata (2º Lugar)</span>
+              <span id="mobile-podio-2" style="font-size: 0.7rem; color: #fff;">Aguardando...</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #cd7f32;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1556911220-e15b29be8c8f')">
+              <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div>
+              <span style="font-size: 0.75rem; font-weight: bold; color: #cd7f32; display: block;">🥉 Bronze (3º Lugar)</span>
+              <span id="mobile-podio-3" style="font-size: 0.7rem; color: #fff;">Aguardando...</span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="bolinha-atalho" onclick="mudarAbaMobile('central')">
-      <span style="font-size: 1.1rem;">💬</span>
-      <span>Feed</span>
-    </div>
-    <div class="bolinha-atalho" onclick="mudarAbaMobile('direita')">
-      <span style="font-size: 1.1rem;">📂</span>
-      <span>Gaveta</span>
+
+    <!-- 4 BOLINHAS DE ATALHO ABAIXO DO RANKING NO MOBILE -->
+    <div id="barra-bolinhas-celular" style="display: flex;">
+      <div class="bolinha-atalho" onclick="mudarAbaMobile('desafio')">
+        <span style="font-size: 1.1rem;">🎯</span>
+        <span>Desafio</span>
+      </div>
+      <div class="bolinha-atalho" onclick="mudarAbaMobile('feed')">
+        <span style="font-size: 1.1rem;">💬</span>
+        <span>Feed</span>
+      </div>
+      <div class="bolinha-atalho" onclick="mudarAbaMobile('gaveta')">
+        <span style="font-size: 1.1rem;">📂</span>
+        <span>Gaveta</span>
+      </div>
+      <div class="bolinha-atalho" onclick="mudarAbaMobile('comunidade')">
+        <span style="font-size: 1.1rem;">🌐</span>
+        <span>Fandoms</span>
+      </div>
     </div>
   </div>
 
@@ -458,7 +512,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS (ADAPTATIVO) -->
+  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS (PC) OU FEED COMPLETO (MOBILE ABAIXO) -->
   <div class="layout" id="feed-principal">
     
     <!-- COLUNA ESQUERDA: DESAFIO DO DIA + MEUS BIAS UNIDOS -->
@@ -518,7 +572,7 @@ border-radius:999px; display:inline-block;}
       </div>
     </div>
 
-    <!-- COLUNA CENTRAL (FEED) -->
+    <!-- COLUNA CENTRAL (FEED COMPLETO) -->
     <div id="coluna-central" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" id="painel-central-container" style="margin-bottom: 0;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
@@ -588,7 +642,7 @@ border-radius:999px; display:inline-block;}
       </div>
     </div>
 
-    <!-- COLUNA DIREITA: RANKING, GAVETA E FANDOMS -->
+    <!-- COLUNA DIREITA: RANKING, GAVETA E FANDOMS (EXCLUSIVO PC) -->
     <div id="coluna-direita" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
         <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;" id="txt-campeao-semana">Campeão da Semana</h3>
@@ -674,15 +728,17 @@ border-radius:999px; display:inline-block;}
 const ASSINATURA_MESTRE_CRIADOR = "Luana de Souza Gonçalves";
 let modoAtualNoCentro = "GERAL";
 
-/* ALTERNAR ABAS NO CELULAR USANDO AS BOLINHAS DO TOPO */
+/* FUNÇÃO PARA AS 4 BOLINHAS DE ATALHO NO MOBILE */
 function mudarAbaMobile(aba) {
-  document.getElementById('coluna-esquerda').classList.remove('ativa-mobile');
-  document.getElementById('coluna-central').classList.remove('ativa-mobile');
-  document.getElementById('coluna-direita').classList.remove('ativa-mobile');
-
-  if (aba === 'esquerda') document.getElementById('coluna-esquerda').classList.add('ativa-mobile');
-  if (aba === 'central') document.getElementById('coluna-central').classList.add('ativa-mobile');
-  if (aba === 'direita') document.getElementById('coluna-direita').classList.add('ativa-mobile');
+  if (aba === 'desafio') {
+    abrirDesafioNoCentro();
+  } else if (aba === 'feed') {
+    voltarParaFeedPrincipal();
+  } else if (aba === 'gaveta') {
+    alternarGavetaNoCentro({ preventDefault: function(){} });
+  } else if (aba === 'comunidade') {
+    tentarEntrarComunidade('Super Junior', '#2196f3');
+  }
 }
 
 const desafio_segunda = "";
@@ -1001,8 +1057,8 @@ function alternarGavetaNoCentro(event) {
 
   if (modoAtualNoCentro !== "GAVETA") {
     modoAtualNoCentro = "GAVETA";
-    layoutGrid.style.gridTemplateColumns = "300px 1fr 240px";
-    btnVerGaveta.innerText = "✖ Fechar Gaveta";
+    if(layoutGrid) layoutGrid.style.gridTemplateColumns = "300px 1fr 240px";
+    if(btnVerGaveta) btnVerGaveta.innerText = "✖ Fechar Gaveta";
     document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta Privada";
     document.getElementById('sub-feed-atual').innerText = "Apenas o que você curtiu, achou legal e interagiu";
     document.getElementById('btn-voltar-geral').style.display = 'block';
@@ -1289,9 +1345,18 @@ function atualizarPodioSemanal() {
     listaPosts.push({ autor, likes });
   });
   listaPosts.sort((a, b) => b.likes - a.likes);
-  document.getElementById('podio-1').innerText = listaPosts[0] ? listaPosts[0].autor + " (" + listaPosts[0].likes + "v)" : "Aguardando...";
-  document.getElementById('podio-2').innerText = listaPosts[1] ? listaPosts[1].autor + " (" + listaPosts[1].likes + "v)" : "Aguardando...";
-  document.getElementById('podio-3').innerText = listaPosts[2] ? listaPosts[2].autor + " (" + listaPosts[2].likes + "v)" : "Aguardando...";
+  
+  let p1 = listaPosts[0] ? listaPosts[0].autor + " (" + listaPosts[0].likes + "v)" : "Aguardando...";
+  let p2 = listaPosts[1] ? listaPosts[1].autor + " (" + listaPosts[1].likes + "v)" : "Aguardando...";
+  let p3 = listaPosts[2] ? listaPosts[2].autor + " (" + listaPosts[2].likes + "v)" : "Aguardando...";
+
+  if(document.getElementById('podio-1')) document.getElementById('podio-1').innerText = p1;
+  if(document.getElementById('podio-2')) document.getElementById('podio-2').innerText = p2;
+  if(document.getElementById('podio-3')) document.getElementById('podio-3').innerText = p3;
+
+  if(document.getElementById('mobile-podio-1')) document.getElementById('mobile-podio-1').innerText = p1;
+  if(document.getElementById('mobile-podio-2')) document.getElementById('mobile-podio-2').innerText = p2;
+  if(document.getElementById('mobile-podio-3')) document.getElementById('mobile-podio-3').innerText = p3;
 }
 
 function atualizarNomePerfil(input) {
