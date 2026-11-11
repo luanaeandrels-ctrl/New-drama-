@@ -96,7 +96,7 @@
 .grupo-input label { display: block; font-size: 0.8rem; color: #f3d98b; margin-bottom: 4px; }
 *{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', Arial, sans-serif}
 body {
-  background: #060a1e url('fundo.jpeg') no-repeat center center fixed;
+  background: #060a1e url('img/fundo.jpg') no-repeat center center fixed;
   background-size: cover;
   image-rendering: -webkit-optimize-contrast;
   color: #fff;
@@ -185,8 +185,9 @@ border-radius:999px; display:inline-block;}
   .layout{display:block;}
   .logo{font-size:48px}
   #barra-bolinhas-celular { display: flex; }
-  .coluna-mobile { display: none; }
-  .coluna-mobile.ativa-mobile { display: flex; flex-direction: column; gap: 14px; }
+  /* NO MOBILE, AS COLUNAS COMEÇAM OCULTAS E SÃO CONTROLADAS POR ABA */
+  .coluna-mobile { display: none !important; }
+  .coluna-mobile.ativa-mobile { display: flex !important; flex-direction: column; gap: 14px; }
 }
 </style>
 </head>
@@ -461,7 +462,7 @@ border-radius:999px; display:inline-block;}
   <div class="layout" id="feed-principal">
     
     <!-- COLUNA ESQUERDA: DESAFIO DO DIA + MEUS BIAS UNIDOS -->
-    <div id="coluna-esquerda" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
+    <div id="coluna-esquerda" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       
       <!-- CARD UNIFICADO -->
       <div class="card" id="card-desafio-esquerda" style="border: 2px solid #9c27b0; background: rgba(156, 39, 176, 0.08); margin-bottom: 0;">
@@ -518,7 +519,7 @@ border-radius:999px; display:inline-block;}
     </div>
 
     <!-- COLUNA CENTRAL (FEED) -->
-    <div id="coluna-central" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
+    <div id="coluna-central" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" id="painel-central-container" style="margin-bottom: 0;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 10px;">
@@ -573,7 +574,6 @@ border-radius:999px; display:inline-block;}
             <div style="cursor: pointer; width: 100%; border-radius: 8px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534447677768-be436bb09401')">
               <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401" style="width: 100%; height: auto; display: block; object-fit: contain;">
             </div>
-            <!-- LINHA DE INTERAÇÃO RESTAURADA (CURTIR, COMPARTILHAR E COMENTAR) -->
             <div class="lista-respostas-chat" style="margin-left: 15px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; border-left: 2px solid rgba(243,217,139,0.3); padding-left: 10px;"></div>
             <div style="margin-top: 10px; display: flex; gap: 12px; justify-content: flex-end;">
               <button onclick="curtirPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;"><span class="contador-post-likes">0</span> Curtir</button>
