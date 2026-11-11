@@ -123,15 +123,17 @@ body::before {
   align-items: center;
   justify-content: center;
   gap: 16px;
+  transition: all 0.3s ease;
 }
 .logo{
-  font-family:Georgia, serif; font-size:80px; font-weight:700;
+  font-family:Georgia, serif; font-size:75px; font-weight:700;
   color:#f3d98b; letter-spacing:1px;
   text-shadow:0 0 20px #f3d98b, 0 0 40px #b8860b;
   line-height: 1.1;
   cursor: pointer;
+  transition: font-size 0.3s ease;
 }
-.subtitle{font-size:22px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 6px;}
+.subtitle{font-size:20px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease;}
 .layout{display:grid; grid-template-columns:300px 1fr 300px; gap:14px; margin-top:14px; align-items:start; transition: all 0.3s ease;}
 .card{
   background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(14px);
@@ -149,10 +151,10 @@ border-radius:999px; display:inline-block;}
 /* 4 BOLINHAS DE ATALHO DO CELULAR */
 #barra-bolinhas-celular {
   display: none;
-  gap: 10px;
+  gap: 8px;
   justify-content: center;
   align-items: center;
-  margin: 12px 0;
+  margin: 6px 0;
   overflow-x: auto;
   padding: 4px;
 }
@@ -163,7 +165,7 @@ border-radius:999px; display:inline-block;}
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(243,217,139,0.3);
   border-radius: 50%;
-  width: 60px; height: 60px;
+  width: 50px; height: 50px;
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
@@ -174,9 +176,9 @@ border-radius:999px; display:inline-block;}
   background: rgba(243,217,139,0.2);
 }
 .bolinha-atalho span {
-  font-size: 0.58rem;
+  font-size: 0.5rem;
   color: #f3d98b;
-  margin-top: 2px;
+  margin-top: 1px;
   font-weight: bold;
   text-align: center;
 }
@@ -186,11 +188,11 @@ border-radius:999px; display:inline-block;}
   display: none;
   justify-content: center;
   align-items: center;
-  gap: 18px;
-  margin: 12px 0 16px 0;
-  padding: 8px;
+  gap: 12px;
+  margin: 6px 0 10px 0;
+  padding: 6px;
   background: rgba(0,0,0,0.25);
-  border-radius: 16px;
+  border-radius: 14px;
   border: 1px solid rgba(243,217,139,0.2);
 }
 .circulo-podio-kwai {
@@ -200,7 +202,7 @@ border-radius:999px; display:inline-block;}
   cursor: pointer;
 }
 .circulo-avatar {
-  width: 65px; height: 65px;
+  width: 50px; height: 50px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
@@ -213,28 +215,32 @@ border-radius:999px; display:inline-block;}
 }
 .circulo-avatar:hover { transform: scale(1.05); }
 .circulo-avatar img { width: 100%; height: 100%; object-fit: cover; }
-.circulo-ouro { border: 3px solid #ffd700; box-shadow: 0 0 15px rgba(255,215,0,0.6); }
-.circulo-prata { border: 3px solid #c0c0c0; box-shadow: 0 0 15px rgba(192,192,192,0.6); }
-.circulo-bronze { border: 3px solid #cd7f32; box-shadow: 0 0 15px rgba(205,127,50,0.6); }
+.circulo-ouro { border: 3px solid #ffd700; box-shadow: 0 0 12px rgba(255,215,0,0.6); }
+.circulo-prata { border: 3px solid #c0c0c0; box-shadow: 0 0 12px rgba(192,192,192,0.6); }
+.circulo-bronze { border: 3px solid #cd7f32; box-shadow: 0 0 12px rgba(205,127,50,0.6); }
 .tag-podio-label {
-  font-size: 0.65rem;
+  font-size: 0.58rem;
   font-weight: bold;
-  margin-top: 4px;
+  margin-top: 2px;
   text-align: center;
 }
 
 #bloco-topo-mobile { display: none; }
 
+/* CLASSE PARA RECOLHER A LOGO AO ROLAR NO MOBILE */
+.logo-recolhida .logo { font-size: 22px !important; text-shadow: 0 0 8px #f3d98b; }
+.logo-recolhida .subtitle { display: none; }
+.logo-recolhida header { padding: 3px 0 !important; }
+
 @media (max-width:1000px){
   .layout{display:block;}
-  .logo{font-size:42px}
-  #bloco-topo-mobile { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+  #bloco-topo-mobile { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
   .podio-kwai-container { display: flex; }
   #coluna-esquerda, #coluna-direita { display: none !important; }
 }
 </style>
 </head>
-<body>
+<body onscroll="verificarRolagemTopoMobile()">
 
 <!-- TELA DE TRAVAMENTO DE SEGURANÇA -->
 <div id="tela-travada-global">
@@ -260,14 +266,14 @@ border-radius:999px; display:inline-block;}
 
 <div class="app">
   <!-- CABECALHO DO USUARIO -->
-  <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 10px; border: 1px solid rgba(255,255,255,0.1);">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <div id="avatar-usuario" style="width: 36px; height: 36px; border-radius: 50%; background: #ff4757; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; overflow: hidden; border: 1px solid #f3d98b;">?</div>
-      <span id="nome-usuario" style="font-weight: bold; font-size: 0.9rem; color: #fff;">Visitante</span>
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1);">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div id="avatar-usuario" style="width: 32px; height: 32px; border-radius: 50%; background: #ff4757; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; overflow: hidden; border: 1px solid #f3d98b;">?</div>
+      <span id="nome-usuario" style="font-weight: bold; font-size: 0.85rem; color: #fff;">Visitante</span>
     </div>
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <button id="btn-acao-perfil" onclick="abrirMenuLateral()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar</button>
-      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem;" title="Suporte com Desenvolvedora">⋮</button>
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <button id="btn-acao-perfil" onclick="abrirMenuLateral()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 5px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Entrar</button>
+      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;" title="Suporte com Desenvolvedora">⋮</button>
     </div>
   </div>
 
@@ -442,11 +448,11 @@ border-radius:999px; display:inline-block;}
   </div>
 
   <!-- CABECALHO DA LOGO PRINCIPAL -->
-  <header style="text-align: center; padding: 15px 0 10px;">
+  <header style="text-align: center; padding: 8px 0 4px;">
     <div class="logo-container" style="display: flex; align-items: center; justify-content: center; gap: 16px;">
-      <div class="logo" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">New Drama</div>
+      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">New Drama</div>
     </div>
-    <div class="subtitle" style="font-size: 22px; letter-spacing: 3px; opacity:.8; text-transform: uppercase; margin-top: 6px;">doramas k-pop animes</div>
+    <div class="subtitle" id="subtitulo-logo-topo" style="font-size: 18px; letter-spacing: 3px; opacity:.8; text-transform: uppercase; margin-top: 3px;">doramas k-pop animes</div>
   </header>
 
   <!-- BLOCO EXCLUSIVO MOBILE COM PÓDIO EM CÍRCULOS ESTILO KWAI -->
@@ -454,19 +460,19 @@ border-radius:999px; display:inline-block;}
     <!-- 4 BOLINHAS DE ATALHO -->
     <div id="barra-bolinhas-celular" style="display: flex;">
       <div class="bolinha-atalho" onclick="mudarAbaMobile('desafio')">
-        <span style="font-size: 1.2rem;">🎯</span>
+        <span style="font-size: 1rem;">🎯</span>
         <span>Desafio</span>
       </div>
       <div class="bolinha-atalho" onclick="mudarAbaMobile('feed')">
-        <span style="font-size: 1.2rem;">💬</span>
+        <span style="font-size: 1rem;">💬</span>
         <span>Feed</span>
       </div>
       <div class="bolinha-atalho" onclick="mudarAbaMobile('gaveta')">
-        <span style="font-size: 1.2rem;">📂</span>
+        <span style="font-size: 1rem;">📂</span>
         <span>Gaveta</span>
       </div>
       <div class="bolinha-atalho" onclick="mudarAbaMobile('comunidade')">
-        <span style="font-size: 1.2rem;">🌐</span>
+        <span style="font-size: 1rem;">🌐</span>
         <span>Fandoms</span>
       </div>
     </div>
@@ -495,7 +501,7 @@ border-radius:999px; display:inline-block;}
   </div>
 
   <!-- CONTADOR DE CURTIDAS -->
-  <div style="text-align: center; margin: 8px 0 14px 0;">
+  <div style="text-align: center; margin: 4px 0 8px 0;">
     <div style="font-size: 13px;">
       <span class="contador"><span id="txt-votos-hoje">Votos de hoje</span>: <span id="curtidasUsadas">0</span>/3</span>
     </div>
@@ -676,6 +682,14 @@ border-radius:999px; display:inline-block;}
 <!-- SCRIPT DO SISTEMA -->
 <script>
 let modoAtualNoCentro = "GERAL";
+
+function verificarRolagemTopoMobile() {
+  if (window.scrollY > 30) {
+    document.body.classList.add('logo-recolhida');
+  } else {
+    document.body.classList.remove('logo-recolhida');
+  }
+}
 
 function dispararCameraCelular() {
   const inputCamera = document.getElementById('cameraChatComunidadeDireto');
@@ -976,7 +990,7 @@ function alternarGavetaNoCentro(event) {
   if (modoAtualNoCentro !== "GAVETA") {
     modoAtualNoCentro = "GAVETA";
     if(layoutGrid) layoutGrid.style.gridTemplateColumns = "300px 1fr 240px";
-    if(btnVerGaveta) btnVerVerGaveta = btnVerGaveta.innerText = "✖ Fechar Gaveta";
+    if(btnVerGaveta) btnVerGaveta = btnVerGaveta.innerText = "✖ Fechar Gaveta";
     document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta Privada (Completa)";
     document.getElementById('sub-feed-atual').innerText = "Histórico de curtidas, compartilhamentos, comentários e anotações";
     document.getElementById('btn-voltar-geral').style.display = 'block';
@@ -1088,6 +1102,10 @@ function entrarComunidadeEfetivo(nomeComunidade, corTema) {
   document.getElementById('btn-adm-comunidade').style.display = 'block';
   document.getElementById('btn-voltar-geral').style.display = 'block';
   document.getElementById('container-subgrupos').style.display = 'block';
+  
+  let logoEl = document.getElementById('texto-logo-principal');
+  if(logoEl) logoEl.innerText = nomeComunidade;
+  
   carregarSubgruposInternos(nomeComunidade);
 }
 
@@ -1165,7 +1183,6 @@ function enviarMensagemChatComunidade() {
 function criarTopicoChatHTML(nome, texto, midiaBase64, isVideo, corCorrente, mural) {
   if (mural.innerHTML.includes("Nenhuma publicação")) mural.innerHTML = "";
   const topicoDiv = document.createElement('div');
-  // BALÃO PRINCIPAL DA MENSAGEM ESTILO CHAT
   topicoDiv.style.cssText = `background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(243,217,139,0.3); border-radius: 16px; padding: 14px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);`;
   let html = `
     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
@@ -1229,7 +1246,6 @@ function enviarRespostaChat(botao) {
   let listaRespostas = topico.querySelector('.lista-respostas-chat');
   let corPessoal = localStorage.getItem('usuario_cor_tema') || '#2196f3';
   
-  // BALÃO DE RESPOSTA EM ESCADINHA (ESTILO CHAT)
   let respDiv = document.createElement('div');
   respDiv.style.cssText = `background: rgba(0, 0, 0, 0.35); border-left: 3px solid ${corPessoal}; padding: 8px 10px; border-radius: 10px; margin-left: 12px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.06);`;
   respDiv.innerHTML = `
