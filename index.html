@@ -9,8 +9,8 @@
 /* BARRA DE ROLAGEM 100% INVISÍVEL */
 /* ==================================== */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 4px;
+  height: 4px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -19,15 +19,9 @@
   background: rgba(255, 255, 255, 0.15);
   border-radius: 999px;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(243, 217, 139, 0.4);
-}
 * {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
-}
-*:hover {
-  scrollbar-color: rgba(255, 255, 255, 0.15) transparent;
 }
 
 /* ==================================== */
@@ -66,7 +60,7 @@
 }
 #modal-menu::before {
   content: ""; position: fixed; inset: 0;
-  background: rgba(6, 10, 30, 0.90);
+  background: rgba(6, 10, 30, 0.92);
   z-index: -1;
 }
 .modal-custom {
@@ -126,14 +120,14 @@ body::before {
   transition: all 0.3s ease;
 }
 .logo{
-  font-family:Georgia, serif; font-size:75px; font-weight:700;
+  font-family:Georgia, serif; font-size:65px; font-weight:700;
   color:#f3d98b; letter-spacing:1px;
   text-shadow:0 0 20px #f3d98b, 0 0 40px #b8860b;
   line-height: 1.1;
   cursor: pointer;
   transition: font-size 0.3s ease;
 }
-.subtitle{font-size:20px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease;}
+.subtitle{font-size:18px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease;}
 .layout{display:grid; grid-template-columns:300px 1fr 300px; gap:14px; margin-top:14px; align-items:start; transition: all 0.3s ease;}
 .card{
   background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(14px);
@@ -148,13 +142,13 @@ select option { background: #121829; color: #fff; }
 .contador{font-size:13px; background:rgba(243,217,139,0.15); border:1px solid #f3d98b; padding:6px 10px;
 border-radius:999px; display:inline-block;}
 
-/* 4 BOLINHAS DE ATALHO DO CELULAR */
+/* BOLINHAS DE ATALHO GAVETA MOBILE */
 #barra-bolinhas-celular {
   display: none;
-  gap: 8px;
+  gap: 10px;
   justify-content: center;
   align-items: center;
-  margin: 6px 0;
+  margin: 8px 0;
   overflow-x: auto;
   padding: 4px;
 }
@@ -163,9 +157,9 @@ border-radius:999px; display:inline-block;}
   flex-direction: column;
   align-items: center;
   background: rgba(255,255,255,0.08);
-  border: 1px solid rgba(243,217,139,0.3);
+  border: 1px solid rgba(243,217,139,0.35);
   border-radius: 50%;
-  width: 50px; height: 50px;
+  width: 54px; height: 54px;
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s, background 0.2s;
@@ -173,17 +167,17 @@ border-radius:999px; display:inline-block;}
 }
 .bolinha-atalho:hover {
   transform: scale(1.08);
-  background: rgba(243,217,139,0.2);
+  background: rgba(243,217,139,0.25);
 }
 .bolinha-atalho span {
-  font-size: 0.5rem;
+  font-size: 0.55rem;
   color: #f3d98b;
   margin-top: 1px;
   font-weight: bold;
   text-align: center;
 }
 
-/* CÍRCULOS DO PÓDIO ESTILO KWAI NO MOBILE */
+/* PÓDIO KWAI MOBILE */
 .podio-kwai-container {
   display: none;
   justify-content: center;
@@ -202,14 +196,13 @@ border-radius:999px; display:inline-block;}
   cursor: pointer;
 }
 .circulo-avatar {
-  width: 50px; height: 50px;
+  width: 48px; height: 48px;
   border-radius: 50%;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #111;
-  position: relative;
   box-shadow: 0 4px 15px rgba(0,0,0,0.5);
   transition: transform 0.2s;
 }
@@ -218,19 +211,27 @@ border-radius:999px; display:inline-block;}
 .circulo-ouro { border: 3px solid #ffd700; box-shadow: 0 0 12px rgba(255,215,0,0.6); }
 .circulo-prata { border: 3px solid #c0c0c0; box-shadow: 0 0 12px rgba(192,192,192,0.6); }
 .circulo-bronze { border: 3px solid #cd7f32; box-shadow: 0 0 12px rgba(205,127,50,0.6); }
-.tag-podio-label {
-  font-size: 0.58rem;
-  font-weight: bold;
-  margin-top: 2px;
-  text-align: center;
-}
+.tag-podio-label { font-size: 0.58rem; font-weight: bold; margin-top: 2px; text-align: center; }
 
 #bloco-topo-mobile { display: none; }
 
-/* CLASSE PARA RECOLHER A LOGO AO ROLAR NO MOBILE */
+/* LOGO RECOLHIDA AO ROLAR */
 .logo-recolhida .logo { font-size: 22px !important; text-shadow: 0 0 8px #f3d98b; }
 .logo-recolhida .subtitle { display: none; }
 .logo-recolhida header { padding: 3px 0 !important; }
+
+/* GAVETA MOBILE DE TELA CHEIA PARA AS FUNÇÕES DO DESKTOP */
+#gaveta-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 30, 0.96);
+  backdrop-filter: blur(10px);
+  z-index: 99998;
+  display: none;
+  flex-direction: column;
+  padding: 15px;
+  overflow-y: auto;
+}
 
 @media (max-width:1000px){
   .layout{display:block;}
@@ -250,7 +251,18 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- MODAL ESTILO PINTEREST (TELA CHEIA) -->
+<!-- GAVETA MOBILE EXCLUSIVA: TODAS AS FUNÇÕES DO DESKTOP AQUI -->
+<div id="gaveta-mobile-overlay">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
+    <h3 id="titulo-gaveta-mobile" style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Gaveta de Recursos</h3>
+    <button onclick="fecharGavetaMobile()" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">✕ Fechar Gaveta</button>
+  </div>
+  <div id="conteudo-dinamico-gaveta-mobile" style="display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px;">
+    <!-- O conteúdo da função escolhida (Desafio, Meus Bias, Gaveta Privada ou Fandoms) será injetado aqui dinamicamente no mobile -->
+  </div>
+</div>
+
+<!-- MODAL ESTILO PINTEREST (ZOOM FOTOS) -->
 <div id="modal-pinterest" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; overflow: auto; padding: 10px;">
   <button onclick="fecharModalPinterest()" style="position: fixed; top: 20px; right: 25px; background: rgba(255,255,255,0.25); border: none; color: white; font-size: 1.4rem; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 100000;">✕</button>
   
@@ -259,7 +271,7 @@ border-radius:999px; display:inline-block;}
   </div>
 
   <div style="position: fixed; bottom: 20px; background: rgba(20,25,45,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(243,217,139,0.4); padding: 10px 20px; border-radius: 999px; display: flex; gap: 15px; align-items: center; z-index: 100000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
-    <span style="font-size: 0.8rem; color: #f3d98b; font-weight: bold;" id="txt-label-zoom">Zoom:</span>
+    <span style="font-size: 0.8rem; color: #f3d98b; font-weight: bold;">Zoom:</span>
     <input type="range" id="sliderZoomPinterest" min="1" max="4" step="0.2" value="1" oninput="aplicarZoomPinterest(this.value)" style="width: 150px; cursor: pointer;">
   </div>
 </div>
@@ -308,19 +320,6 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
       <button onclick="fecharPainelAdm()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Painel</button>
-    </div>
-  </div>
-
-  <!-- MODAL DE SELEÇÃO DE FANDOMS (MOBILE) -->
-  <div id="modal-fandoms-mobile" class="modal-custom">
-    <div class="caixa-modal">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">Fandoms & Comunidades</h3>
-        <button onclick="fecharModalFandomsMobile()" style="background: none; border: none; color: #ff4757; font-size: 1.2rem; cursor: pointer; font-weight: bold;">✕</button>
-      </div>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 12px;">Selecione o fandom que deseja acessar:</p>
-      <div id="lista-fandoms-modal-mobile" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
-      <button onclick="abrirModalNovoTemaDesdeMobile()" style="width: 100%; padding: 10px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">+ Gerenciar / Criar Fandoms</button>
     </div>
   </div>
 
@@ -449,35 +448,34 @@ border-radius:999px; display:inline-block;}
 
   <!-- CABECALHO DA LOGO PRINCIPAL -->
   <header style="text-align: center; padding: 8px 0 4px;">
-    <div class="logo-container" style="display: flex; align-items: center; justify-content: center; gap: 16px;">
+    <div class="logo-container">
       <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">New Drama</div>
     </div>
-    <div class="subtitle" id="subtitulo-logo-topo" style="font-size: 18px; letter-spacing: 3px; opacity:.8; text-transform: uppercase; margin-top: 3px;">doramas k-pop animes</div>
+    <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
 
-  <!-- BLOCO EXCLUSIVO MOBILE COM PÓDIO EM CÍRCULOS ESTILO KWAI -->
+  <!-- BLOCO EXCLUSIVO MOBILE: 4 BOLINHAS DE ATALHO PARA ABRIR GAVETAS -->
   <div id="bloco-topo-mobile">
-    <!-- 4 BOLINHAS DE ATALHO -->
     <div id="barra-bolinhas-celular" style="display: flex;">
-      <div class="bolinha-atalho" onclick="mudarAbaMobile('desafio')">
+      <div class="bolinha-atalho" onclick="abrirGavetaMobile('desafio')">
         <span style="font-size: 1rem;">🎯</span>
         <span>Desafio</span>
       </div>
-      <div class="bolinha-atalho" onclick="mudarAbaMobile('feed')">
-        <span style="font-size: 1rem;">💬</span>
-        <span>Feed</span>
+      <div class="bolinha-atalho" onclick="abrirGavetaMobile('bias')">
+        <span style="font-size: 1rem;">⭐</span>
+        <span>Meus Bias</span>
       </div>
-      <div class="bolinha-atalho" onclick="mudarAbaMobile('gaveta')">
+      <div class="bolinha-atalho" onclick="abrirGavetaMobile('gaveta')">
         <span style="font-size: 1rem;">📂</span>
         <span>Gaveta</span>
       </div>
-      <div class="bolinha-atalho" onclick="mudarAbaMobile('comunidade')">
+      <div class="bolinha-atalho" onclick="abrirGavetaMobile('fandoms')">
         <span style="font-size: 1rem;">🌐</span>
         <span>Fandoms</span>
       </div>
     </div>
 
-    <!-- PÓDIO COM CÍRCULOS ESTILO KWAI (SEMPRE VISÍVEL NO MOBILE) -->
+    <!-- PÓDIO COM CÍRCULOS ESTILO KWAI -->
     <div class="podio-kwai-container">
       <div class="circulo-podio-kwai" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')">
         <div class="circulo-avatar circulo-prata">
@@ -507,7 +505,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS -->
+  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS (DESKTOP) -->
   <div class="layout" id="feed-principal">
     
     <!-- COLUNA ESQUERDA -->
@@ -557,7 +555,7 @@ border-radius:999px; display:inline-block;}
       </div>
     </div>
 
-    <!-- COLUNA CENTRAL: FEED GERAL NA ENTRADA -->
+    <!-- COLUNA CENTRAL: FEED GERAL -->
     <div id="coluna-central" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" id="painel-central-container" style="margin-bottom: 0;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
@@ -691,16 +689,144 @@ function verificarRolagemTopoMobile() {
   }
 }
 
+// INTELIGÊNCIA DE CÂMERA: DESKTOP ABRE WEBCAM DO PC / CELULAR ABRE CÂMERA NATIVA
 function dispararCameraCelular() {
-  const inputCamera = document.getElementById('cameraChatComunidadeDireto');
-  if (inputCamera) inputCamera.click();
+  const isDesktop = !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  if (isDesktop) {
+    abrirModalWebcamDesktop();
+  } else {
+    const inputCamera = document.getElementById('cameraChatComunidadeDireto');
+    if (inputCamera) inputCamera.click();
+  }
 }
 
-function mudarAbaMobile(aba) {
-  if (aba === 'desafio') abrirDesafioNoCentro();
-  else if (aba === 'feed') voltarParaFeedPrincipal();
-  else if (aba === 'gaveta') alternarGavetaNoCentro({ preventEvent: true });
-  else if (aba === 'comunidade') abrirModalFandomsMobile();
+function abrirModalWebcamDesktop() {
+  let modalExistente = document.getElementById('modal-webcam-pc');
+  if (modalExistente) modalExistente.remove();
+
+  const modalHtml = `
+    <div id="modal-webcam-pc" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
+      <div style="background: #121829; border: 1px solid #f3d98b; padding: 20px; border-radius: 16px; max-width: 500px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+        <h3 style="color: #f3d98b; margin-bottom: 10px; font-size: 1.1rem;">📸 Capturar Foto pela Webcam</h3>
+        <video id="videoWebcamPC" autoplay playsinline style="width: 100%; max-height: 300px; background: #000; border-radius: 8px; margin-bottom: 15px;"></video>
+        <canvas id="canvasWebcamPC" style="display: none;"></canvas>
+        <div style="display: flex; gap: 10px;">
+          <button onclick="tirarFotoWebcamPC()" style="flex: 1; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Tirar Foto</button>
+          <button onclick="fecharModalWebcamPC()" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    .then(stream => {
+      window.streamWebcamGlobal = stream;
+      const videoEl = document.getElementById('videoWebcamPC');
+      if (videoEl) videoEl.srcObject = stream;
+    })
+    .catch(err => {
+      alert("⚠️ Não foi possível acessar a webcam do computador. Verifique as permissões do navegador.");
+      fecharModalWebcamPC();
+    });
+}
+
+function fecharModalWebcamPC() {
+  if (window.streamWebcamGlobal) {
+    window.streamWebcamGlobal.getTracks().forEach(track => track.stop());
+    window.streamWebcamGlobal = null;
+  }
+  let modal = document.getElementById('modal-webcam-pc');
+  if (modal) modal.remove();
+}
+
+function tirarFotoWebcamPC() {
+  const videoEl = document.getElementById('videoWebcamPC');
+  const canvasEl = document.getElementById('canvasWebcamPC');
+  if (!videoEl || !canvasEl) return;
+
+  canvasEl.width = videoEl.videoWidth || 640;
+  canvasEl.height = videoEl.videoHeight || 480;
+  let ctx = canvasEl.getContext('2d');
+  ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height);
+
+  let base64Foto = canvasEl.toDataURL('image/jpeg', 0.92);
+  midiaChatValidaBase64 = base64Foto;
+  midiaChatIsVideo = false;
+
+  let label = document.getElementById('label-midia-chat');
+  if (label) label.innerText = " 📷 Foto da Webcam (Pronto)";
+
+  fecharModalWebcamPC();
+  alert("✅ Foto capturada com sucesso pela webcam do computador!");
+}
+
+// SISTEMA DE GAVETA MOBILE (ABRE E FECHA COM TODAS AS FUNÇÕES DO DESKTOP)
+function abrirGavetaMobile(tipo) {
+  let overlay = document.getElementById('gaveta-mobile-overlay');
+  let container = document.getElementById('conteudo-dinamico-gaveta-mobile');
+  let titulo = document.getElementById('titulo-gaveta-mobile');
+  container.innerHTML = "";
+
+  if (tipo === 'desafio') {
+    titulo.innerText = "🎯 Desafio do Dia & Pódio";
+    container.innerHTML = `
+      <div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px;">
+        <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">Desafio</h4>
+        <input type="text" id="inputBuscaBiasDesafioMob" placeholder="Buscar bias por nº ou nome..." oninput="filtrarBuscaBiasDesafio(this.value)" style="margin-bottom: 10px;">
+        <div id="bloco-envio-desafio-mob" style="margin-bottom: 10px;"></div>
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-top: 10px;">
+          <h5 style="color: #f3d98b; margin-bottom: 6px;">👑 Pódio Atual</h5>
+          <p style="font-size: 0.8rem; margin: 2px 0;">🥇 1º: Park Chanyeol</p>
+          <p style="font-size: 0.8rem; margin: 2px 0;">🥈 2º: Lee Dong-wook</p>
+          <p style="font-size: 0.8rem; margin: 2px 0;">🥉 3º: Choi Si-won</p>
+        </div>
+      </div>
+    `;
+    setTimeout(() => renderizarCardDesafioEsquerda(), 50);
+  } else if (tipo === 'bias') {
+    titulo.innerText = "⭐ Gerenciar Meus Bias (1 a 1000)";
+    container.innerHTML = `
+      <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
+        <button onclick="abrirModalBias()" class="btn-tema-bg" style="width: 100%; padding: 12px; background: #ff4757; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Adicionar ou Editar Bias</button>
+        <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 10px;">Lista de Bias cadastrados:</p>
+        <div id="lista-bias-container-mob" style="display: flex; flex-direction: column; gap: 8px; max-height: 350px; overflow-y: auto;"></div>
+      </div>
+    `;
+    setTimeout(() => carregarMeusBiasNaInterfaceMobile(), 50);
+  } else if (tipo === 'gaveta') {
+    titulo.innerText = "📂 Minha Gaveta Privada & Histórico";
+    let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
+    let htmlGav = `
+      <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
+        <textarea id="campoGavetaTextoMob" placeholder="Escreva nota ou adicione algo na gaveta..." style="border-radius: 10px; height: 50px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;"></textarea>
+        <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+          <input type="file" id="campoGavetaFotoMob" accept="image/*" style="display:none;" onchange="document.getElementById('lbl-foto-mob').innerText=this.files[0].name">
+          <label for="campoGavetaFotoMob" id="lbl-foto-mob" style="flex:1; background:rgba(255,255,255,0.1); padding:8px; border-radius:8px; text-align:center; font-size:0.75rem; color:#f3d98b; cursor:pointer;">📁 Foto Privada</label>
+          <button onclick="comentarGavetaMobile()" style="background:#f3d98b; color:#1a1030; border:none; padding:8px 14px; border-radius:8px; font-weight:bold; cursor:pointer;">Salvar</button>
+        </div>
+        <hr style="border:none; border-top:1px solid rgba(255,255,255,0.15); margin-bottom:10px;">
+        <div id="listaGavetaMob" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;"></div>
+      </div>
+    `;
+    container.innerHTML = htmlGav;
+    setTimeout(() => carregarHistoricoNaGavetaMobile(), 50);
+  } else if (tipo === 'fandoms') {
+    titulo.innerText = "🌐 Fandoms & Comunidades";
+    container.innerHTML = `
+      <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
+        <button onclick="abrirModalNovoTema()" style="width: 100%; padding: 12px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Gerenciar / Criar Fandom</button>
+        <div id="lista-comunidades-container-mob" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+    `;
+    setTimeout(() => renderizarListaFandomsLateralMobile(), 50);
+  }
+
+  overlay.style.display = 'flex';
+}
+
+function fecharGavetaMobile() {
+  document.getElementById('gaveta-mobile-overlay').style.display = 'none';
 }
 
 const desafio_segunda = "";
@@ -757,25 +883,21 @@ function renderizarListaFandomsLateral() {
   });
 }
 
-function abrirModalFandomsMobile() {
-  let containerMobile = document.getElementById('lista-fandoms-modal-mobile');
-  if (!containerMobile) return;
-  containerMobile.innerHTML = "";
+function renderizarListaFandomsLateralMobile() {
+  let container = document.getElementById('lista-comunidades-container-mob');
+  if (!container) return;
+  container.innerHTML = "";
   let coresPadroes = ["#2196f3", "#00bcd4", "#9c27b0", "#e91e63", "#4caf50", "#ff9800", "#795548", "#e0a838"];
-
+  
   comunidadesAprovadas.forEach((nomeFandom, index) => {
     let cor = coresPadroes[index % coresPadroes.length];
     let btn = document.createElement('button');
-    btn.style.cssText = `width: 100%; padding: 10px 14px; border-radius: 8px; border: none; background: rgba(255,255,255,0.08); border-left: 4px solid ${cor}; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;`;
+    btn.style.cssText = `padding: 10px 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.08); border-left: 4px solid ${cor}; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;`;
     btn.innerHTML = `<span>${nomeFandom}</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; color: #f3d98b;">Acessar</span>`;
-    btn.onclick = () => { fecharModalFandomsMobile(); tentarEntrarComunidade(nomeFandom, cor); };
-    containerMobile.appendChild(btn);
+    btn.onclick = () => { fecharGavetaMobile(); tentarEntrarComunidade(nomeFandom, cor); };
+    container.appendChild(btn);
   });
-  document.getElementById('modal-fandoms-mobile').style.display = 'flex';
 }
-
-function fecharModalFandomsMobile() { document.getElementById('modal-fandoms-mobile').style.display = 'none'; }
-function abrirModalNovoTemaDesdeMobile() { fecharModalFandomsMobile(); abrirModalNovoTema(); }
 
 function renderizarFandomsNoModalGerenciamento() {
   let containerModal = document.getElementById('lista-fandoms-gerenciar-modal');
@@ -835,6 +957,32 @@ function carregarHistoricoNaGaveta() {
   gaveta.innerHTML = htmlConteudo;
 }
 
+function carregarHistoricoNaGavetaMobile() {
+  let gaveta = document.getElementById('listaGavetaMob');
+  if (!gaveta) return;
+  let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
+  if (historicoSalvo.length === 0) {
+    gaveta.innerHTML = "<p style='color:#aaa; font-size:0.8rem; text-align:center;'>Nenhum item salvo na gaveta ainda.</p>";
+    return;
+  }
+  let htmlConteudo = "";
+  historicoSalvo.forEach((item, index) => {
+    let corBadge = item.tipo === 'CURTIDA' ? '#ff4757' : (item.tipo === 'COMENTÁRIO' ? '#2196f3' : '#f3d98b');
+    htmlConteudo += `
+      <div style="background: rgba(0,0,0,0.35); padding: 10px; border-radius: 8px; border-left: 3px solid ${corBadge}; position: relative;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <span style="font-size: 0.7rem; background: ${corBadge}; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${item.tipo}</span>
+          <span style="font-size: 0.7rem; color: #aaa;">${item.data}</span>
+        </div>
+        <p style="margin: 0 0 6px 0; font-size: 0.8rem; color: #fff; word-break: break-word;">${item.texto}</p>
+        ${item.foto ? `<div style="margin-top: 6px; width: 100%; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>` : ''}
+        <button onclick="removerItemGaveta(${index}); abrirGavetaMobile('gaveta')" style="position: absolute; top: 8px; right: 8px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">Excluir</button>
+      </div>
+    `;
+  });
+  gaveta.innerHTML = htmlConteudo;
+}
+
 function removerItemGaveta(index) {
   let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
   historicoSalvo.splice(index, 1);
@@ -875,10 +1023,11 @@ function filtrarBuscaBiasDesafio(termo) {
 }
 
 function renderizarCardDesafioEsquerda() {
-  let bloco = document.getElementById('bloco-envio-desafio-esq');
+  let bloco = document.getElementById('bloco-envio-desafio-esq') || document.getElementById('bloco-envio-desafio-mob');
   if (!bloco) return;
   let desafioAtivoHoje = obterDesafioDoDiaAtual();
   if(document.getElementById('sub-titulo-desafio-esq')) document.getElementById('sub-titulo-desafio-esq').innerText = desafioAtivoHoje;
+  if(document.getElementById('sub-titulo-desafio-mob')) document.getElementById('sub-titulo-desafio-mob').innerText = desafioAtivoHoje;
   let hojeStr = new Date().toLocaleDateString();
   let envioSalvo = JSON.parse(localStorage.getItem('meu_envio_desafio_hoje') || 'null');
   let formEnviado = envioSalvo && envioSalvo.data === hojeStr;
@@ -958,8 +1107,6 @@ function abrirDesafioNoCentro() {
   modoAtualNoCentro = "DESAFIO";
   let painelCentral = document.getElementById('painel-central-container');
   let btnVoltarGeral = document.getElementById('btn-voltar-geral');
-  let btnVerGaveta = document.getElementById('btn-ver-gaveta-centro');
-  if(btnVerGaveta) btnVerGaveta.innerText = "📂 Abrir no Centro";
   document.getElementById('titulo-feed-atual').innerText = "Desafio do Dia: " + obterDesafioDoDiaAtual();
   document.getElementById('sub-feed-atual').innerText = "Veja e vote nas fotos enviadas hoje!";
   btnVoltarGeral.style.display = 'block';
@@ -990,7 +1137,7 @@ function alternarGavetaNoCentro(event) {
   if (modoAtualNoCentro !== "GAVETA") {
     modoAtualNoCentro = "GAVETA";
     if(layoutGrid) layoutGrid.style.gridTemplateColumns = "300px 1fr 240px";
-    if(btnVerGaveta) btnVerGaveta = btnVerGaveta.innerText = "✖ Fechar Gaveta";
+    if(btnVerGaveta) btnVerGaveta.innerText = "✖ Fechar Gaveta";
     document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta Privada (Completa)";
     document.getElementById('sub-feed-atual').innerText = "Histórico de curtidas, compartilhamentos, comentários e anotações";
     document.getElementById('btn-voltar-geral').style.display = 'block';
@@ -1427,12 +1574,43 @@ function carregarMeusBiasNaInterface() {
   });
 }
 
+function carregarMeusBiasNaInterfaceMobile() {
+  const container = document.getElementById('lista-bias-container-mob');
+  if(!container) return;
+  let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
+  if (listaBias.length === 0) {
+    container.innerHTML = `<div style="padding: 10px; text-align: center; color: #aaa; font-size: 0.85rem;">Lista vazia. Adicione seus bias!</div>`;
+    return;
+  }
+  container.innerHTML = "";
+  let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757';
+  listaBias.forEach(bias => {
+    const itemDiv = document.createElement('div');
+    itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81;";
+    itemDiv.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 36px; height: 36px; border-radius: 6px; background: #333; overflow: hidden; display: flex; align-items: center; justify-content: center;">
+          ${bias.foto ? `<img src="${bias.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span style="font-size:0.6rem; color:#aaa;">Sem foto</span>'}
+        </div>
+        <div>
+          <span style="font-size: 0.7rem; background: ${corPessoal}; color: white; padding: 2px 5px; border-radius: 4px; font-weight: bold;">#${bias.posicao}</span>
+          <b style="font-size: 0.85rem; margin-left: 4px; color: #fff;">${bias.nome}</b>
+          <p style="margin: 2px 0 0 0; font-size: 0.7rem; color: #aaa;">${bias.categoria}</p>
+        </div>
+      </div>
+      <button onclick="removerBias(${bias.posicao}); abrirGavetaMobile('bias')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>
+    `;
+    container.appendChild(itemDiv);
+  });
+}
+
 function removerBias(posicao) {
   if (confirm(`Deseja remover da posição #${posicao}?`)) {
     let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
     listaBias = listaBias.filter(b => b.posicao !== posicao);
     localStorage.setItem('meus_bias_salvos', JSON.stringify(listaBias));
     carregarMeusBiasNaInterface();
+    carregarMeusBiasNaInterfaceMobile();
   }
 }
 
@@ -1499,6 +1677,22 @@ function comentarGaveta() {
   } else {
     registrarNoHistoricoGaveta('NOTA RÁPIDA', texto);
     document.getElementById('campoGavetaTexto').value = "";
+  }
+}
+
+function comentarGavetaMobile() {
+  let texto = document.getElementById('campoGavetaTextoMob').value.trim();
+  let fileInput = document.getElementById('campoGavetaFotoMob');
+  if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo ou escolha uma foto!"); return; }
+
+  if (fileInput.files && fileInput.files[0]) {
+    converterImagemParaHD(fileInput.files[0], 1000, 1000, function(hdBase64) {
+      registrarNoHistoricoGaveta('NOTA / FOTO', texto || 'Foto privada', hdBase64);
+      abrirGavetaMobile('gaveta');
+    });
+  } else {
+    registrarNoHistoricoGaveta('NOTA RÁPIDA', texto);
+    abrirGavetaMobile('gaveta');
   }
 }
 </script>
