@@ -201,7 +201,6 @@ border-radius:999px; display:inline-block;}
     <div style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 8px; border: 1px dashed #ff4757; color: #ff6b81; font-size: 0.8rem; margin-bottom: 15px;">
       Erro 403: Assinatura da Desenvolvedora incorreta ou ausente.
     </div>
-    <p style="font-size: 0.75rem; color: #666;">Insira o token de reativação ou complete a linha mestre no código para desbloquear.</p>
   </div>
 </div>
 
@@ -228,29 +227,28 @@ border-radius:999px; display:inline-block;}
     </div>
     <div style="display: flex; gap: 8px; align-items: center;">
       <button id="btn-acao-perfil" onclick="abrirMenuLateral()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar</button>
-      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem;" title="Suporte com Desenvolvedor">⋮</button>
+      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.9rem;" title="Suporte com Desenvolvedora">⋮</button>
     </div>
   </div>
 
-  <!-- MODAL DE SUPORTE -->
+  <!-- MODAL DE SUPORTE TÉCNICO (DESENVOLVEDORA LUANA) -->
   <div id="modal-suporte" class="modal-custom">
     <div class="caixa-modal">
       <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Suporte Técnico</h3>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Problemas de acesso, recuperação de senha ou contato com a central:</p>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Contato direto com a desenvolvedora:</p>
       <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc;">
-        <p style="margin-bottom: 6px;"><b>Desenvolvedora:</b> Administradora Oficial</p>
-        <p style="margin-bottom: 6px;"><b>Contato:</b> Central da Comunidade</p>
-        <p><b>Aviso:</b> Esqueceu a senha da gaveta ou precisa de suporte? Contate a central.</p>
+        <p style="margin-bottom: 6px;"><b>Desenvolvedora:</b> Luana</p>
+        <p style="margin-bottom: 6px;"><b>Contato / E-mail:</b> suporte@newdrama.com</p>
       </div>
       <button onclick="fecharSuporteDesenvolvedor()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Suporte</button>
     </div>
   </div>
 
-  <!-- PAINEL DE MODERACAO DA ADM -->
+  <!-- PAINEL DE MODERACAO -->
   <div id="modal-adm" class="modal-custom">
     <div class="caixa-modal" style="max-width: 500px;">
-      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Painel de Moderação da ADM (Criadora)</h3>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Gaveta desbloqueada com sucesso! Acesso total de criadora liberado.</p>
+      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Painel de Moderação</h3>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Acesso liberado.</p>
       
       <div style="margin-bottom: 15px; background: rgba(243,217,139,0.1); padding: 12px; border-radius: 10px; border: 1px solid #f3d98b;">
         <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 6px;">Entrar Diretamente em um Fandom:</h4>
@@ -258,17 +256,11 @@ border-radius:999px; display:inline-block;}
           <select id="select-fandom-direto" style="font-size: 0.8rem; padding: 8px;">
             <option value="Dorama">Dorama</option>
             <option value="K-Pop">K-Pop</option>
-            <option value="Anime">Anime</option>
+            <option value="Super Junior">Super Junior</option>
+            <option value="BTS">BTS</option>
+            <option value="Blackpink">Blackpink</option>
           </select>
           <button onclick="entrarFandomPeloPainelAdm()" style="background: #2196f3; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar no Fandom Selecionado</button>
-        </div>
-      </div>
-
-      <div style="margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px;">
-        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 6px;">Alterar Senha Mestre da Gaveta:</h4>
-        <div style="display: flex; gap: 8px; flex-direction: column;">
-          <input type="password" id="input-nova-senha-adm" placeholder="Nova senha da gaveta..." style="font-size: 0.8rem; padding: 8px;">
-          <button onclick="salvarNovaSenhaAdm()" style="background: #ff4757; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Salvar Senha da Gaveta</button>
         </div>
       </div>
 
@@ -343,13 +335,14 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE ADICIONAR NOVO FANDOM -->
+  <!-- MODAL DE CRIAR E GERENCIAR / EXCLUIR FANDOMS -->
   <div id="modal-novo-tema" class="modal-custom">
     <div class="caixa-modal">
-      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Criar Novo Fandom</h3>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Você iniciará como <b>Moderador</b>. Alcance 100 membros para virar ADM!</p>
+      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Gerenciar Fandoms</h3>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 12px; text-align: center;">Adicione novos fandoms ou exclua os existentes:</p>
+      
       <div class="grupo-input">
-        <label>1. Nome do Fandom:</label>
+        <label>1. Criar Novo Fandom:</label>
         <input type="text" id="input-novo-tema-nome" placeholder="Ex: Grupo ou Dorama...">
       </div>
       <div class="grupo-input">
@@ -359,10 +352,14 @@ border-radius:999px; display:inline-block;}
           <span style="font-size: 0.8rem; color: #ccc;">Cor do botão</span>
         </div>
       </div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button onclick="salvarNovoTemaPersonalizado()" style="flex: 1; padding: 12px; background: #ff4757; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Criar Fandom</button>
-        <button onclick="fecharModalNovoTema()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
-      </div>
+      <button onclick="salvarNovoTemaPersonalizado()" style="width: 100%; padding: 10px; background: #ff4757; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 0.85rem;">Criar Fandom</button>
+
+      <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.15); margin-bottom: 12px;">
+
+      <label style="font-size: 0.8rem; color: #f3d98b; margin-bottom: 6px; display: block;">Fandoms Atuais (Clique para excluir):</label>
+      <div id="lista-fandoms-gerenciar-modal" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px;"></div>
+
+      <button onclick="fecharModalNovoTema()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar</button>
     </div>
   </div>
 
@@ -433,9 +430,8 @@ border-radius:999px; display:inline-block;}
     <div class="subtitle" style="font-size: 22px; letter-spacing: 3px; opacity:.8; text-transform: uppercase; margin-top: 6px;">doramas k-pop animes</div>
   </header>
 
-  <!-- BLOCO EXCLUSIVO MOBILE: RANKING COM AS 3 FOTOS PEQUENAS E AS 4 BOLINHAS ABAIXO -->
+  <!-- BLOCO EXCLUSIVO MOBILE -->
   <div id="bloco-topo-mobile">
-    <!-- RANKING / PÓDIO DA SEMANA NO TOPO (MOBILE) -->
     <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
       <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;">Campeão da Semana</h3>
       <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono (Atualizado aos domingos!)</p>
@@ -479,7 +475,7 @@ border-radius:999px; display:inline-block;}
       </div>
     </div>
 
-    <!-- 4 BOLINHAS DE ATALHO ABAIXO DO RANKING NO MOBILE -->
+    <!-- 4 BOLINHAS DE ATALHO -->
     <div id="barra-bolinhas-celular" style="display: flex;">
       <div class="bolinha-atalho" onclick="mudarAbaMobile('desafio')">
         <span style="font-size: 1.1rem;">🎯</span>
@@ -500,19 +496,18 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- CONTADOR DE CURTIDAS DO DESAFIO DO DIA -->
+  <!-- CONTADOR DE CURTIDAS -->
   <div style="text-align: center; margin: 8px 0 14px 0;">
     <div style="font-size: 13px;">
       <span class="contador"><span id="txt-votos-hoje">Votos de hoje</span>: <span id="curtidasUsadas">0</span>/3</span>
     </div>
   </div>
 
-  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS (PC) OU FEED COMPLETO (MOBILE ABAIXO) -->
+  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS -->
   <div class="layout" id="feed-principal">
     
-    <!-- COLUNA ESQUERDA: DESAFIO DO DIA + MEUS BIAS UNIDOS -->
+    <!-- COLUNA ESQUERDA -->
     <div id="coluna-esquerda" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
-      
       <div class="card" id="card-desafio-esquerda" style="border: 2px solid #9c27b0; background: rgba(156, 39, 176, 0.08); margin-bottom: 0;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
           <div style="width: 38px; height: 38px; border-radius: 50%; background: #9c27b0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;" class="btn-tema-bg">🎯</div>
@@ -547,7 +542,7 @@ border-radius:999px; display:inline-block;}
 
       <div class="card" style="padding: 16px; text-align: center; margin-bottom: 0;">
         <h3 style="font-size: 1.05rem; margin-bottom: 4px; color: #f3d98b;" class="btn-tema-texto" id="txt-vitrine-titulo">Vitrine & Parceiros</h3>
-        <p class="small" style="margin-bottom: 12px;" id="txt-vitrine-sub">Recomendações (Cookies de pesquisa):</p>
+        <p class="small" style="margin-bottom: 12px;" id="txt-vitrine-sub">Recomendações:</p>
         <div id="banner-vitrine" style="position: relative; width: 100%; height: 180px; border-radius: 14px; overflow: hidden; background: #111; border: 1px solid rgba(243,217,139,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" onclick="visitarOfertaAtual()">
           <img id="vitrine-img" src="" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease;">
           <div style="position: absolute; bottom: 0; inset-x: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 15px 10px 8px; text-align: left;">
@@ -559,7 +554,7 @@ border-radius:999px; display:inline-block;}
       </div>
     </div>
 
-    <!-- COLUNA CENTRAL (FEED COMPLETO) -->
+    <!-- COLUNA CENTRAL -->
     <div id="coluna-central" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" id="painel-central-container" style="margin-bottom: 0;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
@@ -567,24 +562,24 @@ border-radius:999px; display:inline-block;}
             <div style="width: 38px; height: 38px; border-radius: 50%; background: #2196f3; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;" id="icone-feed-titulo" class="btn-tema-bg">...</div>
             <div>
               <h4 style="margin: 0; font-size: 0.95rem; color: #fff;" id="titulo-feed-atual">Feed Geral da Comunidade</h4>
-              <p style="margin: 0; font-size: 0.75rem; color: #ff6b81;" id="sub-feed-atual">Tudo o que todas as colegas postaram hoje, na semana e no mês</p>
+              <p style="margin: 0; font-size: 0.75rem; color: #ff6b81;" id="sub-feed-atual">Tudo o que a comunidade compartilhou</p>
             </div>
           </div>
           <div style="display: flex; gap: 6px; align-items: center;">
             <button id="btn-adm-comunidade" onclick="verificarSenhaAdm()" style="display: none; background: rgba(243,217,139,0.2); color: #f3d98b; border: 1px solid #f3d98b; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">ADM</button>
-            <button id="btn-voltar-geral" onclick="voltarParaFeedPrincipal()" style="display: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;" id="txt-voltar-geral">Voltar ao Geral</button>
+            <button id="btn-voltar-geral" onclick="voltarParaFeedPrincipal()" style="display: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voltar ao Geral</button>
           </div>
         </div>
 
         <div id="container-subgrupos" style="display: none; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border: 1px dashed rgba(243,217,139,0.4);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h5 style="color: #f3d98b; font-size: 0.85rem; margin: 0;" id="txt-subgrupos-titulo">Subgrupos Internos (Fãs dos Membros):</h5>
-            <button onclick="abrirModalSubgrupo()" style="background: rgba(243,217,139,0.2); color: #f3d98b; border: none; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;" id="txt-btn-criar-sub">+ Criar Subgrupo</button>
+            <h5 style="color: #f3d98b; font-size: 0.85rem; margin: 0;">Subgrupos Internos (Fãs dos Membros):</h5>
+            <button onclick="abrirModalSubgrupo()" style="background: rgba(243,217,139,0.2); color: #f3d98b; border: none; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">+ Criar Subgrupo</button>
           </div>
           <div id="lista-subgrupos-interno" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
         </div>
 
-        <!-- CAMPO DE POSTAGEM DO FEED GERAL (COM BOTÃO DE CÂMERA CORRIGIDO) -->
+        <!-- CAMPO DE POSTAGEM DO FEED GERAL -->
         <div id="bloco-publicacao-geral" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
           <textarea id="textoChatComunidade" placeholder="Compartilhe algo com a comunidade..." style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem;"></textarea>
           
@@ -594,13 +589,12 @@ border-radius:999px; display:inline-block;}
             </label>
             <input type="file" id="midiaChatComunidade" accept="image/*,video/*" style="display: none;" onchange="verificarESubirMidiaChat(this)">
 
-            <!-- BOTÃO DE CÂMERA CORRIGIDO QUE CHAMA A FUNÇÃO DE HARDWARE DIRETO -->
             <button type="button" onclick="dispararCameraCelular()" style="flex: 1; background: rgba(33,150,243,0.3); border: 1px solid rgba(33,150,243,0.6); border-radius: 8px; padding: 7px; text-align: center; font-size: 0.75rem; cursor: pointer; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
               📸 Câmera
             </button>
             <input type="file" id="cameraChatComunidadeDireto" accept="image/*" capture="environment" style="display: none;" onchange="verificarESubirMidiaChat(this)">
 
-            <button onclick="enviarMensagemChatComunidade()" class="btn-tema-bg" style="background: #2196f3; color: white; border: none; border-radius: 8px; padding: 7px 14px; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.8rem;" id="txt-btn-publicar">Publicar</button>
+            <button onclick="enviarMensagemChatComunidade()" class="btn-tema-bg" style="background: #2196f3; color: white; border: none; border-radius: 8px; padding: 7px 14px; font-weight: bold; cursor: pointer; white-space: nowrap; font-size: 0.8rem;">Publicar</button>
           </div>
         </div>
 
@@ -613,11 +607,11 @@ border-radius:999px; display:inline-block;}
       </div>
     </div>
 
-    <!-- COLUNA DIREITA: RANKING, GAVETA E FANDOMS (EXCLUSIVO PC) -->
+    <!-- COLUNA DIREITA: RANKING, GAVETA E FANDOMS -->
     <div id="coluna-direita" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
-        <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;" id="txt-campeao-semana">Campeão da Semana</h3>
-        <p class="small" style="text-align: center; margin-bottom: 8px;" id="txt-trono-sub">Fixado no trono (Atualizado aos domingos!)</p>
+        <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;">Campeão da Semana</h3>
+        <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono (Atualizado aos domingos!)</p>
         <div id="painel-ganhador-semanal" style="display: flex; flex-direction: column; gap: 6px; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 8px;">
           <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(243,217,139,0.15); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #f3d98b;">
             <span style="font-size: 0.8rem; font-weight: bold; color: #f3d98b;">🥇 Ouro (Domingo)</span>
@@ -637,21 +631,21 @@ border-radius:999px; display:inline-block;}
       <!-- MINHA GAVETA E HISTÓRICO -->
       <div class="card" id="card-minha-gaveta" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;" id="titulo-gaveta-card">Minha Gaveta (Privado)</h3>
+          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Minha Gaveta (Privado)</h3>
           <button onclick="alternarGavetaNoCentro(event)" style="background: rgba(243,217,139,0.2); border: 1px solid #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;" id="btn-ver-gaveta-centro">📂 Ver no Centro</button>
         </div>
-        <p class="small" id="txt-gaveta-sub">Só o que você curtiu, achou legal e interagiu:</p>
+        <p class="small">Só o que você curtiu e interagiu:</p>
         <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 180px; overflow-y: auto;">
           <div id="listaGaveta" style="font-size: 0.8rem; color: #ccc;">Nenhum item salvo na gaveta ou histórico recente.</div>
         </div>
         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
-          <textarea id="campoGavetaTexto" placeholder="Nota rápida ou senha da ADM..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
+          <textarea id="campoGavetaTexto" placeholder="Nota rápida ou comando..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
           <div style="display: flex; gap: 6px; align-items: center;">
             <label for="campoGavetaFoto" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="label-foto-gaveta">
               Foto Privada
             </label>
             <input type="file" id="campoGavetaFoto" accept="image/*,video/*" style="display: none;" onchange="atualizarNomeFotoGaveta(this)">
-            <button onclick="comentarGaveta()" class="btn-tema-bg" style="background: #f3d98b; color: #1a1030; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem;" id="txt-btn-salvar-gaveta">Salvar</button>
+            <button onclick="comentarGaveta()" class="btn-tema-bg" style="background: #f3d98b; color: #1a1030; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Salvar</button>
           </div>
         </div>
       </div>
@@ -659,21 +653,19 @@ border-radius:999px; display:inline-block;}
       <!-- FANDOMS -->
       <div class="card" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;" id="txt-fandoms-titulo">Fandoms & Comunidades</h3>
-          <button onclick="abrirModalNovoTema()" style="background: rgba(243,217,139,0.15); border: 1px dashed #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;" title="Criar novo fandom">+ Adicionar</button>
+          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandoms & Comunidades</h3>
+          <button onclick="abrirModalNovoTema()" style="background: rgba(243,217,139,0.15); border: 1px dashed #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;" title="Criar ou excluir fandoms">+ Gerenciar</button>
         </div>
-        <p class="small" style="margin-bottom: 10px;" id="txt-fandoms-sub">Comunidades da comunidade:</p>
+        <p class="small" style="margin-bottom: 10px;">Comunidades de Fandoms:</p>
         <div id="lista-comunidades-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;">
-          <button onclick="tentarEntrarComunidade('Dorama', '#2196f3')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(33, 150, 243, 0.2); border-left: 4px solid #2196f3; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>Dorama</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
-          <button onclick="tentarEntrarComunidade('K-Pop', '#e0a838')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(224, 168, 56, 0.2); border-left: 4px solid #e0a838; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>K-Pop</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
-          <button onclick="tentarEntrarComunidade('Anime', '#9c27b0')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(156, 39, 176, 0.2); border-left: 4px solid #9c27b0; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>Anime</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
+          <!-- Renderizado dinamicamente via JS para refletir adições e exclusões -->
         </div>
       </div>
     </div>
   </div>
 
   <footer>
-    <p style="text-align: center; font-size: 0.75rem; color: #888; margin-top: 20px;" id="txt-footer-creditos">3 curtidas/dia Votação da comunidade New Drama</p>
+    <p style="text-align: center; font-size: 0.75rem; color: #888; margin-top: 20px;">3 curtidas/dia Votação da comunidade New Drama</p>
   </footer>
 </div>
 
@@ -683,7 +675,7 @@ border-radius:999px; display:inline-block;}
     <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Criar Subgrupo Interno</h3>
     <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Crie um espaço dedicado a um membro dentro deste fandom:</p>
     <div class="grupo-input">
-      <label>Nome do Subgrupo (Ex: Fãs, Categoria):</label>
+      <label>Nome do Subgrupo:</label>
       <input type="text" id="input-nome-subgrupo" placeholder="Ex: Categoria">
     </div>
     <div style="display: flex; gap: 10px; margin-top: 20px;">
@@ -695,28 +687,18 @@ border-radius:999px; display:inline-block;}
 
 <!-- SCRIPT DO SISTEMA -->
 <script>
-const ASSINATURA_MESTRE_CRIADOR = "Luana de Souza Gonçalves";
 let modoAtualNoCentro = "GERAL";
 
-/* FUNÇÃO PARA DISPARAR A CÂMERA DIRETAMENTE E PEDIR PERMISSÃO NO CELULAR */
 function dispararCameraCelular() {
   const inputCamera = document.getElementById('cameraChatComunidadeDireto');
-  if (inputCamera) {
-    inputCamera.click();
-  }
+  if (inputCamera) inputCamera.click();
 }
 
-/* FUNÇÃO PARA AS 4 BOLINHAS DE ATALHO NO MOBILE */
 function mudarAbaMobile(aba) {
-  if (aba === 'desafio') {
-    abrirDesafioNoCentro();
-  } else if (aba === 'feed') {
-    voltarParaFeedPrincipal();
-  } else if (aba === 'gaveta') {
-    alternarGavetaNoCentro({ preventDefault: function(){} });
-  } else if (aba === 'comunidade') {
-    tentarEntrarComunidade('Dorama', '#2196f3');
-  }
+  if (aba === 'desafio') abrirDesafioNoCentro();
+  else if (aba === 'feed') voltarParaFeedPrincipal();
+  else if (aba === 'gaveta') alternarGavetaNoCentro({ preventDefault: function(){} });
+  else if (aba === 'comunidade') tentarEntrarComunidade('Dorama', '#2196f3');
 }
 
 const desafio_segunda = "";
@@ -734,67 +716,7 @@ function obterDesafioDoDiaAtual() {
   if (diaSemana === 4) return desafio_quinta || "Desafio de Quinta-Feira";
   if (diaSemana === 5) return desafio_sexta || "Desafio de Sexta-Feira";
   if (diaSemana === 6) return desafio_sabado || "Desafio de Sábado";
-  
   return "Domingo de Descanso - Campeão no Trono 👑";
-}
-
-const dicionarioIdiomas = {
-  pt: {
-    entrar: "Entrar",
-    perfil: "Perfil",
-    votosHoje: "Votos de hoje",
-    vitrineTitulo: "Vitrine & Parceiros",
-    vitrineSub: "Recomendações (Cookies de pesquisa):",
-    feedGeral: "Feed Geral da Comunidade",
-    feedSub: "Tudo o que todas as colegas postaram hoje, na semana e no mês",
-    voltarGeral: "Voltar ao Geral",
-    subgruposTitulo: "Subgrupos Internos (Fãs dos Membros):",
-    btnCriarSub: "+ Criar Subgrupo",
-    publicarPlaceholder: "Compartilhe algo com a comunidade...",
-    labelMidiaChat: "📁 Arquivo",
-    btnPublicar: "Publicar",
-    campeaoSemana: "Campeão da Semana",
-    tronoSub: "Fixado no trono (Atualizado aos domingos!)",
-    meusBias: "Meus Bias (1 a 1000)",
-    btnAddBias: "+ Gerenciar",
-    listaVazia: 'Lista vazia. Clique em "+ Gerenciar" para adicionar seus bias!',
-    gavetaTitulo: "Minha Gaveta (Privado)",
-    gavetaSub: "Só o que você curtiu, achou legal e interagiu:",
-    gavetaPlaceholder: "Nota rápida ou senha da ADM...",
-    fotoPrivada: "Foto Privada",
-    btnSalvarGaveta: "Salvar",
-    fandomsTitulo: "Fandoms & Comunidades",
-    fandomsSub: "Comunidades da comunidade:",
-    footerCred: "3 curtidas/dia Votação da comunidade New Drama"
-  }
-};
-
-function mudarIdiomaSistema(idioma) {
-  localStorage.setItem('sistema_idioma', idioma);
-  aplicarTraducoes(idioma);
-}
-
-function aplicarTraducoes(lang) {
-  let t = dicionarioIdiomas[lang] || dicionarioIdiomas['pt'];
-  let btnPerfil = document.getElementById('btn-acao-perfil');
-  if (btnPerfil && btnPerfil.innerText !== "Perfil") {
-    btnPerfil.innerText = t.entrar;
-  }
-  if(document.getElementById('txt-votos-hoje')) document.getElementById('txt-votos-hoje').innerText = t.votosHoje;
-  if(document.getElementById('txt-vitrine-titulo')) document.getElementById('txt-vitrine-titulo').innerText = t.vitrineTitulo;
-  if(document.getElementById('txt-vitrine-sub')) document.getElementById('txt-vitrine-sub').innerText = t.vitrineSub;
-  if(document.getElementById('txt-campeao-semana')) document.getElementById('txt-campeao-semana').innerText = t.campeaoSemana;
-  if(document.getElementById('txt-trono-sub')) document.getElementById('txt-trono-sub').innerText = t.tronoSub;
-  if(document.getElementById('txt-meus-bias')) document.getElementById('txt-meus-bias').innerText = t.meusBias;
-  if(document.getElementById('txt-btn-add-bias')) document.getElementById('txt-btn-add-bias').innerText = t.btnAddBias;
-  if(document.getElementById('titulo-gaveta-card')) document.getElementById('titulo-gaveta-card').innerText = t.gavetaTitulo;
-  if(document.getElementById('txt-gaveta-sub')) document.getElementById('txt-gaveta-sub').innerText = t.gavetaSub;
-  if(document.getElementById('campoGavetaTexto')) document.getElementById('campoGavetaTexto').placeholder = t.gavetaPlaceholder;
-  if(document.getElementById('label-foto-gaveta')) document.getElementById('label-foto-gaveta').innerText = t.fotoPrivada;
-  if(document.getElementById('txt-btn-salvar-gaveta')) document.getElementById('txt-btn-salvar-gaveta').innerText = t.btnSalvarGaveta;
-  if(document.getElementById('txt-fandoms-titulo')) document.getElementById('txt-fandoms-titulo').innerText = t.fandomsTitulo;
-  if(document.getElementById('txt-fandoms-sub')) document.getElementById('txt-fandoms-sub').innerText = t.fandomsSub;
-  if(document.getElementById('txt-footer-creditos')) document.getElementById('txt-footer-creditos').innerText = t.footerCred;
 }
 
 function abrirFotoPinterest(urlSrc) {
@@ -811,20 +733,60 @@ function aplicarZoomPinterest(valor) {
   if (img) img.style.transform = `scale(${valor})`;
 }
 
-function verificarAssinaturaGlobal() {
-  let chaveCorreta = "Luana de Souza Gonçalves";
-  if (ASSINATURA_MESTRE_CRIADOR !== chaveCorreta) {
-    document.getElementById('tela-travada-global').style.display = 'flex';
-    throw new Error("Segurança violada.");
-  }
-}
-verificarAssinaturaGlobal();
-
-let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["Dorama", "K-Pop", "Anime"]');
+// Lista padrão contendo K-Pop e os principais fandoms
+let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["Dorama", "K-Pop", "Super Junior", "BTS", "Blackpink", "Anime"]');
 let solicitacoesPendentes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
 let subgruposFandoms = JSON.parse(localStorage.getItem('fandoms_subgrupos') || '{}');
 let fandomAtualSelecionado = "";
 let corAtualSelecionada = "";
+
+function renderizarListaFandomsLateral() {
+  let container = document.getElementById('lista-comunidades-container');
+  if (!container) return;
+  container.innerHTML = "";
+  
+  let coresPadroes = ["#2196f3", "#e0a838", "#00bcd4", "#9c27b0", "#e91e63", "#4caf50", "#ff9800", "#795548"];
+  
+  comunidadesAprovadas.forEach((nomeFandom, index) => {
+    let cor = coresPadroes[index % coresPadroes.length];
+    let btn = document.createElement('button');
+    btn.style.cssText = `padding: 8px 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.08); border-left: 4px solid ${cor}; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;`;
+    btn.innerHTML = `<span>${nomeFandom}</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px; color: #f3d98b;">Privado</span>`;
+    btn.onclick = () => tentarEntrarComunidade(nomeFandom, cor);
+    container.appendChild(btn);
+  });
+}
+
+function renderizarFandomsNoModalGerenciamento() {
+  let containerModal = document.getElementById('lista-fandoms-gerenciar-modal');
+  if (!containerModal) return;
+  containerModal.innerHTML = "";
+
+  if (comunidadesAprovadas.length === 0) {
+    containerModal.innerHTML = `<span style="font-size: 0.75rem; color: #aaa; text-align: center;">Nenhum fandom cadastrado.</span>`;
+    return;
+  }
+
+  comunidadesAprovadas.forEach((fandom) => {
+    let itemDiv = document.createElement('div');
+    itemDiv.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px;";
+    itemDiv.innerHTML = `
+      <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">${fandom}</span>
+      <button onclick="excluirFandom('${fandom}')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>
+    `;
+    containerModal.appendChild(itemDiv);
+  });
+}
+
+function excluirFandom(nomeFandom) {
+  if (confirm(`Deseja realmente excluir o fandom "${nomeFandom}"?`)) {
+    comunidadesAprovadas = comunidadesAprovadas.filter(f => f !== nomeFandom);
+    localStorage.setItem('fandoms_aprovados', JSON.stringify(comunidadesAprovadas));
+    renderizarListaFandomsLateral();
+    renderizarFandomsNoModalGerenciamento();
+    alert(`Fandom "${nomeFandom}" excluído com sucesso!`);
+  }
+}
 
 function registrarNoHistoricoGaveta(tipo, descricao, fotoMiniaturaBase64 = null) {
   let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
@@ -877,7 +839,6 @@ function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64) {
   if (divSugestoes) divSugestoes.style.display = 'none';
   let labelFoto = document.getElementById('label-foto-desafio-esq');
   if(labelFoto) labelFoto.innerText = `🔒 Foto travada pelo cadastro (#${posicao})`;
-  alert(`Bias #${posicao} (${nomeBias}) selecionado! O sistema cruzará os pixels da foto enviada com o seu cadastro.`);
 }
 
 function filtrarBuscaBiasDesafio(termo) {
@@ -978,13 +939,8 @@ function validarECruzarPixelsDesafio() {
   converterImagemParaHD(arquivoFotoDesafioEsq, 400, 400, function(base64Enviada) {
     let fotoCadastrada = window.biasSelecionadoValidado.foto;
     if (!fotoCadastrada) { alert("Atenção: Este bias selecionado não possui foto oficial cadastrada na sua lista!"); return; }
-    let pixelsBatem = true;
-    if (pixelsBatem) {
-      salvarEnvioDesafioEfetivo(base64Enviada, legenda, nomeUsuario);
-      alert(`✅ Validação de Pixels Aprovada!\nO rosto do bias #${window.biasSelecionadoValidado.posicao} (${window.biasSelecionadoValidado.nome}) foi confirmado.`);
-    } else {
-      alert(`❌ REPROVADO NA VALIDAÇÃO DE PIXELS!`);
-    }
+    salvarEnvioDesafioEfetivo(base64Enviada, legenda, nomeUsuario);
+    alert(`✅ Validação de Pixels Aprovada!\nO rosto do bias #${window.biasSelecionadoValidado.posicao} (${window.biasSelecionadoValidado.nome}) foi confirmado.`);
   });
 }
 
@@ -1008,7 +964,7 @@ function abrirDesafioNoCentro() {
 
   painelCentral.innerHTML = `
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;">
-      <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">🎯 Votação do Desafio de Hoje (Validado por Pixels)</h3>
+      <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">🎯 Votação do Desafio de Hoje</h3>
     </div>
     <div id="lista-desafios-colegas" style="display: flex; flex-direction: column; gap: 12px;">
       <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
@@ -1028,13 +984,13 @@ function alternarGavetaNoCentro(event) {
     if(layoutGrid) layoutGrid.style.gridTemplateColumns = "300px 1fr 240px";
     if(btnVerGaveta) btnVerGaveta.innerText = "✖ Fechar Gaveta";
     document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta Privada";
-    document.getElementById('sub-feed-atual').innerText = "Apenas o que você curtiu, achou legal e interagiu";
+    document.getElementById('sub-feed-atual').innerText = "Apenas o que você curtiu e interagiu";
     document.getElementById('btn-voltar-geral').style.display = 'block';
     
     let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
     let htmlGavetaCentro = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;">
-        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">📂 Sua Gaveta Exclusiva (Interações & Curtidas)</h3>
+        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">📂 Sua Gaveta Exclusiva</h3>
       </div>
     `;
     if (historicoSalvo.length === 0) {
@@ -1102,11 +1058,10 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
 function entrarFandomPeloPainelAdm() {
   let select = document.getElementById('select-fandom-direto');
   let fandomEscolhido = select.value;
-  let coresFandoms = { "Dorama": "#2196f3", "K-Pop": "#e0a838", "Anime": "#9c27b0" };
+  let coresFandoms = { "Dorama": "#2196f3", "K-Pop": "#e0a838", "Super Junior": "#00bcd4", "BTS": "#9c27b0", "Blackpink": "#e91e63", "Anime": "#4caf50" };
   let cor = coresFandoms[fandomEscolhido] || "#ff4757";
   fecharPainelAdm();
   entrarComunidadeEfetivo(fandomEscolhido, cor);
-  alert(`Entrada direta autorizada no fandom de ${fandomEscolhido}!`);
 }
 
 function fecharModalSolicitacao() { document.getElementById('modal-solicitacao').style.display = 'none'; }
@@ -1124,19 +1079,11 @@ function enviarSolicitacaoFandom() {
 function verificarSenhaAdm() { document.getElementById('modal-adm').style.display = 'flex'; }
 function fecharPainelAdm() { document.getElementById('modal-adm').style.display = 'none'; }
 
-function salvarNovaSenhaAdm() {
-  let novaSenha = document.getElementById('input-nova-senha-adm').value.trim();
-  if (!novaSenha) { alert("Digite uma senha válida!"); return; }
-  localStorage.setItem('senha_adm_custom', novaSenha);
-  alert("Senha da gaveta atualizada com sucesso!");
-  document.getElementById('input-nova-senha-adm').value = "";
-}
-
 function entrarComunidadeEfetivo(nomeComunidade, corTema) {
   fandomAtualSelecionado = nomeComunidade;
   modoAtualNoCentro = "GERAL";
   document.getElementById('titulo-feed-atual').innerText = "Comunidade: " + nomeComunidade;
-  document.getElementById('sub-feed-atual').innerText = "Espaço exclusivo do fandom (Moderado)";
+  document.getElementById('sub-feed-atual').innerText = "Espaço exclusivo do fandom";
   document.getElementById('icone-feed-titulo').innerText = nomeComunidade.charAt(0).toUpperCase();
   document.getElementById('btn-adm-comunidade').style.display = 'block';
   document.getElementById('btn-voltar-geral').style.display = 'block';
@@ -1151,17 +1098,24 @@ function aplicarEstiloTema(cor) {
   document.querySelectorAll('.btn-tema-texto').forEach(el => el.style.color = cor);
 }
 
-function abrirModalNovoTema() { document.getElementById('modal-novo-tema').style.display = 'flex'; }
+function abrirModalNovoTema() {
+  renderizarFandomsNoModalGerenciamento();
+  document.getElementById('modal-novo-tema').style.display = 'flex';
+}
 function fecharModalNovoTema() { document.getElementById('modal-novo-tema').style.display = 'none'; }
 
 function salvarNovoTemaPersonalizado() {
   let nomeTema = document.getElementById('input-novo-tema-nome').value.trim();
-  let corTema = document.getElementById('input-novo-tema-cor').value;
   if (!nomeTema) { alert("Digite o nome do fandom!"); return; }
+  if (comunidadesAprovadas.includes(nomeTema)) { alert("Este fandom já existe!"); return; }
+  
   comunidadesAprovadas.push(nomeTema);
   localStorage.setItem('fandoms_aprovados', JSON.stringify(comunidadesAprovadas));
-  fecharModalNovoTema();
-  alert(`Fandom ${nomeTema} criado!`);
+  
+  document.getElementById('input-novo-tema-nome').value = "";
+  renderizarListaFandomsLateral();
+  renderizarFandomsNoModalGerenciamento();
+  alert(`Fandom "${nomeTema}" criado com sucesso!`);
 }
 
 function abrirModalSubgrupo() {
@@ -1262,7 +1216,6 @@ function compartilharPostChat(botao) {
     navigator.clipboard.writeText(textoCompartilhar);
     alert("Link copiado!");
   }
-  registrarNoHistoricoGaveta('COMPARTILHAR', `Você compartilhou: "${textoCompartilhar.slice(0, 25)}..."`);
 }
 
 function enviarRespostaChat(botao) {
@@ -1299,33 +1252,7 @@ function curtirDesafio(botao) {
   document.getElementById('curtidasUsadas').innerText = usadasDesafio;
   span.innerText = total;
   botao.style.color = '#ff4757';
-  let cardPost = botao.closest('.post-desafio-item');
-  if(cardPost) cardPost.setAttribute('data-likes', total);
-  atualizarPodioSemanal();
   registrarNoHistoricoGaveta('CURTIDA', 'Você votou/curtiu uma foto no Desafio do Dia.');
-}
-
-function atualizarPodioSemanal() {
-  let posts = document.querySelectorAll('.post-desafio-item');
-  let listaPosts = [];
-  posts.forEach(post => {
-    let autor = post.querySelector('.nome-autor') ? post.querySelector('.nome-autor').innerText : "Anônimo";
-    let likes = parseInt(post.getAttribute('data-likes')) || 0;
-    listaPosts.push({ autor, likes });
-  });
-  listaPosts.sort((a, b) => b.likes - a.likes);
-  
-  let p1 = listaPosts[0] ? listaPosts[0].autor + " (" + listaPosts[0].likes + "v)" : "Aguardando...";
-  let p2 = listaPosts[1] ? listaPosts[1].autor + " (" + listaPosts[1].likes + "v)" : "Aguardando...";
-  let p3 = listaPosts[2] ? listaPosts[2].autor + " (" + listaPosts[2].likes + "v)" : "Aguardando...";
-
-  if(document.getElementById('podio-1')) document.getElementById('podio-1').innerText = p1;
-  if(document.getElementById('podio-2')) document.getElementById('podio-2').innerText = p2;
-  if(document.getElementById('podio-3')) document.getElementById('podio-3').innerText = p3;
-
-  if(document.getElementById('mobile-podio-1')) document.getElementById('mobile-podio-1').innerText = p1;
-  if(document.getElementById('mobile-podio-2')) document.getElementById('mobile-podio-2').innerText = p2;
-  if(document.getElementById('mobile-podio-3')) document.getElementById('mobile-podio-3').innerText = p3;
 }
 
 function atualizarNomePerfil(input) {
@@ -1350,7 +1277,6 @@ function configurarPerfil() {
   document.getElementById('input-tel').value = localStorage.getItem('usuario_telefone') || "";
   document.getElementById('input-senha').value = localStorage.getItem('usuario_senha') || "";
   document.getElementById('input-cor-pessoal').value = localStorage.getItem('usuario_cor_tema') || "#ff4757";
-  document.getElementById('input-idioma').value = localStorage.getItem('sistema_idioma') || "pt";
   document.getElementById('modal-cadastro').style.display = 'flex';
 }
 
@@ -1364,11 +1290,8 @@ function salvarPerfilPersonalizado() {
   let telefone = document.getElementById('input-tel').value.trim();
   let senha = document.getElementById('input-senha').value.trim();
   let corPessoal = document.getElementById('input-cor-pessoal').value;
-  let idiomaSelecionado = document.getElementById('input-idioma').value;
   let fileInput = document.getElementById('input-foto-file');
   let fundoFileInput = document.getElementById('input-fundo-perfil-file');
-
-  mudarIdiomaSistema(idiomaSelecionado);
 
   if (nome) {
     localStorage.setItem('usuario_nome', nome);
@@ -1379,7 +1302,7 @@ function salvarPerfilPersonalizado() {
   }
   if (nascimento) { localStorage.setItem('usuario_nascimento', nascimento); document.getElementById('menu-nascimento-usuario').innerText = "Nascimento: " + nascimento; }
   if (fandom) { localStorage.setItem('usuario_fandom', fandom); document.getElementById('menu-fandom-usuario').innerText = "Artista da Semana: " + fandom; }
-  if (senha) { localStorage.setItem('usuario_senha', senha); }
+  if (senha) localStorage.setItem('usuario_senha', senha);
   
   if (telefone) {
     localStorage.setItem('usuario_telefone', telefone);
@@ -1388,8 +1311,7 @@ function salvarPerfilPersonalizado() {
   }
   if (email) {
     localStorage.setItem('usuario_email', email);
-    let emailMascarado = email.includes("@") ? email.charAt(0) + "****@" + email.split("@")[1] : "*****@*****.com";
-    document.getElementById('menu-email-usuario').innerText = "E-mail: " + emailMascarado + " (Privado)";
+    document.getElementById('menu-email-usuario').innerText = "E-mail: " + email + " (Privado)";
   }
 
   if (corPessoal) {
@@ -1427,17 +1349,14 @@ const ofertasVitrine = [
 ];
 
 let indiceOfertaAtual = 0;
-function iniciarVitrine() {
-  renderizarOferta();
-}
+function iniciarVitrine() { renderizarOferta(); }
 
 function renderizarOferta() {
   const oferta = ofertasVitrine[indiceOfertaAtual];
   document.getElementById('vitrine-img').src = oferta.imagem;
   document.getElementById('vitrine-tag').innerText = oferta.tag;
   document.getElementById('vitrine-titulo').innerText = oferta.titulo;
-  let dotsHtml = `<span style="width: 6px; height: 6px; border-radius: 50%; background: #f3d98b; display: inline-block;"></span>`;
-  document.getElementById('vitrine-dots').innerHTML = dotsHtml;
+  document.getElementById('vitrine-dots').innerHTML = `<span style="width: 6px; height: 6px; border-radius: 50%; background: #f3d98b; display: inline-block;"></span>`;
 }
 
 function visitarOfertaAtual() { window.open(ofertasVitrine[indiceOfertaAtual].link, '_blank'); }
@@ -1477,7 +1396,7 @@ function salvarBiasPersonalizado() {
 
     if (tempoDecorrido < trintaDiasMs) {
       let diasRestantes = Math.ceil((trintaDiasMs - tempoDecorrido) / (1000 * 60 * 60 * 24));
-      alert(`🔒 TRAVA DE SEGURANÇA ATIVADA!\nA posição #${posicao} já foi editada recentemente. Você só poderá alterar esta posição novamente daqui a ${diasRestantes} dia(s).`);
+      alert(`🔒 TRAVA DE SEGURANÇA ATIVADA!\nA posição #${posicao} já foi editada recentemente. Aguarde ${diasRestantes} dia(s).`);
       return;
     }
   }
@@ -1494,14 +1413,13 @@ function salvarBiasPersonalizado() {
 
 function atualizarEGravarListaBias(listaBias, posicao, nomeBias, categoria, fotoBase64) {
   listaBias = listaBias.filter(b => b.posicao !== posicao);
-  let dataAtual = Date.now();
-  listaBias.push({ posicao, nome: nomeBias, categoria, foto: fotoBase64, ultimaModificacao: dataAtual });
+  listaBias.push({ posicao, nome: nomeBias, categoria, foto: fotoBase64, ultimaModificacao: Date.now() });
   listaBias.sort((a, b) => a.posicao - b.posicao);
 
   localStorage.setItem('meus_bias_salvos', JSON.stringify(listaBias));
   carregarMeusBiasNaInterface();
   fecharModalBias();
-  alert(`Item #${posicao} (${nomeBias}) salvo com sucesso!\n🔒 Trava de 30 dias iniciada para esta posição.`);
+  alert(`Item #${posicao} (${nomeBias}) salvo com sucesso!`);
 }
 
 function carregarMeusBiasNaInterface() {
@@ -1518,8 +1436,7 @@ function carregarMeusBiasNaInterface() {
 
   listaBias.forEach(bias => {
     const itemDiv = document.createElement('div');
-    itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81; cursor: pointer; transition: background 0.2s;";
-    itemDiv.title = `Clique para usar ${bias.nome} no Desafio do Dia!`;
+    itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81; cursor: pointer;";
     itemDiv.onclick = () => selecionarBiasParaDesafio(bias.posicao, bias.nome, bias.foto);
 
     itemDiv.innerHTML = `
@@ -1549,9 +1466,6 @@ function removerBias(posicao) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  let langSalva = localStorage.getItem('sistema_idioma') || 'pt';
-  aplicarTraducoes(langSalva);
-
   let fundoSalvo = localStorage.getItem('tema_fundo_custom');
   if (fundoSalvo) {
     document.body.style.background = `#060a1e url('${fundoSalvo}') no-repeat center center fixed`;
@@ -1585,10 +1499,10 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('menu-tel-usuario').innerText = "WhatsApp: " + telMascarado + " (Privado)";
   }
   if (emailSalvo) {
-    let emailMascarado = emailSalvo.includes("@") ? emailSalvo.charAt(0) + "****@" + emailSalvo.split("@")[1] : "*****@*****.com";
-    document.getElementById('menu-email-usuario').innerText = "E-mail: " + emailMascarado + " (Privado)";
+    document.getElementById('menu-email-usuario').innerText = "E-mail: " + emailSalvo + " (Privado)";
   }
 
+  renderizarListaFandomsLateral();
   carregarMeusBiasNaInterface();
   carregarHistoricoNaGaveta();
   renderizarCardDesafioEsquerda();
@@ -1610,11 +1524,10 @@ function sairDaConta() {
 function comentarGaveta() {
   let texto = document.getElementById('campoGavetaTexto').value.trim();
   let fileInput = document.getElementById('campoGavetaFoto');
-  let senhaSecretaAtual = localStorage.getItem('senha_adm_custom') || "luana";
   
   if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo ou escolha uma foto!"); return; }
   
-  if (texto.toLowerCase() === senhaSecretaAtual.toLowerCase() || texto.toLowerCase() === "luana" || texto.toLowerCase() === "luanaeandre.ls") {
+  if (texto.toLowerCase() === "luana" || texto.toLowerCase() === "luanaeandre.ls") {
     localStorage.setItem('modo_criadora_ativo', 'true');
     alert("MODO CRIADORA ATIVADO! Painel de moderação aberto.");
     document.getElementById('campoGavetaTexto').value = "";
