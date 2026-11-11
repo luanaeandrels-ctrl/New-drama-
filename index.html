@@ -156,7 +156,7 @@ select option { background: #121829; color: #fff; }
 border-radius:999px; display:inline-block;}
 
 /* ==================================== */
-/* NOVO MOBILE REESTRUTURADO (STORIES IG - BOLINHAS GIGANTES 130px) */
+/* NOVO MOBILE REESTRUTURADO (STORIES IG - BOLINHAS GIGANTES 130px REAIS) */
 /* ==================================== */
 #bloco-topo-mobile { display: none; }
 
@@ -179,8 +179,8 @@ border-radius:999px; display:inline-block;}
   text-align: center;
 }
 .story-avatar-mob {
-  width: 130px;  /* Bolinha gigante estilo Instagram */
-  height: 130px; /* Bolinha gigante estilo Instagram */
+  width: 130px;  /* Bolinha gigante exata de 130px */
+  height: 130px; /* Bolinha gigante exata de 130px */
   border-radius: 50%;
   padding: 3px;
   background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
@@ -220,7 +220,7 @@ border-radius:999px; display:inline-block;}
   max-width: 132px;
 }
 
-/* BALÃO DO DESAFIO DO DIA TAMANHO GIGANTE (130px de altura) */
+/* BALÃO DO DESAFIO DO DIA COM 130px EXATOS */
 .story-balao-mob {
   display: flex;
   flex-direction: column;
@@ -230,7 +230,7 @@ border-radius:999px; display:inline-block;}
   border-radius: 20px;
   padding: 10px 14px;
   width: 280px;  
-  height: 130px; /* Altura idêntica às novas bolinhas de 130px */
+  height: 130px; /* Altura corrigida para 130px exatos */
   flex-shrink: 0;
   cursor: pointer;
   scroll-snap-align: start;
@@ -287,7 +287,7 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- GAVETA MOBILE EXCLUSIVA (CLIQUE NO TÍTULO PARA FECHAR/VOLTAR) -->
+<!-- GAVETA MOBILE EXCLUSIVA -->
 <div id="gaveta-mobile-overlay">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
     <h3 id="titulo-gaveta-mobile" onclick="fecharGavetaMobile()" style="color: #f3d98b; font-size: 1.1rem; margin: 0; cursor: pointer;" title="Toque aqui para voltar">Gaveta de Recursos (Toque aqui para voltar)</h3>
@@ -479,10 +479,10 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- CABECALHO DA LOGO PRINCIPAL -->
+  <!-- CABECALHO DA LOGO PRINCIPAL COM DUPLO CLIQUE PARA VOLTAR -->
   <header style="text-align: center; padding: 8px 0 4px;">
     <div class="logo-container">
-      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">New Drama</div>
+      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" ondblclick="voltarParaFeedPrincipal()" title="Dê um duplo clique aqui para voltar ao início!">New Drama</div>
     </div>
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
@@ -524,7 +524,7 @@ border-radius:999px; display:inline-block;}
         <span class="story-arroba-mob">Bronze</span>
       </div>
 
-      <!-- 4. BALÃO DO DESAFIO DO DIA -->
+      <!-- 4. BALÃO DO DESAFIO DO DIA (130px) -->
       <div class="story-balao-mob" onclick="abrirGavetaMobile('desafio')">
         <span class="titulo-b">🎯 Desafio do Dia</span>
         <p class="texto-b" id="texto-resumo-desafio-mob">Carregando tema de hoje...</p>
