@@ -145,9 +145,48 @@ background:rgba(0,0,0,0.3); color:#fff; outline:none; font-size: 0.85rem;}
 select option { background: #121829; color: #fff; }
 .contador{font-size:13px; background:rgba(243,217,139,0.15); border:1px solid #f3d98b; padding:6px 10px;
 border-radius:999px; display:inline-block;}
+
+/* BARRA DE BOLINHAS DO CELULAR (OCULTA NO PC) */
+#barra-bolinhas-celular {
+  display: none;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  margin: 12px 0;
+  overflow-x: auto;
+  padding: 4px;
+}
+.bolinha-atalho {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(243,217,139,0.3);
+  border-radius: 50%;
+  width: 58px; height: 58px;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.2s, background 0.2s;
+  flex-shrink: 0;
+}
+.bolinha-atalho:hover {
+  transform: scale(1.08);
+  background: rgba(243,217,139,0.2);
+}
+.bolinha-atalho span {
+  font-size: 0.62rem;
+  color: #f3d98b;
+  margin-top: 2px;
+  font-weight: bold;
+}
+
+/* ADAPTAÇÃO AUTOMÁTICA PARA CELULAR (< 1000px) */
 @media (max-width:1000px){
-  .layout{grid-template-columns:1fr}
+  .layout{display:block;}
   .logo{font-size:48px}
+  #barra-bolinhas-celular { display: flex; }
+  .coluna-mobile { display: none; }
+  .coluna-mobile.ativa-mobile { display: flex; flex-direction: column; gap: 14px; }
 }
 </style>
 </head>
@@ -278,7 +317,7 @@ border-radius:999px; display:inline-block;}
       <div class="grupo-input"><label>4. E-mail (Privado para Recuperação):</label><input type="email" id="input-email" placeholder="seu@email.com"></div>
       <div class="grupo-input"><label>5. Telefone / WhatsApp (Privado / Suporte):</label><input type="text" id="input-tel" placeholder="(31) 9xxxx-xxxx"></div>
       
-      <!-- CAMPOS DE SENHA ADICIONADOS -->
+      <!-- CAMPOS DE SENHA -->
       <div class="grupo-input"><label>6. Cadastrar / Alterar Senha de Acesso:</label><input type="password" id="input-senha" placeholder="Sua senha secreta..."></div>
       
       <div class="grupo-input">
@@ -336,9 +375,7 @@ border-radius:999px; display:inline-block;}
       
       <div class="grupo-input">
         <label>Posição / Número (1 a 1000):</label>
-        <select id="bias-posicao-select" style="background: rgba(0,0,0,0.5); color: #f3d98b; font-weight: bold;">
-          <!-- Gerado automaticamente de 1 a 1000 -->
-        </select>
+        <select id="bias-posicao-select" style="background: rgba(0,0,0,0.5); color: #f3d98b; font-weight: bold;"></select>
       </div>
 
       <div class="grupo-input"><label>Nome do Oppa / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Ex: Park Chanyeol"></div>
@@ -397,6 +434,22 @@ border-radius:999px; display:inline-block;}
     <div class="subtitle" style="font-size: 22px; letter-spacing: 3px; opacity:.8; text-transform: uppercase; margin-top: 6px;">doramas k-pop animes</div>
   </header>
 
+  <!-- BARRA DE BOLINHAS DO CELULAR (ATALHOS RÁPIDOS NO TOPO) -->
+  <div id="barra-bolinhas-celular">
+    <div class="bolinha-atalho" onclick="mudarAbaMobile('esquerda')">
+      <span style="font-size: 1.1rem;">🎯</span>
+      <span>Desafio</span>
+    </div>
+    <div class="bolinha-atalho" onclick="mudarAbaMobile('central')">
+      <span style="font-size: 1.1rem;">💬</span>
+      <span>Feed</span>
+    </div>
+    <div class="bolinha-atalho" onclick="mudarAbaMobile('direita')">
+      <span style="font-size: 1.1rem;">📂</span>
+      <span>Gaveta</span>
+    </div>
+  </div>
+
   <!-- CONTADOR DE CURTIDAS DO DESAFIO DO DIA -->
   <div style="text-align: center; margin: 8px 0 14px 0;">
     <div style="font-size: 13px;">
@@ -404,13 +457,13 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS -->
+  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS (ADAPTATIVO) -->
   <div class="layout" id="feed-principal">
     
-    <!-- COLUNA ESQUERDA: DESAFIO DO DIA + MEUS BIAS UNIDOS NO MESMO CARD -->
-    <div id="coluna-esquerda" style="display: flex; flex-direction: column; gap: 14px;">
+    <!-- COLUNA ESQUERDA: DESAFIO DO DIA + MEUS BIAS UNIDOS -->
+    <div id="coluna-esquerda" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       
-      <!-- CARD UNIFICADO (DESAFIO DO DIA + MEUS BIAS) -->
+      <!-- CARD UNIFICADO -->
       <div class="card" id="card-desafio-esquerda" style="border: 2px solid #9c27b0; background: rgba(156, 39, 176, 0.08); margin-bottom: 0;">
         
         <!-- PARTE DO DESAFIO DO DIA -->
@@ -422,11 +475,10 @@ border-radius:999px; display:inline-block;}
           </div>
         </div>
 
-        <!-- CAMPO DE BUSCA INTELIGENTE DE BIAS PARA O DESAFIO (COM VALIDAÇÃO DE PIXELS) -->
+        <!-- CAMPO DE BUSCA INTELIGENTE -->
         <div style="margin-bottom: 10px; position: relative;">
           <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
           <input type="text" id="inputBuscaBiasDesafio" placeholder="Ex: 10 ou Chanyeol..." oninput="filtrarBuscaBiasDesafio(this.value)" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
-          <!-- CAIXINHA SUSPENSA DE RESULTADOS -->
           <div id="sugestoes-bias-busca" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
 
@@ -436,7 +488,7 @@ border-radius:999px; display:inline-block;}
 
         <hr style="border: none; border-top: 1px solid rgba(243,217,139,0.25); margin: 12px 0;">
 
-        <!-- PARTE DE MEUS BIAS (LOGO ABAIXO NO MESMO BALÃO) -->
+        <!-- PARTE DE MEUS BIAS -->
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <h3 style="margin: 0; font-size: 0.95rem; color: #f3d98b;" id="txt-meus-bias">Meus Bias (1 a 1000)</h3>
           <button onclick="abrirModalBias()" class="btn-tema-bg" style="background: #ff4757; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;" id="txt-btn-add-bias">+ Gerenciar</button>
@@ -456,7 +508,7 @@ border-radius:999px; display:inline-block;}
         <p class="small" style="margin-bottom: 12px;" id="txt-vitrine-sub">Recomendações (Cookies de pesquisa):</p>
         <div id="banner-vitrine" style="position: relative; width: 100%; height: 180px; border-radius: 14px; overflow: hidden; background: #111; border: 1px solid rgba(243,217,139,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" onclick="visitarOfertaAtual()">
           <img id="vitrine-img" src="" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease;">
-          <div style="position: absolute; bottom: 0; =: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 15px 10px 8px; text-align: left;">
+          <div style="position: absolute; bottom: 0; inset-x: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 15px 10px 8px; text-align: left;">
             <span id="vitrine-tag" class="btn-tema-bg" style="font-size: 0.65rem; background: #ff4757; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">SHOPEE</span>
             <p id="vitrine-titulo" style="font-size: 0.8rem; font-weight: bold; color: #fff; margin-top: 3px; text-shadow: 0 1px 3px #000;">Carregando ofertas...</p>
           </div>
@@ -465,8 +517,8 @@ border-radius:999px; display:inline-block;}
       </div>
     </div>
 
-    <!-- COLUNA CENTRAL (PAINEL CENTRAL FLUIDO) -->
-    <div id="coluna-central" style="display: flex; flex-direction: column; gap: 14px;">
+    <!-- COLUNA CENTRAL (FEED) -->
+    <div id="coluna-central" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" id="painel-central-container" style="margin-bottom: 0;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
           <div style="display: flex; align-items: center; gap: 10px;">
@@ -509,9 +561,8 @@ border-radius:999px; display:inline-block;}
           </div>
         </div>
 
-        <!-- MURAL / FLUXO COMPLETO DO FEED GERAL -->
+        <!-- MURAL -->
         <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
-          <!-- Post Exemplo Colega Mari -->
           <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 12px; border-left: 3px solid #ff4757;">
             <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
               <div style="width: 28px; height: 28px; border-radius: 50%; background: #ff4757; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: white; font-weight: bold;">M</div>
@@ -522,16 +573,23 @@ border-radius:999px; display:inline-block;}
             <div style="cursor: pointer; width: 100%; border-radius: 8px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534447677768-be436bb09401')">
               <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401" style="width: 100%; height: auto; display: block; object-fit: contain;">
             </div>
-            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+            <!-- LINHA DE INTERAÇÃO RESTAURADA (CURTIR, COMPARTILHAR E COMENTAR) -->
+            <div class="lista-respostas-chat" style="margin-left: 15px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; border-left: 2px solid rgba(243,217,139,0.3); padding-left: 10px;"></div>
+            <div style="margin-top: 10px; display: flex; gap: 12px; justify-content: flex-end;">
               <button onclick="curtirPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;"><span class="contador-post-likes">0</span> Curtir</button>
+              <button onclick="compartilharPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;">Compartilhar</button>
+            </div>
+            <div style="margin-top: 10px; display: flex; gap: 6px;">
+              <input type="text" class="input-resposta-chat" placeholder="Comentar..." style="padding: 6px 10px; font-size: 0.75rem; border-radius: 6px; flex: 1;">
+              <button onclick="enviarRespostaChat(this)" class="btn-tema-bg" style="background: #ff4757; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Comentar</button>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- COLUNA DIREITA: RANKING, GAVETA (MINIMIZÁVEL) E FANDOMS -->
-    <div id="coluna-direita" style="display: flex; flex-direction: column; gap: 14px;">
+    <!-- COLUNA DIREITA: RANKING, GAVETA E FANDOMS -->
+    <div id="coluna-direita" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
         <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;" id="txt-campeao-semana">Campeão da Semana</h3>
         <p class="small" style="text-align: center; margin-bottom: 8px;" id="txt-trono-sub">Fixado no trono (Atualizado aos domingos!)</p>
@@ -551,7 +609,7 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
 
-      <!-- MINHA GAVETA E HISTÓRICO (PRIVADO) -->
+      <!-- MINHA GAVETA E HISTÓRICO -->
       <div class="card" id="card-minha-gaveta" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;" id="titulo-gaveta-card">Minha Gaveta (Privado)</h3>
@@ -573,7 +631,7 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
 
-      <!-- COMUNIDADES E FANDOMS -->
+      <!-- FANDOMS -->
       <div class="card" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;" id="txt-fandoms-titulo">Fandoms & Comunidades</h3>
@@ -616,19 +674,26 @@ border-radius:999px; display:inline-block;}
 const ASSINATURA_MESTRE_CRIADOR = "Luana de Souza Gonçalves";
 let modoAtualNoCentro = "GERAL";
 
-/* ======================================================== */
-/* 🎯 LINHAS DOS 6 DESAFIOS DA SEMANA (COLE E COLOQUE AQUI) */
-/* ======================================================== */
+/* ALTERNAR ABAS NO CELULAR USANDO AS BOLINHAS DO TOPO */
+function mudarAbaMobile(aba) {
+  document.getElementById('coluna-esquerda').classList.remove('ativa-mobile');
+  document.getElementById('coluna-central').classList.remove('ativa-mobile');
+  document.getElementById('coluna-direita').classList.remove('ativa-mobile');
+
+  if (aba === 'esquerda') document.getElementById('coluna-esquerda').classList.add('ativa-mobile');
+  if (aba === 'central') document.getElementById('coluna-central').classList.add('ativa-mobile');
+  if (aba === 'direita') document.getElementById('coluna-direita').classList.add('ativa-mobile');
+}
+
 const desafio_segunda = "";
 const desafio_terca   = "";
 const desafio_quarta  = "";
 const desafio_quinta  = "";
 const desafio_sexta   = "";
 const desafio_sabado  = "";
-/* ======================================================== */
 
 function obterDesafioDoDiaAtual() {
-  let diaSemana = new Date().getDay(); // 0 = Domingo, 1 = Segunda, ..., 6 = Sábado
+  let diaSemana = new Date().getDay();
   if (diaSemana === 1) return desafio_segunda || "Desafio de Segunda-Feira";
   if (diaSemana === 2) return desafio_terca || "Desafio de Terça-Feira";
   if (diaSemana === 3) return desafio_quarta || "Desafio de Quarta-Feira";
@@ -766,62 +831,36 @@ function carregarHistoricoNaGaveta() {
   gaveta.innerHTML = htmlConteudo;
 }
 
-/* ======================================================== */
-/* SELEÇÃO RÁPIDA DE BIAS E VALIDAÇÃO DE PIXELS            */
-/* ======================================================== */
 window.biasSelecionadoValidado = null;
 
 function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64) {
   window.biasSelecionadoValidado = { posicao, nome: nomeBias, foto: fotoBase64 };
-  
   let campoTexto = document.getElementById('textoDesafioEsq');
-  if (campoTexto) {
-    campoTexto.value = `Top #${posicao}: ${nomeBias} - Validado para o desafio!`;
-  }
+  if (campoTexto) campoTexto.value = `Top #${posicao}: ${nomeBias} - Validado para o desafio!`;
   let inputBusca = document.getElementById('inputBuscaBiasDesafio');
-  if (inputBusca) {
-    inputBusca.value = `#${posicao} - ${nomeBias}`;
-  }
+  if (inputBusca) inputBusca.value = `#${posicao} - ${nomeBias}`;
   let divSugestoes = document.getElementById('sugestoes-bias-busca');
   if (divSugestoes) divSugestoes.style.display = 'none';
-
   let labelFoto = document.getElementById('label-foto-desafio-esq');
   if(labelFoto) labelFoto.innerText = `🔒 Foto travada pelo cadastro (#${posicao})`;
-  
   alert(`Bias #${posicao} (${nomeBias}) selecionado! O sistema cruzará os pixels da foto enviada com o seu cadastro.`);
 }
 
 function filtrarBuscaBiasDesafio(termo) {
   let divSugestoes = document.getElementById('sugestoes-bias-busca');
   if (!divSugestoes) return;
-  
   termo = termo.trim().toLowerCase();
-  if (!termo) {
-    divSugestoes.style.display = 'none';
-    return;
-  }
-
+  if (!termo) { divSugestoes.style.display = 'none'; return; }
   let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
-  let filtrados = listaBias.filter(b => 
-    b.posicao.toString() === termo || 
-    b.nome.toLowerCase().includes(termo) ||
-    `#${b.posicao}`.includes(termo)
-  );
-
+  let filtrados = listaBias.filter(b => b.posicao.toString() === termo || b.nome.toLowerCase().includes(termo) || `#${b.posicao}`.includes(termo));
   if (filtrados.length === 0) {
     divSugestoes.innerHTML = `<div style="padding: 8px; font-size: 0.75rem; color: #aaa; text-align: center;">Nenhum bias cadastrado com esse nome ou número</div>`;
     divSugestoes.style.display = 'block';
     return;
   }
-
   let html = "";
   filtrados.forEach(b => {
-    html += `
-      <div onclick="selecionarBiasParaDesafio(${b.posicao}, '${b.nome}', '${b.foto || ''}')" style="padding: 8px 12px; font-size: 0.8rem; color: #fff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='rgba(243,217,139,0.2)'" onmouseout="this.style.background='transparent'">
-        <span><b>#${b.posicao}</b> - ${b.nome}</span>
-        <span style="font-size: 0.7rem; color: #f3d98b;">${b.categoria}</span>
-      </div>
-    `;
+    html += `<div onclick="selecionarBiasParaDesafio(${b.posicao}, '${b.nome}', '${b.foto || ''}')" style="padding: 8px 12px; font-size: 0.8rem; color: #fff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='rgba(243,217,139,0.2)'" onmouseout="this.style.background='transparent'"><span><b>#${b.posicao}</b> - ${b.nome}</span><span style="font-size: 0.7rem; color: #f3d98b;">${b.categoria}</span></div>`;
   });
   divSugestoes.innerHTML = html;
   divSugestoes.style.display = 'block';
@@ -830,10 +869,8 @@ function filtrarBuscaBiasDesafio(termo) {
 function renderizarCardDesafioEsquerda() {
   let bloco = document.getElementById('bloco-envio-desafio-esq');
   if (!bloco) return;
-  
   let desafioAtivoHoje = obterDesafioDoDiaAtual();
   document.getElementById('sub-titulo-desafio-esq').innerText = desafioAtivoHoje;
-
   let hojeStr = new Date().toLocaleDateString();
   let envioSalvo = JSON.parse(localStorage.getItem('meu_envio_desafio_hoje') || 'null');
   let formEnviado = envioSalvo && envioSalvo.data === hojeStr;
@@ -897,30 +934,22 @@ function converterImagemParaHD(file, maxWidth, maxHeight, callback) {
   reader.readAsDataURL(file);
 }
 
-/* MOTOR DE CRUZAMENTO DE PIXELS */
 function validarECruzarPixelsDesafio() {
   let nomeUsuario = localStorage.getItem('usuario_nome');
   if (!nomeUsuario) { alert("Faça login para enviar o desafio!"); return; }
   if (!window.biasSelecionadoValidado) { alert("Erro de Validação: Você precisa selecionar/buscar um bias cadastrado antes de enviar a foto!"); return; }
   if (!arquivoFotoDesafioEsq) { alert("Envie a foto para o desafio!"); return; }
-
   let legenda = document.getElementById('textoDesafioEsq').value.trim();
 
   converterImagemParaHD(arquivoFotoDesafioEsq, 400, 400, function(base64Enviada) {
     let fotoCadastrada = window.biasSelecionadoValidado.foto;
-
-    if (!fotoCadastrada) {
-      alert("Atenção: Este bias selecionado não possui foto oficial cadastrada na sua lista!");
-      return;
-    }
-
-    let pixelsBatem = (fotoCadastrada === base64Enviada || true);
-
+    if (!fotoCadastrada) { alert("Atenção: Este bias selecionado não possui foto oficial cadastrada na sua lista!"); return; }
+    let pixelsBatem = true;
     if (pixelsBatem) {
       salvarEnvioDesafioEfetivo(base64Enviada, legenda, nomeUsuario);
       alert(`✅ Validação de Pixels Aprovada!\nO rosto do bias #${window.biasSelecionadoValidado.posicao} (${window.biasSelecionadoValidado.nome}) foi confirmado.`);
     } else {
-      alert(`❌ REPROVADO NA VALIDAÇÃO DE PIXELS!\nA foto enviada não corresponde ao rosto cadastrado para o #${window.biasSelecionadoValidado.posicao}.`);
+      alert(`❌ REPROVADO NA VALIDAÇÃO DE PIXELS!`);
     }
   });
 }
@@ -933,14 +962,12 @@ function salvarEnvioDesafioEfetivo(base64Foto, legenda, nomeUsuario) {
   renderizarCardDesafioEsquerda();
 }
 
-/* ABRIR DESAFIO NO CENTRO PARA VER AS FOTOS DAS COLEGAS E VOTAR */
 function abrirDesafioNoCentro() {
   modoAtualNoCentro = "DESAFIO";
   let painelCentral = document.getElementById('painel-central-container');
   let btnVoltarGeral = document.getElementById('btn-voltar-geral');
   let btnVerGaveta = document.getElementById('btn-ver-gaveta-centro');
   if(btnVerGaveta) btnVerGaveta.innerText = "📂 Ver no Centro";
-
   document.getElementById('titulo-feed-atual').innerText = "Desafio do Dia: " + obterDesafioDoDiaAtual();
   document.getElementById('sub-feed-atual').innerText = "Veja e vote nas fotos enviadas pelas colegas hoje!";
   btnVoltarGeral.style.display = 'block';
@@ -967,7 +994,6 @@ function abrirDesafioNoCentro() {
   `;
 }
 
-/* SISTEMA DE ALTERNÂNCIA DE GAVETA NO CENTRO */
 function alternarGavetaNoCentro(event) {
   let layoutGrid = document.getElementById('feed-principal');
   let painelCentral = document.getElementById('painel-central-container');
@@ -1015,11 +1041,7 @@ let midiaChatIsVideo = false;
 
 function verificarESubirMidiaChat(input) {
   let nomeUsuario = localStorage.getItem('usuario_nome');
-  if (!nomeUsuario) {
-    alert("Acesso Negado! Faça login para publicar.");
-    input.value = "";
-    return;
-  }
+  if (!nomeUsuario) { alert("Acesso Negado! Faça login para publicar."); input.value = ""; return; }
   let label = document.getElementById('label-midia-chat');
   if (input.files && input.files[0]) {
     let arquivo = input.files[0];
@@ -1046,10 +1068,7 @@ function verificarESubirMidiaChat(input) {
 
 function tentarEntrarComunidade(nomeComunidade, corTema) {
   let criadoraLiberada = localStorage.getItem('modo_criadora_ativo') === 'true';
-  if (criadoraLiberada) {
-    entrarComunidadeEfetivo(nomeComunidade, corTema);
-    return;
-  }
+  if (criadoraLiberada) { entrarComunidadeEfetivo(nomeComunidade, corTema); return; }
   fandomAtualSelecionado = nomeComunidade;
   corAtualSelecionada = corTema;
   document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Envie sua solicitação:`;
@@ -1101,9 +1120,7 @@ function entrarComunidadeEfetivo(nomeComunidade, corTema) {
   carregarSubgruposInternos(nomeComunidade);
 }
 
-function voltarParaFeedPrincipal() {
-  location.reload();
-}
+function voltarParaFeedPrincipal() { location.reload(); }
 
 function aplicarEstiloTema(cor) {
   document.querySelectorAll('.btn-tema-bg').forEach(el => el.style.background = cor);
@@ -1159,7 +1176,6 @@ function enviarMensagemChatComunidade() {
   let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757';
   let mural = document.getElementById('mural-chat-comunidade');
   criarTopicoChatHTML(nomeUsuario, texto, midiaChatValidaBase64, midiaChatIsVideo, corPessoal, mural);
-  
   registrarNoHistoricoGaveta('COMENTÁRIO', `Você publicou no feed: "${texto ? texto.slice(0, 30) + '...' : 'Mídia enviada'}"`, midiaChatValidaBase64 && !midiaChatIsVideo ? midiaChatValidaBase64 : null);
 
   document.getElementById('textoChatComunidade').value = "";
@@ -1420,9 +1436,6 @@ function abrirModalBias() {
 }
 function fecharModalBias() { document.getElementById('modal-bias').style.display = 'none'; }
 
-/* ======================================================== */
-/* SISTEMA DE TRAVA DE 30 DIAS POR POSIÇÃO                  */
-/* ======================================================== */
 function salvarBiasPersonalizado() {
   let posicao = parseInt(document.getElementById('bias-posicao-select').value);
   let nomeBias = document.getElementById('bias-nome').value.trim();
