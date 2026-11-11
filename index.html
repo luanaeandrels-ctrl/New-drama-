@@ -255,16 +255,29 @@ border-radius:999px; display:inline-block;}
         <div style="display: flex; gap: 8px; flex-direction: column;">
           <select id="select-fandom-direto" style="font-size: 0.8rem; padding: 8px;">
             <option value="Dorama">Dorama</option>
-            <option value="K-Pop">K-Pop</option>
             <option value="Super Junior">Super Junior</option>
             <option value="BTS">BTS</option>
             <option value="Blackpink">Blackpink</option>
+            <option value="Anime">Anime</option>
           </select>
           <button onclick="entrarFandomPeloPainelAdm()" style="background: #2196f3; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar no Fandom Selecionado</button>
         </div>
       </div>
 
       <button onclick="fecharPainelAdm()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Painel</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE SELEÇÃO DE FANDOMS (MOBILE) -->
+  <div id="modal-fandoms-mobile" class="modal-custom">
+    <div class="caixa-modal">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">Fandoms & Comunidades</h3>
+        <button onclick="fecharModalFandomsMobile()" style="background: none; border: none; color: #ff4757; font-size: 1.2rem; cursor: pointer; font-weight: bold;">✕</button>
+      </div>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 12px;">Selecione o fandom que deseja acessar:</p>
+      <div id="lista-fandoms-modal-mobile" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto; margin-bottom: 15px;"></div>
+      <button onclick="abrirModalNovoTemaDesdeMobile()" style="width: 100%; padding: 10px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">+ Gerenciar / Criar Fandoms</button>
     </div>
   </div>
 
@@ -658,7 +671,7 @@ border-radius:999px; display:inline-block;}
         </div>
         <p class="small" style="margin-bottom: 10px;">Comunidades de Fandoms:</p>
         <div id="lista-comunidades-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;">
-          <!-- Renderizado dinamicamente via JS para refletir adições e exclusões -->
+          <!-- Renderizado dinamicamente via JS -->
         </div>
       </div>
     </div>
@@ -698,7 +711,7 @@ function mudarAbaMobile(aba) {
   if (aba === 'desafio') abrirDesafioNoCentro();
   else if (aba === 'feed') voltarParaFeedPrincipal();
   else if (aba === 'gaveta') alternarGavetaNoCentro({ preventDefault: function(){} });
-  else if (aba === 'comunidade') tentarEntrarComunidade('Dorama', '#2196f3');
+  else if (aba === 'comunidade') abrirModalFandomsMobile();
 }
 
 const desafio_segunda = "";
@@ -733,8 +746,8 @@ function aplicarZoomPinterest(valor) {
   if (img) img.style.transform = `scale(${valor})`;
 }
 
-// Lista padrão contendo K-Pop e os principais fandoms
-let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["Dorama", "K-Pop", "Super Junior", "BTS", "Blackpink", "Anime"]');
+// Lista padrão atualizada sem o K-Pop generalizado
+let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["Dorama", "Super Junior", "BTS", "Blackpink", "Anime"]');
 let solicitacoesPendentes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
 let subgruposFandoms = JSON.parse(localStorage.getItem('fandoms_subgrupos') || '{}');
 let fandomAtualSelecionado = "";
@@ -745,7 +758,7 @@ function renderizarListaFandomsLateral() {
   if (!container) return;
   container.innerHTML = "";
   
-  let coresPadroes = ["#2196f3", "#e0a838", "#00bcd4", "#9c27b0", "#e91e63", "#4caf50", "#ff9800", "#795548"];
+  let coresPadroes = ["#2196f3", "#00bcd4", "#9c27b0", "#e91e63", "#4caf50", "#ff9800", "#795548", "#e0a838"];
   
   comunidadesAprovadas.forEach((nomeFandom, index) => {
     let cor = coresPadroes[index % coresPadroes.length];
@@ -755,6 +768,37 @@ function renderizarListaFandomsLateral() {
     btn.onclick = () => tentarEntrarComunidade(nomeFandom, cor);
     container.appendChild(btn);
   });
+}
+
+function abrirModalFandomsMobile() {
+  let containerMobile = document.getElementById('lista-fandoms-modal-mobile');
+  if (!containerMobile) return;
+  containerMobile.innerHTML = "";
+
+  let coresPadroes = ["#2196f3", "#00bcd4", "#9c27b0", "#e91e63", "#4caf50", "#ff9800", "#795548", "#e0a838"];
+
+  comunidadesAprovadas.forEach((nomeFandom, index) => {
+    let cor = coresPadroes[index % coresPadroes.length];
+    let btn = document.createElement('button');
+    btn.style.cssText = `width: 100%; padding: 10px 14px; border-radius: 8px; border: none; background: rgba(255,255,255,0.08); border-left: 4px solid ${cor}; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;`;
+    btn.innerHTML = `<span>${nomeFandom}</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; color: #f3d98b;">Acessar</span>`;
+    btn.onclick = () => {
+      fecharModalFandomsMobile();
+      tentarEntrarComunidade(nomeFandom, cor);
+    };
+    containerMobile.appendChild(btn);
+  });
+
+  document.getElementById('modal-fandoms-mobile').style.display = 'flex';
+}
+
+function fecharModalFandomsMobile() {
+  document.getElementById('modal-fandoms-mobile').style.display = 'none';
+}
+
+function abrirModalNovoTemaDesdeMobile() {
+  fecharModalFandomsMobile();
+  abrirModalNovoTema();
 }
 
 function renderizarFandomsNoModalGerenciamento() {
@@ -1058,7 +1102,7 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
 function entrarFandomPeloPainelAdm() {
   let select = document.getElementById('select-fandom-direto');
   let fandomEscolhido = select.value;
-  let coresFandoms = { "Dorama": "#2196f3", "K-Pop": "#e0a838", "Super Junior": "#00bcd4", "BTS": "#9c27b0", "Blackpink": "#e91e63", "Anime": "#4caf50" };
+  let coresFandoms = { "Dorama": "#2196f3", "Super Junior": "#00bcd4", "BTS": "#9c27b0", "Blackpink": "#e91e63", "Anime": "#4caf50" };
   let cor = coresFandoms[fandomEscolhido] || "#ff4757";
   fecharPainelAdm();
   entrarComunidadeEfetivo(fandomEscolhido, cor);
