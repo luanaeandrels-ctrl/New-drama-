@@ -96,7 +96,7 @@
 .grupo-input label { display: block; font-size: 0.8rem; color: #f3d98b; margin-bottom: 4px; }
 *{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', Arial, sans-serif}
 body {
-  background: #060a1e url('fundo.jpeg') no-repeat center center fixed;
+  background: #060a1e url('img/fundo.jpg') no-repeat center center fixed;
   background-size: cover;
   image-rendering: -webkit-optimize-contrast;
   color: #fff;
@@ -236,10 +236,10 @@ border-radius:999px; display:inline-block;}
   <div id="modal-suporte" class="modal-custom">
     <div class="caixa-modal">
       <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Suporte Técnico</h3>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Problemas de acesso, recuperação de senha ou contato com a desenvolvedora:</p>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Problemas de acesso, recuperação de senha ou contato com a central:</p>
       <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc;">
-        <p style="margin-bottom: 6px;"><b>Desenvolvedora:</b> Luana de Souza Gonçalves</p>
-        <p style="margin-bottom: 6px;"><b>E-mail:</b> luanaeandre.ls@gmail.com</p>
+        <p style="margin-bottom: 6px;"><b>Desenvolvedora:</b> Administradora Oficial</p>
+        <p style="margin-bottom: 6px;"><b>Contato:</b> Central da Comunidade</p>
         <p><b>Aviso:</b> Esqueceu a senha da gaveta ou precisa de suporte? Contate a central.</p>
       </div>
       <button onclick="fecharSuporteDesenvolvedor()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Suporte</button>
@@ -256,10 +256,9 @@ border-radius:999px; display:inline-block;}
         <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 6px;">Entrar Diretamente em um Fandom:</h4>
         <div style="display: flex; gap: 8px; flex-direction: column;">
           <select id="select-fandom-direto" style="font-size: 0.8rem; padding: 8px;">
-            <option value="Super Junior">Super Junior</option>
-            <option value="EXO">EXO</option>
-            <option value="BTS">BTS</option>
-            <option value="BLACKPINK">BLACKPINK</option>
+            <option value="Dorama">Dorama</option>
+            <option value="K-Pop">K-Pop</option>
+            <option value="Anime">Anime</option>
           </select>
           <button onclick="entrarFandomPeloPainelAdm()" style="background: #2196f3; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar no Fandom Selecionado</button>
         </div>
@@ -312,9 +311,9 @@ border-radius:999px; display:inline-block;}
         </select>
       </div>
 
-      <div class="grupo-input"><label>1. Nome ou Apelido na Comunidade:</label><input type="text" id="input-nome" placeholder="Ex: Luana"></div>
-      <div class="grupo-input"><label>2. Data de Nascimento:</label><input type="text" id="input-nasc" placeholder="Ex: 01/06/1994"></div>
-      <div class="grupo-input"><label>3. Fandom / Artista da Semana:</label><input type="text" id="input-fandom" placeholder="Ex: Chanyeol (Top 1)"></div>
+      <div class="grupo-input"><label>1. Nome ou Apelido na Comunidade:</label><input type="text" id="input-nome" placeholder="Ex: Visitante"></div>
+      <div class="grupo-input"><label>2. Data de Nascimento:</label><input type="text" id="input-nasc" placeholder="Ex: DD/MM/AAAA"></div>
+      <div class="grupo-input"><label>3. Fandom / Artista da Semana:</label><input type="text" id="input-fandom" placeholder="Ex: Artista Principal"></div>
       <div class="grupo-input"><label>4. E-mail (Privado para Recuperação):</label><input type="email" id="input-email" placeholder="seu@email.com"></div>
       <div class="grupo-input"><label>5. Telefone / WhatsApp (Privado / Suporte):</label><input type="text" id="input-tel" placeholder="(31) 9xxxx-xxxx"></div>
       
@@ -351,7 +350,7 @@ border-radius:999px; display:inline-block;}
       <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Você iniciará como <b>Moderador</b>. Alcance 100 membros para virar ADM!</p>
       <div class="grupo-input">
         <label>1. Nome do Fandom:</label>
-        <input type="text" id="input-novo-tema-nome" placeholder="Ex: Stray Kids, Dorama...">
+        <input type="text" id="input-novo-tema-nome" placeholder="Ex: Grupo ou Dorama...">
       </div>
       <div class="grupo-input">
         <label>2. Cor de Destaque:</label>
@@ -378,7 +377,7 @@ border-radius:999px; display:inline-block;}
         <select id="bias-posicao-select" style="background: rgba(0,0,0,0.5); color: #f3d98b; font-weight: bold;"></select>
       </div>
 
-      <div class="grupo-input"><label>Nome do Oppa / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Ex: Park Chanyeol"></div>
+      <div class="grupo-input"><label>Nome do Oppa / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Ex: Nome do Artista"></div>
       <div class="grupo-input"><label>Categoria:</label><input type="text" id="bias-categoria" placeholder="Ex: K-Pop, Dorama, Atriz"></div>
       <div class="grupo-input">
         <label>Foto Oficial de Referência (Para Validação de Pixels):</label>
@@ -525,7 +524,7 @@ border-radius:999px; display:inline-block;}
 
         <div style="margin-bottom: 10px; position: relative;">
           <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
-          <input type="text" id="inputBuscaBiasDesafio" placeholder="Ex: 10 ou Chanyeol..." oninput="filtrarBuscaBiasDesafio(this.value)" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
+          <input type="text" id="inputBuscaBiasDesafio" placeholder="Ex: 1 ou Nome..." oninput="filtrarBuscaBiasDesafio(this.value)" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
           <div id="sugestoes-bias-busca" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
 
@@ -552,7 +551,7 @@ border-radius:999px; display:inline-block;}
         <div id="banner-vitrine" style="position: relative; width: 100%; height: 180px; border-radius: 14px; overflow: hidden; background: #111; border: 1px solid rgba(243,217,139,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);" onclick="visitarOfertaAtual()">
           <img id="vitrine-img" src="" style="width: 100%; height: 100%; object-fit: cover; transition: opacity 0.5s ease;">
           <div style="position: absolute; bottom: 0; inset-x: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 15px 10px 8px; text-align: left;">
-            <span id="vitrine-tag" class="btn-tema-bg" style="font-size: 0.65rem; background: #ff4757; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">SHOPEE</span>
+            <span id="vitrine-tag" class="btn-tema-bg" style="font-size: 0.65rem; background: #ff4757; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">PARCEIRO</span>
             <p id="vitrine-titulo" style="font-size: 0.8rem; font-weight: bold; color: #fff; margin-top: 3px; text-shadow: 0 1px 3px #000;">Carregando ofertas...</p>
           </div>
         </div>
@@ -605,27 +604,10 @@ border-radius:999px; display:inline-block;}
           </div>
         </div>
 
-        <!-- MURAL -->
+        <!-- MURAL LIMPO -->
         <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
-          <div style="background: rgba(0,0,0,0.2); border-radius: 12px; padding: 12px; border-left: 3px solid #ff4757;">
-            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-              <div style="width: 28px; height: 28px; border-radius: 50%; background: #ff4757; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: white; font-weight: bold;">M</div>
-              <span style="font-size: 0.85rem; font-weight: bold; color: #f3d98b;">Mari</span>
-              <span style="font-size: 0.7rem; color: #aaa; margin-left: auto;">Há 10 min</span>
-            </div>
-            <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #fff;">Olha que foto linda que compartilhei no feed geral!</p>
-            <div style="cursor: pointer; width: 100%; border-radius: 8px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534447677768-be436bb09401')">
-              <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401" style="width: 100%; height: auto; display: block; object-fit: contain;">
-            </div>
-            <div class="lista-respostas-chat" style="margin-left: 15px; margin-top: 8px; display: flex; flex-direction: column; gap: 6px; border-left: 2px solid rgba(243,217,139,0.3); padding-left: 10px;"></div>
-            <div style="margin-top: 10px; display: flex; gap: 12px; justify-content: flex-end;">
-              <button onclick="curtirPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;"><span class="contador-post-likes">0</span> Curtir</button>
-              <button onclick="compartilharPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;">Compartilhar</button>
-            </div>
-            <div style="margin-top: 10px; display: flex; gap: 6px;">
-              <input type="text" class="input-resposta-chat" placeholder="Comentar..." style="padding: 6px 10px; font-size: 0.75rem; border-radius: 6px; flex: 1;">
-              <button onclick="enviarRespostaChat(this)" class="btn-tema-bg" style="background: #ff4757; color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Comentar</button>
-            </div>
+          <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
+            Nenhuma publicação no feed ainda. Seja a primeira pessoa a compartilhar algo com a comunidade!
           </div>
         </div>
       </div>
@@ -665,7 +647,7 @@ border-radius:999px; display:inline-block;}
         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
           <textarea id="campoGavetaTexto" placeholder="Nota rápida ou senha da ADM..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
           <div style="display: flex; gap: 6px; align-items: center;">
-            <label for="campoGavetaFoto" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" class="btn-tema-texto" id="label-foto-gaveta">
+            <label for="campoGavetaFoto" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="label-foto-gaveta">
               Foto Privada
             </label>
             <input type="file" id="campoGavetaFoto" accept="image/*,video/*" style="display: none;" onchange="atualizarNomeFotoGaveta(this)">
@@ -682,10 +664,9 @@ border-radius:999px; display:inline-block;}
         </div>
         <p class="small" style="margin-bottom: 10px;" id="txt-fandoms-sub">Comunidades da comunidade:</p>
         <div id="lista-comunidades-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;">
-          <button onclick="tentarEntrarComunidade('Super Junior', '#2196f3')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(33, 150, 243, 0.2); border-left: 4px solid #2196f3; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>Super Junior</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
-          <button onclick="tentarEntrarComunidade('EXO', '#e0a838')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(224, 168, 56, 0.2); border-left: 4px solid #e0a838; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>EXO</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
-          <button onclick="tentarEntrarComunidade('BTS', '#9c27b0')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(156, 39, 176, 0.2); border-left: 4px solid #9c27b0; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>BTS</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
-          <button onclick="tentarEntrarComunidade('BLACKPINK', '#ff69b4')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(255, 105, 180, 0.2); border-left: 4px solid #ff69b4; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>BLACKPINK</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
+          <button onclick="tentarEntrarComunidade('Dorama', '#2196f3')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(33, 150, 243, 0.2); border-left: 4px solid #2196f3; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>Dorama</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
+          <button onclick="tentarEntrarComunidade('K-Pop', '#e0a838')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(224, 168, 56, 0.2); border-left: 4px solid #e0a838; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>K-Pop</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
+          <button onclick="tentarEntrarComunidade('Anime', '#9c27b0')" style="padding: 8px 12px; border-radius: 8px; border: none; background: rgba(156, 39, 176, 0.2); border-left: 4px solid #9c27b0; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;"><span>Anime</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px;">Privado</span></button>
         </div>
       </div>
     </div>
@@ -702,8 +683,8 @@ border-radius:999px; display:inline-block;}
     <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Criar Subgrupo Interno</h3>
     <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Crie um espaço dedicado a um membro dentro deste fandom:</p>
     <div class="grupo-input">
-      <label>Nome do Subgrupo (Ex: Petals, Jungkook, J-Hope, Lilies):</label>
-      <input type="text" id="input-nome-subgrupo" placeholder="Ex: Petals">
+      <label>Nome do Subgrupo (Ex: Fãs, Categoria):</label>
+      <input type="text" id="input-nome-subgrupo" placeholder="Ex: Categoria">
     </div>
     <div style="display: flex; gap: 10px; margin-top: 20px;">
       <button onclick="salvarSubgrupoInterno()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Criar Subgrupo</button>
@@ -734,7 +715,7 @@ function mudarAbaMobile(aba) {
   } else if (aba === 'gaveta') {
     alternarGavetaNoCentro({ preventDefault: function(){} });
   } else if (aba === 'comunidade') {
-    tentarEntrarComunidade('Super Junior', '#2196f3');
+    tentarEntrarComunidade('Dorama', '#2196f3');
   }
 }
 
@@ -839,7 +820,7 @@ function verificarAssinaturaGlobal() {
 }
 verificarAssinaturaGlobal();
 
-let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["Super Junior", "EXO", "BTS", "BLACKPINK"]');
+let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["Dorama", "K-Pop", "Anime"]');
 let solicitacoesPendentes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
 let subgruposFandoms = JSON.parse(localStorage.getItem('fandoms_subgrupos') || '{}');
 let fandomAtualSelecionado = "";
@@ -1022,7 +1003,7 @@ function abrirDesafioNoCentro() {
   let btnVerGaveta = document.getElementById('btn-ver-gaveta-centro');
   if(btnVerGaveta) btnVerGaveta.innerText = "📂 Ver no Centro";
   document.getElementById('titulo-feed-atual').innerText = "Desafio do Dia: " + obterDesafioDoDiaAtual();
-  document.getElementById('sub-feed-atual').innerText = "Veja e vote nas fotos enviadas pelas colegas hoje!";
+  document.getElementById('sub-feed-atual').innerText = "Veja e vote nas fotos enviadas hoje!";
   btnVoltarGeral.style.display = 'block';
 
   painelCentral.innerHTML = `
@@ -1030,18 +1011,8 @@ function abrirDesafioNoCentro() {
       <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">🎯 Votação do Desafio de Hoje (Validado por Pixels)</h3>
     </div>
     <div id="lista-desafios-colegas" style="display: flex; flex-direction: column; gap: 12px;">
-      <div class="post-desafio-item" data-likes="0" style="background: rgba(0,0,0,0.25); border-radius: 12px; padding: 12px; border-left: 3px solid #9c27b0;">
-        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
-          <div style="width: 28px; height: 28px; border-radius: 50%; background: #9c27b0; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: white; font-weight: bold;">R</div>
-          <span style="font-size: 0.85rem; font-weight: bold; color: #f3d98b;" class="nome-autor">Raeli</span>
-        </div>
-        <div style="width: 100%; border-radius: 8px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 8px;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1518709268805-4e9042af9f23')">
-          <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23" style="width: 100%; height: auto; display: block; object-fit: contain;">
-        </div>
-        <p style="margin: 0 0 8px 0; font-size: 0.85rem; color: #fff;">Participando do desafio de hoje com o Top 1 validado!</p>
-        <div style="display: flex; justify-content: space-around;">
-          <button onclick="curtirDesafio(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.85rem; font-weight: bold;"><span class="contador-likes">0</span> Votos ❤️</button>
-        </div>
+      <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
+        Nenhum envio para o desafio hoje ainda.
       </div>
     </div>
   `;
@@ -1131,7 +1102,7 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
 function entrarFandomPeloPainelAdm() {
   let select = document.getElementById('select-fandom-direto');
   let fandomEscolhido = select.value;
-  let coresFandoms = { "Super Junior": "#2196f3", "EXO": "#e0a838", "BTS": "#9c27b0", "BLACKPINK": "#ff69b4" };
+  let coresFandoms = { "Dorama": "#2196f3", "K-Pop": "#e0a838", "Anime": "#9c27b0" };
   let cor = coresFandoms[fandomEscolhido] || "#ff4757";
   fecharPainelAdm();
   entrarComunidadeEfetivo(fandomEscolhido, cor);
@@ -1239,6 +1210,7 @@ function enviarMensagemChatComunidade() {
 }
 
 function criarTopicoChatHTML(nome, texto, midiaBase64, isVideo, corCorrente, mural) {
+  if (mural.innerHTML.includes("Nenhuma publicação")) mural.innerHTML = "";
   const topicoDiv = document.createElement('div');
   topicoDiv.style.cssText = `background: rgba(0,0,0,0.2); border-radius: 12px; padding: 12px; border-left: 3px solid ${corCorrente};`;
   let html = `
@@ -1451,18 +1423,12 @@ function buscarNoYoutubeDireto() {
 }
 
 const ofertasVitrine = [
-  {tag: "SHOPEE CASA & DECOR", titulo: "Utilidades e Organização para o Lar", imagem: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92", link: "https://shopee.com.br"},
-  {tag: "MERCADO LIVRE OFERTAS", titulo: "Tudo para Costura e Organização", imagem: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f", link: "https://www.mercadolivre.com.br"},
-  {tag: "PARCEIRO K-POP", titulo: "Chaveiros e Acessórios Exclusivos BTS", imagem: "https://images.unsplash.com/photo-1534447677768-be436bb09401", link: "https://shopee.com.br"}
+  {tag: "PARCEIRO", titulo: "Conteúdos e Recomendações", imagem: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92", link: "https://www.google.com"}
 ];
 
 let indiceOfertaAtual = 0;
 function iniciarVitrine() {
   renderizarOferta();
-  setInterval(() => {
-    indiceOfertaAtual = (indiceOfertaAtual + 1) % ofertasVitrine.length;
-    renderizarOferta();
-  }, 4000);
 }
 
 function renderizarOferta() {
@@ -1470,11 +1436,7 @@ function renderizarOferta() {
   document.getElementById('vitrine-img').src = oferta.imagem;
   document.getElementById('vitrine-tag').innerText = oferta.tag;
   document.getElementById('vitrine-titulo').innerText = oferta.titulo;
-  let dotsHtml = "";
-  ofertasVitrine.forEach((_, idx) => {
-    let cor = idx === indiceOfertaAtual ? '#f3d98b' : 'rgba(255,255,255,0.3)';
-    dotsHtml += `<span style="width: 6px; height: 6px; border-radius: 50%; background: ${cor}; display: inline-block;"></span>`;
-  });
+  let dotsHtml = `<span style="width: 6px; height: 6px; border-radius: 50%; background: #f3d98b; display: inline-block;"></span>`;
   document.getElementById('vitrine-dots').innerHTML = dotsHtml;
 }
 
@@ -1503,7 +1465,7 @@ function salvarBiasPersonalizado() {
   let nomeBias = document.getElementById('bias-nome').value.trim();
   let categoria = document.getElementById('bias-categoria').value.trim() || "Geral";
   let fileInput = document.getElementById('bias-foto-file');
-  if (!nomeBias) { alert("Digite o nome do bias!"); return; }
+  if (!nomeBias) { alert("Digite o nome!"); return; }
 
   let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
   let existente = listaBias.find(b => b.posicao === posicao);
@@ -1539,7 +1501,7 @@ function atualizarEGravarListaBias(listaBias, posicao, nomeBias, categoria, foto
   localStorage.setItem('meus_bias_salvos', JSON.stringify(listaBias));
   carregarMeusBiasNaInterface();
   fecharModalBias();
-  alert(`Bias #${posicao} (${nomeBias}) salvo com sucesso!\n🔒 Trava de 30 dias iniciada para esta posição.`);
+  alert(`Item #${posicao} (${nomeBias}) salvo com sucesso!\n🔒 Trava de 30 dias iniciada para esta posição.`);
 }
 
 function carregarMeusBiasNaInterface() {
@@ -1547,7 +1509,7 @@ function carregarMeusBiasNaInterface() {
   let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
   
   if (listaBias.length === 0) {
-    container.innerHTML = `<div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center; color: #aaa; font-size: 0.85rem;" id="txt-lista-vazia">Lista vazia. Clique em "+ Gerenciar" para adicionar seus bias!</div>`;
+    container.innerHTML = `<div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center; color: #aaa; font-size: 0.85rem;" id="txt-lista-vazia">Lista vazia. Clique em "+ Gerenciar" para adicionar!</div>`;
     return;
   }
 
@@ -1578,7 +1540,7 @@ function carregarMeusBiasNaInterface() {
 }
 
 function removerBias(posicao) {
-  if (confirm(`Deseja remover o bias da posição #${posicao}?`)) {
+  if (confirm(`Deseja remover da posição #${posicao}?`)) {
     let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
     listaBias = listaBias.filter(b => b.posicao !== posicao);
     localStorage.setItem('meus_bias_salvos', JSON.stringify(listaBias));
