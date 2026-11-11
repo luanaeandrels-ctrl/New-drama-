@@ -220,7 +220,7 @@ border-radius:999px; display:inline-block;}
 .logo-recolhida .subtitle { display: none; }
 .logo-recolhida header { padding: 3px 0 !important; }
 
-/* GAVETA MOBILE DE TELA CHEIA PARA AS FUNÇÕES DO DESKTOP */
+/* GAVETA MOBILE DE TELA CHEIA */
 #gaveta-mobile-overlay {
   position: fixed;
   inset: 0;
@@ -251,15 +251,13 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- GAVETA MOBILE EXCLUSIVA: TODAS AS FUNÇÕES DO DESKTOP AQUI -->
+<!-- GAVETA MOBILE EXCLUSIVA -->
 <div id="gaveta-mobile-overlay">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
     <h3 id="titulo-gaveta-mobile" style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Gaveta de Recursos</h3>
     <button onclick="fecharGavetaMobile()" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; padding: 6px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">✕ Fechar Gaveta</button>
   </div>
-  <div id="conteudo-dinamico-gaveta-mobile" style="display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px;">
-    <!-- O conteúdo da função escolhida (Desafio, Meus Bias, Gaveta Privada ou Fandoms) será injetado aqui dinamicamente no mobile -->
-  </div>
+  <div id="conteudo-dinamico-gaveta-mobile" style="display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px;"></div>
 </div>
 
 <!-- MODAL ESTILO PINTEREST (ZOOM FOTOS) -->
@@ -547,7 +545,7 @@ border-radius:999px; display:inline-block;}
         <p class="small" style="margin-bottom: 12px;">Recomendações:</p>
         <div id="banner-vitrine" style="position: relative; width: 100%; height: 180px; border-radius: 14px; overflow: hidden; background: #111; border: 1px solid rgba(243,217,139,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="visitarOfertaAtual()">
           <img id="vitrine-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
-          <div style="position: absolute; bottom: 0; inset-x: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 15px 10px 8px; text-align: left;">
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 15px 10px 8px; text-align: left;">
             <span id="vitrine-tag" class="btn-tema-bg" style="font-size: 0.65rem; background: #ff4757; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">PARCEIRO</span>
             <p id="vitrine-titulo" style="font-size: 0.8rem; font-weight: bold; color: #fff; margin-top: 3px; text-shadow: 0 1px 3px #000;">Carregando ofertas...</p>
           </div>
@@ -594,7 +592,7 @@ border-radius:999px; display:inline-block;}
           </div>
         </div>
 
-        <!-- MURAL DO FEED COM BALÕES ESTILO CHAT -->
+        <!-- MURAL DO FEED -->
         <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
           <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
             Nenhuma publicação no feed ainda. Seja a primeira pessoa a compartilhar algo com a comunidade!
@@ -689,7 +687,7 @@ function verificarRolagemTopoMobile() {
   }
 }
 
-// INTELIGÊNCIA DE CÂMERA: DESKTOP ABRE WEBCAM DO PC / CELULAR ABRE CÂMERA NATIVA
+// INTELIGÊNCIA DE CÂMERA: DESKTOP ABRE WEBCAM / CELULAR ABRE CÂMERA NATIVA
 function dispararCameraCelular() {
   const isDesktop = !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
   if (isDesktop) {
@@ -761,7 +759,7 @@ function tirarFotoWebcamPC() {
   alert("✅ Foto capturada com sucesso pela webcam do computador!");
 }
 
-// SISTEMA DE GAVETA MOBILE (ABRE E FECHA COM TODAS AS FUNÇÕES DO DESKTOP)
+// SISTEMA DE GAVETA MOBILE (UNIFICANDO DESAFIO E MEUS BIAS)
 function abrirGavetaMobile(tipo) {
   let overlay = document.getElementById('gaveta-mobile-overlay');
   let container = document.getElementById('conteudo-dinamico-gaveta-mobile');
@@ -769,21 +767,26 @@ function abrirGavetaMobile(tipo) {
   container.innerHTML = "";
 
   if (tipo === 'desafio') {
-    titulo.innerText = "🎯 Desafio do Dia & Pódio";
+    titulo.innerText = "🎯 Desafio do Dia & Meus Bias";
     container.innerHTML = `
-      <div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px;">
-        <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">Desafio</h4>
+      <div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px; margin-bottom: 12px;">
+        <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">Desafio do Dia</h4>
         <input type="text" id="inputBuscaBiasDesafioMob" placeholder="Buscar bias por nº ou nome..." oninput="filtrarBuscaBiasDesafio(this.value)" style="margin-bottom: 10px;">
         <div id="bloco-envio-desafio-mob" style="margin-bottom: 10px;"></div>
-        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; margin-top: 10px;">
-          <h5 style="color: #f3d98b; margin-bottom: 6px;">👑 Pódio Atual</h5>
-          <p style="font-size: 0.8rem; margin: 2px 0;">🥇 1º: Park Chanyeol</p>
-          <p style="font-size: 0.8rem; margin: 2px 0;">🥈 2º: Lee Dong-wook</p>
-          <p style="font-size: 0.8rem; margin: 2px 0;">🥉 3º: Choi Si-won</p>
+      </div>
+      <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(243,217,139,0.3); padding: 15px; border-radius: 14px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h4 style="color: #f3d98b; font-size: 0.95rem; margin: 0;">Meus Bias (1 a 1000)</h4>
+          <button onclick="abrirModalBias()" class="btn-tema-bg" style="background: #ff4757; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
         </div>
+        <p style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">Clique para selecionar e preencher o desafio:</p>
+        <div id="lista-bias-container-mob" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div>
       </div>
     `;
-    setTimeout(() => renderizarCardDesafioEsquerda(), 50);
+    setTimeout(() => {
+      renderizarCardDesafioEsquerda();
+      carregarMeusBiasNaInterfaceMobile();
+    }, 50);
   } else if (tipo === 'bias') {
     titulo.innerText = "⭐ Gerenciar Meus Bias (1 a 1000)";
     container.innerHTML = `
@@ -1000,6 +1003,7 @@ function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64) {
   if (inputBusca) inputBusca.value = `#${posicao} - ${nomeBias}`;
   let divSugestoes = document.getElementById('sugestoes-bias-busca');
   if (divSugestoes) divSugestoes.style.display = 'none';
+  alert(`Bias #${posicao} (${nomeBias}) selecionado para o desafio!`);
 }
 
 function filtrarBuscaBiasDesafio(termo) {
@@ -1207,12 +1211,29 @@ function verificarESubirMidiaChat(input) {
   }
 }
 
+// TRAVA DE SEGURANÇA REFORÇADA PARA FANDOMS (DESKTOP & MOBILE)
 function tentarEntrarComunidade(nomeComunidade, corTema) {
   let criadoraLiberada = localStorage.getItem('modo_criadora_ativo') === 'true';
-  if (criadoraLiberada) { entrarComunidadeEfetivo(nomeComunidade, corTema); return; }
+  if (criadoraLiberada) { 
+    entrarComunidadeEfetivo(nomeComunidade, corTema); 
+    return; 
+  }
+  
+  // Verifica se o usuário possui senha/perfil autenticado na sessão
+  let senhaSalva = localStorage.getItem('usuario_senha');
+  let nomeSalvo = localStorage.getItem('usuario_nome');
+  
+  if (!nomeSalvo || !senhaSalva) {
+    if (confirm(`🔒 Fandom Protegido!\nPara entrar no fandom de "${nomeComunidade}", você precisa fazer login com sua senha de acesso ou enviar uma solicitação.\n\nDeseja abrir o painel de login/cadastro agora?`)) {
+      configurarPerfil();
+    }
+    return;
+  }
+
+  // Se tem senha, abre modal de confirmação de senha de ADM/Acesso
   fandomAtualSelecionado = nomeComunidade;
   corAtualSelecionada = corTema;
-  document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Envie sua solicitação:`;
+  document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Insira sua solicitação de acesso:`;
   document.getElementById('modal-solicitacao').style.display = 'flex';
 }
 
@@ -1586,9 +1607,10 @@ function carregarMeusBiasNaInterfaceMobile() {
   let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757';
   listaBias.forEach(bias => {
     const itemDiv = document.createElement('div');
-    itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81;";
+    itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81; cursor: pointer;";
+    itemDiv.onclick = () => selecionarBiasParaDesafio(bias.posicao, bias.nome, bias.foto);
     itemDiv.innerHTML = `
-      <div style="display: flex; align-items: center; gap: 10px;">
+      <div style="display: flex; align-items: center; gap: 10px; pointer-events: none;">
         <div style="width: 36px; height: 36px; border-radius: 6px; background: #333; overflow: hidden; display: flex; align-items: center; justify-content: center;">
           ${bias.foto ? `<img src="${bias.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span style="font-size:0.6rem; color:#aaa;">Sem foto</span>'}
         </div>
@@ -1598,7 +1620,7 @@ function carregarMeusBiasNaInterfaceMobile() {
           <p style="margin: 2px 0 0 0; font-size: 0.7rem; color: #aaa;">${bias.categoria}</p>
         </div>
       </div>
-      <button onclick="removerBias(${bias.posicao}); abrirGavetaMobile('bias')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>
+      <button onclick="event.stopPropagation(); removerBias(${bias.posicao}); abrirGavetaMobile('desafio')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>
     `;
     container.appendChild(itemDiv);
   });
