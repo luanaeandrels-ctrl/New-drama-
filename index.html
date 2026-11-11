@@ -388,7 +388,7 @@ border-radius:999px; display:inline-block;}
       </div>
 
       <div class="grupo-input"><label>Nome do Oppa / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Ex: Nome do Artista"></div>
-      <div class="grupo-input"><label>Categoria:</label><input type="text" id="bias-categoria" placeholder="Ex: K-Pop, Dorama, Atriz"></div>
+      <div class="grupo-input"><label>Categoria:</label><input type="text" id="bias-categoria" placeholder="Ex: Dorama, Atriz"></div>
       <div class="grupo-input">
         <label>Foto Oficial de Referência (Para Validação de Pixels):</label>
         <label for="bias-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-bias">Escolher Foto Oficial</label>
@@ -443,69 +443,46 @@ border-radius:999px; display:inline-block;}
     <div class="subtitle" style="font-size: 22px; letter-spacing: 3px; opacity:.8; text-transform: uppercase; margin-top: 6px;">doramas k-pop animes</div>
   </header>
 
-  <!-- BLOCO EXCLUSIVO MOBILE -->
+  <!-- BLOCO EXCLUSIVO MOBILE CORRIGIDO -->
   <div id="bloco-topo-mobile">
-    <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
-      <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;">Campeão da Semana</h3>
-      <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono (Atualizado aos domingos!)</p>
-      
-      <div style="display: flex; flex-direction: column; gap: 8px; padding: 6px; background: rgba(0,0,0,0.3); border-radius: 8px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(243,217,139,0.15); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #f3d98b;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534447677768-be436bb09401')">
-              <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div>
-              <span style="font-size: 0.75rem; font-weight: bold; color: #f3d98b; display: block;">🥇 Ouro (1º Lugar)</span>
-              <span id="mobile-podio-1" style="font-size: 0.7rem; color: #fff;">Aguardando...</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #cccccc;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1518709268805-4e9042af9f23')">
-              <img src="https://images.unsplash.com/photo-1518709268805-4e9042af9f23" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div>
-              <span style="font-size: 0.75rem; font-weight: bold; color: #ccc; display: block;">🥈 Prata (2º Lugar)</span>
-              <span id="mobile-podio-2" style="font-size: 0.7rem; color: #fff;">Aguardando...</span>
-            </div>
-          </div>
-        </div>
-
-        <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px; border-left: 3px solid #cd7f32;">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="width: 32px; height: 32px; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1556911220-e15b29be8c8f')">
-              <img src="https://images.unsplash.com/photo-1556911220-e15b29be8c8f" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div>
-              <span style="font-size: 0.75rem; font-weight: bold; color: #cd7f32; display: block;">🥉 Bronze (3º Lugar)</span>
-              <span id="mobile-podio-3" style="font-size: 0.7rem; color: #fff;">Aguardando...</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- 4 BOLINHAS DE ATALHO -->
+    <!-- 4 BOLINHAS DE ATALHO DO CELULAR COM ÍMBOLOS RESTAURADOS -->
     <div id="barra-bolinhas-celular" style="display: flex;">
       <div class="bolinha-atalho" onclick="mudarAbaMobile('desafio')">
-        <span style="font-size: 1.1rem;">🎯</span>
+        <span style="font-size: 1.2rem;">🎯</span>
         <span>Desafio</span>
       </div>
       <div class="bolinha-atalho" onclick="mudarAbaMobile('feed')">
-        <span style="font-size: 1.1rem;">💬</span>
+        <span style="font-size: 1.2rem;">💬</span>
         <span>Feed</span>
       </div>
       <div class="bolinha-atalho" onclick="mudarAbaMobile('gaveta')">
-        <span style="font-size: 1.1rem;">📂</span>
+        <span style="font-size: 1.2rem;">📂</span>
         <span>Gaveta</span>
       </div>
       <div class="bolinha-atalho" onclick="mudarAbaMobile('comunidade')">
-        <span style="font-size: 1.1rem;">🌐</span>
+        <span style="font-size: 1.2rem;">🌐</span>
         <span>Fandoms</span>
       </div>
+    </div>
+
+    <!-- PAINEL MOBILE DE DESAFIO RÁPIDO CORRIGIDO -->
+    <div class="card" style="border: 2px solid #9c27b0; background: rgba(156, 39, 176, 0.08); margin-bottom: 0;">
+      <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+        <div style="width: 38px; height: 38px; border-radius: 50%; background: #9c27b0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;">🎯</div>
+        <div>
+          <h4 style="margin: 0; font-size: 0.95rem; color: #f3d98b; font-weight: bold;">Desafio do Dia</h4>
+          <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #fff;" id="sub-titulo-desafio-mobile">Carregando desafio...</p>
+        </div>
+      </div>
+
+      <div style="margin-bottom: 10px; position: relative;">
+        <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
+        <input type="text" id="inputBuscaBiasDesafioMobile" placeholder="Ex: 1 ou Nome..." oninput="filtrarBuscaBiasDesafioMobile(this.value)" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
+        <div id="sugestoes-bias-busca-mobile" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
+      </div>
+
+      <div id="bloco-envio-desafio-mobile" style="margin-bottom: 12px;"></div>
+      <button onclick="abrirDesafioNoCentro()" class="btn-tema-bg" style="width: 100%; margin-bottom: 10px; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 8px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer;">🔍 Ver Fotos das Colegas (Votar)</button>
     </div>
   </div>
 
@@ -698,7 +675,7 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- SCRIPT DO SISTEMA -->
+<!-- SCRIPT DO SISTEMA CORRIGIDO MOBILE -->
 <script>
 let modoAtualNoCentro = "GERAL";
 
@@ -746,7 +723,6 @@ function aplicarZoomPinterest(valor) {
   if (img) img.style.transform = `scale(${valor})`;
 }
 
-// Lista padrão atualizada sem o K-Pop generalizado
 let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["Dorama", "Super Junior", "BTS", "Blackpink", "Anime"]');
 let solicitacoesPendentes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
 let subgruposFandoms = JSON.parse(localStorage.getItem('fandoms_subgrupos') || '{}');
@@ -877,29 +853,49 @@ function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64) {
   window.biasSelecionadoValidado = { posicao, nome: nomeBias, foto: fotoBase64 };
   let campoTexto = document.getElementById('textoDesafioEsq');
   if (campoTexto) campoTexto.value = `Top #${posicao}: ${nomeBias} - Validado para o desafio!`;
+  let campoTextoMob = document.getElementById('textoDesafioMobile');
+  if (campoTextoMob) campoTextoMob.value = `Top #${posicao}: ${nomeBias} - Validado para o desafio!`;
+  
   let inputBusca = document.getElementById('inputBuscaBiasDesafio');
   if (inputBusca) inputBusca.value = `#${posicao} - ${nomeBias}`;
+  let inputBuscaMob = document.getElementById('inputBuscaBiasDesafioMobile');
+  if (inputBuscaMob) inputBuscaMob.value = `#${posicao} - ${nomeBias}`;
+
   let divSugestoes = document.getElementById('sugestoes-bias-busca');
   if (divSugestoes) divSugestoes.style.display = 'none';
+  let divSugestoesMob = document.getElementById('sugestoes-bias-busca-mobile');
+  if (divSugestoesMob) divSugestoesMob.style.display = 'none';
+
   let labelFoto = document.getElementById('label-foto-desafio-esq');
-  if(labelFoto) labelFoto.innerText = `🔒 Foto travada pelo cadastro (#${posicao})`;
+  if(labelFoto) labelFoto.innerText = `🔒 Foto travada (#${posicao})`;
+  let labelFotoMob = document.getElementById('label-foto-desafio-mobile');
+  if(labelFotoMob) labelFotoMob.innerText = `🔒 Foto travada (#${posicao})`;
 }
 
 function filtrarBuscaBiasDesafio(termo) {
-  let divSugestoes = document.getElementById('sugestoes-bias-busca');
+  filtrarBuscaComum(termo, 'sugestoes-bias-busca', false);
+}
+
+function filtrarBuscaBiasDesafioMobile(termo) {
+  filtrarBuscaComum(termo, 'sugestoes-bias-busca-mobile', true);
+}
+
+function filtrarBuscaComum(termo, idContainer, isMobile) {
+  let divSugestoes = document.getElementById(idContainer);
   if (!divSugestoes) return;
   termo = termo.trim().toLowerCase();
   if (!termo) { divSugestoes.style.display = 'none'; return; }
   let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
   let filtrados = listaBias.filter(b => b.posicao.toString() === termo || b.nome.toLowerCase().includes(termo) || `#${b.posicao}`.includes(termo));
   if (filtrados.length === 0) {
-    divSugestoes.innerHTML = `<div style="padding: 8px; font-size: 0.75rem; color: #aaa; text-align: center;">Nenhum bias cadastrado com esse nome ou número</div>`;
+    divSugestoes.innerHTML = `<div style="padding: 8px; font-size: 0.75rem; color: #aaa; text-align: center;">Nenhum bias cadastrado</div>`;
     divSugestoes.style.display = 'block';
     return;
   }
   let html = "";
   filtrados.forEach(b => {
-    html += `<div onclick="selecionarBiasParaDesafio(${b.posicao}, '${b.nome}', '${b.foto || ''}')" style="padding: 8px 12px; font-size: 0.8rem; color: #fff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='rgba(243,217,139,0.2)'" onmouseout="this.style.background='transparent'"><span><b>#${b.posicao}</b> - ${b.nome}</span><span style="font-size: 0.7rem; color: #f3d98b;">${b.categoria}</span></div>`;
+    let fnClick = isMobile ? `selecionarBiasParaDesafio(${b.posicao}, '${b.nome}', '${b.foto || ''}')` : `selecionarBiasParaDesafio(${b.posicao}, '${b.nome}', '${b.foto || ''}')`;
+    html += `<div onclick="${fnClick}" style="padding: 8px 12px; font-size: 0.8rem; color: #fff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='rgba(243,217,139,0.2)'" onmouseout="this.style.background='transparent'"><span><b>#${b.posicao}</b> - ${b.nome}</span><span style="font-size: 0.7rem; color: #f3d98b;">${b.categoria}</span></div>`;
   });
   divSugestoes.innerHTML = html;
   divSugestoes.style.display = 'block';
@@ -907,15 +903,19 @@ function filtrarBuscaBiasDesafio(termo) {
 
 function renderizarCardDesafioEsquerda() {
   let bloco = document.getElementById('bloco-envio-desafio-esq');
-  if (!bloco) return;
+  let blocoMob = document.getElementById('bloco-envio-desafio-mobile');
   let desafioAtivoHoje = obterDesafioDoDiaAtual();
-  document.getElementById('sub-titulo-desafio-esq').innerText = desafioAtivoHoje;
+  
+  if(document.getElementById('sub-titulo-desafio-esq')) document.getElementById('sub-titulo-desafio-esq').innerText = desafioAtivoHoje;
+  if(document.getElementById('sub-titulo-desafio-mobile')) document.getElementById('sub-titulo-desafio-mobile').innerText = desafioAtivoHoje;
+
   let hojeStr = new Date().toLocaleDateString();
   let envioSalvo = JSON.parse(localStorage.getItem('meu_envio_desafio_hoje') || 'null');
   let formEnviado = envioSalvo && envioSalvo.data === hojeStr;
 
+  let htmlConteudo = "";
   if (formEnviado) {
-    bloco.innerHTML = `
+    htmlConteudo = `
       <div style="background: rgba(76,175,80,0.15); border: 1px solid #4caf50; padding: 10px; border-radius: 8px; text-align: center;">
         <p style="font-size: 0.8rem; color: #4caf50; font-weight: bold; margin-bottom: 6px;">✅ Desafio já postado hoje!</p>
         <p style="font-size: 0.75rem; color: #fff; margin-bottom: 6px;"><b>${envioSalvo.legenda}</b></p>
@@ -923,16 +923,21 @@ function renderizarCardDesafioEsquerda() {
       </div>
     `;
   } else {
-    bloco.innerHTML = `
+    htmlConteudo = `
       <div style="display: flex; flex-direction: column; gap: 6px;">
-        <textarea id="textoDesafioEsq" placeholder="Busque o bias acima para travar o envio..." style="border-radius: 8px; resize: none; height: 45px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
+        <textarea id="textoDesafioEsq" placeholder="Busque o bias acima para travar..." style="border-radius: 8px; resize: none; height: 45px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
         <div style="display: flex; gap: 4px;">
           <label for="inputFotoDesafioEsq" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(243,217,139,0.4); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="label-foto-desafio-esq">📁 Foto do Desafio</label>
           <input type="file" id="inputFotoDesafioEsq" accept="image/*" style="display: none;" onchange="processarFotoDesafioEsq(this)">
-          <button onclick="validarECruzarPixelsDesafio()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Postar (Validar)</button>
+          <button onclick="validarECruzarPixelsDesafio()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Postar</button>
         </div>
       </div>
     `;
+  }
+
+  if (bloco) bloco.innerHTML = htmlConteudo;
+  if (blocoMob) {
+    blocoMob.innerHTML = htmlConteudo.replace('textoDesafioEsq', 'textoDesafioMobile').replace('inputFotoDesafioEsq', 'inputFotoDesafioMobile').replace('label-foto-desafio-esq', 'label-foto-desafio-mobile');
   }
 }
 
@@ -941,7 +946,10 @@ let arquivoFotoDesafioEsq = null;
 function processarFotoDesafioEsq(input) {
   if (input.files && input.files[0]) {
     arquivoFotoDesafioEsq = input.files[0];
-    document.getElementById('label-foto-desafio-esq').innerText = "📷 " + input.files[0].name;
+    let lbl = document.getElementById('label-foto-desafio-esq');
+    if(lbl) lbl.innerText = "📷 " + input.files[0].name;
+    let lblMob = document.getElementById('label-foto-desafio-mobile');
+    if(lblMob) lblMob.innerText = "📷 " + input.files[0].name;
   }
 }
 
@@ -978,7 +986,7 @@ function validarECruzarPixelsDesafio() {
   if (!nomeUsuario) { alert("Faça login para enviar o desafio!"); return; }
   if (!window.biasSelecionadoValidado) { alert("Erro de Validação: Você precisa selecionar/buscar um bias cadastrado antes de enviar a foto!"); return; }
   if (!arquivoFotoDesafioEsq) { alert("Envie a foto para o desafio!"); return; }
-  let legenda = document.getElementById('textoDesafioEsq').value.trim();
+  let legenda = document.getElementById('textoDesafioEsq')?.value.trim() || document.getElementById('textoDesafioMobile')?.value.trim() || "";
 
   converterImagemParaHD(arquivoFotoDesafioEsq, 400, 400, function(base64Enviada) {
     let fotoCadastrada = window.biasSelecionadoValidado.foto;
@@ -1074,18 +1082,18 @@ function verificarESubirMidiaChat(input) {
       midiaChatIsVideo = true;
       reader.onload = function(e) {
         midiaChatValidaBase64 = e.target.result;
-        label.innerText = " " + arquivo.name + " (Pronto)";
+        if(label) label.innerText = " " + arquivo.name + " (Pronto)";
       };
       reader.readAsDataURL(arquivo);
     } else {
       midiaChatIsVideo = false;
       converterImagemParaHD(arquivo, 1200, 1200, function(hdBase64) {
         midiaChatValidaBase64 = hdBase64;
-        label.innerText = " " + arquivo.name + " (HD Pronto)";
+        if(label) label.innerText = " " + arquivo.name + " (HD Pronto)";
       });
     }
   } else {
-    label.innerText = "📁 Arquivo";
+    if(label) label.innerText = "📁 Arquivo";
     midiaChatValidaBase64 = null;
   }
 }
@@ -1180,6 +1188,7 @@ function salvarSubgrupoInterno() {
 
 function carregarSubgruposInternos(nomeFandom) {
   let containerSub = document.getElementById('lista-subgrupos-interno');
+  if(!containerSub) return;
   containerSub.innerHTML = "";
   let subs = subgruposFandoms[nomeFandom] || [];
   subs.forEach(s => {
@@ -1468,6 +1477,7 @@ function atualizarEGravarListaBias(listaBias, posicao, nomeBias, categoria, foto
 
 function carregarMeusBiasNaInterface() {
   const container = document.getElementById('lista-bias-container');
+  if(!container) return;
   let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
   
   if (listaBias.length === 0) {
