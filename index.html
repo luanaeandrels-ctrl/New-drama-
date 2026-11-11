@@ -156,7 +156,7 @@ select option { background: #121829; color: #fff; }
 border-radius:999px; display:inline-block;}
 
 /* ==================================== */
-/* NOVO MOBILE REESTRUTURADO (STORIES IG - TAMANHO GRANDE 110px) */
+/* NOVO MOBILE REESTRUTURADO (STORIES IG - BOLINHAS GIGANTES 130px) */
 /* ==================================== */
 #bloco-topo-mobile { display: none; }
 
@@ -173,14 +173,14 @@ border-radius:999px; display:inline-block;}
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  width: 116px; /* Ajustado para acomodar os 110px */
+  width: 136px;
   cursor: pointer;
   scroll-snap-align: start;
   text-align: center;
 }
 .story-avatar-mob {
-  width: 110px;  /* Aumentado para 110px conforme solicitado */
-  height: 110px; /* Aumentado para 110px conforme solicitado */
+  width: 130px;  /* Bolinha gigante estilo Instagram */
+  height: 130px; /* Bolinha gigante estilo Instagram */
   border-radius: 50%;
   padding: 3px;
   background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
@@ -209,7 +209,7 @@ border-radius:999px; display:inline-block;}
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 112px;
+  max-width: 132px;
 }
 .story-arroba-mob {
   font-size: 0.65rem;
@@ -217,10 +217,10 @@ border-radius:999px; display:inline-block;}
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 112px;
+  max-width: 132px;
 }
 
-/* BALÃO DO DESAFIO DO DIAS TAMANHO PROPORCIONAL (110px de altura) */
+/* BALÃO DO DESAFIO DO DIA TAMANHO GIGANTE (130px de altura) */
 .story-balao-mob {
   display: flex;
   flex-direction: column;
@@ -229,8 +229,8 @@ border-radius:999px; display:inline-block;}
   border: 1px solid #9c27b0;
   border-radius: 20px;
   padding: 10px 14px;
-  width: 260px;  /* Aumentado proporcionalmente para não cortar */
-  height: 110px; /* Mesma altura das novas bolinhas de 110px */
+  width: 280px;  
+  height: 130px; /* Altura idêntica às novas bolinhas de 130px */
   flex-shrink: 0;
   cursor: pointer;
   scroll-snap-align: start;
@@ -487,7 +487,7 @@ border-radius:999px; display:inline-block;}
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
 
-  <!-- BLOCO EXCLUSIVO MOBILE: STORIES / CARROSSEL HORIZONTAL (TAMANHO 110px) -->
+  <!-- BLOCO EXCLUSIVO MOBILE: STORIES / CARROSSEL HORIZONTAL (BOLINHAS GIGANTES 130px) -->
   <div id="bloco-topo-mobile">
     <div class="stories-mobile-container">
       
@@ -498,8 +498,8 @@ border-radius:999px; display:inline-block;}
             <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Ouro">
           </div>
         </div>
-        <span class="story-nome-mob">Chanyeol</span>
-        <span class="story-arroba-mob">@admin_luana</span>
+        <span class="story-nome-mob">1º Lugar</span>
+        <span class="story-arroba-mob">Ouro</span>
       </div>
 
       <!-- 2. PÓDIO 2º LUGAR (PRATA) -->
@@ -509,8 +509,8 @@ border-radius:999px; display:inline-block;}
             <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" alt="Prata">
           </div>
         </div>
-        <span class="story-nome-mob">Dong-wook</span>
-        <span class="story-arroba-mob">@colega_ari</span>
+        <span class="story-nome-mob">2º Lugar</span>
+        <span class="story-arroba-mob">Prata</span>
       </div>
 
       <!-- 3. PÓDIO 3º LUGAR (BRONZE) -->
@@ -520,8 +520,8 @@ border-radius:999px; display:inline-block;}
             <img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" alt="Bronze">
           </div>
         </div>
-        <span class="story-nome-mob">Si-won</span>
-        <span class="story-arroba-mob">@colega_danny</span>
+        <span class="story-nome-mob">3º Lugar</span>
+        <span class="story-arroba-mob">Bronze</span>
       </div>
 
       <!-- 4. BALÃO DO DESAFIO DO DIA -->
@@ -533,7 +533,7 @@ border-radius:999px; display:inline-block;}
       <!-- 5. BOTÃO MINHA GAVETA -->
       <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
         <div class="story-avatar-mob" style="background: #9c27b0;">
-          <div class="story-avatar-inner" style="background: #121829; color: #f3d98b; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+          <div class="story-avatar-inner" style="background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;">
             📂
           </div>
         </div>
@@ -544,7 +544,7 @@ border-radius:999px; display:inline-block;}
       <!-- 6. BOTÃO COMUNIDADE / FANDOMS -->
       <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
         <div class="story-avatar-mob" style="background: #2196f3;">
-          <div class="story-avatar-inner" style="background: #121829; color: #2196f3; font-size: 1.5rem; display: flex; align-items: center; justify-content: center;">
+          <div class="story-avatar-inner" style="background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;">
             🌐
           </div>
         </div>
@@ -662,7 +662,7 @@ border-radius:999px; display:inline-block;}
 
     <!-- COLUNA DIREITA: RANKING, GAVETA E FANDOMS -->
     <div id="coluna-direita" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
-      <!-- CAMPEÃO DA SEMANA - PÓDIO INTERATIVO COM FOTOS E ARROBAS -->
+      <!-- CAMPEÃO DA SEMANA - PÓDIO INTERATIVO COM FOTOS -->
       <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
         <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;">Campeão da Semana</h3>
         <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono (Atualizado aos domingos!)</p>
@@ -677,10 +677,10 @@ border-radius:999px; display:inline-block;}
               </div>
               <div>
                 <span style="font-size: 0.75rem; font-weight: bold; color: #ffd700; display: block;">🥇 1º Lugar (Ouro)</span>
-                <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Park Chanyeol</span>
+                <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Ouro</span>
               </div>
             </div>
-            <span style="font-size: 0.7rem; color: #f3d98b; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">@admin_luana</span>
+            <span style="font-size: 0.7rem; color: #f3d98b; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">Trisavô</span>
           </div>
 
           <!-- 2º LUGAR (PRATA) -->
@@ -691,10 +691,10 @@ border-radius:999px; display:inline-block;}
               </div>
               <div>
                 <span style="font-size: 0.75rem; font-weight: bold; color: #c0c0c0; display: block;">🥈 2º Lugar (Prata)</span>
-                <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Lee Dong-wook</span>
+                <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Prata</span>
               </div>
             </div>
-            <span style="font-size: 0.7rem; color: #ccc; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">@colega_ari</span>
+            <span style="font-size: 0.7rem; color: #ccc; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">Top 2</span>
           </div>
 
           <!-- 3º LUGAR (BRONZE) -->
@@ -705,10 +705,10 @@ border-radius:999px; display:inline-block;}
               </div>
               <div>
                 <span style="font-size: 0.75rem; font-weight: bold; color: #cd7f32; display: block;">🥉 3º Lugar (Bronze)</span>
-                <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Choi Si-won</span>
+                <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Bronze</span>
               </div>
             </div>
-            <span style="font-size: 0.7rem; color: #cd7f32; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">@colega_danny</span>
+            <span style="font-size: 0.7rem; color: #cd7f32; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">Top 3</span>
           </div>
 
         </div>
@@ -1217,9 +1217,9 @@ function abrirDesafioNoCentro() {
     </div>
     <div style="background: rgba(243,217,139,0.1); border: 1px solid #f3d98b; padding: 12px; border-radius: 10px; margin-bottom: 15px;">
       <h4 style="color: #f3d98b; font-size: 0.9rem; margin-bottom: 6px;">👑 Pódio da Semana (Fixado)</h4>
-      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥇 <b>1º Lugar:</b> Park Chanyeol</p>
-      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥈 <b>2º Lugar:</b> Lee Dong-wook</p>
-      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥉 <b>3º Lugar:</b> Choi Si-won</p>
+      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥇 <b>1º Lugar:</b> Destaque Ouro</p>
+      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥈 <b>2º Lugar:</b> Destaque Prata</p>
+      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥉 <b>3º Lugar:</b> Destaque Bronze</p>
     </div>
     <div id="lista-desafios-colegas" style="display: flex; flex-direction: column; gap: 12px;">
       <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
