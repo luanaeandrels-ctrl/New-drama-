@@ -1819,5 +1819,24 @@ function comentarGavetaMobile() {
   }
 }
 </script>
+<script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
+    authDomain: "new-drama-e729b.firebaseapp.com",
+    projectId: "new-drama-e729b",
+    storageBucket: "new-drama-e729b.firebasestorage.app",
+    messagingSenderId: "1038068499530",
+    appId: "1:1038068499530:web:44fd33a0a628bcad4ad2b3",
+    measurementId: "G-VXNH7S6N36"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
 </body>
 </html>
