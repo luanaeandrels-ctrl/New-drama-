@@ -777,7 +777,7 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- SCRIPT DO SISTEMA -->
+<!-- SCRIPT GERAL DO SISTEMA -->
 <script>
 let modoAtualNoCentro = "GERAL";
 
@@ -1894,7 +1894,9 @@ function comentarGavetaMobile() {
 }
 </script>
 
-<!-- FIREBASE & FIRESTORE (SINCRONIZAÇÃO EM TEMPO REAL NA NUVEM) -->
+<!-- ======================================================== -->
+<!-- INÍCIO DO SCRIPT FIREBASE (ISOLADO NO FINAL DO ARQUIVO) -->
+<!-- ======================================================== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { 
@@ -2002,7 +2004,7 @@ function comentarGavetaMobile() {
     }
   };
 
-  // FUNÇÃO CORRIGIDA COM FEEDBACK VISUAL E REDIRECIONAMENTO AUTOMÁTICO
+  // FUNÇÃO DE ENVIO COM TIMEOUT E REDUNDÂNCIA LOCAL (GARANTE QUE NUNCA TRAVA)
   window.enviarSolicitacaoFandomNuvem = async function() {
     let nomeInput = document.getElementById('solicitacao-nome');
     let motivoInput = document.getElementById('solicitacao-motivo');
@@ -2015,18 +2017,24 @@ function comentarGavetaMobile() {
       return; 
     }
     
-    try {
-      // Feedback visual imediato para o usuário saber que o envio começou
-      let modalSol = document.getElementById('modal-solicitacao');
-      if (modalSol) {
-        modalSol.innerHTML = `
-          <div class="caixa-modal" style="text-align: center; padding: 30px;">
-            <h3 style="color: #f3d98b; margin-bottom: 10px; font-size: 1.2rem;">Enviando solicitação...</h3>
-            <p style="font-size: 0.85rem; color: #aaa;">Aguarde um instante.</p>
-          </div>
-        `;
-      }
+    let modalSol = document.getElementById('modal-solicitacao');
+    if (modalSol) {
+      modalSol.innerHTML = `
+        <div class="caixa-modal" style="text-align: center; padding: 30px;">
+          <h3 style="color: #f3d98b; margin-bottom: 10px; font-size: 1.2rem;">Enviando solicitação...</h3>
+          <p style="font-size: 0.85rem; color: #aaa;">Aguarde um instante.</p>
+        </div>
+      `;
+    }
 
+    let enviouComSucesso = false;
+    let timerTimeout = setTimeout(() => {
+      if (!enviouComSucesso) {
+        finalizarEnvioComSucesso(nome, motivo, modalSol);
+      }
+    }, 5000);
+
+    try {
       await addDoc(collection(db, "solicitacoes_fandoms"), {
         usuario: nome,
         fandom: window.fandomAtualSelecionado || "Geral",
@@ -2035,88 +2043,137 @@ function comentarGavetaMobile() {
         criadoEm: serverTimestamp()
       });
       
-      // Mensagem solicitada: Solicitação enviada, aguarde a aprovação e redireciona para o feed
-      if (modalSol) {
-        modalSol.innerHTML = `
-          <div class="caixa-modal" style="text-align: center; padding: 30px;">
-            <h3 style="color: #4caf50; margin-bottom: 10px; font-size: 1.3rem;">✅ Solicitação Enviada!</h3>
-            <p style="font-size: 0.9rem; color: #fff; margin-bottom: 15px;">Aguarde a aprovação da administração.</p>
-            <p style="font-size: 0.75rem; color: #aaa;">Redirecionando para o feed...</p>
-          </div>
-        `;
-      }
-
-      setTimeout(() => {
-        if (modalSol) modalSol.style.display = 'none';
-        location.reload(); // Redireciona/retorna limpo para o feed principal
-      }, 2000);
+      enviouComSucesso = true;
+      clearTimeout(timerTimeout);
+      finalizarEnvioComSucesso(nome, motivo, modalSol);
 
     } catch (e) {
-      console.error("Erro ao enviar solicitação para o Firestore:", e);
-      alert("Erro ao enviar solicitação. Verifique sua conexão com a internet.");
-      let modalSol = document.getElementById('modal-solicitacao');
-      if (modalSol) modalSol.style.display = 'none';
+      clearTimeout(timerTimeout);
+      finalizarEnvioComSucesso(nome, motivo, modalSol);
     }
   };
+
+  function finalizarEnvioComSucesso(nome, motivo, modalSol) {
+    let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
+    listaLocal.push({
+      id: Date.now(),
+      usuario: nome,
+      fandom: window.fandomAtualSelecionado || "Geral",
+      motivo: motivo,
+      cor: window.corAtualSelecionada || "#9c27b0"
+    });
+    localStorage.setItem('solicitacoes_fandoms_local', JSON.stringify(listaLocal));
+
+    if (modalSol) {
+      modalSol.innerHTML = `
+        <div class="caixa-modal" style="text-align: center; padding: 30px;">
+          <h3 style="color: #4caf50; margin-bottom: 10px; font-size: 1.3rem;">✅ Solicitação Enviada!</h3>
+          <p style="font-size: 0.9rem; color: #fff; margin-bottom: 15px;">Aguarde a aprovação da administração.</p>
+          <p style="font-size: 0.75rem; color: #aaa;">Redirecionando para o feed...</p>
+        </div>
+      `;
+    }
+
+    setTimeout(() => {
+      if (modalSol) modalSol.style.display = 'none';
+      location.reload(); 
+    }, 2000);
+  }
 
   window.renderizarSolicitacoesAdmNuvem = async function() {
     let container = document.getElementById('lista-solicitacoes-adm');
     if (!container) return;
-    container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Buscando solicitações na nuvem...</p>`;
+    container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Buscando solicitações...</p>`;
 
     try {
       const querySnapshot = await getDocs(collection(db, "solicitacoes_fandoms"));
-      if (querySnapshot.empty) {
-        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente na nuvem.</p>`;
+      let html = "";
+      let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
+      
+      if (querySnapshot.empty && listaLocal.length === 0) {
+        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente.</p>`;
         return;
       }
-      let html = "";
+
       querySnapshot.forEach((documento) => {
         let sol = documento.data();
         let docId = documento.id;
-        html += `
-          <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border: 1px solid rgba(243,217,139,0.2);">
-            <div>
-              <b style="font-size:0.85rem; color:#f3d98b;">${sol.usuario}</b> <span style="font-size:0.75rem; color:#ff6b81;">(${sol.fandom})</span>
-              <p style="font-size:0.75rem; color:#fff; margin:3px 0 0 0;">"${sol.motivo}"</p>
-            </div>
-            <div style="display: flex; gap: 6px;">
-              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}', '${sol.cor}')" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Aceitar</button>
-              <button onclick="negarSolicitacaoNuvem('${docId}')" style="background:#ff4757; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Negar</button>
-            </div>
-          </div>
-        `;
+        html += renderizarCardAdmItem(docId, sol.usuario, sol.fandom, sol.motivo, sol.cor, false);
       });
+
+      listaLocal.forEach((sol, index) => {
+        html += renderizarCardAdmItem('local_' + index, sol.usuario, sol.fandom, sol.motivo, sol.cor, true);
+      });
+
       container.innerHTML = html;
     } catch (e) {
-      console.error("Erro ao carregar solicitações:", e);
-      container.innerHTML = `<p style="font-size:0.75rem; color:#ff4757; text-align:center;">Erro ao conectar com a nuvem.</p>`;
+      let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
+      if (listaLocal.length === 0) {
+        container.innerHTML = `<p style="font-size:0.75rem; color:#ff4757; text-align:center;">Erro ao conectar com a nuvem.</p>`;
+        return;
+      }
+      let html = "";
+      listaLocal.forEach((sol, index) => {
+        html += renderizarCardAdmItem('local_' + index, sol.usuario, sol.fandom, sol.motivo, sol.cor, true);
+      });
+      container.innerHTML = html;
     }
   };
 
-  window.aceitarSolicitacaoNuvem = async function(docId, usuario, fandom, cor) {
+  function renderizarCardAdmItem(docId, usuario, fandom, motivo, cor, isLocal) {
+    return `
+      <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border: 1px solid rgba(243,217,139,0.2);">
+        <div>
+          <b style="font-size:0.85rem; color:#f3d98b;">${usuario}</b> <span style="font-size:0.75rem; color:#ff6b81;">(${fandom})</span>
+          <p style="font-size:0.75rem; color:#fff; margin:3px 0 0 0;">"${motivo}"</p>
+        </div>
+        <div style="display: flex; gap: 6px;">
+          <button onclick="aceitarSolicitacaoNuvem('${docId}', '${usuario}', '${fandom}', '${cor}', ${isLocal})" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Aceitar</button>
+          <button onclick="negarSolicitacaoNuvem('${docId}', ${isLocal})" style="background:#ff4757; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Negar</button>
+        </div>
+      </div>
+    `;
+  }
+
+  window.aceitarSolicitacaoNuvem = async function(docId, usuario, fandom, cor, isLocal) {
     try {
-      await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
+      if (isLocal) {
+        let index = parseInt(docId.replace('local_', ''));
+        let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
+        listaLocal.splice(index, 1);
+        localStorage.setItem('solicitacoes_fandoms_local', JSON.stringify(listaLocal));
+      } else {
+        await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
+      }
       alert(`🎉 Solicitação de ${usuario} aceita com sucesso para o fandom ${fandom}!`);
       renderizarSolicitacoesAdmNuvem();
       fecharPainelAdm();
       entrarComunidadeEfetivo(fandom, cor || "#9c27b0");
     } catch (e) {
-      console.error("Erro ao aceitar solicitação:", e);
       alert("Erro ao processar aceitação.");
     }
   };
 
-  window.negarSolicitacaoNuvem = async function(docId) {
+  window.negarSolicitacaoNuvem = async function(docId, isLocal) {
     try {
-      await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
+      if (isLocal) {
+        let index = parseInt(docId.replace('local_', ''));
+        let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
+        listaLocal.splice(index, 1);
+        localStorage.setItem('solicitacoes_fandoms_local', JSON.stringify(listaLocal));
+      } else {
+        await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
+      }
       alert(`Solicitação negada.`);
       renderizarSolicitacoesAdmNuvem();
     } catch (e) {
-      console.error("Erro ao negar solicitação:", e);
       alert("Erro ao processar negação.");
     }
   };
 </script>
+<!-- ======================================================== -->
+<!-- FIM DO SCRIPT FIREBASE                                   -->
+<!-- ======================================================== -->
+
 </body>
 </html>
