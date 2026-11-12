@@ -1838,6 +1838,17 @@ function comentarGavetaMobile() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
+  // Monitora se você está logada para mudar o botão de "Entrar" para "Perfil"
+  onAuthStateChanged(auth, (user) => {
+    const botaoPerfil = document.getElementById("acao-perfil");
+    if (botaoPerfil) {
+      if (user) {
+        botaoPerfil.innerText = "Perfil";
+      } else {
+        botaoPerfil.innerText = "Entrar";
+       }
+    }
+  }); 
  </script> 
 </body>
 </html>
