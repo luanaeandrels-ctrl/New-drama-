@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>New Drama</title>
+<title>Umbrella</title>
 <link rel="manifest" href="/manifest.json">
 <style>
 /* ==================================== */
@@ -25,9 +25,6 @@
   scrollbar-color: transparent transparent;
 }
 
-/* ==================================== */
-/* ESTILOS GERAIS E PAINEL DA CRIADORA */
-/* ==================================== */
 #painel-criadora {
   display: none; 
   margin: 15px 0;
@@ -117,14 +114,15 @@
 .grupo-input label { display: block; font-size: 0.8rem; color: #f3d98b; margin-bottom: 4px; }
 *{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', Arial, sans-serif}
 body {
-  background: #060a1e;
+  background: #060a1e url('fundo.jpg') no-repeat center center fixed;
+  background-size: cover;
   color: #fff;
   min-height: 100vh;
   margin: 0;
 }
 body::before {
   content:""; position:fixed; inset:0;
-  background:rgba(0,0,0,0.3);
+  background:rgba(0,0,0,0.45);
   z-index:0;
 }
 .app {
@@ -141,22 +139,34 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   transition: all 0.3s ease;
 }
 .logo{
-  font-family:Georgia, serif; font-size:65px; font-weight:700;
+  font-family:Georgia, serif; font-size:58px; font-weight:700;
   color:#f3d98b; letter-spacing:1px;
   text-shadow:0 0 20px #f3d98b, 0 0 40px #b8860b;
   line-height: 1.1;
   cursor: pointer;
   transition: all 0.3s ease;
 }
-.subtitle{font-size:18px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease;}
+.boneco-logo {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #f3d98b;
+  box-shadow: 0 0 10px rgba(243,217,139,0.5);
+}
+.subtitle{font-size:18px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease; text-align: center;}
 
 body.logo-recolhida .logo {
-  font-size: 32px !important;
+  font-size: 28px !important;
   text-shadow: 0 0 10px #f3d98b;
+}
+body.logo-recolhida .boneco-logo {
+  width: 32px;
+  height: 32px;
 }
 body.logo-recolhida .subtitle {
   font-size: 11px !important;
@@ -167,8 +177,8 @@ body.logo-recolhida .subtitle {
 
 .layout{display:grid; grid-template-columns:300px 1fr 300px; gap:14px; margin-top:14px; align-items:start; transition: all 0.3s ease;}
 .card{
-  background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(14px);
-  border: 1px solid rgba(243, 217, 139, 0.25); border-radius: 20px; padding: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(243, 217, 139, 0.2); border-radius: 20px; padding: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-bottom: 14px;
 }
 .card h3{font-size:16px; margin-bottom:4px}
@@ -309,27 +319,26 @@ border-radius:999px; display:inline-block;}
 <!-- POPUP FLUTUANTE DA CRIADORA (DESAFIO DO DIA GLOBAL) -->
 <div id="modal-popup-criadora-desafio" class="modal-custom" style="z-index: 100001;">
   <div class="caixa-modal" style="border: 2px solid #9c27b0; box-shadow: 0 0 30px rgba(156, 39, 176, 0.6);">
-    <div style="text-align: center; margin-bottom: 12px;">
-      <span style="font-size: 2rem;">👑</span>
-      <h3 style="color: #f3d98b; font-size: 1.25rem; margin-top: 4px;">Modo Criadora Ativado!</h3>
-      <p style="font-size: 0.78rem; color: #ccc;">Atualize o <b>Desafio do Dia</b> para toda a plataforma:</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Painel da Criadora</h3>
+      <button onclick="fecharPopupCriadoraDesafio()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
     </div>
     <div class="grupo-input">
-      <label>Novo Desafio do Dia (Visível para todos):</label>
+      <label>Novo Desafio do Dia:</label>
       <textarea id="input-popup-desafio-global" placeholder="Digite o desafio de hoje aqui..." style="border-radius: 12px; height: 80px; padding: 10px; font-size: 0.9rem; resize: none;"></textarea>
     </div>
     <div style="display: flex; gap: 10px; margin-top: 15px;">
-      <button onclick="salvarDesafioPeloPopupCriadora()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">🚀 Publicar para Todos</button>
-      <button onclick="fecharPopupCriadoraDesafio()" style="padding: 12px 16px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Fechar</button>
+      <button onclick="salvarDesafioPeloPopupCriadora()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Publicar</button>
     </div>
-    <button onclick="fecharPopupCriadoraDesafio(); verificarSenhaAdm();" style="width: 100%; margin-top: 10px; padding: 8px; background: rgba(243,217,139,0.15); border: 1px solid #f3d98b; color: #f3d98b; border-radius: 8px; font-size: 0.78rem; font-weight: bold; cursor: pointer;">Abrir Painel Completo de Moderação (ADM)</button>
+    <button onclick="fecharPopupCriadoraDesafio(); verificarSenhaAdm();" style="width: 100%; margin-top: 10px; padding: 8px; background: rgba(243,217,139,0.15); border: 1px solid #f3d98b; color: #f3d98b; border-radius: 8px; font-size: 0.78rem; font-weight: bold; cursor: pointer;">Painel ADM</button>
   </div>
 </div>
 
 <!-- GAVETA MOBILE EXCLUSIVA -->
 <div id="gaveta-mobile-overlay">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
-    <h3 id="titulo-gaveta-mobile" onclick="fecharGavetaMobile()" style="color: #f3d98b; font-size: 1.1rem; margin: 0; cursor: pointer;" title="Toque aqui para voltar">Gaveta de Recursos (Toque aqui para voltar)</h3>
+    <span style="width: 24px;"></span>
+    <button onclick="fecharGavetaMobile()" style="background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer;" title="Fechar">✕</button>
   </div>
   <div id="conteudo-dinamico-gaveta-mobile" style="display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px;"></div>
 </div>
@@ -348,6 +357,35 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
+<!-- MODAL PARA CRIAR NOVA PUBLICAÇÃO (FEED GERAL) -->
+<div id="modal-criar-publicacao" class="modal-custom">
+  <div class="caixa-modal" style="border: 2px solid var(--cor-tema-ativa, #2196f3); box-shadow: 0 0 30px rgba(33,150,243,0.4);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+      <h3 class="btn-tema-texto" style="color: #2196f3; font-size: 1.1rem; margin: 0;">Nova Publicação no Umbrella</h3>
+      <button onclick="fecharModalPublicacao()" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✕</button>
+    </div>
+
+    <!-- ÁREA DO BALÃO DE PRÉ-VISUALIZAÇÃO DA MÍDIA -->
+    <div id="preview-container-midia" style="width: 100%; height: 160px; background: rgba(0,0,0,0.4); border-radius: 14px; border: 1px dashed rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; position: relative; padding: 6px;">
+      <span id="preview-placeholder-txt" style="font-size: 0.8rem; color: #aaa;">Nenhuma foto ou vídeo selecionado</span>
+      <img id="preview-img-tag" src="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; display: none;">
+      <video id="preview-vid-tag" src="" controls style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; display: none;"></video>
+    </div>
+
+    <div class="grupo-input">
+      <textarea id="textoChatComunidade" placeholder="Escreva sua legenda abrigada..." style="border-radius: 12px; resize: none; height: 75px; padding: 10px; font-size: 0.9rem; background: rgba(0,0,0,0.4); color: #fff;"></textarea>
+    </div>
+    <div style="display: flex; gap: 8px; margin-bottom: 15px;">
+      <label for="midiaChatComunidade" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-midia-chat">📁 Galeria</label>
+      <input type="file" id="midiaChatComunidade" accept="image/*,video/*" style="display: none;" onchange="verificarESubirMidiaChat(this)">
+
+      <button type="button" onclick="dispararCameraCelular()" style="flex: 1; background: rgba(33,150,243,0.3); border: 1px solid rgba(33,150,243,0.6); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #fff;">📸 Câmera</button>
+      <input type="file" id="cameraChatComunidadeDireto" accept="image/*" capture="environment" style="display: none;" onchange="verificarESubirMidiaChat(this)">
+    </div>
+    <button onclick="enviarMensagemChatComunidade()" class="btn-tema-bg" style="width: 100%; padding: 12px; background: #2196f3; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.9rem;">Publicar</button>
+  </div>
+</div>
+
 <div class="app">
   <!-- CABECALHO DO USUARIO -->
   <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1);">
@@ -357,46 +395,48 @@ border-radius:999px; display:inline-block;}
     </div>
     <div style="display: flex; gap: 6px; align-items: center;">
       <button id="btn-acao-perfil" onclick="clicarBotaoPerfil()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 5px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Entrar</button>
-      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;" title="Suporte">⋮</button>
+      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">⋮</button>
     </div>
   </div>
 
   <!-- MODAL DE SUPORTE -->
   <div id="modal-suporte" class="modal-custom">
     <div class="caixa-modal">
-      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Suporte Técnico</h3>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Contato com a moderação:</p>
-      <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc;">
-        <p style="margin-bottom: 6px;"><b>Suporte:</b> Atendimento ao Usuário</p>
-        <p style="margin-bottom: 6px;"><b>E-mail:</b> suporte@newdrama.com</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Suporte</h3>
+        <button onclick="fecharSuporteDesenvolvedor()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
       </div>
-      <button onclick="fecharSuporteDesenvolvedor()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Suporte</button>
+      <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc;">
+        <p style="margin-bottom: 6px;"><b>E-mail:</b> suporte@umbrella.com</p>
+      </div>
     </div>
   </div>
 
   <!-- PAINEL DE MODERACAO & CRIADORA -->
   <div id="modal-adm" class="modal-custom">
     <div class="caixa-modal" style="max-width: 520px;">
-      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">👑 Painel de Moderação & Criadora</h3>
-      <p style="font-size: 0.75rem; color: #aaa; text-align: center; margin-bottom: 15px;">Gerencie solicitações, fandoms e feed global.</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Moderação</h3>
+        <button onclick="fecharPainelAdm()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+      </div>
       
       <div style="margin-bottom: 15px; background: rgba(243,217,139,0.1); padding: 12px; border-radius: 10px; border: 1px solid #f3d98b;">
-        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 6px;">🎯 Mudar Desafio do Dia Global:</h4>
+        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 6px;">Novo Desafio Global:</h4>
         <div style="display: flex; gap: 6px;">
-          <input type="text" id="input-adm-desafio-rapido" placeholder="Novo tema do desafio..." style="padding: 8px; font-size: 0.8rem; border-radius: 8px;">
+          <input type="text" id="input-adm-desafio-rapido" placeholder="Tema..." style="padding: 8px; font-size: 0.8rem; border-radius: 8px;">
           <button onclick="salvarDesafioPeloPainelAdm()" style="background: #9c27b0; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; white-space: nowrap;">Atualizar</button>
         </div>
       </div>
 
       <div style="margin-bottom: 15px; background: rgba(156,39,176,0.15); padding: 12px; border-radius: 10px; border: 1px solid #9c27b0;">
-        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 8px;">📥 Solicitações Pendentes de Fandoms (Firestore Nuvem):</h4>
+        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 8px;">Solicitações Umbrella Pendentes:</h4>
         <div id="lista-solicitacoes-adm" style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
-          <p style="font-size:0.75rem; color:#aaa; text-align:center;">Carregando solicitações da nuvem...</p>
+          <p style="font-size:0.75rem; color:#aaa; text-align:center;">Carregando...</p>
         </div>
       </div>
 
       <div style="margin-bottom: 15px; background: rgba(33,150,243,0.15); padding: 12px; border-radius: 10px; border: 1px solid #2196f3;">
-        <h4 style="font-size: 0.9rem; color: #2196f3; margin-bottom: 6px;">🌐 Entrar Diretamente em um Fandom:</h4>
+        <h4 style="font-size: 0.9rem; color: #2196f3; margin-bottom: 6px;">Entrar em Fandom:</h4>
         <div style="display: flex; gap: 8px; flex-direction: column;">
           <select id="select-fandom-direto" style="font-size: 0.8rem; padding: 8px;">
             <option value="BTS">BTS</option>
@@ -405,110 +445,102 @@ border-radius:999px; display:inline-block;}
             <option value="Doramas">Doramas</option>
             <option value="Anime">Anime</option>
           </select>
-          <button onclick="entrarFandomPeloPainelAdm()" style="background: #2196f3; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar no Fandom Selecionado</button>
+          <button onclick="entrarFandomPeloPainelAdm()" style="background: #2196f3; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar</button>
         </div>
       </div>
-
-      <button onclick="fecharPainelAdm()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Painel</button>
     </div>
   </div>
 
-  <!-- MODAL DE SOLICITACAO DE FANDOM -->
+  <!-- MODAL DE SOLICITACAO DE FANDOM / ABRIGO (ESTILO DORAMA) -->
   <div id="modal-solicitacao" class="modal-custom">
     <div class="caixa-modal">
-      <h3 style="color: #ff4757; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Fandom Protegido</h3>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;" id="texto-aviso-fandom">Este fandom é blindado. Envie sua solicitação:</p>
-      <div class="grupo-input"><label>Seu Nome / Apelido:</label><input type="text" id="solicitacao-nome" placeholder="Ex: Visitante"></div>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="color: #ff4757; font-size: 1.1rem; margin: 0;">☂️ Abrigo Umbrella</h3>
+        <button onclick="fecharModalSolicitacao()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 0.8rem; color: #f3d98b; margin-bottom: 15px; line-height: 1.4;" id="texto-aviso-fandom">Este é um círculo protegido. Quer saber se pode te proteger da chuva?</p>
+      <div class="grupo-input"><label>Seu Nome / Apelido:</label><input type="text" id="solicitacao-nome" placeholder="Seu apelido"></div>
       <div class="grupo-input">
-        <label>Por que você quer entrar neste fandom?</label>
-        <textarea id="solicitacao-motivo" placeholder="Ex: Sou fã nº 1!" style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
+        <label>Mensagem de Abrigo:</label>
+        <textarea id="solicitacao-motivo" placeholder="Por que deseja compartilhar este guarda-chuva?" style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
       </div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button onclick="enviarSolicitacaoFandomNuvem()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Enviar Pedido para Nuvem</button>
-        <button onclick="fecharModalSolicitacao()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
-      </div>
+      <button onclick="enviarSolicitacaoFandomNuvem()" style="width: 100%; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;">Compartilhar o Guarda-Chuva ☂️</button>
     </div>
   </div>
 
   <!-- MODAL DE CADASTRO / LOGIN -->
   <div id="modal-cadastro" class="modal-custom">
     <div class="caixa-modal">
-      <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Entrar / Dados Cadastrais</h3>
-      <p style="font-size: 0.75rem; color: #aaa; text-align: center; margin-bottom: 12px;">Preencha seus dados para acessar sua conta na comunidade:</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 class="btn-tema-texto" style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Entrar / Cadastro</h3>
+        <button onclick="fecharModalCadastro()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+      </div>
       
       <button type="button" onclick="tentarLoginGoogleDireto()" style="width: 100%; padding: 10px; background: #fff; color: #333; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.85rem; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
-        <span>G</span> Entrar rápido com conta Google
+        <span>G</span> Entrar com Google
       </button>
 
-      <div class="grupo-input"><label>1. Nome ou Apelido na Comunidade:</label><input type="text" id="input-nome" placeholder="Seu apelido"></div>
-      <div class="grupo-input"><label>2. Data de Nascimento:</label><input type="text" id="input-nasc" placeholder="DD/MM/AAAA"></div>
-      <div class="grupo-input"><label>3. Fandom / Artista da Semana:</label><input type="text" id="input-fandom" placeholder="Nome do artista"></div>
-      <div class="grupo-input"><label>4. E-mail:</label><input type="email" id="input-email" placeholder="seu@email.com"></div>
-      <div class="grupo-input"><label>5. WhatsApp:</label><input type="text" id="input-tel" placeholder="(00) 00000-0000"></div>
-      <div class="grupo-input"><label>6. Senha de Acesso:</label><input type="password" id="input-senha" placeholder="Sua senha..."></div>
+      <div class="grupo-input"><label>Nome:</label><input type="text" id="input-nome" placeholder="Seu apelido"></div>
+      <div class="grupo-input"><label>Nascimento:</label><input type="text" id="input-nasc" placeholder="DD/MM/AAAA"></div>
+      <div class="grupo-input"><label>Fandom/Artista:</label><input type="text" id="input-fandom" placeholder="Nome do artista"></div>
+      <div class="grupo-input"><label>E-mail:</label><input type="email" id="input-email" placeholder="seu@email.com"></div>
+      <div class="grupo-input"><label>WhatsApp:</label><input type="text" id="input-tel" placeholder="(00) 00000-0000"></div>
+      <div class="grupo-input"><label>Senha:</label><input type="password" id="input-senha" placeholder="Sua senha..."></div>
       
       <div class="grupo-input">
-        <label>7. Cor Pessoal do Tema:</label>
+        <label>Cor do Tema:</label>
         <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
           <input type="color" id="input-cor-pessoal" value="#ff4757" style="width: 50px; height: 40px; border: none; border-radius: 8px; cursor: pointer; background: transparent;">
-          <span style="font-size: 0.8rem; color: #ccc;">Sua cor favorita na interface!</span>
         </div>
       </div>
       <div class="grupo-input">
-        <label>8. Foto de Perfil:</label>
-        <label for="input-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-perfil">Escolher Foto de Perfil</label>
+        <label>Foto de Perfil:</label>
+        <label for="input-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-perfil">Escolher Foto</label>
         <input type="file" id="input-foto-file" accept="image/*" style="display: none;" onchange="atualizarNomePerfil(this)">
       </div>
-      <div class="grupo-input">
-        <label>9. Plano de Fundo HD:</label>
-        <label for="input-fundo-perfil-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-fundo-perfil">Escolher Fundo HD</label>
-        <input type="file" id="input-fundo-perfil-file" accept="image/*" style="display: none;" onchange="atualizarNomeFundoPerfil(this)">
-      </div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button onclick="salvarPerfilPersonalizado()" class="btn-tema-bg" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Entrar / Salvar</button>
-        <button onclick="fecharModalCadastro()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
-      </div>
+      <button onclick="salvarPerfilPersonalizado()" class="btn-tema-bg" style="width: 100%; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;">Salvar</button>
     </div>
   </div>
 
   <!-- MODAL GERENCIAR FANDOMS -->
   <div id="modal-novo-tema" class="modal-custom">
     <div class="caixa-modal">
-      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Gerenciar Fandoms</h3>
-      <div class="grupo-input">
-        <label>1. Criar Novo Fandom:</label>
-        <input type="text" id="input-novo-tema-nome" placeholder="Nome do grupo ou dorama...">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Fandoms / Umbrella</h3>
+        <button onclick="fecharModalNovoTema()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
       </div>
-      <button onclick="salvarNovoTemaPersonalizado()" style="width: 100%; padding: 10px; background: #ff4757; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 0.85rem;">Criar Fandom</button>
+      <div class="grupo-input">
+        <label>Criar Novo:</label>
+        <input type="text" id="input-novo-tema-nome" placeholder="Nome...">
+      </div>
+      <button onclick="salvarNovoTemaPersonalizado()" style="width: 100%; padding: 10px; background: #ff4757; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 0.85rem;">Adicionar</button>
       <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.15); margin-bottom: 12px;">
-      <label style="font-size: 0.8rem; color: #f3d98b; margin-bottom: 6px; display: block;">Fandoms Atuais (Clique para excluir):</label>
-      <div id="lista-fandoms-gerenciar-modal" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px;"></div>
-      <button onclick="fecharModalNovoTema()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar</button>
+      <div id="lista-fandoms-gerenciar-modal" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;"></div>
     </div>
   </div>
 
   <!-- MODAL GERENCIAR BIAS -->
   <div id="modal-bias" class="modal-custom">
     <div class="caixa-modal">
-      <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Gerenciar Meus Bias (1 a 1000)</h3>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">⚠️ Cada posição só pode ser editada <b>1 vez a cada 30 dias</b>!</p>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h3 class="btn-tema-texto" style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Gerenciar Meus Bias (1 a 1000)</h3>
+        <button onclick="fecharModalBias()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+      </div>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px;">⚠️ Cada posição pode ser editada <b>1 vez a cada 30 dias</b>.</p>
       
       <div class="grupo-input">
-        <label>Posição / Número (1 a 1000):</label>
+        <label>Posição:</label>
         <select id="bias-posicao-select" style="background: rgba(0,0,0,0.5); color: #f3d98b; font-weight: bold;"></select>
       </div>
 
-      <div class="grupo-input"><label>Nome do Artista / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Nome..."></div>
-      <div class="grupo-input"><label>Categoria (Dorama, Grupo, Filme):</label><input type="text" id="bias-categoria" placeholder="Ex: K-Pop, Dorama..."></div>
+      <div class="grupo-input"><label>Nome:</label><input type="text" id="bias-nome" placeholder="Nome..."></div>
+      <div class="grupo-input"><label>Categoria:</label><input type="text" id="bias-categoria" placeholder="Ex: K-Pop..."></div>
       <div class="grupo-input">
-        <label>Foto Oficial de Referência:</label>
-        <label for="bias-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-bias">Escolher Foto Oficial</label>
+        <label>Foto:</label>
+        <label for="bias-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-bias">Escolher Foto</label>
         <input type="file" id="bias-foto-file" accept="image/*" style="display: none;" onchange="atualizarNomeBias(this)">
       </div>
-      <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button onclick="salvarBiasPersonalizado()" class="btn-tema-bg" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Salvar na Lista</button>
-        <button onclick="fecharModalBias()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Fechar</button>
-      </div>
+      <button onclick="salvarBiasPersonalizado()" class="btn-tema-bg" style="width: 100%; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;">Salvar</button>
     </div>
   </div>
 
@@ -516,8 +548,8 @@ border-radius:999px; display:inline-block;}
   <div id="modal-menu">
     <div style="max-width: 800px; margin: 40px auto; padding: 20px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 15px;">
-        <h2 class="btn-tema-texto" style="color: #f3d98b; margin: 0; font-size: 1.5rem;">Meu Perfil na Comunidade</h2>
-        <button onclick="fecharMenuLateral()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 18px; border-radius: 8px; font-weight: bold; cursor: pointer;">← Voltar ao Feed</button>
+        <h2 class="btn-tema-texto" style="color: #f3d98b; margin: 0; font-size: 1.3rem;">Meu Perfil</h2>
+        <button onclick="fecharMenuLateral()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; width: 36px; height: 36px; border-radius: 50%; font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
       </div>
       <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 14px; margin-bottom: 20px; border: 1px solid rgba(243,217,139,0.2);">
         <div style="display: flex; align-items: center; gap: 20px;">
@@ -528,24 +560,25 @@ border-radius:999px; display:inline-block;}
           </div>
         </div>
         <div style="flex-grow: 1; max-width: 340px; min-width: 260px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; border: 1px solid rgba(243,217,139,0.3);">
-          <p class="btn-tema-texto" style="font-size: 0.8rem; color: #f3d98b; margin-bottom: 6px; font-weight: bold;">🎶 Índice de Músicas / Player:</p>
           <div style="display: flex; gap: 6px; margin-bottom: 6px;">
-            <input type="text" id="termo-busca-yt" placeholder="Buscar música ou artista..." style="padding: 8px; font-size: 0.8rem; border-radius: 6px; flex: 1;">
+            <input type="text" id="termo-busca-yt" placeholder="Buscar música..." style="padding: 8px; font-size: 0.8rem; border-radius: 6px; flex: 1;">
             <button onclick="buscarNoYoutubeDireto()" class="btn-tema-bg" style="background: #ff0000; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; white-space: nowrap;">Buscar</button>
           </div>
         </div>
       </div>
       <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;">
-        <button onclick="configurarPerfil()" class="btn-tema-bg" style="width: 100%; padding: 14px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem;">Alterar Dados Cadastrais & Senha</button>
-        <button onclick="sairDaConta()" style="width: 100%; padding: 14px; background: rgba(255, 71, 87, 0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem;">Sair da Conta / Desconectar</button>
+        <button onclick="configurarPerfil()" class="btn-tema-bg" style="width: 100%; padding: 14px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem;">Alterar Dados</button>
+        <button onclick="sairDaConta()" style="width: 100%; padding: 14px; background: rgba(255, 71, 87, 0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem;">Sair</button>
       </div>
     </div>
   </div>
 
-  <!-- CABECALHO DA LOGO PRINCIPAL -->
+  <!-- CABECALHO DA LOGO PRINCIPAL COM ALINHAMENTO DE BONEQUINHOS -->
   <header style="text-align: center; padding: 8px 0 4px;">
     <div class="logo-container">
-      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" title="Dê um clique para voltar ao início!">New Drama</div>
+      <img src="homem.jpg" alt="Homem" class="boneco-logo" onerror="this.style.display='none'">
+      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">Umbrella</div>
+      <img src="mulher.jpg" alt="Mulher" class="boneco-logo" onerror="this.style.display='none'">
     </div>
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
@@ -554,24 +587,24 @@ border-radius:999px; display:inline-block;}
   <div id="bloco-topo-mobile">
     <div class="stories-mobile-container">
       <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')">
-        <div class="story-avatar-mob"><div class="story-avatar-inner"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Ouro"></div></div>
+        <div class="story-avatar-mob"><div class="story-avatar-inner" style="background: #111;"></div></div>
         <span class="story-nome-mob">1º Lugar</span><span class="story-arroba-mob">Ouro</span>
       </div>
       <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')">
-        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #c0c0c0, #888);"><div class="story-avatar-inner"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" alt="Prata"></div></div>
+        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #c0c0c0, #888);"><div class="story-avatar-inner" style="background: #111;"></div></div>
         <span class="story-nome-mob">2º Lugar</span><span class="story-arroba-mob">Prata</span>
       </div>
       <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')">
-        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #cd7f32, #8b4513);"><div class="story-avatar-inner"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" alt="Bronze"></div></div>
+        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #cd7f32, #8b4513);"><div class="story-avatar-inner" style="background: #111;"></div></div>
         <span class="story-nome-mob">3º Lugar</span><span class="story-arroba-mob">Bronze</span>
       </div>
       <div class="story-balao-mob" onclick="abrirGavetaMobile('desafio')">
-        <span class="titulo-b">🎯 Desafio do Dia</span>
-        <p class="texto-b" id="texto-resumo-desafio-mob">Carregando tema de hoje...</p>
+        <span class="titulo-b">Desafio do Dia</span>
+        <p class="texto-b" id="texto-resumo-desafio-mob">Carregando...</p>
       </div>
       <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
         <div class="story-avatar-mob" style="background: #9c27b0;"><div class="story-avatar-inner" style="background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;">📂</div></div>
-        <span class="story-nome-mob">Minha Gaveta</span><span class="story-arroba-mob">Privado</span>
+        <span class="story-nome-mob">Gaveta</span><span class="story-arroba-mob">Privado</span>
       </div>
       <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
         <div class="story-avatar-mob" style="background: #2196f3;"><div class="story-avatar-inner" style="background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;">🌐</div></div>
@@ -597,25 +630,21 @@ border-radius:999px; display:inline-block;}
           <div style="width: 38px; height: 38px; border-radius: 50%; background: #9c27b0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;" class="btn-tema-bg">🎯</div>
           <div>
             <h4 style="margin: 0; font-size: 0.95rem; color: #f3d98b; font-weight: bold;">Desafio do Dia</h4>
-            <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #fff;" id="sub-titulo-desafio-esq">Carregando desafio...</p>
+            <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #fff;" id="sub-titulo-desafio-esq">Carregando...</p>
           </div>
         </div>
 
         <!-- PAINEL DA CRIADORA GLOBAL -->
         <div id="painel-criadora">
-          <h4>👑 Painel Global da Criadora</h4>
-          <input type="text" id="novo-desafio-input" placeholder="Digite o novo desafio do dia para toda a plataforma...">
-          <button onclick="atualizarDesafioDoDiaGlobal()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; width: 100%;">Atualizar Desafio em Toda Plataforma</button>
+          <h4>Painel Global</h4>
+          <input type="text" id="novo-desafio-input" placeholder="Novo desafio...">
+          <button onclick="atualizarDesafioDoDiaGlobal()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; width: 100%;">Atualizar</button>
         </div>
 
-        <div style="margin-bottom: 10px; position: relative;">
-          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
-          <input type="text" id="inputBuscaBiasDesafio" placeholder="Busque o bias acima para travar..." oninput="filtrarBuscaBiasDesafio(this.value)" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
-          <div id="sugestoes-bias-busca" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
-        </div>
-
+        <!-- PAINEL UNIFICADO DO DESAFIO (BLOCO ÚNICO FLUIDO) -->
         <div id="bloco-envio-desafio-esq" style="margin-bottom: 12px;"></div>
-        <button onclick="abrirDesafioNoCentro()" class="btn-tema-bg" style="width: 100%; margin-bottom: 14px; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">🔍 Ver Fotos das Colegas (Votar)</button>
+
+        <button onclick="abrirDesafioNoCentro()" class="btn-tema-bg" style="width: 100%; margin-bottom: 14px; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Ver Envio das Colegas</button>
 
         <hr style="border: none; border-top: 1px solid rgba(243,217,139,0.25); margin: 12px 0;">
 
@@ -623,22 +652,20 @@ border-radius:999px; display:inline-block;}
           <h3 style="margin: 0; font-size: 0.95rem; color: #f3d98b;">Meus Bias (1 a 1000)</h3>
           <button onclick="abrirModalBias()" class="btn-tema-bg" style="background: #ff4757; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
         </div>
-        <p style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">Clique em qualquer bias para preencher o desafio:</p>
         <div id="lista-bias-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto;">
           <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center; color: #aaa; font-size: 0.85rem;">
-            Lista vazia. Clique em "+ Gerenciar" para adicionar seus bias!
+            Lista vazia.
           </div>
         </div>
       </div>
 
       <div class="card" style="padding: 16px; text-align: center; margin-bottom: 0;">
-        <h3 style="font-size: 1.05rem; margin-bottom: 4px; color: #f3d98b;" class="btn-tema-texto">Vitrine & Parceiros</h3>
-        <p class="small" style="margin-bottom: 12px;">Recomendações:</p>
+        <h3 style="font-size: 1.05rem; margin-bottom: 4px; color: #f3d98b;" class="btn-tema-texto">Vitrine</h3>
         <div id="banner-vitrine" style="position: relative; width: 100%; height: 180px; border-radius: 14px; overflow: hidden; background: #111; border: 1px solid rgba(243,217,139,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="visitarOfertaAtual()">
           <img id="vitrine-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
           <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 15px 10px 8px; text-align: left;">
             <span id="vitrine-tag" class="btn-tema-bg" style="font-size: 0.65rem; background: #ff4757; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">PARCEIRO</span>
-            <p id="vitrine-titulo" style="font-size: 0.8rem; font-weight: bold; color: #fff; margin-top: 3px; text-shadow: 0 1px 3px #000;">Carregando ofertas...</p>
+            <p id="vitrine-titulo" style="font-size: 0.8rem; font-weight: bold; color: #fff; margin-top: 3px; text-shadow: 0 1px 3px #000;">Carregando...</p>
           </div>
         </div>
       </div>
@@ -646,47 +673,40 @@ border-radius:999px; display:inline-block;}
 
     <!-- COLUNA CENTRAL: FEED GERAL -->
     <div id="coluna-central" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
-      <div class="card" id="painel-central-container" style="margin-bottom: 0;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+      <div class="card" id="painel-central-container" style="margin-bottom: 0; background: transparent; border: none; box-shadow: none; padding: 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 20px; border: 1px solid rgba(243,217,139,0.2);">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div style="width: 38px; height: 38px; border-radius: 50%; background: #2196f3; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;" id="icone-feed-titulo" class="btn-tema-bg">💬</div>
             <div>
-              <h4 style="margin: 0; font-size: 0.95rem; color: #fff;" id="titulo-feed-atual">Feed Geral da Comunidade</h4>
-              <p style="margin: 0; font-size: 0.75rem; color: #ff6b81;" id="sub-feed-atual">Tudo o que a comunidade compartilhou</p>
+              <h4 style="margin: 0; font-size: 0.95rem; color: #fff;" id="titulo-feed-atual">Comunidade</h4>
+              <p style="margin: 0; font-size: 0.75rem; color: #ff6b81;" id="sub-feed-atual">Feed global</p>
             </div>
           </div>
           <div style="display: flex; gap: 6px; align-items: center;">
             <button id="btn-adm-comunidade" onclick="verificarSenhaAdm()" style="display: none; background: rgba(243,217,139,0.2); color: #f3d98b; border: 1px solid #f3d98b; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">👑 ADM</button>
-            <button id="btn-voltar-geral" onclick="voltarParaFeedPrincipal()" style="display: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voltar ao Geral</button>
+            <button id="btn-voltar-geral" onclick="voltarParaFeedPrincipal()" style="display: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voltar</button>
+            
+            <!-- BOTÃO DE DISPARO COM CAMERA.JPG -->
+            <button onclick="abrirModalPublicacao()" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Disparar Foto">
+              <div style="width: 44px; height: 44px; border-radius: 50%; background: #111; border: 2px solid #f3d98b; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 15px rgba(243,217,139,0.4);">
+                <img src="camera.jpg" alt="Câmera" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='camera.jpg'; this.onerror=function(){this.style.display='none';}">
+              </div>
+            </button>
           </div>
         </div>
 
-        <div id="container-subgrupos" style="display: none; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border: 1px dashed rgba(243,217,139,0.4);">
+        <div id="container-subgrupos" style="display: none; margin-bottom: 15px; background: rgba(255,255,255,0.04); padding: 12px; border-radius: 20px; border: 1px dashed rgba(243,217,139,0.4);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-            <h5 style="color: #f3d98b; font-size: 0.85rem; margin: 0;">Subgrupos Internos:</h5>
-            <button onclick="abrirModalSubgrupo()" style="background: rgba(243,217,139,0.2); color: #f3d98b; border: none; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">+ Criar Subgrupo</button>
+            <h5 style="color: #f3d98b; font-size: 0.85rem; margin: 0;">Subgrupos:</h5>
+            <button onclick="abrirModalSubgrupo()" style="background: rgba(243,217,139,0.2); color: #f3d98b; border: none; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">+ Criar</button>
           </div>
           <div id="lista-subgrupos-interno" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
         </div>
 
-        <!-- CAMPO DE POSTAGEM DO FEED GERAL -->
-        <div id="bloco-publicacao-geral" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
-          <textarea id="textoChatComunidade" placeholder="Compartilhe algo com a comunidade..." style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem;"></textarea>
-          <div style="display: flex; gap: 6px;">
-            <label for="midiaChatComunidade" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 7px; text-align: center; font-size: 0.75rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="label-midia-chat">📁 Arquivo</label>
-            <input type="file" id="midiaChatComunidade" accept="image/*,video/*" style="display: none;" onchange="verificarESubirMidiaChat(this)">
-
-            <button type="button" onclick="dispararCameraCelular()" style="flex: 1; background: rgba(33,150,243,0.3); border: 1px solid rgba(33,150,243,0.6); border-radius: 8px; padding: 7px; text-align: center; font-size: 0.75rem; cursor: pointer; color: #fff;">📸 Câmera</button>
-            <input type="file" id="cameraChatComunidadeDireto" accept="image/*" capture="environment" style="display: none;" onchange="verificarESubirMidiaChat(this)">
-
-            <button onclick="enviarMensagemChatComunidade()" class="btn-tema-bg" style="background: #2196f3; color: white; border: none; border-radius: 8px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Publicar</button>
-          </div>
-        </div>
-
-        <!-- MURAL DO FEED -->
+        <!-- MURAL DO FEED (FLUIDO E LIVRE) -->
         <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
-          <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
-            Carregando publicações do feed geral...
+          <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">
+            Carregando publicações...
           </div>
         </div>
       </div>
@@ -696,31 +716,28 @@ border-radius:999px; display:inline-block;}
     <div id="coluna-direita" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
         <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;">Campeão da Semana</h3>
-        <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono (Atualizado aos domingos!)</p>
+        <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono</p>
         
         <div style="display: flex; flex-direction: column; gap: 8px; padding: 4px;">
-          <div onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')" style="display: flex; align-items: center; justify-content: space-between; background: rgba(243,217,139,0.2); padding: 8px 10px; border-radius: 8px; border: 1px solid #ffd700; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(243,217,139,0.2); padding: 8px 10px; border-radius: 8px; border: 1px solid #ffd700;">
             <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ffd700; overflow: hidden; background: #111;"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" style="width: 100%; height: 100%; object-fit: cover;"></div>
-              <div><span style="font-size: 0.75rem; font-weight: bold; color: #ffd700; display: block;">🥇 1º Lugar (Ouro)</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Ouro</span></div>
+              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ffd700; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"></div>
+              <div><span style="font-size: 0.75rem; font-weight: bold; color: #ffd700; display: block;">🥇 Ouro</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Ouro</span></div>
             </div>
-            <span style="font-size: 0.7rem; color: #f3d98b; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">top 1</span>
           </div>
 
-          <div onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; border: 1px solid #c0c0c0; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; border: 1px solid #c0c0c0;">
             <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c0c0c0; overflow: hidden; background: #111;"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" style="width: 100%; height: 100%; object-fit: cover;"></div>
-              <div><span style="font-size: 0.75rem; font-weight: bold; color: #c0c0c0; display: block;">🥈 2º Lugar (Prata)</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Prata</span></div>
+              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c0c0c0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"></div>
+              <div><span style="font-size: 0.75rem; font-weight: bold; color: #c0c0c0; display: block;">🥈 Prata</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Prata</span></div>
             </div>
-            <span style="font-size: 0.7rem; color: #ccc; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">Top 2</span>
           </div>
 
-          <div onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; border: 1px solid #cd7f32; cursor: pointer;">
+          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; border: 1px solid #cd7f32;">
             <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #cd7f32; overflow: hidden; background: #111;"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" style="width: 100%; height: 100%; object-fit: cover;"></div>
-              <div><span style="font-size: 0.75rem; font-weight: bold; color: #cd7f32; display: block;">🥉 3º Lugar (Bronze)</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Bronze</span></div>
+              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #cd7f32; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"></div>
+              <div><span style="font-size: 0.75rem; font-weight: bold; color: #cd7f32; display: block;">🥉 Bronze</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Bronze</span></div>
             </div>
-            <span style="font-size: 0.7rem; color: #cd7f32; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">Top 3</span>
           </div>
         </div>
       </div>
@@ -728,17 +745,16 @@ border-radius:999px; display:inline-block;}
       <!-- MINHA GAVETA -->
       <div class="card" id="card-minha-gaveta" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Minha Gaveta (Privado)</h3>
-          <button onclick="alternarGavetaNoCentro(event)" style="background: rgba(243,217,139,0.2); border: 1px solid #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;" id="btn-ver-gaveta-centro">📂 Abrir no Centro</button>
+          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Minha Gaveta</h3>
+          <button onclick="alternarGavetaNoCentro(event)" style="background: rgba(243,217,139,0.2); border: 1px solid #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;" id="btn-ver-gaveta-centro">Abrir</button>
         </div>
-        <p class="small">Suas notas, fotos e histórico:</p>
-        <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 180px; overflow-y: auto;">
-          <div id="listaGaveta" style="font-size: 0.8rem; color: #ccc;">Nenhum item salvo na gaveta ainda.</div>
+        <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.04); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 180px; overflow-y: auto;">
+          <div id="listaGaveta" style="font-size: 0.8rem; color: #ccc;">Nenhum item salvo.</div>
         </div>
         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
-          <textarea id="campoGavetaTexto" placeholder="Escreva sua nota..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
+          <textarea id="campoGavetaTexto" placeholder="Nota..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
           <div style="display: flex; gap: 6px; align-items: center;">
-            <label for="campoGavetaFoto" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b;" id="label-foto-gaveta">Foto Privada</label>
+            <label for="campoGavetaFoto" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b;" id="label-foto-gaveta">Foto</label>
             <input type="file" id="campoGavetaFoto" accept="image/*,video/*" style="display: none;" onchange="atualizarNomeFotoGaveta(this)">
             <button onclick="comentarGaveta()" class="btn-tema-bg" style="background: #f3d98b; color: #1a1030; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Salvar</button>
           </div>
@@ -748,38 +764,47 @@ border-radius:999px; display:inline-block;}
       <!-- FANDOMS -->
       <div class="card" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandoms & Comunidades</h3>
+          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandoms</h3>
           <button onclick="abrirModalNovoTema()" style="background: rgba(243,217,139,0.15); border: 1px dashed #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
         </div>
-        <p class="small" style="margin-bottom: 10px;">Comunidades:</p>
         <div id="lista-comunidades-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;"></div>
       </div>
     </div>
   </div>
 
   <footer>
-    <p style="text-align: center; font-size: 0.75rem; color: #888; margin-top: 20px;">3 curtidas/dia Votação da comunidade New Drama</p>
+    <p style="text-align: center; font-size: 0.75rem; color: #888; margin-top: 20px;">Umbrella</p>
   </footer>
 </div>
 
 <!-- MODAL CRIAR SUBGRUPO -->
 <div id="modal-subgrupo" class="modal-custom">
   <div class="caixa-modal">
-    <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Criar Subgrupo Interno</h3>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+      <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Criar Subgrupo</h3>
+      <button onclick="fecharModalSubgrupo()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+    </div>
     <div class="grupo-input">
-      <label>Nome do Subgrupo:</label>
-      <input type="text" id="input-nome-subgrupo" placeholder="Ex: Categoria...">
+      <label>Nome:</label>
+      <input type="text" id="input-nome-subgrupo" placeholder="Nome...">
     </div>
-    <div style="display: flex; gap: 10px; margin-top: 20px;">
-      <button onclick="salvarSubgrupoInterno()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Criar</button>
-      <button onclick="fecharModalSubgrupo()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
-    </div>
+    <button onclick="salvarSubgrupoInterno()" style="width: 100%; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;">Criar</button>
   </div>
 </div>
 
 <!-- SCRIPT GERAL DO SISTEMA -->
 <script>
 let modoAtualNoCentro = "GERAL";
+
+function abrirModalPublicacao() {
+  let modal = document.getElementById('modal-criar-publicacao');
+  if (modal) modal.style.display = 'flex';
+}
+
+function fecharModalPublicacao() {
+  let modal = document.getElementById('modal-criar-publicacao');
+  if (modal) modal.style.display = 'none';
+}
 
 function verificarChaveCriadora(textoDigitado) {
   if (!textoDigitado) return false;
@@ -808,21 +833,21 @@ function fecharPopupCriadoraDesafio() {
 
 function salvarDesafioPeloPopupCriadora() {
   let novoTexto = document.getElementById('input-popup-desafio-global').value.trim();
-  if (!novoTexto) { alert("Digite o texto do desafio!"); return; }
+  if (!novoTexto) { alert("Digite o texto!"); return; }
   aplicarAtualizacaoDesafioGlobal(novoTexto);
   fecharPopupCriadoraDesafio();
 }
 
 function salvarDesafioPeloPainelAdm() {
   let novoTexto = document.getElementById('input-adm-desafio-rapido').value.trim();
-  if (!novoTexto) { alert("Digite o novo desafio!"); return; }
+  if (!novoTexto) { alert("Digite o desafio!"); return; }
   aplicarAtualizacaoDesafioGlobal(novoTexto);
   document.getElementById('input-adm-desafio-rapido').value = "";
 }
 
 function atualizarDesafioDoDiaGlobal() {
   const novoTexto = document.getElementById("novo-desafio-input").value.trim();
-  if (!novoTexto) { alert("Digite o novo desafio do dia!"); return; }
+  if (!novoTexto) { alert("Digite o desafio!"); return; }
   aplicarAtualizacaoDesafioGlobal(novoTexto);
   document.getElementById("novo-desafio-input").value = "";
 }
@@ -832,7 +857,7 @@ function aplicarAtualizacaoDesafioGlobal(novoTexto) {
   let subEsq = document.getElementById('sub-titulo-desafio-esq');
   if (subEsq) subEsq.innerText = novoTexto;
   atualizarResumoDesafioMob();
-  alert("🎯 Desafio atualizado com sucesso para toda a plataforma!");
+  alert("Desafio atualizado!");
 }
 
 function clicarBotaoPerfil() {
@@ -869,13 +894,13 @@ function abrirModalWebcamDesktop() {
   const modalHtml = `
     <div id="modal-webcam-pc" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;">
       <div style="background: #121829; border: 1px solid #f3d98b; padding: 20px; border-radius: 16px; max-width: 500px; width: 100%; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
-        <h3 style="color: #f3d98b; margin-bottom: 10px; font-size: 1.1rem;">📸 Capturar Foto pela Webcam</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Câmera</h3>
+          <button onclick="fecharModalWebcamPC()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+        </div>
         <video id="videoWebcamPC" autoplay playsinline style="width: 100%; max-height: 300px; background: #000; border-radius: 8px; margin-bottom: 15px;"></video>
         <canvas id="canvasWebcamPC" style="display: none;"></canvas>
-        <div style="display: flex; gap: 10px;">
-          <button onclick="tirarFotoWebcamPC()" style="flex: 1; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Tirar Foto</button>
-          <button onclick="fecharModalWebcamPC()" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Cancelar</button>
-        </div>
+        <button onclick="tirarFotoWebcamPC()" style="width: 100%; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Tirar Foto</button>
       </div>
     </div>
   `;
@@ -888,7 +913,7 @@ function abrirModalWebcamDesktop() {
       if (videoEl) videoEl.srcObject = stream;
     })
     .catch(err => {
-      alert("⚠️ Não foi possível acessar a webcam.");
+      alert("⚠️ Webcam indisponível.");
       fecharModalWebcamPC();
     });
 }
@@ -917,7 +942,12 @@ function tirarFotoWebcamPC() {
   midiaChatIsVideo = false;
 
   let label = document.getElementById('label-midia-chat');
-  if (label) label.innerText = " 📷 Foto da Webcam (Pronto)";
+  if (label) label.innerText = "Foto pronta";
+
+  let placeholder = document.getElementById('preview-placeholder-txt');
+  let imgTag = document.getElementById('preview-img-tag');
+  if (placeholder) placeholder.style.display = 'none';
+  if (imgTag) { imgTag.src = base64Foto; imgTag.style.display = 'block'; }
 
   fecharModalWebcamPC();
 }
@@ -925,28 +955,20 @@ function tirarFotoWebcamPC() {
 function abrirGavetaMobile(tipo) {
   let overlay = document.getElementById('gaveta-mobile-overlay');
   let container = document.getElementById('conteudo-dinamico-gaveta-mobile');
-  let titulo = document.getElementById('titulo-gaveta-mobile');
   container.innerHTML = "";
 
   if (tipo === 'desafio') {
-    titulo.innerText = "🎯 Desafio do Dia (Toque aqui para voltar)";
     container.innerHTML = `
       <div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px; margin-bottom: 12px;">
         <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">${obterDesafioDoDiaAtual()}</h4>
-        <div style="margin-bottom: 10px; position: relative;">
-          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
-          <input type="text" id="inputBuscaBiasDesafioMob" placeholder="Busque o bias acima para travar..." oninput="filtrarBuscaBiasDesafio(this.value, 'mob')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
-          <div id="sugestoes-bias-busca-mob" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
-        </div>
         <div id="bloco-envio-desafio-mob" style="margin-bottom: 10px;"></div>
-        <button onclick="fecharGavetaMobile(); abrirDesafioNoCentroMobile()" class="btn-tema-bg" style="width: 100%; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-top: 5px;">🔍 Ver Fotos das Colegas (Votar)</button>
+        <button onclick="fecharGavetaMobile(); abrirDesafioNoCentroMobile()" class="btn-tema-bg" style="width: 100%; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-top: 5px;">Ver Envio das Colegas</button>
       </div>
       <div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(243,217,139,0.3); padding: 15px; border-radius: 14px;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <h4 style="color: #f3d98b; font-size: 0.95rem; margin: 0;">Meus Bias (1 a 1000)</h4>
           <button onclick="abrirModalBias()" class="btn-tema-bg" style="background: #ff4757; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
         </div>
-        <p style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">Clique para selecionar e preencher o desafio:</p>
         <div id="lista-bias-container-mob" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div>
       </div>
     `;
@@ -955,13 +977,12 @@ function abrirGavetaMobile(tipo) {
       carregarMeusBiasNaInterfaceMobile();
     }, 50);
   } else if (tipo === 'gaveta') {
-    titulo.innerText = "📂 Minha Gaveta Privada (Toque aqui para voltar)";
     container.innerHTML = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
-        <textarea id="campoGavetaTextoMob" placeholder="Escreva sua nota..." style="border-radius: 10px; height: 50px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;"></textarea>
+        <textarea id="campoGavetaTextoMob" placeholder="Nota..." style="border-radius: 10px; height: 50px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;"></textarea>
         <div style="display: flex; gap: 6px; margin-bottom: 12px;">
           <input type="file" id="campoGavetaFotoMob" accept="image/*" style="display:none;" onchange="document.getElementById('lbl-foto-mob').innerText=this.files[0].name">
-          <label for="campoGavetaFotoMob" id="lbl-foto-mob" style="flex:1; background:rgba(255,255,255,0.1); padding:8px; border-radius:8px; text-align:center; font-size:0.75rem; color:#f3d98b; cursor:pointer;">📁 Foto Privada</label>
+          <label for="campoGavetaFotoMob" id="lbl-foto-mob" style="flex:1; background:rgba(255,255,255,0.1); padding:8px; border-radius:8px; text-align:center; font-size:0.75rem; color:#f3d98b; cursor:pointer;">Foto</label>
           <button onclick="comentarGavetaMobile()" style="background:#f3d98b; color:#1a1030; border:none; padding:8px 14px; border-radius:8px; font-weight:bold; cursor:pointer;">Salvar</button>
         </div>
         <hr style="border:none; border-top:1px solid rgba(255,255,255,0.15); margin-bottom:10px;">
@@ -970,10 +991,9 @@ function abrirGavetaMobile(tipo) {
     `;
     setTimeout(() => carregarHistoricoNaGavetaMobile(), 50);
   } else if (tipo === 'fandoms') {
-    titulo.innerText = "🌐 Comunidade & Fandoms (Toque aqui para voltar)";
     container.innerHTML = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
-        <button onclick="abrirModalNovoTema()" style="width: 100%; padding: 12px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Gerenciar / Criar Fandom</button>
+        <button onclick="abrirModalNovoTema()" style="width: 100%; padding: 12px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Criar Fandom</button>
         <div id="lista-comunidades-container-mob" style="display: flex; flex-direction: column; gap: 8px;"></div>
       </div>
     `;
@@ -988,7 +1008,7 @@ function fecharGavetaMobile() {
 }
 
 function obterDesafioDoDiaAtual() {
-  return localStorage.getItem('desafioDoDiaGlobal') || "Escolha seu bias favorito e poste a foto no feed!";
+  return localStorage.getItem('desafioDoDiaGlobal') || "Escolha seu bias favorito e poste no desafio!";
 }
 
 function atualizarResumoDesafioMob() {
@@ -1025,7 +1045,7 @@ function renderizarListaFandomsLateral() {
     let cor = coresPadroes[index % coresPadroes.length];
     let btn = document.createElement('button');
     btn.style.cssText = `padding: 8px 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.08); border-left: 4px solid ${cor}; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;`;
-    btn.innerHTML = `<span>${nomeFandom}</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px; color: #f3d98b;">Privado</span>`;
+    btn.innerHTML = `<span>${nomeFandom}</span>`;
     btn.onclick = () => tentarEntrarComunidade(nomeFandom, cor);
     container.appendChild(btn);
   });
@@ -1041,7 +1061,7 @@ function renderizarListaFandomsLateralMobile() {
     let cor = coresPadroes[index % coresPadroes.length];
     let btn = document.createElement('button');
     btn.style.cssText = `padding: 10px 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.08); border-left: 4px solid ${cor}; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;`;
-    btn.innerHTML = `<span>${nomeFandom}</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; color: #f3d98b;">Acessar</span>`;
+    btn.innerHTML = `<span>${nomeFandom}</span>`;
     btn.onclick = () => { fecharGavetaMobile(); tentarEntrarComunidade(nomeFandom, cor); };
     container.appendChild(btn);
   });
@@ -1054,13 +1074,13 @@ function renderizarFandomsNoModalGerenciamento() {
   comunidadesAprovadas.forEach((fandom) => {
     let itemDiv = document.createElement('div');
     itemDiv.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px;";
-    itemDiv.innerHTML = `<span style="font-size: 0.8rem; color: #fff; font-weight: bold;">${fandom}</span> <button onclick="excluirFandom('${fandom}')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>`;
+    itemDiv.innerHTML = `<span style="font-size: 0.8rem; color: #fff; font-weight: bold;">${fandom}</span> <button onclick="excluirFandom('${fandom}')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">✕</button>`;
     containerModal.appendChild(itemDiv);
   });
 }
 
 function excluirFandom(nomeFandom) {
-  if (confirm(`Deseja realmente excluir o fandom "${nomeFandom}"?`)) {
+  if (confirm(`Excluir "${nomeFandom}"?`)) {
     comunidadesAprovadas = comunidadesAprovadas.filter(f => f !== nomeFandom);
     localStorage.setItem('fandoms_aprovados', JSON.stringify(comunidadesAprovadas));
     renderizarListaFandomsLateral();
@@ -1084,7 +1104,7 @@ function carregarHistoricoNaGaveta() {
   if (!gaveta) return;
   let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
   if (historicoSalvo.length === 0) {
-    gaveta.innerHTML = "Nenhum item salvo na gaveta ainda.";
+    gaveta.innerHTML = "Nenhum item salvo.";
     return;
   }
   let htmlConteudo = "";
@@ -1092,12 +1112,9 @@ function carregarHistoricoNaGaveta() {
     let corBadge = item.tipo === 'CURTIDA' ? '#ff4757' : (item.tipo === 'COMENTÁRIO' ? '#2196f3' : '#f3d98b');
     htmlConteudo += `
       <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid ${corBadge}; position: relative;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <span style="font-size: 0.65rem; background: ${corBadge}; color: #fff; padding: 1px 4px; border-radius: 3px; font-weight: bold;">${item.tipo}</span>
-        </div>
         <p style="margin: 0 0 4px 0; font-size: 0.75rem; color: #fff; word-break: break-word;">${item.texto}</p>
         ${item.foto ? `<div style="margin-top: 6px; width: 100%; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>` : ''}
-        <button onclick="removerItemGaveta(${index})" style="position: absolute; top: 4px; right: 6px; background: none; border: none; color: #ff4757; cursor: pointer; font-size: 0.75rem;">X</button>
+        <button onclick="removerItemGaveta(${index})" style="position: absolute; top: 4px; right: 6px; background: none; border: none; color: #ff4757; cursor: pointer; font-size: 0.75rem;">✕</button>
       </div>
     `;
   });
@@ -1109,7 +1126,7 @@ function carregarHistoricoNaGavetaMobile() {
   if (!gaveta) return;
   let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
   if (historicoSalvo.length === 0) {
-    gaveta.innerHTML = "<p style='color:#aaa; font-size:0.8rem; text-align:center;'>Nenhum item salvo na gaveta ainda.</p>";
+    gaveta.innerHTML = "<p style='color:#aaa; font-size:0.8rem; text-align:center;'>Nenhum item salvo.</p>";
     return;
   }
   let htmlConteudo = "";
@@ -1117,13 +1134,9 @@ function carregarHistoricoNaGavetaMobile() {
     let corBadge = item.tipo === 'CURTIDA' ? '#ff4757' : (item.tipo === 'COMENTÁRIO' ? '#2196f3' : '#f3d98b');
     htmlConteudo += `
       <div style="background: rgba(0,0,0,0.35); padding: 10px; border-radius: 8px; border-left: 3px solid ${corBadge}; position: relative;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <span style="font-size: 0.7rem; background: ${corBadge}; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${item.tipo}</span>
-          <span style="font-size: 0.7rem; color: #aaa;">${item.data}</span>
-        </div>
         <p style="margin: 0 0 6px 0; font-size: 0.8rem; color: #fff; word-break: break-word;">${item.texto}</p>
         ${item.foto ? `<div style="margin-top: 6px; width: 100%; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>` : ''}
-        <button onclick="removerItemGaveta(${index}); abrirGavetaMobile('gaveta')" style="position: absolute; top: 8px; right: 8px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">Excluir</button>
+        <button onclick="removerItemGaveta(${index}); abrirGavetaMobile('gaveta')" style="position: absolute; top: 8px; right: 8px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">✕</button>
       </div>
     `;
   });
@@ -1137,38 +1150,39 @@ function removerItemGaveta(index) {
   carregarHistoricoNaGaveta();
 }
 
-window.biasSelecionadoValidado = null;
+window.biasDesafioSelecionadoId = null;
+window.biasDesafioSelecionadoNome = "";
 
-function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64, origem = 'esq') {
-  window.biasSelecionadoValidado = { posicao, nome: nomeBias, foto: fotoBase64 };
-  let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasDesafioMob' : 'inputBuscaBiasDesafio');
+function selecionarBiasParaDesafioUnificado(posicao, nomeBias, origem = 'esq') {
+  window.biasDesafioSelecionadoId = posicao;
+  window.biasDesafioSelecionadoNome = nomeBias;
+  let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasUnificadoMob' : 'inputBuscaBiasUnificado');
   if (inputBusca) inputBusca.value = `#${posicao} - ${nomeBias}`;
-  let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-busca-mob' : 'sugestoes-bias-busca');
+  let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-unificado-mob' : 'sugestoes-bias-unificado');
   if (divSugestoes) divSugestoes.style.display = 'none';
-  alert(`Bias #${posicao} (${nomeBias}) selecionado para o desafio!`);
 }
 
-function filtrarBuscaBiasDesafio(termo, origem = 'esq') {
+function filtrarBuscaBiasUnificado(termo, origem = 'esq') {
   if (verificarChaveCriadora(termo)) {
-    let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasDesafioMob' : 'inputBuscaBiasDesafio');
+    let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasUnificadoMob' : 'inputBuscaBiasUnificado');
     if (inputBusca) inputBusca.value = "";
     return;
   }
 
-  let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-busca-mob' : 'sugestoes-bias-busca');
+  let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-unificado-mob' : 'sugestoes-bias-unificado');
   if (!divSugestoes) return;
   termo = termo.trim().toLowerCase();
   if (!termo) { divSugestoes.style.display = 'none'; return; }
   let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
   let filtrados = listaBias.filter(b => b.posicao.toString() === termo || b.nome.toLowerCase().includes(termo) || `#${b.posicao}`.includes(termo));
   if (filtrados.length === 0) {
-    divSugestoes.innerHTML = `<div style="padding: 8px; font-size: 0.75rem; color: #aaa; text-align: center;">Nenhum bias cadastrado</div>`;
+    divSugestoes.innerHTML = `<div style="padding: 8px; font-size: 0.75rem; color: #aaa; text-align: center;">Nenhum bias encontrado</div>`;
     divSugestoes.style.display = 'block';
     return;
   }
   let html = "";
   filtrados.forEach(b => {
-    html += `<div onclick="selecionarBiasParaDesafio(${b.posicao}, '${b.nome}', '${b.foto || ''}', '${origem}')" style="padding: 8px 12px; font-size: 0.8rem; color: #fff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='rgba(243,217,139,0.2)'" onmouseout="this.style.background='transparent'"><span><b>#${b.posicao}</b> - ${b.nome}</span><span style="font-size: 0.7rem; color: #f3d98b;">${b.categoria}</span></div>`;
+    html += `<div onclick="selecionarBiasParaDesafioUnificado(${b.posicao}, '${b.nome}', '${origem}')" style="padding: 8px 12px; font-size: 0.8rem; color: #fff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;" onmouseover="this.style.background='rgba(243,217,139,0.2)'" onmouseout="this.style.background='transparent'"><span><b>#${b.posicao}</b> - ${b.nome}</span></div>`;
   });
   divSugestoes.innerHTML = html;
   divSugestoes.style.display = 'block';
@@ -1189,20 +1203,49 @@ function renderizarCardDesafioEsquerda() {
   if (formEnviado) {
     htmlConteudo = `
       <div style="background: rgba(76,175,80,0.15); border: 1px solid #4caf50; padding: 10px; border-radius: 8px; text-align: center;">
-        <p style="font-size: 0.8rem; color: #4caf50; font-weight: bold; margin-bottom: 6px;">✅ Desafio já postado hoje!</p>
-        <p style="font-size: 0.75rem; color: #fff; margin-bottom: 6px;"><b>${envioSalvo.legenda}</b></p>
-        ${envioSalvo.foto ? `<div style="width: 100%; height: 140px; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('${envioSalvo.foto}')"><img src="${envioSalvo.foto}" style="width: 100%; height: 100%; object-fit: cover;"></div>` : ''}
+        <p style="font-size: 0.8rem; color: #4caf50; font-weight: bold; margin-bottom: 4px;">Participação Enviada!</p>
+        <p style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 4px;"><b>#${envioSalvo.biasPos} - ${envioSalvo.biasNome}</b></p>
+        <p style="font-size: 0.75rem; color: #fff; margin-bottom: 6px;">${envioSalvo.legenda}</p>
+        ${envioSalvo.foto ? `<div style="width: 100%; height: 130px; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('${envioSalvo.foto}')"><img src="${envioSalvo.foto}" style="width: 100%; height: 100%; object-fit: cover;"></div>` : ''}
       </div>
     `;
   } else {
+    // BLOCO ÚNICO INTEGRADO COM BOTÃO REDONDO MINIMALISTA (SEM CAIXA QUADRADA DE WINDOWS XP)
     htmlConteudo = `
-      <div style="display: flex; flex-direction: column; gap: 6px;">
-        <textarea id="textoDesafioEsq" placeholder="Escreva a legenda do seu envio..." style="border-radius: 8px; resize: none; height: 45px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
-        <div style="display: flex; gap: 4px;">
-          <label for="inputFotoDesafioEsq" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(243,217,139,0.4); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="label-foto-desafio-esq">📁 Foto do Desafio</label>
-          <input type="file" id="inputFotoDesafioEsq" accept="image/*" style="display: none;" onchange="processarFotoDesafioEsq(this)">
-          <button onclick="validarECruzarPixelsDesafio()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Postar</button>
+      <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid rgba(243,217,139,0.3);">
+        
+        <!-- BUSCA E SELEÇÃO DO BIAS DOS 1 A 1000 -->
+        <div style="position: relative;">
+          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Selecionar Bias (1 a 1000):</label>
+          <input type="text" id="inputBuscaBiasUnificado" placeholder="Digite o nome ou número (ex: 1)..." oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
+          <div id="sugestoes-bias-unificado" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 140px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
+
+        <!-- COMENTÁRIO / CONTEXTO DO DESAFIO -->
+        <div style="position: relative;">
+          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Contexto do Desafio:</label>
+          <textarea id="textoDesafioUnificado" placeholder="Ex: Ele segurando o guarda-chuva na série tal..." style="border-radius: 8px; resize: none; height: 50px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
+        </div>
+
+        <!-- BOTÃO REDONDO MINIMALISTA DE FOTO + ENVIO -->
+        <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: 2px;">
+          
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <label for="inputFotoDesafioUnificado" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid #f3d98b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: all 0.2s;" title="Escolher Foto do Bias" id="label-circulo-foto-desafio">
+              <span style="font-size: 1rem; color: #f3d98b;">📷</span>
+            </label>
+            <input type="file" id="inputFotoDesafioUnificado" accept="image/*" style="display: none;" onchange="processarFotoDesafioUnificado(this)">
+            
+            <div id="preview-mini-container" style="display: none; width: 38px; height: 38px; border-radius: 50%; overflow: hidden; border: 2px solid #f3d98b; cursor: pointer;" onclick="abrirFotoPinterest(window.fotoBiasBase64Temp)">
+              <img id="preview-mini-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+
+            <span id="label-texto-status-foto" style="font-size: 0.75rem; color: #aaa;">Foto do Bias</span>
+          </div>
+
+          <button onclick="validarECruzarPixelsDesafioUnificado()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Enviar Desafio</button>
+        </div>
+
       </div>
     `;
   }
@@ -1211,12 +1254,24 @@ function renderizarCardDesafioEsquerda() {
   if (blocoMob) blocoMob.innerHTML = htmlConteudo;
 }
 
-let arquivoFotoDesafioEsq = null;
-function processarFotoDesafioEsq(input) {
+window.arquivoFotoDesafioUnificado = null;
+window.fotoBiasBase64Temp = null;
+
+function processarFotoDesafioUnificado(input) {
   if (input.files && input.files[0]) {
-    arquivoFotoDesafioEsq = input.files[0];
-    let lbl = document.getElementById('label-foto-desafio-esq');
-    if(lbl) lbl.innerText = "📷 " + input.files[0].name;
+    window.arquivoFotoDesafioUnificado = input.files[0];
+    converterImagemParaHD(input.files[0], 500, 500, function(base64Enviada) {
+      window.fotoBiasBase64Temp = base64Enviada;
+      let labelCirculo = document.getElementById('label-circulo-foto-desafio');
+      let previewMini = document.getElementById('preview-mini-container');
+      let miniImg = document.getElementById('preview-mini-img');
+      let statusTxt = document.getElementById('label-texto-status-foto');
+
+      if (labelCirculo) labelCirculo.style.display = 'none';
+      if (miniImg) miniImg.src = base64Enviada;
+      if (previewMini) previewMini.style.display = 'block';
+      if (statusTxt) { statusTxt.innerText = "Foto anexada!"; statusTxt.style.color = "#4caf50"; }
+    });
   }
 }
 
@@ -1243,44 +1298,53 @@ function converterImagemParaHD(file, maxWidth, maxHeight, callback) {
   reader.readAsDataURL(file);
 }
 
-function validarECruzarPixelsDesafio() {
-  let legenda = document.getElementById('textoDesafioEsq')?.value.trim() || "";
+function validarECruzarPixelsDesafioUnificado() {
+  let legenda = document.getElementById('textoDesafioUnificado')?.value.trim() || "";
   let nomeUsuario = localStorage.getItem('usuario_nome');
-  if (!nomeUsuario) { alert("Faça login para enviar o desafio!"); return; }
-  if (!window.biasSelecionadoValidado) { alert("Erro: Selecione um bias cadastrado antes de enviar!"); return; }
-  if (!arquivoFotoDesafioEsq) { alert("Envie a foto para o desafio!"); return; }
+  if (!nomeUsuario) { alert("Faça login!"); return; }
+  if (!window.biasDesafioSelecionadoId) { alert("Selecione um bias da sua lista (1 a 1000)!"); return; }
+  if (!window.arquivoFotoDesafioUnificado && !window.fotoBiasBase64Temp) { alert("Selecione a foto para o desafio!"); return; }
 
-  converterImagemParaHD(arquivoFotoDesafioEsq, 400, 400, function(base64Enviada) {
+  let processarEnvioComBase64 = (base64Enviada) => {
     let hojeStr = new Date().toLocaleDateString();
-    let dadosEnvio = { data: hojeStr, legenda: legenda, foto: base64Enviada, autor: nomeUsuario };
+    let dadosEnvio = { 
+      data: hojeStr, 
+      biasPos: window.biasDesafioSelecionadoId, 
+      biasNome: window.biasDesafioSelecionadoNome, 
+      legenda: legenda, 
+      foto: base64Enviada, 
+      autor: nomeUsuario 
+    };
     localStorage.setItem('meu_envio_desafio_hoje', JSON.stringify(dadosEnvio));
-    registrarNoHistoricoGaveta('POSTAGEM', `Desafio do Dia enviado: "${legenda.slice(0, 25)}..."`, base64Enviada);
+    registrarNoHistoricoGaveta('POSTAGEM', `Desafio do dia: #${window.biasDesafioSelecionadoId} - ${window.biasDesafioSelecionadoNome}`, base64Enviada);
     renderizarCardDesafioEsquerda();
-    alert(`✅ Validação Aprovada!\nO rosto do bias #${window.biasSelecionadoValidado.posicao} foi confirmado.`);
-  });
+    alert("Enviado para o desafio das colegas com sucesso!");
+  };
+
+  if (window.fotoBiasBase64Temp) {
+    processarEnvioComBase64(window.fotoBiasBase64Temp);
+  } else {
+    converterImagemParaHD(window.arquivoFotoDesafioUnificado, 500, 500, function(base64Enviada) {
+      processarEnvioComBase64(base64Enviada);
+    });
+  }
 }
 
 function abrirDesafioNoCentro() {
   modoAtualNoCentro = "DESAFIO";
   let painelCentral = document.getElementById('painel-central-container');
   let btnVoltarGeral = document.getElementById('btn-voltar-geral');
-  document.getElementById('titulo-feed-atual').innerText = "Desafio do Dia: " + obterDesafioDoDiaAtual();
-  document.getElementById('sub-feed-atual').innerText = "Veja e vote nas fotos enviadas hoje!";
+  document.getElementById('titulo-feed-atual').innerText = "Desafio do Dia";
+  document.getElementById('sub-feed-atual').innerText = obterDesafioDoDiaAtual();
   btnVoltarGeral.style.display = 'block';
 
   painelCentral.innerHTML = `
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;">
-      <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">🎯 Votação & Pódio do Desafio</h3>
-    </div>
-    <div style="background: rgba(243,217,139,0.1); border: 1px solid #f3d98b; padding: 12px; border-radius: 10px; margin-bottom: 15px;">
-      <h4 style="color: #f3d98b; font-size: 0.9rem; margin-bottom: 6px;">👑 Pódio da Semana (Fixado)</h4>
-      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥇 <b>1º Lugar:</b> Destaque Ouro</p>
-      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥈 <b>2º Lugar:</b> Destaque Prata</p>
-      <p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥉 <b>3º Lugar:</b> Destaque Bronze</p>
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 20px; border: 1px solid rgba(243,217,139,0.2);">
+      <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">Envios das Colegas para o Desafio</h3>
     </div>
     <div id="lista-desafios-colegas" style="display: flex; flex-direction: column; gap: 12px;">
-      <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
-        Nenhum envio para o desafio hoje ainda. Seja a primeira a postar!
+      <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">
+        Nenhum envio para o desafio hoje.
       </div>
     </div>
   `;
@@ -1299,31 +1363,27 @@ function alternarGavetaNoCentro(event) {
   if (modoAtualNoCentro !== "GAVETA") {
     modoAtualNoCentro = "GAVETA";
     if(layoutGrid) layoutGrid.style.gridTemplateColumns = "300px 1fr 240px";
-    if(btnVerGaveta) btnVerGaveta.innerText = "✖ Fechar Gaveta";
-    document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta Privada (Completa)";
-    document.getElementById('sub-feed-atual').innerText = "Histórico de curtidas, compartilhamentos, comentários e anotações";
+    if(btnVerGaveta) btnVerGaveta.innerText = "✕";
+    document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta";
+    document.getElementById('sub-feed-atual').innerText = "Histórico";
     document.getElementById('btn-voltar-geral').style.display = 'block';
     
     let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
     let htmlGavetaCentro = `
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;">
-        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">📂 Sua Gaveta & Histórico de Interações</h3>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 20px; border: 1px solid rgba(243,217,139,0.2);">
+        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">Minha Gaveta</h3>
       </div>
     `;
     if (historicoSalvo.length === 0) {
-      htmlGavetaCentro += '<p style="color: #aaa; font-size: 0.85rem; text-align: center; padding: 20px;">Sua gaveta está vazia.</p>';
+      htmlGavetaCentro += '<p style="color: #aaa; font-size: 0.85rem; text-align: center; padding: 20px;">Vazio.</p>';
     } else {
       historicoSalvo.forEach((item, index) => {
         let corBadge = item.tipo === 'CURTIDA' ? '#ff4757' : (item.tipo === 'COMENTÁRIO' ? '#2196f3' : '#f3d98b');
         htmlGavetaCentro += `
           <div style="background: rgba(0,0,0,0.35); border-radius: 12px; padding: 14px; border-left: 4px solid ${corBadge}; margin-bottom: 12px; position: relative;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font-size: 0.75rem; background: ${corBadge}; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold;">${item.tipo}</span>
-              <span style="font-size: 0.75rem; color: #aaa;">${item.data}</span>
-            </div>
             <p style="margin: 0 0 10px 0; font-size: 0.9rem; color: #fff; word-break: break-word;">${item.texto}</p>
             ${item.foto ? `<div style="width: 100%; max-height: 350px; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; max-height: 350px; display: block; object-fit: contain;"></div>` : ''}
-            <button onclick="removerItemGavetaCentro(${index})" style="position: absolute; top: 10px; right: 12px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>
+            <button onclick="removerItemGavetaCentro(${index})" style="position: absolute; top: 10px; right: 12px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">✕</button>
           </div>
         `;
       });
@@ -1344,8 +1404,12 @@ let midiaChatIsVideo = false;
 
 function verificarESubirMidiaChat(input) {
   let nomeUsuario = localStorage.getItem('usuario_nome');
-  if (!nomeUsuario) { alert("Acesso Negado! Faça login para publicar."); input.value = ""; return; }
+  if (!nomeUsuario) { alert("Faça login!"); input.value = ""; return; }
   let label = document.getElementById('label-midia-chat');
+  let placeholder = document.getElementById('preview-placeholder-txt');
+  let imgTag = document.getElementById('preview-img-tag');
+  let vidTag = document.getElementById('preview-vid-tag');
+
   if (input.files && input.files[0]) {
     let arquivo = input.files[0];
     if (arquivo.type.startsWith('video')) {
@@ -1353,19 +1417,28 @@ function verificarESubirMidiaChat(input) {
       midiaChatIsVideo = true;
       reader.onload = function(e) {
         midiaChatValidaBase64 = e.target.result;
-        if(label) label.innerText = " " + arquivo.name + " (Pronto)";
+        if(label) label.innerText = arquivo.name;
+        if(placeholder) placeholder.style.display = 'none';
+        if(imgTag) imgTag.style.display = 'none';
+        if(vidTag) { vidTag.src = midiaChatValidaBase64; vidTag.style.display = 'block'; }
       };
       reader.readAsDataURL(arquivo);
     } else {
       midiaChatIsVideo = false;
       converterImagemParaHD(arquivo, 1200, 1200, function(hdBase64) {
         midiaChatValidaBase64 = hdBase64;
-        if(label) label.innerText = " " + arquivo.name + " (HD Pronto)";
+        if(label) label.innerText = arquivo.name;
+        if(placeholder) placeholder.style.display = 'none';
+        if(vidTag) vidTag.style.display = 'none';
+        if(imgTag) { imgTag.src = hdBase64; imgTag.style.display = 'block'; }
       });
     }
   } else {
-    if(label) label.innerText = "📁 Arquivo";
+    if(label) label.innerText = "Galeria";
     midiaChatValidaBase64 = null;
+    if(placeholder) placeholder.style.display = 'block';
+    if(imgTag) imgTag.style.display = 'none';
+    if(vidTag) vidTag.style.display = 'none';
   }
 }
 
@@ -1384,7 +1457,7 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
   if (inputNomeSol && nomeSalvo) inputNomeSol.value = nomeSalvo;
   
   let avisoEl = document.getElementById('texto-aviso-fandom');
-  if (avisoEl) avisoEl.innerText = `O fandom de ${nomeComunidade} é blindado. Envie sua solicitação:`;
+  if (avisoEl) avisoEl.innerText = `${nomeComunidade} é um abrigo protegido. Quer saber se pode te proteger da chuva?`;
   
   let modalSol = document.getElementById('modal-solicitacao');
   if (modalSol) modalSol.style.display = 'flex';
@@ -1412,8 +1485,8 @@ function fecharPainelAdm() { document.getElementById('modal-adm').style.display 
 function entrarComunidadeEfetivo(nomeComunidade, corTema) {
   window.fandomAtualSelecionado = nomeComunidade;
   modoAtualNoCentro = "GERAL";
-  document.getElementById('titulo-feed-atual').innerText = "Comunidade: " + nomeComunidade;
-  document.getElementById('sub-feed-atual').innerText = "Espaço exclusivo do fandom";
+  document.getElementById('titulo-feed-atual').innerText = nomeComunidade;
+  document.getElementById('sub-feed-atual').innerText = "Abrigo Umbrella";
   document.getElementById('icone-feed-titulo').innerText = nomeComunidade.charAt(0).toUpperCase();
   document.getElementById('btn-adm-comunidade').style.display = 'block';
   document.getElementById('btn-voltar-geral').style.display = 'block';
@@ -1422,12 +1495,16 @@ function entrarComunidadeEfetivo(nomeComunidade, corTema) {
   let logoEl = document.getElementById('texto-logo-principal');
   if(logoEl) logoEl.innerText = nomeComunidade;
   
+  aplicarEstiloTema(corTema);
+  localStorage.setItem('usuario_cor_tema', corTema);
+  
   carregarSubgruposInternos(nomeComunidade);
 }
 
 function voltarParaFeedPrincipal() { location.reload(); }
 
 function aplicarEstiloTema(cor) {
+  document.documentElement.style.setProperty('--cor-tema-ativa', cor);
   document.querySelectorAll('.btn-tema-bg').forEach(el => el.style.background = cor);
   document.querySelectorAll('.btn-tema-texto').forEach(el => el.style.color = cor);
 }
@@ -1440,18 +1517,17 @@ function fecharModalNovoTema() { document.getElementById('modal-novo-tema').styl
 
 function salvarNovoTemaPersonalizado() {
   let nomeTema = document.getElementById('input-novo-tema-nome').value.trim();
-  if (!nomeTema) { alert("Digite o nome do fandom!"); return; }
-  if (comunidadesAprovadas.includes(nomeTema)) { alert("Este fandom já existe!"); return; }
+  if (!nomeTema) { alert("Digite o nome!"); return; }
+  if (comunidadesAprovadas.includes(nomeTema)) { alert("Já existe!"); return; }
   comunidadesAprovadas.push(nomeTema);
   localStorage.setItem('fandoms_aprovados', JSON.stringify(comunidadesAprovadas));
   document.getElementById('input-novo-tema-nome').value = "";
   renderizarListaFandomsLateral();
   renderizarFandomsNoModalGerenciamento();
-  alert(`Fandom "${nomeTema}" criado com sucesso!`);
 }
 
 function abrirModalSubgrupo() {
-  if (!window.fandomAtualSelecionado) { alert("Entre em um fandom primeiro!"); return; }
+  if (!window.fandomAtualSelecionado) { alert("Entre em um abrigo!"); return; }
   document.getElementById('modal-subgrupo').style.display = 'flex';
 }
 function fecharModalSubgrupo() { document.getElementById('modal-subgrupo').style.display = 'none'; }
@@ -1479,10 +1555,9 @@ function carregarSubgruposInternos(nomeFandom) {
   });
 }
 
-function atualizarNomePerfil(input) { if (input.files && input.files[0]) document.getElementById('label-foto-perfil').innerText = " " + input.files[0].name; }
-function atualizarNomeFundoPerfil(input) { if (input.files && input.files[0]) document.getElementById('label-fundo-perfil').innerText = " " + input.files[0].name; }
-function atualizarNomeBias(input) { if (input.files && input.files[0]) document.getElementById('label-foto-bias').innerText = " " + input.files[0].name; }
-function atualizarNomeFotoGaveta(input) { if (input.files && input.files[0]) document.getElementById('label-foto-gaveta').innerText = " " + input.files[0].name; }
+function atualizarNomePerfil(input) { if (input.files && input.files[0]) document.getElementById('label-foto-perfil').innerText = input.files[0].name; }
+function atualizarNomeBias(input) { if (input.files && input.files[0]) document.getElementById('label-foto-bias').innerText = input.files[0].name; }
+function atualizarNomeFotoGaveta(input) { if (input.files && input.files[0]) document.getElementById('label-foto-gaveta').innerText = input.files[0].name; }
 
 function configurarPerfil() {
   document.getElementById('input-nome').value = localStorage.getItem('usuario_nome') || "";
@@ -1499,7 +1574,7 @@ function fecharModalCadastro() { document.getElementById('modal-cadastro').style
 
 function salvarPerfilPersonalizado() {
   let nome = document.getElementById('input-nome').value.trim();
-  if (!nome) { alert("Por favor, digite seu nome ou apelido para entrar!"); return; }
+  if (!nome) { alert("Digite seu nome!"); return; }
 
   let nascimento = document.getElementById('input-nasc').value.trim();
   let fandom = document.getElementById('input-fandom').value.trim();
@@ -1508,7 +1583,6 @@ function salvarPerfilPersonalizado() {
   let senha = document.getElementById('input-senha').value.trim();
   let corPessoal = document.getElementById('input-cor-pessoal').value;
   let fileInput = document.getElementById('input-foto-file');
-  let fundoFileInput = document.getElementById('input-fundo-perfil-file');
 
   localStorage.setItem('usuario_nome', nome);
   document.getElementById('nome-usuario').innerText = nome;
@@ -1522,7 +1596,7 @@ function salvarPerfilPersonalizado() {
   if (nascimento) localStorage.setItem('usuario_nascimento', nascimento);
   if (fandom) {
     localStorage.setItem('usuario_fandom', fandom);
-    document.getElementById('menu-fandom-usuario').innerText = "Artista da Semana: " + fandom;
+    document.getElementById('menu-fandom-usuario').innerText = fandom;
   }
   if (senha) localStorage.setItem('usuario_senha', senha);
   if (telefone) localStorage.setItem('usuario_telefone', telefone);
@@ -1536,15 +1610,7 @@ function salvarPerfilPersonalizado() {
       document.getElementById('perfil-avatar-grande').innerHTML = `<img src="${hdBase64}" style="width: 100%; height: 100%; object-fit: cover;">`;
     });
   }
-  if (fundoFileInput.files && fundoFileInput.files[0]) {
-    converterImagemParaHD(fundoFileInput.files[0], 1920, 1080, function(hdFundoBase64) {
-      document.body.style.background = `#060a1e url('${hdFundoBase64}') no-repeat center center fixed`;
-      document.body.style.backgroundSize = 'cover';
-      localStorage.setItem('tema_fundo_custom', hdFundoBase64);
-    });
-  }
   fecharModalCadastro();
-  alert(`Bem-vinda(o), ${nome}! Login realizado com sucesso.`);
 }
 
 function abrirSuporteDesenvolvedor() { document.getElementById('modal-suporte').style.display = 'flex'; }
@@ -1556,7 +1622,7 @@ function buscarNoYoutubeDireto() {
 }
 
 const ofertasVitrine = [
-  {tag: "PARCEIRO", titulo: "Conteúdos e Recomendações", imagem: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92", link: "https://www.google.com"}
+  {tag: "PARCEIRO", titulo: "Recomendações", imagem: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92", link: "https://www.google.com"}
 ];
 let indiceOfertaAtual = 0;
 function iniciarVitrine() { renderizarOferta(); }
@@ -1619,7 +1685,6 @@ function atualizarEGravarListaBias(listaBias, posicao, nomeBias, categoria, foto
   localStorage.setItem('meus_bias_salvos', JSON.stringify(listaBias));
   carregarMeusBiasNaInterface();
   fecharModalBias();
-  alert(`Item #${posicao} (${nomeBias}) salvo!`);
 }
 
 function carregarMeusBiasNaInterface() {
@@ -1627,7 +1692,7 @@ function carregarMeusBiasNaInterface() {
   if(!container) return;
   let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
   if (listaBias.length === 0) {
-    container.innerHTML = `<div style="padding: 10px; text-align: center; color: #aaa; font-size: 0.85rem;">Lista vazia. Clique em "+ Gerenciar" para adicionar!</div>`;
+    container.innerHTML = `<div style="padding: 10px; text-align: center; color: #aaa; font-size: 0.85rem;">Lista vazia.</div>`;
     return;
   }
   container.innerHTML = "";
@@ -1635,16 +1700,15 @@ function carregarMeusBiasNaInterface() {
   listaBias.forEach(bias => {
     const itemDiv = document.createElement('div');
     itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81; cursor: pointer;";
-    itemDiv.onclick = () => selecionarBiasParaDesafio(bias.posicao, bias.nome, bias.foto);
+    itemDiv.onclick = () => selecionarBiasParaDesafioUnificado(bias.posicao, bias.nome);
     itemDiv.innerHTML = `
       <div style="display: flex; align-items: center; gap: 10px; pointer-events: none;">
         <div style="width: 40px; height: 40px; border-radius: 6px; background: #333; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-          ${bias.foto ? `<img src="${bias.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span style="font-size:0.7rem; color:#aaa;">Sem foto</span>'}
+          ${bias.foto ? `<img src="${bias.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span style="font-size:0.7rem; color:#aaa;">-</span>'}
         </div>
         <div>
           <span style="font-size: 0.75rem; background: ${corPessoal}; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">#${bias.posicao}</span>
           <b style="font-size: 0.9rem; margin-left: 5px; color: #fff;">${bias.nome}</b>
-          <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #aaa;">${bias.categoria}</p>
         </div>
       </div>
       <button onclick="event.stopPropagation(); removerBias(${bias.posicao})" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 1rem; padding: 4px;">✕</button>
@@ -1658,7 +1722,7 @@ function carregarMeusBiasNaInterfaceMobile() {
   if(!container) return;
   let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
   if (listaBias.length === 0) {
-    container.innerHTML = `<div style="padding: 10px; text-align: center; color: #aaa; font-size: 0.85rem;">Lista vazia. Adicione seus bias!</div>`;
+    container.innerHTML = `<div style="padding: 10px; text-align: center; color: #aaa; font-size: 0.85rem;">Lista vazia.</div>`;
     return;
   }
   container.innerHTML = "";
@@ -1666,26 +1730,25 @@ function carregarMeusBiasNaInterfaceMobile() {
   listaBias.forEach(bias => {
     const itemDiv = document.createElement('div');
     itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81; cursor: pointer;";
-    itemDiv.onclick = () => selecionarBiasParaDesafio(bias.posicao, bias.nome, bias.foto, 'mob');
+    itemDiv.onclick = () => selecionarBiasParaDesafioUnificado(bias.posicao, bias.nome, 'mob');
     itemDiv.innerHTML = `
       <div style="display: flex; align-items: center; gap: 10px; pointer-events: none;">
         <div style="width: 36px; height: 36px; border-radius: 6px; background: #333; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-          ${bias.foto ? `<img src="${bias.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span style="font-size:0.6rem; color:#aaa;">Sem foto</span>'}
+          ${bias.foto ? `<img src="${bias.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span style="font-size:0.6rem; color:#aaa;">-</span>'}
         </div>
         <div>
           <span style="font-size: 0.7rem; background: ${corPessoal}; color: white; padding: 2px 5px; border-radius: 4px; font-weight: bold;">#${bias.posicao}</span>
           <b style="font-size: 0.85rem; margin-left: 4px; color: #fff;">${bias.nome}</b>
-          <p style="margin: 2px 0 0 0; font-size: 0.7rem; color: #aaa;">${bias.categoria}</p>
         </div>
       </div>
-      <button onclick="event.stopPropagation(); removerBias(${bias.posicao}); abrirGavetaMobile('desafio')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>
+      <button onclick="event.stopPropagation(); removerBias(${bias.posicao}); abrirGavetaMobile('desafio')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">✕</button>
     `;
     container.appendChild(itemDiv);
   });
 }
 
 function removerBias(posicao) {
-  if (confirm(`Deseja remover da posição #${posicao}?`)) {
+  if (confirm(`Remover #${posicao}?`)) {
     let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
     listaBias = listaBias.filter(b => b.posicao !== posicao);
     localStorage.setItem('meus_bias_salvos', JSON.stringify(listaBias));
@@ -1695,11 +1758,6 @@ function removerBias(posicao) {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
-  let fundoSalvo = localStorage.getItem('tema_fundo_custom');
-  if (fundoSalvo) {
-    document.body.style.background = `#060a1e url('${fundoSalvo}') no-repeat center center fixed`;
-    document.body.style.backgroundSize = 'cover';
-  }
   let corSalva = localStorage.getItem('usuario_cor_tema');
   if (corSalva) aplicarEstiloTema(corSalva);
 
@@ -1738,7 +1796,7 @@ function abrirMenuLateral() { document.getElementById('modal-menu').style.displa
 function fecharMenuLateral() { document.getElementById('modal-menu').style.display = 'none'; }
 
 function sairDaConta() {
-  if (confirm("Deseja realmente sair da conta?")) {
+  if (confirm("Sair da conta?")) {
     localStorage.removeItem('usuario_nome');
     localStorage.removeItem('usuario_cor_tema');
     localStorage.removeItem('usuario_foto');
@@ -1749,7 +1807,7 @@ function sairDaConta() {
 function comentarGaveta() {
   let texto = document.getElementById('campoGavetaTexto').value.trim();
   let fileInput = document.getElementById('campoGavetaFoto');
-  if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo ou escolha uma foto!"); return; }
+  if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo!"); return; }
 
   if (verificarChaveCriadora(texto)) {
     document.getElementById('campoGavetaTexto').value = "";
@@ -1758,13 +1816,13 @@ function comentarGaveta() {
 
   if (fileInput.files && fileInput.files[0]) {
     converterImagemParaHD(fileInput.files[0], 1000, 1000, function(hdBase64) {
-      registrarNoHistoricoGaveta('NOTA / FOTO', texto || 'Foto privada', hdBase64);
+      registrarNoHistoricoGaveta('NOTA', texto || 'Foto', hdBase64);
       document.getElementById('campoGavetaTexto').value = "";
       document.getElementById('campoGavetaFoto').value = "";
-      document.getElementById('label-foto-gaveta').innerText = "Foto Privada";
+      document.getElementById('label-foto-gaveta').innerText = "Foto";
     });
   } else {
-    registrarNoHistoricoGaveta('NOTA RÁPIDA', texto);
+    registrarNoHistoricoGaveta('NOTA', texto);
     document.getElementById('campoGavetaTexto').value = "";
   }
 }
@@ -1781,18 +1839,18 @@ function comentarGavetaMobile() {
 
   if (fileInput.files && fileInput.files[0]) {
     converterImagemParaHD(fileInput.files[0], 1000, 1000, function(hdBase64) {
-      registrarNoHistoricoGaveta('NOTA / FOTO', texto || 'Foto privada', hdBase64);
+      registrarNoHistoricoGaveta('NOTA', texto || 'Foto', hdBase64);
       abrirGavetaMobile('gaveta');
     });
   } else {
-    registrarNoHistoricoGaveta('NOTA RÁPIDA', texto);
+    registrarNoHistoricoGaveta('NOTA', texto);
     abrirGavetaMobile('gaveta');
   }
 }
 </script>
 
 <!-- ======================================================== -->
-<!-- INÍCIO DO SCRIPT FIREBASE (INTEGRADO AO FIRESTORE)       -->
+<!-- SCRIPT FIREBASE (FIRESTORE) EM TEMPO REAL                -->
 <!-- ======================================================== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1812,6 +1870,11 @@ function comentarGavetaMobile() {
     getDocs, 
     deleteDoc, 
     doc, 
+    onSnapshot,
+    query,
+    orderBy,
+    updateDoc,
+    increment,
     serverTimestamp 
   } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -1835,9 +1898,7 @@ function comentarGavetaMobile() {
       if (result && result.user) {
         efetivarLoginComGoogle(result.user);
       }
-    }).catch((error) => {
-      console.warn("Erro no redirect:", error);
-    });
+    }).catch(() => {});
 
   window.tentarLoginGoogleDireto = function() {
     localStorage.removeItem('usuario_nome');
@@ -1848,7 +1909,7 @@ function comentarGavetaMobile() {
       .then((result) => {
         efetivarLoginComGoogle(result.user);
       })
-      .catch((error) => {
+      .catch(() => {
         signInWithRedirect(auth, provider);
       });
   };
@@ -1863,11 +1924,10 @@ function comentarGavetaMobile() {
     aplicarDadosGoogleNaInterface(user);
     let modalCadastro = document.getElementById('modal-cadastro');
     if (modalCadastro) modalCadastro.style.display = 'none';
-    alert(`Bem-vinda(o), ${user.displayName}! Login realizado com sucesso.`);
   }
 
   function aplicarDadosGoogleNaInterface(user) {
-    const nomeGoogle = user.displayName || "Usuário Google";
+    const nomeGoogle = user.displayName || "Usuário";
     const emailGoogle = user.email || "";
     const fotoGoogle = user.photoURL || "";
 
@@ -1892,7 +1952,7 @@ function comentarGavetaMobile() {
   }
 
   window.sairDaConta = function() {
-    if (confirm("Deseja realmente sair da conta?")) {
+    if (confirm("Sair?")) {
       signOut(auth).finally(() => {
         localStorage.clear();
         location.reload();
@@ -1900,24 +1960,21 @@ function comentarGavetaMobile() {
     }
   };
 
-  // ==========================================
-  // FUNÇÕES DO FIRESTORE PARA OS POSTS DO FEED GERAL
-  // ==========================================
   window.enviarMensagemChatComunidade = async function() {
     let nomeUsuario = localStorage.getItem('usuario_nome');
-    if (!nomeUsuario) { alert("Faça login para publicar no feed!"); return; }
+    if (!nomeUsuario) { alert("Faça login!"); return; }
     let texto = document.getElementById('textoChatComunidade').value.trim();
-    if (!texto && !midiaChatValidaBase64) { alert("Escreva algo ou envie uma mídia!"); return; }
+    if (!texto && !midiaChatValidaBase64) { alert("Escreva algo!"); return; }
     let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757';
 
     try {
-      // Salva na nuvem (Firestore) na coleção "posts" para aparecer para todo mundo!
       await addDoc(collection(db, "posts"), {
         autor: nomeUsuario,
         mensagem: texto,
         midia: midiaChatValidaBase64 || "",
         isVideo: midiaChatIsVideo || false,
         cor: corPessoal,
+        likes: 0,
         criadoEm: serverTimestamp()
       });
 
@@ -1927,40 +1984,119 @@ function comentarGavetaMobile() {
       midiaChatValidaBase64 = null;
       midiaChatIsVideo = false;
 
-      registrarNoHistoricoGaveta('COMENTÁRIO', `Você publicou no feed: "${texto ? texto.slice(0, 30) + '...' : 'Mídia enviada'}"`);
-      carregarPostsDoFirestore();
+      let placeholder = document.getElementById('preview-placeholder-txt');
+      let imgTag = document.getElementById('preview-img-tag');
+      let vidTag = document.getElementById('preview-vid-tag');
+      if(placeholder) placeholder.style.display = 'block';
+      if(imgTag) imgTag.style.display = 'none';
+      if(vidTag) vidTag.style.display = 'none';
+
+      fecharModalPublicacao();
+      registrarNoHistoricoGaveta('COMENTÁRIO', `Publicou no Umbrella: "${texto ? texto.slice(0, 20) + '...' : 'Mídia'}"`);
     } catch (e) {
-      alert("Erro ao enviar post para a nuvem. Verifique sua conexão.");
+      alert("Erro ao enviar.");
     }
   };
 
-  async function carregarPostsDoFirestore() {
+  // Escuta em tempo real do Feed (Firestore onSnapshot)
+  function escutarPostsTempoReal() {
     let mural = document.getElementById('mural-chat-comunidade');
     if (!mural) return;
 
-    try {
-      const querySnapshot = await getDocs(collection(db, "posts"));
-      if (querySnapshot.empty) {
-        mural.innerHTML = `<div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">Nenhuma publicação no feed ainda. Seja a primeira pessoa a compartilhar algo com a comunidade!</div>`;
+    const q = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
+    onSnapshot(q, (snapshot) => {
+      if (snapshot.empty) {
+        mural.innerHTML = `<div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">Nenhuma publicação no abrigo ainda.</div>`;
         return;
       }
 
       mural.innerHTML = "";
-      querySnapshot.forEach((docSnap) => {
+      snapshot.forEach((docSnap) => {
         let post = docSnap.data();
-        criarTopicoChatHTML(post.autor || "Anônimo", post.mensagem || "", post.midia || null, post.isVideo || false, post.cor || "#ff4757", mural);
+        let postId = docSnap.id;
+        criarTopicoChatHTML(postId, post.autor || "Anônimo", post.mensagem || "", post.midia || null, post.isVideo || false, post.cor || "#ff4757", post.likes || 0, mural);
       });
-    } catch (e) {
-      console.warn("Erro ao buscar posts da nuvem:", e);
-    }
+    }, (error) => {
+      carregarPostsDoFirestoreFallback();
+    });
   }
 
-  // Carrega os posts automaticamente assim que abre o app
-  carregarPostsDoFirestore();
+  async function carregarPostsDoFirestoreFallback() {
+    let mural = document.getElementById('mural-chat-comunidade');
+    if (!mural) return;
+    try {
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      if (querySnapshot.empty) {
+        mural.innerHTML = `<div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">Nenhuma publicação no abrigo ainda.</div>`;
+        return;
+      }
+      mural.innerHTML = "";
+      querySnapshot.forEach((docSnap) => {
+        let post = docSnap.data();
+        criarTopicoChatHTML(docSnap.id, post.autor || "Anônimo", post.mensagem || "", post.midia || null, post.isVideo || false, post.cor || "#ff4757", post.likes || 0, mural);
+      });
+    } catch(e) {}
+  }
 
-  // ==========================================
-  // SOLICITAÇÕES DE FANDOM (NUVEM)
-  // ==========================================
+  escutarPostsTempoReal();
+
+  function criarTopicoChatHTML(postId, nome, texto, midiaBase64, isVideo, corCorrente, likesCount, mural) {
+    const topicoDiv = document.createElement('div');
+    topicoDiv.style.cssText = `background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(243,217,139,0.2); border-radius: 20px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative;`;
+    
+    let ehCriadora = localStorage.getItem('modo_criadora_ativo') === 'true';
+
+    let html = `
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
+        <div style="width: 32px; height: 32px; border-radius: 50%; background: ${corCorrente}; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; font-weight: bold; border: 1px solid #f3d98b;">${nome.charAt(0).toUpperCase()}</div>
+        <span style="font-size: 0.9rem; font-weight: bold; color: #f3d98b;">${nome}</span>
+        ${ehCriadora ? `<button onclick="deletarPostFirestore('${postId}')" style="background:rgba(255,71,87,0.2); border:1px solid #ff4757; color:#ff6b81; border-radius:4px; padding:2px 6px; font-size:0.65rem; cursor:pointer; margin-left:auto;">✕</button>` : ''}
+      </div>
+      <!-- BALÃO DE FOTO / VÍDEO & CONTEÚDO -->
+      <div style="background: rgba(0,0,0,0.3); border-radius: 14px; padding: 12px; margin-bottom: 10px; border: 1px solid rgba(243,217,139,0.15);">
+        ${texto ? `<p class="texto-conteudo-post" style="margin: 0 0 ${midiaBase64 ? '8px' : '0'}; font-size: 0.85rem; color: #fff; word-break: break-word;">${texto}</p>` : ''}
+        ${midiaBase64 ? (isVideo ? `<video src="${midiaBase64}" controls style="width: 100%; height: auto; border-radius: 10px; display: block;"></video>` : `<div style="cursor: pointer; width: 100%; border-radius: 10px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('${midiaBase64}')"><img src="${midiaBase64}" style="width: 100%; height: auto; display: block; object-fit: contain; border-radius: 10px;"></div>`) : ''}
+      </div>
+      <div style="margin-top: 6px; display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
+        <!-- BOTÃO DE CURTIR GUARDA-CHUVINHA CUSTOMIZADO (SVG) -->
+        <button onclick="curtirPostFirestore('${postId}', this)" style="background: rgba(243,217,139,0.1); border: 1px solid #f3d98b; color: #f3d98b; padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 6px;" title="Proteger com guarda-chuva">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f3d98b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2v10"></path>
+            <path d="M12 12c-4 0-8-2-10-5 2-3 6-5 10-5s8 2 10 5c-2 3-6 5-10 5z"></path>
+            <path d="M12 12v7a2 2 0 0 0 2 2h1"></path>
+          </svg>
+          <span class="contador-post-likes">${likesCount}</span>
+        </button>
+      </div>
+    `;
+    topicoDiv.innerHTML = html;
+    mural.appendChild(topicoDiv);
+  }
+
+  window.curtirPostFirestore = async function(postId, botao) {
+    let nomeUsuario = localStorage.getItem('usuario_nome');
+    if (!nomeUsuario) { alert("Faça login!"); return; }
+    try {
+      const postRef = doc(db, "posts", postId);
+      await updateDoc(postRef, {
+        likes: increment(1)
+      });
+      botao.style.borderColor = '#ff4757';
+      botao.style.color = '#ff4757';
+      registrarNoHistoricoGaveta('CURTIDA', 'Compartilhou guarda-chuva (curtiu post)');
+    } catch (e) {
+      alert("Erro ao curtir.");
+    }
+  };
+
+  window.deletarPostFirestore = async function(postId) {
+    if (confirm("Excluir publicação do abrigo?")) {
+      try {
+        await deleteDoc(doc(db, "posts", postId));
+      } catch(e) {}
+    }
+  };
+
   window.enviarSolicitacaoFandomNuvem = async function() {
     let nomeInput = document.getElementById('solicitacao-nome');
     let motivoInput = document.getElementById('solicitacao-motivo');
@@ -1968,60 +2104,36 @@ function comentarGavetaMobile() {
     let nome = nomeInput ? nomeInput.value.trim() : "";
     let motivo = motivoInput ? motivoInput.value.trim() : "";
     
-    if (!nome || !motivo) { 
-      alert("Por favor, preencha seu nome e o motivo antes de enviar!"); 
-      return; 
-    }
+    if (!nome || !motivo) { alert("Preencha os campos!"); return; }
     
     let modalSol = document.getElementById('modal-solicitacao');
-    if (modalSol) {
-      modalSol.innerHTML = `
-        <div class="caixa-modal" style="text-align: center; padding: 30px;">
-          <h3 style="color: #f3d98b; margin-bottom: 10px; font-size: 1.2rem;">Enviando solicitação...</h3>
-          <p style="font-size: 0.85rem; color: #aaa;">Aguarde um instante.</p>
-        </div>
-      `;
-    }
+    if (modalSol) modalSol.style.display = 'none';
 
     try {
       await addDoc(collection(db, "solicitacoes_fandoms"), {
         usuario: nome,
-        fandom: window.fandomAtualSelecionado || "Geral",
+        fandom: window.fandomAtualSelecionado || "Umbrella",
         motivo: motivo,
         cor: window.corAtualSelecionada || "#9c27b0",
         criadoEm: serverTimestamp()
       });
-      
-      if (modalSol) {
-        modalSol.innerHTML = `
-          <div class="caixa-modal" style="text-align: center; padding: 30px;">
-            <h3 style="color: #4caf50; margin-bottom: 10px; font-size: 1.3rem;">✅ Solicitação Enviada!</h3>
-            <p style="font-size: 0.9rem; color: #fff; margin-bottom: 15px;">Aguarde a aprovação da administração.</p>
-          </div>
-        `;
-      }
-
-      setTimeout(() => {
-        if (modalSol) modalSol.style.display = 'none';
-        location.reload(); 
-      }, 2000);
-
+      alert("Pedido de abrigo enviado com sucesso!");
     } catch (e) {
-      alert("Erro ao enviar solicitação para a nuvem.");
+      alert("Erro ao enviar.");
     }
   };
 
   window.renderizarSolicitacoesAdmNuvem = async function() {
     let container = document.getElementById('lista-solicitacoes-adm');
     if (!container) return;
-    container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Buscando solicitações da nuvem...</p>`;
+    container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Buscando...</p>`;
 
     try {
       const querySnapshot = await getDocs(collection(db, "solicitacoes_fandoms"));
       let html = "";
       
       if (querySnapshot.empty) {
-        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente na nuvem.</p>`;
+        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente.</p>`;
         return;
       }
 
@@ -2029,50 +2141,39 @@ function comentarGavetaMobile() {
         let sol = documento.data();
         let docId = documento.id;
         html += `
-          <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border: 1px solid rgba(243,217,139,0.2);">
+          <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
             <div>
               <b style="font-size:0.85rem; color:#f3d98b;">${sol.usuario}</b> <span style="font-size:0.75rem; color:#ff6b81;">(${sol.fandom})</span>
               <p style="font-size:0.75rem; color:#fff; margin:3px 0 0 0;">"${sol.motivo}"</p>
             </div>
             <div style="display: flex; gap: 6px;">
-              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}', '${sol.cor}')" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Aceitar</button>
-              <button onclick="negarSolicitacaoNuvem('${docId}')" style="background:#ff4757; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Negar</button>
+              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}', '${sol.cor}')" style="background:#4caf50; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Abrigar ☂️</button>
+              <button onclick="negarSolicitacaoNuvem('${docId}')" style="background:#ff4757; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">✕</button>
             </div>
           </div>
         `;
       });
 
       container.innerHTML = html;
-    } catch (e) {
-      container.innerHTML = `<p style="font-size:0.75rem; color:#ff4757; text-align:center;">Erro ao conectar com a nuvem.</p>`;
-    }
+    } catch (e) {}
   };
 
   window.aceitarSolicitacaoNuvem = async function(docId, usuario, fandom, cor) {
     try {
       await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
-      alert(`🎉 Solicitação de ${usuario} aceita com sucesso para o fandom ${fandom}!`);
       renderizarSolicitacoesAdmNuvem();
       fecharPainelAdm();
       entrarComunidadeEfetivo(fandom, cor || "#9c27b0");
-    } catch (e) {
-      alert("Erro ao processar aceitação.");
-    }
+    } catch (e) {}
   };
 
   window.negarSolicitacaoNuvem = async function(docId) {
     try {
       await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
-      alert(`Solicitação negada.`);
       renderizarSolicitacoesAdmNuvem();
-    } catch (e) {
-      alert("Erro ao processar negação.");
-    }
+    } catch (e) {}
   };
 </script>
-<!-- ======================================================== -->
-<!-- FIM DO SCRIPT FIREBASE                                   -->
-<!-- ======================================================== -->
 
 </body>
 </html>
