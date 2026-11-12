@@ -686,7 +686,7 @@ border-radius:999px; display:inline-block;}
         <!-- MURAL DO FEED -->
         <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
           <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">
-            Nenhuma publicação no feed ainda. Seja a primeira pessoa a compartilhar algo com a comunidade!
+            Carregando publicações do feed geral...
           </div>
         </div>
       </div>
@@ -1479,109 +1479,6 @@ function carregarSubgruposInternos(nomeFandom) {
   });
 }
 
-function enviarMensagemChatComunidade() {
-  let nomeUsuario = localStorage.getItem('usuario_nome');
-  if (!nomeUsuario) { alert("Faça login para publicar no feed!"); return; }
-  let texto = document.getElementById('textoChatComunidade').value.trim();
-  if (!texto && !midiaChatValidaBase64) { alert("Escreva algo ou envie uma mídia!"); return; }
-  let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757';
-  let mural = document.getElementById('mural-chat-comunidade');
-  criarTopicoChatHTML(nomeUsuario, texto, midiaChatValidaBase64, midiaChatIsVideo, corPessoal, mural);
-  registrarNoHistoricoGaveta('COMENTÁRIO', `Você publicou no feed: "${texto ? texto.slice(0, 30) + '...' : 'Mídia enviada'}"`, midiaChatValidaBase64 && !midiaChatIsVideo ? midiaChatValidaBase64 : null);
-
-  document.getElementById('textoChatComunidade').value = "";
-  document.getElementById('midiaChatComunidade').value = "";
-  document.getElementById('cameraChatComunidadeDireto').value = "";
-  midiaChatValidaBase64 = null;
-  midiaChatIsVideo = false;
-}
-
-function criarTopicoChatHTML(nome, texto, midiaBase64, isVideo, corCorrente, mural) {
-  if (mural.innerHTML.includes("Nenhuma publicação")) mural.innerHTML = "";
-  const topicoDiv = document.createElement('div');
-  topicoDiv.style.cssText = `background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(243,217,139,0.3); border-radius: 16px; padding: 14px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative;`;
-  
-  let ehCriadora = localStorage.getItem('modo_criadora_ativo') === 'true';
-
-  let html = `
-    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
-      <div style="width: 32px; height: 32px; border-radius: 50%; background: ${corCorrente}; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; font-weight: bold; border: 1px solid #f3d98b;">${nome.charAt(0).toUpperCase()}</div>
-      <span style="font-size: 0.9rem; font-weight: bold; color: #f3d98b;">${nome}</span>
-      <span style="font-size: 0.7rem; color: #aaa; margin-left: auto;">Agora mesmo</span>
-      ${ehCriadora ? `<button onclick="this.closest('div').parentElement.remove(); alert('Publicação removida pela ADM/Criadora!');" style="background:rgba(255,71,87,0.2); border:1px solid #ff4757; color:#ff6b81; border-radius:4px; padding:2px 6px; font-size:0.65rem; cursor:pointer;" title="Remover postagem">Excluir</button>` : ''}
-    </div>
-    ${texto ? `<div style="background: rgba(0,0,0,0.25); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.08);"><p class="texto-conteudo-post" style="margin: 0; font-size: 0.85rem; color: #fff; word-break: break-word;">${texto}</p></div>` : ''}
-  `;
-  if (midiaBase64) {
-    html += isVideo ? `<video src="${midiaBase64}" controls style="width: 100%; height: auto; border-radius: 10px; margin-bottom: 8px; display: block;"></video>` : `<div style="cursor: pointer; width: 100%; border-radius: 10px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;" onclick="abrirFotoPinterest('${midiaBase64}')"><img src="${midiaBase64}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>`;
-  }
-  html += `
-    <div class="lista-respostas-chat" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div>
-    <div style="margin-top: 10px; display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;">
-      <button onclick="curtirPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;"><span class="contador-post-likes">0</span> Curtir</button>
-      <button onclick="compartilharPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;">Compartilhar</button>
-    </div>
-    <div style="margin-top: 8px; display: flex; gap: 6px;">
-      <input type="text" class="input-resposta-chat" placeholder="Responder..." style="padding: 7px 10px; font-size: 0.75rem; border-radius: 8px; flex: 1; background: rgba(0,0,0,0.4);">
-      <button onclick="enviarRespostaChat(this)" class="btn-tema-bg" style="background: ${corCorrente}; color: white; border: none; padding: 7px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Responder</button>
-    </div>
-  `;
-  topicoDiv.innerHTML = html;
-  mural.prepend(topicoDiv);
-}
-
-function curtirPostChat(botao) {
-  let nomeUsuario = localStorage.getItem('usuario_nome');
-  if (!nomeUsuario) { alert("Faça login para curtir."); return; }
-  const span = botao.querySelector('.contador-post-likes');
-  let total = parseInt(span.innerText) || 0;
-  total++;
-  span.innerText = total;
-  botao.style.color = '#ff4757';
-  registrarNoHistoricoGaveta('CURTIDA', 'Você curtiu uma publicação no feed.');
-}
-
-function compartilharPostChat(botao) {
-  let nomeUsuario = localStorage.getItem('usuario_nome');
-  if (!nomeUsuario) { alert("Faça login para compartilhar."); return; }
-  let postCard = botao.closest('div').parentElement;
-  let textoEl = postCard.querySelector('.texto-conteudo-post');
-  let textoCompartilhar = textoEl ? textoEl.innerText : "Confira no New Drama!";
-  if (navigator.share) {
-    navigator.share({ title: 'New Drama', text: textoCompartilhar, url: window.location.href }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(textoCompartilhar);
-    alert("Link copiado!");
-  }
-  registrarNoHistoricoGaveta('COMPARTILHAMENTO', 'Você compartilhou uma publicação.');
-}
-
-function enviarRespostaChat(botao) {
-  let nomeUsuario = localStorage.getItem('usuario_nome');
-  if (!nomeUsuario) { alert("Faça login para comentar."); return; }
-  let topico = botao.closest('div').parentElement;
-  let input = topico.querySelector('.input-resposta-chat');
-  let textoResp = input.value.trim();
-  if (!textoResp) return;
-  let listaRespostas = topico.querySelector('.lista-respostas-chat');
-  let corPessoal = localStorage.getItem('usuario_cor_tema') || '#2196f3';
-  let ehCriadora = localStorage.getItem('modo_criadora_ativo') === 'true';
-  
-  let respDiv = document.createElement('div');
-  respDiv.style.cssText = `background: rgba(0, 0, 0, 0.35); border-left: 3px solid ${corPessoal}; padding: 8px 10px; border-radius: 10px; margin-left: 12px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.06); position: relative;`;
-  respDiv.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;">
-      <span style="font-size: 0.75rem; font-weight: bold; color: ${corPessoal};">${nomeUsuario}</span>
-      <span style="font-size: 0.65rem; color: #aaa; margin-left: auto;">Agora</span>
-      ${ehCriadora ? `<button onclick="this.closest('div').parentElement.remove();" style="background:none; border:none; color:#ff4757; font-size:0.65rem; cursor:pointer;" title="Remover comentário">x</button>` : ''}
-    </div>
-    <p style="font-size: 0.8rem; color: #fff; margin: 0; word-break: break-word;">${textoResp}</p>
-  `;
-  listaRespostas.appendChild(respDiv);
-  input.value = "";
-  registrarNoHistoricoGaveta('COMENTÁRIO', `Você comentou: "${textoResp.slice(0, 25)}..."`);
-}
-
 function atualizarNomePerfil(input) { if (input.files && input.files[0]) document.getElementById('label-foto-perfil').innerText = " " + input.files[0].name; }
 function atualizarNomeFundoPerfil(input) { if (input.files && input.files[0]) document.getElementById('label-fundo-perfil').innerText = " " + input.files[0].name; }
 function atualizarNomeBias(input) { if (input.files && input.files[0]) document.getElementById('label-foto-bias').innerText = " " + input.files[0].name; }
@@ -1895,7 +1792,7 @@ function comentarGavetaMobile() {
 </script>
 
 <!-- ======================================================== -->
-<!-- INÍCIO DO SCRIPT FIREBASE (ISOLADO NO FINAL DO ARQUIVO) -->
+<!-- INÍCIO DO SCRIPT FIREBASE (INTEGRADO AO FIRESTORE)       -->
 <!-- ======================================================== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1952,7 +1849,6 @@ function comentarGavetaMobile() {
         efetivarLoginComGoogle(result.user);
       })
       .catch((error) => {
-        console.warn("Popup bloqueado, tentando por redirect...", error);
         signInWithRedirect(auth, provider);
       });
   };
@@ -2004,7 +1900,67 @@ function comentarGavetaMobile() {
     }
   };
 
-  // FUNÇÃO DE ENVIO COM TIMEOUT E REDUNDÂNCIA LOCAL (GARANTE QUE NUNCA TRAVA)
+  // ==========================================
+  // FUNÇÕES DO FIRESTORE PARA OS POSTS DO FEED GERAL
+  // ==========================================
+  window.enviarMensagemChatComunidade = async function() {
+    let nomeUsuario = localStorage.getItem('usuario_nome');
+    if (!nomeUsuario) { alert("Faça login para publicar no feed!"); return; }
+    let texto = document.getElementById('textoChatComunidade').value.trim();
+    if (!texto && !midiaChatValidaBase64) { alert("Escreva algo ou envie uma mídia!"); return; }
+    let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757';
+
+    try {
+      // Salva na nuvem (Firestore) na coleção "posts" para aparecer para todo mundo!
+      await addDoc(collection(db, "posts"), {
+        autor: nomeUsuario,
+        mensagem: texto,
+        midia: midiaChatValidaBase64 || "",
+        isVideo: midiaChatIsVideo || false,
+        cor: corPessoal,
+        criadoEm: serverTimestamp()
+      });
+
+      document.getElementById('textoChatComunidade').value = "";
+      document.getElementById('midiaChatComunidade').value = "";
+      document.getElementById('cameraChatComunidadeDireto').value = "";
+      midiaChatValidaBase64 = null;
+      midiaChatIsVideo = false;
+
+      registrarNoHistoricoGaveta('COMENTÁRIO', `Você publicou no feed: "${texto ? texto.slice(0, 30) + '...' : 'Mídia enviada'}"`);
+      carregarPostsDoFirestore();
+    } catch (e) {
+      alert("Erro ao enviar post para a nuvem. Verifique sua conexão.");
+    }
+  };
+
+  async function carregarPostsDoFirestore() {
+    let mural = document.getElementById('mural-chat-comunidade');
+    if (!mural) return;
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "posts"));
+      if (querySnapshot.empty) {
+        mural.innerHTML = `<div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">Nenhuma publicação no feed ainda. Seja a primeira pessoa a compartilhar algo com a comunidade!</div>`;
+        return;
+      }
+
+      mural.innerHTML = "";
+      querySnapshot.forEach((docSnap) => {
+        let post = docSnap.data();
+        criarTopicoChatHTML(post.autor || "Anônimo", post.mensagem || "", post.midia || null, post.isVideo || false, post.cor || "#ff4757", mural);
+      });
+    } catch (e) {
+      console.warn("Erro ao buscar posts da nuvem:", e);
+    }
+  }
+
+  // Carrega os posts automaticamente assim que abre o app
+  carregarPostsDoFirestore();
+
+  // ==========================================
+  // SOLICITAÇÕES DE FANDOM (NUVEM)
+  // ==========================================
   window.enviarSolicitacaoFandomNuvem = async function() {
     let nomeInput = document.getElementById('solicitacao-nome');
     let motivoInput = document.getElementById('solicitacao-motivo');
@@ -2027,13 +1983,6 @@ function comentarGavetaMobile() {
       `;
     }
 
-    let enviouComSucesso = false;
-    let timerTimeout = setTimeout(() => {
-      if (!enviouComSucesso) {
-        finalizarEnvioComSucesso(nome, motivo, modalSol);
-      }
-    }, 5000);
-
     try {
       await addDoc(collection(db, "solicitacoes_fandoms"), {
         usuario: nome,
@@ -2043,108 +1992,65 @@ function comentarGavetaMobile() {
         criadoEm: serverTimestamp()
       });
       
-      enviouComSucesso = true;
-      clearTimeout(timerTimeout);
-      finalizarEnvioComSucesso(nome, motivo, modalSol);
+      if (modalSol) {
+        modalSol.innerHTML = `
+          <div class="caixa-modal" style="text-align: center; padding: 30px;">
+            <h3 style="color: #4caf50; margin-bottom: 10px; font-size: 1.3rem;">✅ Solicitação Enviada!</h3>
+            <p style="font-size: 0.9rem; color: #fff; margin-bottom: 15px;">Aguarde a aprovação da administração.</p>
+          </div>
+        `;
+      }
+
+      setTimeout(() => {
+        if (modalSol) modalSol.style.display = 'none';
+        location.reload(); 
+      }, 2000);
 
     } catch (e) {
-      clearTimeout(timerTimeout);
-      finalizarEnvioComSucesso(nome, motivo, modalSol);
+      alert("Erro ao enviar solicitação para a nuvem.");
     }
   };
-
-  function finalizarEnvioComSucesso(nome, motivo, modalSol) {
-    let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
-    listaLocal.push({
-      id: Date.now(),
-      usuario: nome,
-      fandom: window.fandomAtualSelecionado || "Geral",
-      motivo: motivo,
-      cor: window.corAtualSelecionada || "#9c27b0"
-    });
-    localStorage.setItem('solicitacoes_fandoms_local', JSON.stringify(listaLocal));
-
-    if (modalSol) {
-      modalSol.innerHTML = `
-        <div class="caixa-modal" style="text-align: center; padding: 30px;">
-          <h3 style="color: #4caf50; margin-bottom: 10px; font-size: 1.3rem;">✅ Solicitação Enviada!</h3>
-          <p style="font-size: 0.9rem; color: #fff; margin-bottom: 15px;">Aguarde a aprovação da administração.</p>
-          <p style="font-size: 0.75rem; color: #aaa;">Redirecionando para o feed...</p>
-        </div>
-      `;
-    }
-
-    setTimeout(() => {
-      if (modalSol) modalSol.style.display = 'none';
-      location.reload(); 
-    }, 2000);
-  }
 
   window.renderizarSolicitacoesAdmNuvem = async function() {
     let container = document.getElementById('lista-solicitacoes-adm');
     if (!container) return;
-    container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Buscando solicitações...</p>`;
+    container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Buscando solicitações da nuvem...</p>`;
 
     try {
       const querySnapshot = await getDocs(collection(db, "solicitacoes_fandoms"));
       let html = "";
-      let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
       
-      if (querySnapshot.empty && listaLocal.length === 0) {
-        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente.</p>`;
+      if (querySnapshot.empty) {
+        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente na nuvem.</p>`;
         return;
       }
 
       querySnapshot.forEach((documento) => {
         let sol = documento.data();
         let docId = documento.id;
-        html += renderizarCardAdmItem(docId, sol.usuario, sol.fandom, sol.motivo, sol.cor, false);
-      });
-
-      listaLocal.forEach((sol, index) => {
-        html += renderizarCardAdmItem('local_' + index, sol.usuario, sol.fandom, sol.motivo, sol.cor, true);
+        html += `
+          <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border: 1px solid rgba(243,217,139,0.2);">
+            <div>
+              <b style="font-size:0.85rem; color:#f3d98b;">${sol.usuario}</b> <span style="font-size:0.75rem; color:#ff6b81;">(${sol.fandom})</span>
+              <p style="font-size:0.75rem; color:#fff; margin:3px 0 0 0;">"${sol.motivo}"</p>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}', '${sol.cor}')" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Aceitar</button>
+              <button onclick="negarSolicitacaoNuvem('${docId}')" style="background:#ff4757; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Negar</button>
+            </div>
+          </div>
+        `;
       });
 
       container.innerHTML = html;
     } catch (e) {
-      let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
-      if (listaLocal.length === 0) {
-        container.innerHTML = `<p style="font-size:0.75rem; color:#ff4757; text-align:center;">Erro ao conectar com a nuvem.</p>`;
-        return;
-      }
-      let html = "";
-      listaLocal.forEach((sol, index) => {
-        html += renderizarCardAdmItem('local_' + index, sol.usuario, sol.fandom, sol.motivo, sol.cor, true);
-      });
-      container.innerHTML = html;
+      container.innerHTML = `<p style="font-size:0.75rem; color:#ff4757; text-align:center;">Erro ao conectar com a nuvem.</p>`;
     }
   };
 
-  function renderizarCardAdmItem(docId, usuario, fandom, motivo, cor, isLocal) {
-    return `
-      <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border: 1px solid rgba(243,217,139,0.2);">
-        <div>
-          <b style="font-size:0.85rem; color:#f3d98b;">${usuario}</b> <span style="font-size:0.75rem; color:#ff6b81;">(${fandom})</span>
-          <p style="font-size:0.75rem; color:#fff; margin:3px 0 0 0;">"${motivo}"</p>
-        </div>
-        <div style="display: flex; gap: 6px;">
-          <button onclick="aceitarSolicitacaoNuvem('${docId}', '${usuario}', '${fandom}', '${cor}', ${isLocal})" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Aceitar</button>
-          <button onclick="negarSolicitacaoNuvem('${docId}', ${isLocal})" style="background:#ff4757; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Negar</button>
-        </div>
-      </div>
-    `;
-  }
-
-  window.aceitarSolicitacaoNuvem = async function(docId, usuario, fandom, cor, isLocal) {
+  window.aceitarSolicitacaoNuvem = async function(docId, usuario, fandom, cor) {
     try {
-      if (isLocal) {
-        let index = parseInt(docId.replace('local_', ''));
-        let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
-        listaLocal.splice(index, 1);
-        localStorage.setItem('solicitacoes_fandoms_local', JSON.stringify(listaLocal));
-      } else {
-        await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
-      }
+      await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
       alert(`🎉 Solicitação de ${usuario} aceita com sucesso para o fandom ${fandom}!`);
       renderizarSolicitacoesAdmNuvem();
       fecharPainelAdm();
@@ -2154,51 +2060,13 @@ function comentarGavetaMobile() {
     }
   };
 
-  window.negarSolicitacaoNuvem = async function(docId, isLocal) {
+  window.negarSolicitacaoNuvem = async function(docId) {
     try {
-      if (isLocal) {
-        let index = parseInt(docId.replace('local_', ''));
-        let listaLocal = JSON.parse(localStorage.getItem('solicitacoes_fandoms_local') || '[]');
-        listaLocal.splice(index, 1);
-        localStorage.setItem('solicitacoes_fandoms_local', JSON.stringify(listaLocal));
-      } else {
-        await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
-      }
+      await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
       alert(`Solicitação negada.`);
       renderizarSolicitacoesAdmNuvem();
     } catch (e) {
       alert("Erro ao processar negação.");
-      // Importa o Firestore que a gente precisa para salvar e ler os posts
-import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebasejs-firestore.js";
-
-// Inicializa o Firestore no app
-const db = getFirestore();
-
-// Função para enviar um novo post para a comunidade
-async function criarPost(mensagemTexto) {
-    try {
-        const docRef = await addDoc(collection(db, "posts"), {
-            mensagem: mensagemTexto,
-            criadoEm: new Date()
-        });
-        console.log("Post enviado com sucesso! ID:", docRef.id);
-    } catch (e) {
-        console.error("Erro ao enviar o post: ", e);
-    }
-}
-
-// Função para buscar e mostrar os posts na tela
-async function carregarPosts() {
-    try {
-        const querySnapshot = await getDocs(collection(db, "posts"));
-        querySnapshot.forEach((doc) => {
-            console.log(`${doc.id} => `, doc.data());
-        });
-    } catch (e) {
-        console.error("Erro ao carregar os posts: ", e);
-    }
-}
-
     }
   };
 </script>
