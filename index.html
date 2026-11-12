@@ -1377,20 +1377,21 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
     return; 
   }
   
-  let senhaSalva = localStorage.getItem('usuario_senha');
   let nomeSalvo = localStorage.getItem('usuario_nome');
   
-  if (!nomeSalvo || !senhaSalva) {
-    if (confirm(`🔒 Fandom Protegido!\nPara entrar no fandom de "${nomeComunidade}", você precisa fazer login com sua senha de acesso ou enviar uma solicitação.\n\nDeseja abrir o painel de login/cadastro agora?`)) {
+  // Se já estiver logada, vai direto para a solicitação do fandom sem mandar logar de novo!
+  if (nomeSalvo) {
+    fandomAtualSelecionado = nomeComunidade;
+    corAtualSelecionada = corTema;
+    let inputNomeSol = document.getElementById('solicitacao-nome');
+    if (inputNomeSol) inputNomeSol.value = nomeSalvo; // Preenche o nome automático
+    document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Insira sua solicitação de acesso:`;
+    document.getElementById('modal-solicitacao').style.display = 'flex';
+  } else {
+    if (confirm(`🔒 Fandom Protegido!\nPara entrar no fandom de "${nomeComunidade}", você precisa estar logada.\n\nDeseja abrir o painel de login agora?`)) {
       configurarPerfil();
     }
-    return;
   }
-
-  fandomAtualSelecionado = nomeComunidade;
-  corAtualSelecionada = corTema;
-  document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Insira sua solicitação de acesso:`;
-  document.getElementById('modal-solicitacao').style.display = 'flex';
 }
 
 function entrarFandomPeloPainelAdm() {
@@ -1950,7 +1951,6 @@ function comentarGavetaMobile() {
 </script>
 
 <!-- FIREBASE COM FALLBACK SEGURO -->
-<!-- FIREBASE CORRIGIDO: LOGIN DIRETO PARA O FEED -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { 
@@ -2005,7 +2005,6 @@ function comentarGavetaMobile() {
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
-      // Se já estiver logado na sessão do Firebase, atualiza a interface discretamente
       aplicarDadosGoogleNaInterface(user);
     }
   });
@@ -2013,7 +2012,6 @@ function comentarGavetaMobile() {
   function efetivarLoginComGoogle(user) {
     aplicarDadosGoogleNaInterface(user);
 
-    // Fecha o modal de cadastro/login imediatamente
     let modalCadastro = document.getElementById('modal-cadastro');
     if (modalCadastro) modalCadastro.style.display = 'none';
 
