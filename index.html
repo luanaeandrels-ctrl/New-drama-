@@ -114,7 +114,7 @@
 .grupo-input label { display: block; font-size: 0.8rem; color: #f3d98b; margin-bottom: 4px; }
 *{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', Arial, sans-serif}
 body {
-  background: #060a1e url('fundo.jpg') no-repeat center center fixed;
+  background: #060a1e url('fundo.jpeg') no-repeat center center fixed;
   background-size: cover;
   color: #fff;
   min-height: 100vh;
@@ -373,7 +373,7 @@ border-radius:999px; display:inline-block;}
     </div>
 
     <div class="grupo-input">
-      <textarea id="textoChatComunidade" placeholder="Escreva sua legenda abrigada..." style="border-radius: 12px; resize: none; height: 75px; padding: 10px; font-size: 0.9rem; background: rgba(0,0,0,0.4); color: #fff;"></textarea>
+      <textarea id="textoChatComunidade" placeholder="O que vamos proteger hoje" style="border-radius: 12px; resize: none; height: 75px; padding: 10px; font-size: 0.9rem; background: rgba(0,0,0,0.4); color: #fff;"></textarea>
     </div>
     <div style="display: flex; gap: 8px; margin-bottom: 15px;">
       <label for="midiaChatComunidade" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-midia-chat">📁 Galeria</label>
@@ -407,7 +407,7 @@ border-radius:999px; display:inline-block;}
         <button onclick="fecharSuporteDesenvolvedor()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
       </div>
       <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc;">
-        <p style="margin-bottom: 6px;"><b>E-mail:</b> suporte@umbrella.com</p>
+        <p style="margin-bottom: 6px;"><b>E-mail:</b> umbrella.suporte@gmail.com</p>
       </div>
     </div>
   </div>
@@ -603,11 +603,15 @@ border-radius:999px; display:inline-block;}
         <p class="texto-b" id="texto-resumo-desafio-mob">Carregando...</p>
       </div>
       <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
-        <div class="story-avatar-mob" style="background: #9c27b0;"><div class="story-avatar-inner" style="background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;">📂</div></div>
+        <div class="story-avatar-mob" style="background: #9c27b0; overflow: hidden; padding: 0;">
+          <img src="gaveta.jpg" alt="Gaveta" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>📂</div>'">
+        </div>
         <span class="story-nome-mob">Gaveta</span><span class="story-arroba-mob">Privado</span>
       </div>
       <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
-        <div class="story-avatar-mob" style="background: #2196f3;"><div class="story-avatar-inner" style="background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;">🌐</div></div>
+        <div class="story-avatar-mob" style="background: #2196f3; overflow: hidden; padding: 0;">
+          <img src="comunidade.jpg" alt="Comunidade" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>🌐</div>'">
+        </div>
         <span class="story-nome-mob">Comunidade</span><span class="story-arroba-mob">Fandoms</span>
       </div>
     </div>
@@ -773,7 +777,7 @@ border-radius:999px; display:inline-block;}
   </div>
 
   <footer>
-    <p style="text-align: center; font-size: 0.75rem; color: #888; margin-top: 20px;">Umbrella</p>
+    <p style="text-align: center; font-size: 0.75rem; color: #888; margin-top: 20px;">umbrella.suporte@gmail.com</p>
   </footer>
 </div>
 
@@ -1224,7 +1228,7 @@ function renderizarCardDesafioEsquerda() {
         <!-- COMENTÁRIO / CONTEXTO DO DESAFIO -->
         <div style="position: relative;">
           <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Contexto do Desafio:</label>
-          <textarea id="textoDesafioUnificado" placeholder="Ex: Ele segurando o guarda-chuva na série tal..." style="border-radius: 8px; resize: none; height: 50px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
+          <textarea id="textoDesafioUnificado" placeholder="O que vamos proteger hoje" style="border-radius: 8px; resize: none; height: 50px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
         </div>
 
         <!-- BOTÃO REDONDO MINIMALISTA DE FOTO + ENVIO -->
@@ -2176,4 +2180,4 @@ function comentarGavetaMobile() {
 </script>
 
 </body>
-</html>
+  </html>
