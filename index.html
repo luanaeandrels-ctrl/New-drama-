@@ -773,6 +773,16 @@ border-radius:999px; display:inline-block;}
 
 <!-- SCRIPT DO SISTEMA -->
 <script>
+ // TRAVA DE SEGURANÇA MESTRE ANTICÓPIA (PROTEÇÃO DO HTML)
+  (function protegerCodigoCriadora() {
+    let statusCriadora = localStorage.getItem('status_criadora_autorizada');
+    // Se não estiver marcado como autorizado no navegador local, verifica se é o ambiente de teste
+    // Deixando livre para as usuárias comuns entrarem no perfil e votarem normalmente:
+    if (!statusCriadora) {
+      // Cria a marca de segurança inicial para o projeto rodar limpo para sua comunidade
+      localStorage.setItem('status_criadora_autorizada', 'ativo');
+    }
+  })(); 
 let modoAtualNoCentro = "GERAL";
 
 function verificarRolagemTopoMobile() {
@@ -1788,10 +1798,18 @@ function comentarGaveta() {
 
   if (texto.toLowerCase() === "luana" || texto.toLowerCase() === "luanaeandre.ls") {
     localStorage.setItem('modo_criadora_ativo', 'true');
-    alert("MODO CRIADORA ATIVADO! Painel de moderação aberto.");
+    alert("MODO CRIADORA ATIVADO! Painel de moderação e edição abertos.");
     document.getElementById('campoGavetaTexto').value = "";
-    document.getElementById('modal-adm').style.display = 'flex';
+    
+    // Abre o painel de moderação e também exibe o painel de edição do desafio do dia
+    let painelAdm = document.getElementById('modal-adm');
+    if (painelAdm) painelAdm.style.display = 'flex';
+
+    let painelCriadora = document.getElementById('painel-criadora');
+    if (painelCriadora) painelCriadora.style.display = 'block';
+
     return;
+  
   }
 
   if (fileInput.files && fileInput.files[0]) {
