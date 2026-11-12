@@ -1950,12 +1950,13 @@ function comentarGavetaMobile() {
 </script>
 
 <!-- FIREBASE COM FALLBACK SEGURO -->
-<!-- FIREBASE CORRIGIDO PARA CELULAR (REDIRECT) E PC -->
+<!-- FIREBASE HÍBRIDO (POP-UP COM FALLBACK PARA REDIRECT) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { 
     getAuth, 
-    signInWithRedirect, 
+    signInWithPopup, 
+    signInWithRedirect,
     getRedirectResult, 
     GoogleAuthProvider, 
     onAuthStateChanged,
@@ -1976,29 +1977,35 @@ function comentarGavetaMobile() {
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // 1. Captura o retorno do login do Google no celular/PC
+  // Processa o retorno caso tenha usado redirect
   getRedirectResult(auth)
     .then((result) => {
       if (result && result.user) {
         aplicarDadosGoogleNaInterface(result.user);
-        alert(`Bem-vinda(o), ${result.user.displayName}! Login com Google integrado.`);
       }
-    })
-    .catch((error) => {
-      console.error("Erro no retorno do Google:", error);
-      alert("Erro ao conectar com o Google (" + error.code + "). Verifique se 'new-drama1.vercel.app' está nos Domínios Autorizados do Firebase.");
+    }).catch((error) => {
+      console.warn("Erro no redirect:", error);
     });
 
-  // 2. Dispara o redirecionamento oficial do Google (não abre about:blank no celular)
+  // Botão de login inteligente
   window.tentarLoginGoogleDireto = function() {
-    // Limpa cache antigo antes de autenticar com o Google
     localStorage.removeItem('usuario_nome');
     localStorage.removeItem('usuario_email');
     localStorage.removeItem('usuario_foto');
-    signInWithRedirect(auth, provider);
+
+    // Tenta via Popup primeiro (melhor para PC)
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        aplicarDadosGoogleNaInterface(result.user);
+        alert(`Bem-vinda(o), ${result.user.displayName}!`);
+      })
+      .catch((error) => {
+        console.warn("Popup bloqueado, tentando por redirect...", error);
+        // Se o navegador bloquear o popup (comum no celular), usa o redirect automático
+        signInWithRedirect(auth, provider);
+      });
   };
 
-  // 3. Mantém o usuário sincronizado e preenche os dados reais do Google
   onAuthStateChanged(auth, (user) => {
     if (user) {
       aplicarDadosGoogleNaInterface(user);
@@ -2029,20 +2036,17 @@ function comentarGavetaMobile() {
       if (avatarGrande) avatarGrande.innerHTML = `<img src="${fotoGoogle}" style="width: 100%; height: 100%; object-fit: cover;">`;
     }
 
-    // Preenche os inputs do modal caso você abra para editar o restante
     const inputNome = document.getElementById('input-nome');
     const inputEmail = document.getElementById('input-email');
     if (inputNome) inputNome.value = nomeGoogle;
     if (inputEmail) inputEmail.value = emailGoogle;
   }
 
-  // Sobrescreve o sairDaConta para desconectar também do Firebase
-  const sairOriginal = window.sairDaConta;
   window.sairDaConta = function() {
     if (confirm("Deseja realmente sair da conta?")) {
       signOut(auth).finally(() => {
         localStorage.clear();
-        location.reload();
+        location.log ? location.reload() : window.location.href = window.location.href;
       });
     }
   };
