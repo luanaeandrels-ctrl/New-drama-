@@ -96,7 +96,7 @@
   top: 0; left: 0; width: 100vw; height: 100vh;
   background: rgba(11, 15, 25, 0.85);
   backdrop-filter: blur(8px);
-  z-index: 1000;
+  z-index: 10000;
   display: none;
   justify-content: center;
   align-items: center;
@@ -291,7 +291,7 @@ border-radius:999px; display:inline-block;}
   inset: 0;
   background: rgba(6, 10, 30, 0.96);
   backdrop-filter: blur(10px);
-  z-index: 99998;
+  z-index: 9998;
   display: none;
   flex-direction: column;
   padding: 15px;
@@ -312,6 +312,26 @@ border-radius:999px; display:inline-block;}
   <div class="caixa-trava">
     <h2 style="color: #ff4757; margin-bottom: 10px; font-size: 1.4rem;">ACESSO NEGADO & TRAVADO</h2>
     <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 20px;">Linha mestre de segurança violada. Este código pertence exclusivamente à criadora autorizada.</p>
+  </div>
+</div>
+
+<!-- POPUP FLUTUANTE EXCLUSIVO DA CRIADORA (DESAFIO DO DIA GLOBAL) -->
+<div id="modal-popup-criadora-desafio" class="modal-custom" style="z-index: 100001;">
+  <div class="caixa-modal" style="border: 2px solid #9c27b0; box-shadow: 0 0 30px rgba(156, 39, 176, 0.6);">
+    <div style="text-align: center; margin-bottom: 12px;">
+      <span style="font-size: 2rem;">👑</span>
+      <h3 style="color: #f3d98b; font-size: 1.25rem; margin-top: 4px;">Modo Criadora Ativado!</h3>
+      <p style="font-size: 0.78rem; color: #ccc;">Atualize o <b>Desafio do Dia</b> para toda a plataforma conectada:</p>
+    </div>
+    <div class="grupo-input">
+      <label>Novo Desafio do Dia (Visível para todos):</label>
+      <textarea id="input-popup-desafio-global" placeholder="Digite o desafio de hoje aqui..." style="border-radius: 12px; height: 80px; padding: 10px; font-size: 0.9rem; resize: none;"></textarea>
+    </div>
+    <div style="display: flex; gap: 10px; margin-top: 15px;">
+      <button onclick="salvarDesafioPeloPopupCriadora()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">🚀 Publicar para Todos</button>
+      <button onclick="fecharPopupCriadoraDesafio()" style="padding: 12px 16px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Fechar</button>
+    </div>
+    <button onclick="fecharPopupCriadoraDesafio(); verificarSenhaAdm();" style="width: 100%; margin-top: 10px; padding: 8px; background: rgba(243,217,139,0.15); border: 1px solid #f3d98b; color: #f3d98b; border-radius: 8px; font-size: 0.78rem; font-weight: bold; cursor: pointer;">Abrir Painel Completo de Moderação (ADM)</button>
   </div>
 </div>
 
@@ -345,7 +365,7 @@ border-radius:999px; display:inline-block;}
       <span id="nome-usuario" style="font-weight: bold; font-size: 0.85rem; color: #fff;">Visitante</span>
     </div>
     <div style="display: flex; gap: 6px; align-items: center;">
-      <button id="btn-acao-perfil" onclick="clicarBotaoPerfil()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 5px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Entrar</button>
+      <button id="btn-acao-perfil" onclick="clicarBotaoPerfil()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 5px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Entrar</button>
       <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;" title="Suporte com Desenvolvedora">⋮</button>
     </div>
   </div>
@@ -369,6 +389,15 @@ border-radius:999px; display:inline-block;}
       <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">👑 Painel de Moderação & Criadora</h3>
       <p style="font-size: 0.75rem; color: #aaa; text-align: center; margin-bottom: 15px;">Gerencie solicitações, fandoms e feed global.</p>
       
+      <!-- ALTERAR DESAFIO DO DIA -->
+      <div style="margin-bottom: 15px; background: rgba(243,217,139,0.1); padding: 12px; border-radius: 10px; border: 1px solid #f3d98b;">
+        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 6px;">🎯 Mudar Desafio do Dia Global:</h4>
+        <div style="display: flex; gap: 6px;">
+          <input type="text" id="input-adm-desafio-rapido" placeholder="Novo tema do desafio..." style="padding: 8px; font-size: 0.8rem; border-radius: 8px;">
+          <button onclick="salvarDesafioPeloPainelAdm()" style="background: #9c27b0; color: white; border: none; padding: 8px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem; white-space: nowrap;">Atualizar</button>
+        </div>
+      </div>
+
       <!-- APROVAR / NEGAR SOLICITAÇÕES DE FANDOM -->
       <div style="margin-bottom: 15px; background: rgba(156,39,176,0.15); padding: 12px; border-radius: 10px; border: 1px solid #9c27b0;">
         <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 8px;">📥 Solicitações Pendentes de Fandoms:</h4>
@@ -413,13 +442,19 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE CADASTRO -->
+  <!-- MODAL DE CADASTRO / LOGIN -->
   <div id="modal-cadastro" class="modal-custom">
     <div class="caixa-modal">
-      <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Dados Cadastrais & Senha</h3>
-      <div class="grupo-input"><label>1. Nome ou Apelido na Comunidade:</label><input type="text" id="input-nome" placeholder="Ex: Visitante"></div>
+      <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Entrar / Dados Cadastrais</h3>
+      <p style="font-size: 0.75rem; color: #aaa; text-align: center; margin-bottom: 12px;">Preencha seus dados para acessar sua conta na comunidade:</p>
+      
+      <button type="button" onclick="tentarLoginGoogleDireto()" style="width: 100%; padding: 10px; background: #fff; color: #333; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 0.85rem; margin-bottom: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+        <span>G</span> Entrar rápido com conta Google
+      </button>
+
+      <div class="grupo-input"><label>1. Nome ou Apelido na Comunidade:</label><input type="text" id="input-nome" placeholder="Ex: Luana"></div>
       <div class="grupo-input"><label>2. Data de Nascimento:</label><input type="text" id="input-nasc" placeholder="Ex: DD/MM/AAAA"></div>
-      <div class="grupo-input"><label>3. Fandom / Artista da Semana:</label><input type="text" id="input-fandom" placeholder="Ex: Artista Principal"></div>
+      <div class="grupo-input"><label>3. Fandom / Artista da Semana:</label><input type="text" id="input-fandom" placeholder="Ex: Park Chanyeol"></div>
       <div class="grupo-input"><label>4. E-mail:</label><input type="email" id="input-email" placeholder="seu@email.com"></div>
       <div class="grupo-input"><label>5. WhatsApp:</label><input type="text" id="input-tel" placeholder="(31) 9xxxx-xxxx"></div>
       <div class="grupo-input"><label>6. Senha de Acesso:</label><input type="password" id="input-senha" placeholder="Sua senha secreta..."></div>
@@ -442,7 +477,7 @@ border-radius:999px; display:inline-block;}
         <input type="file" id="input-fundo-perfil-file" accept="image/*" style="display: none;" onchange="atualizarNomeFundoPerfil(this)">
       </div>
       <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button onclick="salvarPerfilPersonalizado()" class="btn-tema-bg" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Salvar Dados</button>
+        <button onclick="salvarPerfilPersonalizado()" class="btn-tema-bg" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Entrar / Salvar</button>
         <button onclick="fecharModalCadastro()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
       </div>
     </div>
@@ -710,7 +745,7 @@ border-radius:999px; display:inline-block;}
         </div>
         <p class="small">Suas notas, fotos e histórico:</p>
         <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 180px; overflow-y: auto;">
-          <div id="listaGaveta" style="font-size: 0.8rem; color: #ccc;">Nenhum item salvo na gaveta ainda. Digite "luana" ou "luanaeandre.ls" para ativar o Modo Criadora.</div>
+          <div id="listaGaveta" style="font-size: 0.8rem; color: #ccc;">Nenhum item salvo na gaveta ainda.</div>
         </div>
         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
           <textarea id="campoGavetaTexto" placeholder="Escreva nota ou ative criadora..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
@@ -757,6 +792,83 @@ border-radius:999px; display:inline-block;}
 <!-- SCRIPT DO SISTEMA -->
 <script>
 let modoAtualNoCentro = "GERAL";
+
+// FUNÇÃO CENTRAL PARA VERIFICAR PALAVRAS-CHAVE DO MODO CRIADORA
+function verificarChaveCriadora(textoDigitado) {
+  if (!textoDigitado) return false;
+  let chave = textoDigitado.trim().toLowerCase();
+  if (chave === "luana" || chave === "luanaeandre" || chave === "luanaeandre.ls") {
+    localStorage.setItem('modo_criadora_ativo', 'true');
+    let painelCriadora = document.getElementById('painel-criadora');
+    if (painelCriadora) painelCriadora.style.display = 'block';
+    abrirPopupCriadoraDesafio();
+    return true;
+  }
+  return false;
+}
+
+// CONTROLE DO POPUP FLUTUANTE DA CRIADORA
+function abrirPopupCriadoraDesafio() {
+  let popup = document.getElementById('modal-popup-criadora-desafio');
+  let input = document.getElementById('input-popup-desafio-global');
+  if (input) input.value = localStorage.getItem('desafioDoDiaGlobal') || "";
+  if (popup) popup.style.display = 'flex';
+}
+
+function fecharPopupCriadoraDesafio() {
+  let popup = document.getElementById('modal-popup-criadora-desafio');
+  if (popup) popup.style.display = 'none';
+}
+
+function salvarDesafioPeloPopupCriadora() {
+  let novoTexto = document.getElementById('input-popup-desafio-global').value.trim();
+  if (!novoTexto) {
+    alert("Digite o texto do desafio!");
+    return;
+  }
+  aplicarAtualizacaoDesafioGlobal(novoTexto);
+  fecharPopupCriadoraDesafio();
+}
+
+function salvarDesafioPeloPainelAdm() {
+  let novoTexto = document.getElementById('input-adm-desafio-rapido').value.trim();
+  if (!novoTexto) {
+    alert("Digite o novo desafio!");
+    return;
+  }
+  aplicarAtualizacaoDesafioGlobal(novoTexto);
+  document.getElementById('input-adm-desafio-rapido').value = "";
+}
+
+function atualizarDesafioDoDiaGlobal() {
+  const novoTexto = document.getElementById("novo-desafio-input").value.trim();
+  if (!novoTexto) {
+    alert("Digite o novo desafio do dia!");
+    return;
+  }
+  aplicarAtualizacaoDesafioGlobal(novoTexto);
+  document.getElementById("novo-desafio-input").value = "";
+}
+
+function aplicarAtualizacaoDesafioGlobal(novoTexto) {
+  localStorage.setItem("desafioDoDiaGlobal", novoTexto);
+  let subEsq = document.getElementById('sub-titulo-desafio-esq');
+  if (subEsq) subEsq.innerText = novoTexto;
+  let subMob = document.getElementById('sub-titulo-desafio-mob');
+  if (subMob) subMob.innerText = novoTexto;
+  atualizarResumoDesafioMob();
+  alert("🎯 Desafio atualizado com sucesso para toda a plataforma conectada!");
+}
+
+// CONTROLE DO BOTÃO ENTRAR / PERFIL SEM TRAVAMENTO
+function clicarBotaoPerfil() {
+  let nomeLocal = localStorage.getItem('usuario_nome');
+  if (nomeLocal) {
+    abrirMenuLateral();
+  } else {
+    configurarPerfil();
+  }
+}
 
 function verificarRolagemTopoMobile() {
   if (window.scrollY > 30) {
@@ -846,7 +958,7 @@ function abrirGavetaMobile(tipo) {
     titulo.innerText = "🎯 Desafio do Dia & Envio Integrado (Toque aqui para voltar)";
     container.innerHTML = `
       <div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px; margin-bottom: 12px;">
-        <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">Desafio do Dia</h4>
+        <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">${obterDesafioDoDiaAtual()}</h4>
         <div style="margin-bottom: 10px; position: relative;">
           <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
           <input type="text" id="inputBuscaBiasDesafioMob" placeholder="Ex: 1 ou Nome..." oninput="filtrarBuscaBiasDesafio(this.value, 'mob')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
@@ -1000,7 +1112,7 @@ function carregarHistoricoNaGaveta() {
   if (!gaveta) return;
   let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
   if (historicoSalvo.length === 0) {
-    gaveta.innerHTML = "Nenhum item salvo na gaveta ainda. Digite 'luana' ou 'luanaeandre.ls' para ativar o Modo Criadora.";
+    gaveta.innerHTML = "Nenhum item salvo na gaveta ainda.";
     return;
   }
   let htmlConteudo = "";
@@ -1067,6 +1179,13 @@ function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64, origem = 'esq'
 }
 
 function filtrarBuscaBiasDesafio(termo, origem = 'esq') {
+  // Verifica se digitou a chave da criadora diretamente na busca do bias
+  if (verificarChaveCriadora(termo)) {
+    let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasDesafioMob' : 'inputBuscaBiasDesafio');
+    if (inputBusca) inputBusca.value = "";
+    return;
+  }
+
   let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-busca-mob' : 'sugestoes-bias-busca');
   if (!divSugestoes) return;
   termo = termo.trim().toLowerCase();
@@ -1109,7 +1228,7 @@ function renderizarCardDesafioEsquerda() {
   } else {
     htmlConteudo = `
       <div style="display: flex; flex-direction: column; gap: 6px;">
-        <textarea id="textoDesafioEsq" placeholder="Busque o bias acima para travar..." style="border-radius: 8px; resize: none; height: 45px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
+        <textarea id="textoDesafioEsq" oninput="if(verificarChaveCriadora(this.value)) this.value='';" placeholder="Busque o bias acima para travar..." style="border-radius: 8px; resize: none; height: 45px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
         <div style="display: flex; gap: 4px;">
           <label for="inputFotoDesafioEsq" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(243,217,139,0.4); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="label-foto-desafio-esq">📁 Foto do Desafio</label>
           <input type="file" id="inputFotoDesafioEsq" accept="image/*" style="display: none;" onchange="processarFotoDesafioEsq(this)">
@@ -1156,11 +1275,16 @@ function converterImagemParaHD(file, maxWidth, maxHeight, callback) {
 }
 
 function validarECruzarPixelsDesafio() {
+  let legenda = document.getElementById('textoDesafioEsq')?.value.trim() || "";
+  if (verificarChaveCriadora(legenda)) {
+    document.getElementById('textoDesafioEsq').value = "";
+    return;
+  }
+
   let nomeUsuario = localStorage.getItem('usuario_nome');
   if (!nomeUsuario) { alert("Faça login para enviar o desafio!"); return; }
   if (!window.biasSelecionadoValidado) { alert("Erro: Selecione um bias cadastrado antes de enviar!"); return; }
   if (!arquivoFotoDesafioEsq) { alert("Envie a foto para o desafio!"); return; }
-  let legenda = document.getElementById('textoDesafioEsq')?.value.trim() || "";
 
   converterImagemParaHD(arquivoFotoDesafioEsq, 400, 400, function(base64Enviada) {
     let hojeStr = new Date().toLocaleDateString();
@@ -1568,6 +1692,11 @@ function fecharModalCadastro() { document.getElementById('modal-cadastro').style
 
 function salvarPerfilPersonalizado() {
   let nome = document.getElementById('input-nome').value.trim();
+  if (!nome) {
+    alert("Por favor, digite seu nome ou apelido para entrar!");
+    return;
+  }
+
   let nascimento = document.getElementById('input-nasc').value.trim();
   let fandom = document.getElementById('input-fandom').value.trim();
   let email = document.getElementById('input-email').value.trim();
@@ -1577,15 +1706,20 @@ function salvarPerfilPersonalizado() {
   let fileInput = document.getElementById('input-foto-file');
   let fundoFileInput = document.getElementById('input-fundo-perfil-file');
 
-  if (nome) {
-    localStorage.setItem('usuario_nome', nome);
-    document.getElementById('nome-usuario').innerText = nome;
-    document.getElementById('menu-nome-usuario').innerText = nome;
-    document.getElementById('avatar-usuario').innerText = nome.charAt(0).toUpperCase();
-    document.getElementById('perfil-avatar-grande').innerText = nome.charAt(0).toUpperCase();
-  }
+  localStorage.setItem('usuario_nome', nome);
+  document.getElementById('nome-usuario').innerText = nome;
+  document.getElementById('menu-nome-usuario').innerText = nome;
+  document.getElementById('avatar-usuario').innerText = nome.charAt(0).toUpperCase();
+  document.getElementById('perfil-avatar-grande').innerText = nome.charAt(0).toUpperCase();
+  
+  let btnPerfil = document.getElementById('btn-acao-perfil');
+  if (btnPerfil) btnPerfil.innerText = "Perfil";
+
   if (nascimento) localStorage.setItem('usuario_nascimento', nascimento);
-  if (fandom) localStorage.setItem('usuario_fandom', fandom);
+  if (fandom) {
+    localStorage.setItem('usuario_fandom', fandom);
+    document.getElementById('menu-fandom-usuario').innerText = "Artista da Semana: " + fandom;
+  }
   if (senha) localStorage.setItem('usuario_senha', senha);
   if (telefone) localStorage.setItem('usuario_telefone', telefone);
   if (email) localStorage.setItem('usuario_email', email);
@@ -1606,7 +1740,7 @@ function salvarPerfilPersonalizado() {
     });
   }
   fecharModalCadastro();
-  alert("Dados salvos com sucesso!");
+  alert(`Bem-vinda, ${nome}! Login realizado com sucesso.`);
 }
 
 function abrirSuporteDesenvolvedor() { document.getElementById('modal-suporte').style.display = 'flex'; }
@@ -1767,18 +1901,22 @@ window.addEventListener('DOMContentLoaded', () => {
 
   let nomeSalvo = localStorage.getItem('usuario_nome');
   let fotoSalva = localStorage.getItem('usuario_foto');
+  let btnPerfil = document.getElementById('btn-acao-perfil');
   if (nomeSalvo) {
     document.getElementById('nome-usuario').innerText = nomeSalvo;
     document.getElementById('menu-nome-usuario').innerText = nomeSalvo;
     document.getElementById('avatar-usuario').innerText = nomeSalvo.charAt(0).toUpperCase();
     document.getElementById('perfil-avatar-grande').innerText = nomeSalvo.charAt(0).toUpperCase();
+    if (btnPerfil) btnPerfil.innerText = "Perfil";
+  } else {
+    if (btnPerfil) btnPerfil.innerText = "Entrar";
   }
+
   if (fotoSalva) {
     document.getElementById('avatar-usuario').innerHTML = `<img src="${fotoSalva}" style="width: 100%; height: 100%; object-fit: cover;">`;
     document.getElementById('perfil-avatar-grande').innerHTML = `<img src="${fotoSalva}" style="width: 100%; height: 100%; object-fit: cover;">`;
   }
 
-  // Verifica se a criadora já estava ativa anteriormente
   if (localStorage.getItem('modo_criadora_ativo') === 'true') {
     let painel = document.getElementById('painel-criadora');
     if (painel) painel.style.display = 'block';
@@ -1810,16 +1948,8 @@ function comentarGaveta() {
   if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo ou escolha uma foto!"); return; }
 
   // ATIVAÇÃO DO MODO CRIADORA
-  if (texto.toLowerCase() === "luana" || texto.toLowerCase() === "luanaeandre.ls") {
-    localStorage.setItem('modo_criadora_ativo', 'true');
-    alert("👑 MODO CRIADORA ATIVADO! Painel de moderação e edição abertos.");
+  if (verificarChaveCriadora(texto)) {
     document.getElementById('campoGavetaTexto').value = "";
-    
-    let painelCriadora = document.getElementById('painel-criadora');
-    if (painelCriadora) painelCriadora.style.display = 'block';
-
-    let painelAdm = document.getElementById('modal-adm');
-    if (painelAdm) painelAdm.style.display = 'flex';
     return;
   }
 
@@ -1841,11 +1971,7 @@ function comentarGavetaMobile() {
   let fileInput = document.getElementById('campoGavetaFotoMob');
   if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo!"); return; }
 
-  if (texto.toLowerCase() === "luana" || texto.toLowerCase() === "luanaeandre.ls") {
-    localStorage.setItem('modo_criadora_ativo', 'true');
-    alert("👑 MODO CRIADORA ATIVADO!");
-    let painelCriadora = document.getElementById('painel-criadora');
-    if (painelCriadora) painelCriadora.style.display = 'block';
+  if (verificarChaveCriadora(texto)) {
     fecharGavetaMobile();
     return;
   }
@@ -1862,10 +1988,9 @@ function comentarGavetaMobile() {
 }
 </script>
 
-<!-- FIREBASE E CONTROLE DE PERFIL / MODO CRIADORA -->
+<!-- FIREBASE (OPCIONAL COM FALLBACK SEGURO PARA NÃO TRAVAR O BOTÃO ENTRAR) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
@@ -1878,69 +2003,48 @@ function comentarGavetaMobile() {
     measurementId: "G-VXNH7S6N36"
   };
 
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-  const auth = getAuth(app);
-  const provider = new GoogleAuthProvider();
+  let auth = null;
+  let provider = null;
+  try {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    provider = new GoogleAuthProvider();
+  } catch (e) {
+    console.warn("Firebase inicializado em modo offline:", e);
+  }
 
-  window.fazerLoginGoogle = function() {
+  window.tentarLoginGoogleDireto = function() {
+    if (!auth || !provider) {
+      alert("Login rápido via Google indisponível neste navegador/arquivo local. Preencha seu nome e dados abaixo para entrar normalmente!");
+      return;
+    }
     signInWithPopup(auth, provider)
       .then((result) => {
         const user = result.user;
         localStorage.setItem('usuario_nome', user.displayName);
         if (user.photoURL) localStorage.setItem('usuario_foto', user.photoURL);
-        console.log("Logado com sucesso:", user.displayName);
         location.reload();
       })
       .catch((error) => {
-        console.error("Erro ao fazer login:", error.message);
-        alert("Não foi possível realizar o login. Tente novamente.");
+        console.warn("Popup Google bloqueado ou domínio não autorizado:", error.code);
+        alert("O login rápido do Google foi bloqueado pelo navegador. Preencha seu nome no formulário abaixo para entrar!");
       });
   };
 
-  window.clicarBotaoPerfil = function() {
-    const user = auth.currentUser;
-    if (user || localStorage.getItem('usuario_nome')) {
-      if (typeof abrirMenuLateral === 'function') abrirMenuLateral(); 
-    } else {
-      fazerLoginGoogle();
-    }
-  };
-
-  onAuthStateChanged(auth, (user) => {
-    const botaoPerfil = document.getElementById("btn-acao-perfil");
-    if (botaoPerfil) {
-      if (user) {
+  if (auth) {
+    onAuthStateChanged(auth, (user) => {
+      const botaoPerfil = document.getElementById("btn-acao-perfil");
+      if (botaoPerfil && user) {
+        localStorage.setItem('usuario_nome', user.displayName);
         if (user.photoURL) {
-          botaoPerfil.innerHTML = `<img src="${user.photoURL}" style="width: 22px; height: 22px; border-radius: 50%; vertical-align: middle; margin-right: 4px;"> Perfil`;
+          localStorage.setItem('usuario_foto', user.photoURL);
+          botaoPerfil.innerHTML = `<img src="${user.photoURL}" style="width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; margin-right: 4px;"> Perfil`;
         } else {
           botaoPerfil.innerText = "Perfil";
         }
-      } else {
-        let nomeLocal = localStorage.getItem('usuario_nome');
-        botaoPerfil.innerText = nomeLocal ? "Perfil" : "Entrar";
       }
-    }
-  });
-
-  // FUNÇÃO GLOBAL DA CRIADORA PARA ATUALIZAR O DESAFIO NA PLATAFORMA INTEIRA
-  window.atualizarDesafioDoDiaGlobal = function() {
-    const novoTexto = document.getElementById("novo-desafio-input").value.trim();
-    if (!novoTexto) {
-      alert("Digite o novo desafio do dia!");
-      return;
-    }
-
-    localStorage.setItem("desafioDoDiaGlobal", novoTexto);
-    
-    // Atualiza imediatamente na interface
-    let subEsq = document.getElementById('sub-titulo-desafio-esq');
-    if (subEsq) subEsq.innerText = novoTexto;
-    
-    atualizarResumoDesafioMob();
-    document.getElementById("novo-desafio-input").value = "";
-    alert("🎯 Desafio atualizado com sucesso para toda a plataforma conectada!");
-  };
+    });
+  }
 </script>
 </body>
 </html>
