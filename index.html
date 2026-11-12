@@ -389,9 +389,9 @@ border-radius:999px; display:inline-block;}
       </div>
 
       <div style="margin-bottom: 15px; background: rgba(156,39,176,0.15); padding: 12px; border-radius: 10px; border: 1px solid #9c27b0;">
-        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 8px;">📥 Solicitações Pendentes de Fandoms:</h4>
+        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 8px;">📥 Solicitações Pendentes de Fandoms (Firestore Nuvem):</h4>
         <div id="lista-solicitacoes-adm" style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
-          <p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente no momento.</p>
+          <p style="font-size:0.75rem; color:#aaa; text-align:center;">Carregando solicitações da nuvem...</p>
         </div>
       </div>
 
@@ -424,7 +424,7 @@ border-radius:999px; display:inline-block;}
         <textarea id="solicitacao-motivo" placeholder="Ex: Sou fã nº 1!" style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
       </div>
       <div style="display: flex; gap: 10px; margin-top: 20px;">
-        <button onclick="enviarSolicitacaoFandom()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Enviar Pedido</button>
+        <button onclick="enviarSolicitacaoFandomNuvem()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Enviar Pedido para Nuvem</button>
         <button onclick="fecharModalSolicitacao()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
       </div>
     </div>
@@ -1011,7 +1011,6 @@ function aplicarZoomPinterest(valor) {
 }
 
 let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["BTS", "EXO", "Super Junior", "Doramas", "Anime"]');
-let solicitacoesPendentes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
 let subgruposFandoms = JSON.parse(localStorage.getItem('fandoms_subgrupos') || '{}');
 let fandomAtualSelecionado = "";
 let corAtualSelecionada = "";
@@ -1379,12 +1378,11 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
   
   let nomeSalvo = localStorage.getItem('usuario_nome');
   
-  // Se já estiver logada, vai direto para a solicitação do fandom sem mandar logar de novo!
   if (nomeSalvo) {
     fandomAtualSelecionado = nomeComunidade;
     corAtualSelecionada = corTema;
     let inputNomeSol = document.getElementById('solicitacao-nome');
-    if (inputNomeSol) inputNomeSol.value = nomeSalvo; // Preenche o nome automático
+    if (inputNomeSol) inputNomeSol.value = nomeSalvo;
     document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Insira sua solicitação de acesso:`;
     document.getElementById('modal-solicitacao').style.display = 'flex';
   } else {
@@ -1405,65 +1403,11 @@ function entrarFandomPeloPainelAdm() {
 
 function fecharModalSolicitacao() { document.getElementById('modal-solicitacao').style.display = 'none'; }
 
-function enviarSolicitacaoFandom() {
-  let nome = document.getElementById('solicitacao-nome').value.trim();
-  let motivo = document.getElementById('solicitacao-motivo').value.trim();
-  if (!nome || !motivo) { alert("Preencha seu nome e o motivo!"); return; }
-  
-  solicitacoesPendentes.push({ id: Date.now(), usuario: nome, fandom: fandomAtualSelecionado, motivo: motivo, cor: corAtualSelecionada });
-  localStorage.setItem('fandoms_solicitacoes', JSON.stringify(solicitacoesPendentes));
-  fecharModalSolicitacao();
-  alert("Solicitação enviada para a ADM!");
-}
-
 function verificarSenhaAdm() {
-  renderizarSolicitacoesAdm();
+  renderizarSolicitacoesAdmNuvem();
   document.getElementById('modal-adm').style.display = 'flex';
 }
 function fecharPainelAdm() { document.getElementById('modal-adm').style.display = 'none'; }
-
-function renderizarSolicitacoesAdm() {
-  let container = document.getElementById('lista-solicitacoes-adm');
-  if (!container) return;
-  let solicitacoes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
-  if (solicitacoes.length === 0) {
-    container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente.</p>`;
-    return;
-  }
-  let html = "";
-  solicitacoes.forEach((sol, idx) => {
-    html += `
-      <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <b style="font-size:0.8rem; color:#f3d98b;">${sol.usuario}</b> <span style="font-size:0.7rem; color:#aaa;">(${sol.fandom})</span>
-          <p style="font-size:0.7rem; color:#fff; margin:2px 0 0 0;">"${sol.motivo}"</p>
-        </div>
-        <div style="display: flex; gap: 4px;">
-          <button onclick="aceitarSolicitacao(${idx})" style="background:#4caf50; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Aceitar</button>
-          <button onclick="negarSolicitacao(${idx})" style="background:#ff4757; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Negar</button>
-        </div>
-      </div>
-    `;
-  });
-  container.innerHTML = html;
-}
-
-function aceitarSolicitacao(idx) {
-  let solicitacoes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
-  let sol = solicitacoes[idx];
-  solicitacoes.splice(idx, 1);
-  localStorage.setItem('fandoms_solicitacoes', JSON.stringify(solicitacoes));
-  alert(`Solicitação de ${sol.usuario} aceita com sucesso!`);
-  renderizarSolicitacoesAdm();
-}
-
-function negarSolicitacao(idx) {
-  let solicitacoes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
-  solicitacoes.splice(idx, 1);
-  localStorage.setItem('fandoms_solicitacoes', JSON.stringify(solicitacoes));
-  alert(`Solicitação negada.`);
-  renderizarSolicitacoesAdm();
-}
 
 function entrarComunidadeEfetivo(nomeComunidade, corTema) {
   fandomAtualSelecionado = nomeComunidade;
@@ -1950,7 +1894,7 @@ function comentarGavetaMobile() {
 }
 </script>
 
-<!-- FIREBASE COM FALLBACK SEGURO -->
+<!-- FIREBASE & FIRESTORE (SINCRONIZAÇÃO EM TEMPO REAL NA NUVEM) -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { 
@@ -1962,6 +1906,16 @@ function comentarGavetaMobile() {
     onAuthStateChanged,
     signOut
   } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getFirestore, 
+    collection, 
+    addCollection, 
+    addDoc, 
+    getDocs, 
+    deleteDoc, 
+    doc, 
+    serverTimestamp 
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
@@ -1975,6 +1929,7 @@ function comentarGavetaMobile() {
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
 
   // Processa o retorno do redirect (caso ocorra no celular)
@@ -2049,6 +2004,89 @@ function comentarGavetaMobile() {
         localStorage.clear();
         location.reload();
       });
+    }
+  };
+
+  // ==========================================
+  // FIRESTORE: SOLICITAÇÕES DE FANDOM NA NUVEM
+  // ==========================================
+  window.enviarSolicitacaoFandomNuvem = async function() {
+    let nome = document.getElementById('solicitacao-nome').value.trim();
+    let motivo = document.getElementById('solicitacao-motivo').value.trim();
+    if (!nome || !motivo) { alert("Preencha seu nome e o motivo!"); return; }
+    
+    try {
+      await addDoc(collection(db, "solicitacoes_fandoms"), {
+        usuario: nome,
+        fandom: fandomAtualSelecionado,
+        motivo: motivo,
+        cor: corAtualSelecionada,
+        criadoEm: serverTimestamp()
+      });
+      fecharModalSolicitacao();
+      alert("✅ Solicitação enviada com sucesso para a nuvem da ADM!");
+    } catch (e) {
+      console.error("Erro ao enviar solicitação para o Firestore:", e);
+      alert("Erro ao enviar solicitação. Verifique sua conexão.");
+    }
+  };
+
+  window.renderizarSolicitacoesAdmNuvem = async function() {
+    let container = document.getElementById('lista-solicitacoes-adm');
+    if (!container) return;
+    container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Buscando solicitações na nuvem...</p>`;
+
+    try {
+      const querySnapshot = await getDocs(collection(db, "solicitacoes_fandoms"));
+      if (querySnapshot.empty) {
+        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente na nuvem.</p>";`;
+        return;
+      }
+      let html = "";
+      querySnapshot.forEach((documento) => {
+        let sol = documento.data();
+        let docId = documento.id;
+        html += `
+          <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <div>
+              <b style="font-size:0.8rem; color:#f3d98b;">${sol.usuario}</b> <span style="font-size:0.7rem; color:#aaa;">(${sol.fandom})</span>
+              <p style="font-size:0.7rem; color:#fff; margin:2px 0 0 0;">"${sol.motivo}"</p>
+            </div>
+            <div style="display: flex; gap: 4px;">
+              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}', '${sol.cor}')" style="background:#4caf50; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Aceitar</button>
+              <button onclick="negarSolicitacaoNuvem('${docId}')" style="background:#ff4757; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Negar</button>
+            </div>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    } catch (e) {
+      console.error("Erro ao carregar solicitações:", e);
+      container.innerHTML = `<p style="font-size:0.75rem; color:#ff4757; text-align:center;">Erro ao conectar com a nuvem.</p>`;
+    }
+  };
+
+  window.aceitarSolicitacaoNuvem = async function(docId, usuario, fandom, cor) {
+    try {
+      await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
+      alert(`🎉 Solicitação de ${usuario} aceita com sucesso para o fandom ${fandom}!`);
+      renderizarSolicitacoesAdmNuvem();
+      fecharPainelAdm();
+      entrarComunidadeEfetivo(fandom, cor || "#9c27b0");
+    } catch (e) {
+      console.error("Erro ao aceitar solicitação:", e);
+      alert("Erro ao processar aceitação.");
+    }
+  };
+
+  window.negarSolicitacaoNuvem = async function(docId) {
+    try {
+      await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
+      alert(`Solicitação negada.`);
+      renderizarSolicitacoesAdmNuvem();
+    } catch (e) {
+      console.error("Erro ao negar solicitação:", e);
+      alert("Erro ao processar negação.");
     }
   };
 </script>
