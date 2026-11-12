@@ -1892,7 +1892,6 @@ function comentarGavetaMobile() {
     abrirGavetaMobile('gaveta');
   }
 }
-</script>
 <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1925,12 +1924,17 @@ function comentarGavetaMobile() {
     }
   };
 
-  // Monitora para mudar o texto do botão automaticamente (com o ID correto: btn-acao-perfil)
+  // Monitora o login sem deixar a foto sumir ou piscar errado
   onAuthStateChanged(auth, (user) => {
     const botaoPerfil = document.getElementById("btn-acao-perfil");
     if (botaoPerfil) {
       if (user) {
-        botaoPerfil.innerText = "Perfil";
+        // Se tem foto do Google, exibe a foto e o texto Perfil de forma segura
+        if (user.photoURL) {
+          botaoPerfil.innerHTML = `<img src="${user.photoURL}" style="width: 24px; height: 24px; border-radius: 50%; vertical-align: middle; margin-right: 5px;"> Perfil`;
+        } else {
+          botaoPerfil.innerText = "Perfil";
+        }
       } else {
         botaoPerfil.innerText = "Entrar";
       }
@@ -1945,13 +1949,11 @@ function comentarGavetaMobile() {
       return;
     }
 
-    // Atualiza o texto na tela de todo mundo que estiver acessando
     const elementoDesafioNaTela = document.getElementById("texto-desafio-dia"); 
     if (elementoDesafioNaTela) {
       elementoDesafioNaTela.innerText = novoTexto;
     }
 
-    // Salva no localStorage para persistir
     localStorage.setItem("desafioDoDiaGlobal", novoTexto);
     
     alert("Desafio atualizado com sucesso para todo mundo!");
