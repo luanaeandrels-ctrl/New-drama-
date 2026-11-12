@@ -6,259 +6,1394 @@
 <title>New Drama</title>
 <link rel="manifest" href="/manifest.json">
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Arial,sans-serif}
-body{background:#060a1e url('fundo.jpeg') no-repeat center center fixed;background-size:cover;color:#fff;min-height:100vh}
-body::before{content:"";position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:0}
-.app{position:relative;z-index:1;width:100%;min-height:100vh;padding:10px;max-width:1400px;margin:0 auto}
-.logo{font-family:Georgia,serif;font-size:65px;font-weight:700;color:#f3d98b;text-align:center;text-shadow:0 0 20px #f3d98b,0 0 40px #b8860b;cursor:pointer}
-.subtitle{font-size:18px;letter-spacing:3px;opacity:.8;text-transform:uppercase;text-align:center}
-.layout{display:grid;grid-template-columns:300px 1fr 300px;gap:14px;margin-top:14px;align-items:start}
-.card{background:rgba(255,255,255,.05);backdrop-filter:blur(14px);border:1px solid rgba(243,217,139,.25);border-radius:20px;padding:16px;margin-bottom:14px}
-.card h3{font-size:16px;margin-bottom:4px}.card p.small{font-size:12px;opacity:.75;margin-bottom:10px}
-input,select,textarea{width:100%;padding:10px;border-radius:999px;border:1px solid rgba(255,255,255,.25);background:rgba(0,0,0,.3);color:#fff;outline:none;font-size:.85rem}
-select option{background:#121829;color:#fff}
-.contador{font-size:13px;background:rgba(243,217,139,.15);border:1px solid #f3d98b;padding:6px 10px;border-radius:999px;display:inline-block}
-#painel-criadora{display:none;margin-top:15px;padding:15px;background:#f3e5f5;border:2px solid #9c27b0;border-radius:8px}
-#painel-criadora p{font-weight:bold;color:#7b1fa2;margin-bottom:8px}
-#novo-desafio-input{width:100%;padding:8px;border:1px solid #ccc;border-radius:4px;margin-bottom:8px;font-size:.9rem;color:#000;background:#fff}
-#painel-criadora button{background:#9c27b0;color:#fff;border:none;padding:8px 14px;border-radius:4px;cursor:pointer;font-weight:bold}
-.modal-custom{position:fixed;inset:0;background:rgba(11,15,25,.85);backdrop-filter:blur(8px);z-index:1000;display:none;justify-content:center;align-items:center;padding:20px}
-.caixa-modal{background:#121829;border:1px solid #f3d98b;padding:25px;border-radius:16px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto}
-.grupo-input{margin-bottom:12px}.grupo-input label{display:block;font-size:.8rem;color:#f3d98b;margin-bottom:4px}
-#modal-menu{position:fixed;inset:0;background:#060a1e;z-index:999;overflow-y:auto;display:none;padding:30px 20px}
-#gaveta-mobile-overlay{position:fixed;inset:0;background:rgba(6,10,30,.96);z-index:99998;display:none;flex-direction:column;padding:15px;overflow-y:auto}
-#bloco-topo-mobile{display:none}
-.stories-mobile-container{display:flex;gap:12px;overflow-x:auto;padding:8px 4px 12px;margin-bottom:12px}
-.story-item-mob{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:136px;cursor:pointer;text-align:center}
-.story-avatar-mob{width:130px;height:130px;border-radius:50%;padding:3px;background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);display:flex;align-items:center;justify-content:center}
-.story-avatar-inner{width:100%;height:100%;border-radius:50%;overflow:hidden;background:#111;border:3px solid #060a1e;display:flex;align-items:center;justify-content:center}
-.story-avatar-inner img{width:100%;height:100%;object-fit:cover}
-.story-balao-mob{display:flex;flex-direction:column;justify-content:center;background:rgba(156,39,176,.25);border:1px solid #9c27b0;border-radius:20px;padding:10px 14px;width:280px;height:130px;flex-shrink:0;cursor:pointer}
+/* ==================================== */
+/* BARRA DE ROLAGEM 100% INVISÍVEL */
+/* ==================================== */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 999px;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+/* ==================================== */
+/* ESTILOS GERAIS E TELA DE TRAVAMENTO */
+/* ==================================== */
+  /* ESTILOS DO PAINEL DA CRIADORA E MODAL */
+#painel-criadora {
+  display: none;
+  margin-top: 15px;
+  padding: 15px;
+  background: #f3e5f5;
+  border: 2px solid #9c27b0;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+#painel-criadora p {
+  font-weight: bold;
+  color: #7b1fa2;
+  margin-bottom: 8px;
+}
+
+#novo-desafio-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+#painel-criadora button {
+  background: #9c27b0;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+#painel-criadora button:hover {
+  background: #7b1fa2;
+}
+#tela-travada-global {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: #060a1e;
+  z-index: 99999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.caixa-trava {
+  background: #121829;
+  border: 2px solid #ff4757;
+  padding: 30px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 450px;
+  box-shadow: 0 15px 40px rgba(255, 71, 87, 0.4);
+  text-align: center;
+}
+#modal-menu {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: #060a1e url('img/fundo.jpg') no-repeat center center fixed;
+  background-size: cover;
+  z-index: 999;
+  overflow-y: auto;
+  display: none;
+  box-sizing: border-box;
+  padding: 30px 20px;
+}
+#modal-menu::before {
+  content: ""; position: fixed; inset: 0;
+  background: rgba(6, 10, 30, 0.92);
+  z-index: -1;
+}
+.modal-custom {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(11, 15, 25, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: none;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+.caixa-modal {
+  background: #121829;
+  border: 1px solid #f3d98b;
+  padding: 25px;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  text-align: left;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.grupo-input { margin-bottom: 12px; }
+.grupo-input label { display: block; font-size: 0.8rem; color: #f3d98b; margin-bottom: 4px; }
+*{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', Arial, sans-serif}
+body {
+  background: #060a1e url('fundo.jpeg') no-repeat center center fixed;
+  background-size: cover;
+  image-rendering: -webkit-optimize-contrast;
+  color: #fff;
+  min-height: 100vh;
+  margin: 0;
+}
+body::before {
+  content:""; position:fixed; inset:0;
+  background:rgba(0,0,0,0.3);
+  z-index:0;
+}
+.app {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100vh;
+  padding: 10px;
+  box-sizing: border-box;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  transition: all 0.3s ease;
+}
+.logo{
+  font-family:Georgia, serif; font-size:65px; font-weight:700;
+  color:#f3d98b; letter-spacing:1px;
+  text-shadow:0 0 20px #f3d98b, 0 0 40px #b8860b;
+  line-height: 1.1;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.subtitle{font-size:18px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease;}
+
+/* ANIMAÇÃO DE RECOLHER LOGO NO MOBILE AO ROLAR */
+body.logo-recolhida .logo {
+  font-size: 32px !important;
+  text-shadow: 0 0 10px #f3d98b;
+}
+body.logo-recolhida .subtitle {
+  font-size: 11px !important;
+  letter-spacing: 1px;
+  margin-top: 2px;
+  opacity: 0.6;
+}
+
+.layout{display:grid; grid-template-columns:300px 1fr 300px; gap:14px; margin-top:14px; align-items:start; transition: all 0.3s ease;}
+.card{
+  background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(14px);
+  border: 1px solid rgba(243, 217, 139, 0.25); border-radius: 20px; padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.35); margin-bottom: 14px;
+}
+.card h3{font-size:16px; margin-bottom:4px}
+.card p.small{font-size:12px; opacity:.75; margin-bottom:10px}
+input, select, textarea{width:100%; padding: 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.25);
+background:rgba(0,0,0,0.3); color:#fff; outline:none; font-size: 0.85rem;}
+select option { background: #121829; color: #fff; }
+.contador{font-size:13px; background:rgba(243,217,139,0.15); border:1px solid #f3d98b; padding:6px 10px;
+border-radius:999px; display:inline-block;}
+
+/* ==================================== */
+/* NOVO MOBILE REESTRUTURADO (STORIES IG - BOLINHAS GIGANTES 130px REAIS) */
+/* ==================================== */
+#bloco-topo-mobile { display: none; }
+
+.stories-mobile-container {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  padding: 8px 4px 12px 4px;
+  margin-bottom: 12px;
+  scroll-snap-type: x mandatory;
+}
+.story-item-mob {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  width: 136px;
+  cursor: pointer;
+  scroll-snap-align: start;
+  text-align: center;
+}
+.story-avatar-mob {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  padding: 3px;
+  background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+  margin-bottom: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+.story-avatar-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #111;
+  border: 3px solid #060a1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.story-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
+.story-nome-mob {
+  font-size: 0.78rem;
+  color: #fff;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 132px;
+}
+.story-arroba-mob {
+  font-size: 0.65rem;
+  color: #f3d98b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 132px;
+}
+
+/* BALÃO DO DESAFIO DO DIA COM 130px EXATOS */
+.story-balao-mob {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  background: rgba(156, 39, 176, 0.25);
+  border: 1px solid #9c27b0;
+  border-radius: 20px;
+  padding: 10px 14px;
+  width: 280px;  
+  height: 130px;
+  flex-shrink: 0;
+  cursor: pointer;
+  scroll-snap-align: start;
+  box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
+}
+.story-balao-mob span.titulo-b {
+  font-size: 0.85rem;
+  font-weight: bold;
+  color: #f3d98b;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 3px;
+}
+.story-balao-mob p.texto-b {
+  font-size: 0.72rem;
+  color: #fff;
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.2;
+}
+
+/* GAVETA MOBILE DE TELA CHEIA */
+#gaveta-mobile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(6, 10, 30, 0.96);
+  backdrop-filter: blur(10px);
+  z-index: 99998;
+  display: none;
+  flex-direction: column;
+  padding: 15px;
+  overflow-y: auto;
+}
+/* CORREÇÃO 2 - ADM: só o estilo dos itens do painel, nada do seu layout foi tocado */
 .adm-item{background:rgba(0,0,0,.35);border:1px solid rgba(255,255,255,.15);border-radius:10px;padding:10px;margin-bottom:8px}
 .adm-item button{border:none;border-radius:6px;padding:6px 10px;font-weight:bold;cursor:pointer;font-size:.75rem}
-@media(max-width:1000px){.layout{display:block}#bloco-topo-mobile{display:block}#coluna-esquerda,#coluna-direita{display:none!important}}
+
+@media (max-width:1000px){
+  .layout{display:block;}
+  #bloco-topo-mobile { display: block; }
+  #coluna-esquerda, #coluna-direita { display: none !important; }
+}
 </style>
 </head>
-<body>
-<div id="tela-travada-global" style="display:none"></div>
+<body onscroll="verificarRolagemTopoMobile()">
 
-<!-- PAINEL CRIADORA: agora fica visível dentro do app e o desafio é global via Firestore -->
-<div id="painel-criadora">
-  <p>👑 Painel da Criadora</p>
-  <p id="status-desafio-global" style="font-weight:normal;color:#333;font-size:.8rem">Desafio atual: carregando...</p>
-  <input type="text" id="novo-desafio-input" placeholder="Digite o novo desafio do dia...">
-  <button id="btn-atualizar-desafio" type="button">Atualizar Desafio para toda a plataforma</button>
-  <p id="msg-desafio" style="font-weight:normal;font-size:.8rem;color:#333"></p>
+<!-- TELA DE TRAVAMENTO DE SEGURANÇA -->
+<div id="tela-travada-global">
+  <div class="caixa-trava">
+    <h2 style="color: #ff4757; margin-bottom: 10px; font-size: 1.4rem;">ACESSO NEGADO & TRAVADO</h2>
+    <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 20px;">Linha mestre de segurança violada. Este código pertence exclusivamente à criadora autorizada.</p>
+  </div>
+</div>
+<div id="painel-criadora" style="display: none; margin-top: 15px; padding: 10px; background: #f3e5f5; border-radius: 8px;">
+  <p style="font-weight: bold; color: #7b1fa2; margin-bottom: 5px;">👑 Painel da Criadora</p>
+  <input type="text" id="novo-desafio-input" placeholder="Digite o novo desafio do dia..." style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 8px;">
+  <button onclick="atualizarDesafioDoDia()" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">Atualizar Desafio</button>
+  <!-- CORREÇÃO 3 - só um aviso do desafio atual, sem mudar seu painel -->
+  <p id="msg-desafio-global" style="font-weight:normal;font-size:.8rem;color:#333;margin-top:6px"></p>
+</div>
+<!-- GAVETA MOBILE EXCLUSIVA -->
+<div id="gaveta-mobile-overlay">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
+    <h3 id="titulo-gaveta-mobile" onclick="fecharGavetaMobile()" style="color: #f3d98b; font-size: 1.1rem; margin: 0; cursor: pointer;" title="Toque aqui para voltar">Gaveta de Recursos (Toque aqui para voltar)</h3>
+  </div>
+  <div id="conteudo-dinamico-gaveta-mobile" style="display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px;"></div>
 </div>
 
-<div id="gaveta-mobile-overlay"><div style="display:flex;justify-content:space-between"><h3 id="titulo-gaveta-mobile" onclick="fecharGavetaMobile()" style="color:#f3d98b;cursor:pointer">Gaveta (toque para voltar)</h3></div><div id="conteudo-dinamico-gaveta-mobile"></div></div>
-<div id="modal-pinterest" style="position:fixed;inset:0;background:rgba(0,0,0,.95);z-index:99999;display:none;align-items:center;justify-content:center"><button onclick="fecharModalPinterest()" style="position:fixed;top:20px;right:25px;width:42px;height:42px;border-radius:50%;cursor:pointer">✕</button><img id="img-pinterest-zoom" src="" style="max-width:90vw;max-height:85vh;object-fit:contain"></div>
+<!-- MODAL ESTILO PINTEREST (ZOOM FOTOS) -->
+<div id="modal-pinterest" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; overflow: auto; padding: 10px;">
+  <button onclick="fecharModalPinterest()" style="position: fixed; top: 20px; right: 25px; background: rgba(255,255,255,0.25); border: none; color: white; font-size: 1.4rem; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 100000;">✕</button>
+  <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 40px 10px;">
+    <img id="img-pinterest-zoom" src="" style="max-width: 90vw; max-height: 85vh; object-fit: contain; transition: transform 0.2s ease; transform-origin: center; cursor: grab;">
+  </div>
+  <div style="position: fixed; bottom: 20px; background: rgba(20,25,45,0.85); backdrop-filter: blur(8px); border: 1px solid rgba(243,217,139,0.4); padding: 10px 20px; border-radius: 999px; display: flex; gap: 15px; align-items: center; z-index: 100000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
+    <span style="font-size: 0.8rem; color: #f3d98b; font-weight: bold;">Zoom:</span>
+    <input type="range" id="sliderZoomPinterest" min="1" max="4" step="0.2" value="1" oninput="aplicarZoomPinterest(this.value)" style="width: 150px; cursor: pointer;">
+  </div>
+</div>
 
 <div class="app">
-  <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:rgba(0,0,0,.2);border-radius:12px;margin-bottom:8px;border:1px solid rgba(255,255,255,.1)">
-    <div style="display:flex;align-items:center;gap:8px"><div id="avatar-usuario" style="width:32px;height:32px;border-radius:50%;background:#ff4757;display:flex;align-items:center;justify-content:center;font-weight:bold;overflow:hidden;border:1px solid #f3d98b">?</div><span id="nome-usuario" style="font-weight:bold;font-size:.85rem">Visitante</span></div>
-    <div style="display:flex;gap:6px">
-      <!-- CORREÇÃO 1: antes era onclick="abrirMenuLateral()" e por isso "Entrar" nunca logava. Agora chama a função do Firebase. -->
-      <button id="btn-acao-perfil" type="button" onclick="clicarBotaoPerfil()" style="background:#9c27b0;color:#fff;border:none;padding:5px 10px;border-radius:8px;font-weight:bold;cursor:pointer;font-size:.75rem">Entrar</button>
-      <button onclick="abrirSuporteDesenvolvedor()" style="background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:5px 8px;border-radius:8px;cursor:pointer">⋮</button>
+  <!-- CABECALHO DO USUARIO -->
+  <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1);">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div id="avatar-usuario" style="width: 32px; height: 32px; border-radius: 50%; background: #ff4757; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; overflow: hidden; border: 1px solid #f3d98b;">?</div>
+      <span id="nome-usuario" style="font-weight: bold; font-size: 0.85rem; color: #fff;">Visitante</span>
+    </div>
+    <div style="display: flex; gap: 6px; align-items: center;">
+      <!-- CORREÇÃO 1 - ENTRAR: antes era abrirMenuLateral() e por isso nunca logava. Agora chama o login do Google. Texto também trocado de perfil para Entrar. -->
+      <button id="btn-acao-perfil" onclick="clicarBotaoPerfil()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 5px 10px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Entrar</button>
+      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;" title="Suporte com Desenvolvedora">⋮</button>
     </div>
   </div>
 
-  <div id="modal-suporte" class="modal-custom"><div class="caixa-modal"><h3 style="color:#f3d98b;text-align:center">Suporte Técnico</h3><p style="font-size:.85rem;color:#ccc;margin:12px 0"><b>Desenvolvedora:</b> Luana<br><b>E-mail:</b> suporte@newdrama.com</p><button onclick="fecharSuporteDesenvolvedor()" style="width:100%;padding:10px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:8px;cursor:pointer">Fechar</button></div></div>
-
-  <!-- CORREÇÃO 2: PAINEL ADM COMPLETO -->
-  <div id="modal-adm" class="modal-custom"><div class="caixa-modal" style="max-width:560px">
-    <h3 style="color:#f3d98b;text-align:center">Painel de Moderação</h3>
-    <p id="adm-aviso" style="font-size:.8rem;color:#aaa;text-align:center;margin:8px 0"></p>
-    <div style="background:rgba(243,217,139,.1);padding:12px;border-radius:10px;border:1px solid #f3d98b;margin-bottom:12px">
-      <h4 style="color:#f3d98b;margin-bottom:6px">Entrar diretamente em um fandom:</h4>
-      <select id="select-fandom-direto"><option>【entity-BTS¦canonical_name=BTS】</option><option>【entity-EXO¦canonical_name=EXO】</option><option>【entity-Super Junior¦canonical_name=Super Junior】</option><option>Doramas</option><option>Anime</option></select>
-      <button onclick="entrarFandomPeloPainelAdm()" style="width:100%;margin-top:8px;background:#2196f3;color:#fff;border:none;padding:8px;border-radius:8px;font-weight:bold;cursor:pointer">Entrar no Fandom</button>
-    </div>
-    <h4 style="color:#f3d98b">📥 Solicitações de entrada</h4>
-    <div id="lista-solicitacoes-adm" style="margin:8px 0 14px"></div>
-    <h4 style="color:#f3d98b">💬 Comentários / publicações para moderar</h4>
-    <p style="font-size:.75rem;color:#aaa">Clique em Remover para apagar o comentário da tela e da lista.</p>
-    <div id="lista-comentarios-adm" style="margin:8px 0 14px"></div>
-    <h4 style="color:#f3d98b">🚫 Negar entrada / bloqueados</h4>
-    <div style="display:flex;gap:6px;margin:8px 0"><input id="input-bloquear-nome" placeholder="Nome para negar/bloquear"><button onclick="bloquearUsuarioAdm()" style="background:#ff4757;color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:bold;cursor:pointer;white-space:nowrap">Negar / Bloquear</button></div>
-    <div id="lista-bloqueados-adm"></div>
-    <button onclick="fecharPainelAdm()" style="width:100%;margin-top:14px;padding:10px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:8px;cursor:pointer">Fechar Painel</button>
-  </div></div>
-
-  <div id="modal-solicitacao" class="modal-custom"><div class="caixa-modal"><h3 style="color:#ff4757;text-align:center">Fandom Protegido</h3><p id="texto-aviso-fandom" style="font-size:.75rem;color:#aaa;text-align:center;margin:10px 0">Este fandom é blindado. Envie sua solicitação:</p><div class="grupo-input"><label>Seu Nome / Apelido:</label><input id="solicitacao-nome" placeholder="Ex: Visitante"></div><div class="grupo-input"><label>Por que você quer entrar?</label><textarea id="solicitacao-motivo" placeholder="Ex: Sou fã nº 1!" style="border-radius:10px;height:60px"></textarea></div><div style="display:flex;gap:10px"><button onclick="enviarSolicitacaoFandom()" style="flex:1;padding:12px;background:#9c27b0;color:#fff;border:none;border-radius:10px;font-weight:bold;cursor:pointer">Enviar Pedido</button><button onclick="fecharModalSolicitacao()" style="flex:1;padding:12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:10px;cursor:pointer">Cancelar</button></div></div></div>
-
-  <div id="modal-cadastro" class="modal-custom"><div class="caixa-modal"><h3 style="color:#f3d98b;text-align:center">Dados Cadastrais & Senha</h3>
-    <div class="grupo-input"><label>Nome ou Apelido:</label><input id="input-nome"></div><div class="grupo-input"><label>Data de Nascimento:</label><input id="input-nasc" placeholder="DD/MM/AAAA"></div><div class="grupo-input"><label>Fandom / Artista:</label><input id="input-fandom"></div><div class="grupo-input"><label>E-mail:</label><input id="input-email" type="email"></div><div class="grupo-input"><label>WhatsApp:</label><input id="input-tel"></div><div class="grupo-input"><label>Senha:</label><input id="input-senha" type="password"></div>
-    <div class="grupo-input"><label>Cor pessoal:</label><input id="input-cor-pessoal" type="color" value="#ff4757" style="width:50px;height:40px"></div>
-    <div class="grupo-input"><label>Foto de Perfil:</label><label for="input-foto-file" id="label-foto-perfil" style="display:block;background:rgba(255,255,255,.1);padding:8px;text-align:center;border-radius:8px;cursor:pointer;color:#f3d98b">Escolher Foto</label><input id="input-foto-file" type="file" accept="image/*" style="display:none" onchange="atualizarNomePerfil(this)"></div>
-    <div style="display:flex;gap:10px"><button onclick="salvarPerfilPersonalizado()" style="flex:1;padding:12px;background:#9c27b0;color:#fff;border:none;border-radius:10px;font-weight:bold;cursor:pointer">Salvar Dados</button><button onclick="fecharModalCadastro()" style="flex:1;padding:12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:10px;cursor:pointer">Cancelar</button></div></div></div>
-
-  <div id="modal-novo-tema" class="modal-custom"><div class="caixa-modal"><h3 style="color:#f3d98b;text-align:center">Gerenciar Fandoms</h3><div class="grupo-input"><label>Criar Novo Fandom:</label><input id="input-novo-tema-nome"></div><button onclick="salvarNovoTemaPersonalizado()" style="width:100%;padding:10px;background:#ff4757;color:#fff;border:none;border-radius:8px;font-weight:bold;cursor:pointer">Criar Fandom</button><div id="lista-fandoms-gerenciar-modal" style="margin:12px 0"></div><button onclick="fecharModalNovoTema()" style="width:100%;padding:10px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:8px;cursor:pointer">Fechar</button></div></div>
-
-  <div id="modal-bias" class="modal-custom"><div class="caixa-modal"><h3 style="color:#f3d98b;text-align:center">Gerenciar Meus Bias (1 a 1000)</h3><div class="grupo-input"><label>Posição:</label><select id="bias-posicao-select"></select></div><div class="grupo-input"><label>Nome:</label><input id="bias-nome"></div><div class="grupo-input"><label>Categoria:</label><input id="bias-categoria"></div><div class="grupo-input"><label>Foto:</label><label for="bias-foto-file" id="label-foto-bias" style="display:block;background:rgba(255,255,255,.1);padding:8px;text-align:center;border-radius:8px;cursor:pointer;color:#f3d98b">Escolher Foto</label><input id="bias-foto-file" type="file" accept="image/*" style="display:none" onchange="atualizarNomeBias(this)"></div><div style="display:flex;gap:10px"><button onclick="salvarBiasPersonalizado()" style="flex:1;padding:12px;background:#9c27b0;color:#fff;border:none;border-radius:10px;font-weight:bold;cursor:pointer">Salvar</button><button onclick="fecharModalBias()" style="flex:1;padding:12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:10px;cursor:pointer">Fechar</button></div></div></div>
-
-  <div id="modal-menu"><div style="max-width:800px;margin:40px auto;padding:20px"><div style="display:flex;justify-content:space-between"><h2 style="color:#f3d98b">Meu Perfil</h2><button onclick="fecharMenuLateral()" style="padding:8px 18px;border-radius:8px;cursor:pointer">← Voltar ao Feed</button></div>
-    <div style="display:flex;gap:20px;align-items:center;background:rgba(255,255,255,.05);padding:20px;border-radius:14px;margin:20px 0"><div id="perfil-avatar-grande" style="width:85px;height:85px;border-radius:50%;background:#ff4757;display:flex;align-items:center;justify-content:center;font-size:2.2rem;font-weight:bold;overflow:hidden;border:2px solid #f3d98b">?</div><div><h3 id="menu-nome-usuario">Visitante</h3><p id="menu-fandom-usuario" style="color:#ff6b81">Artista da Semana: Não informado</p></div></div>
-    <div style="display:flex;flex-direction:column;gap:10px"><button onclick="configurarPerfil()" style="padding:14px;background:#9c27b0;color:#fff;border:none;border-radius:10px;font-weight:bold;cursor:pointer">Alterar Dados Cadastrais & Senha</button><button onclick="sairDaConta()" style="padding:14px;background:rgba(255,71,87,.2);border:1px solid #ff4757;color:#ff6b81;border-radius:10px;font-weight:bold;cursor:pointer">Sair da Conta</button></div></div></div>
-
-  <header><div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()">New Drama</div><div class="subtitle">doramas k-pop animes</div></header>
-
-  <div id="bloco-topo-mobile"><div class="stories-mobile-container">
-    <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')"><div class="story-avatar-mob"><div class="story-avatar-inner"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9"></div></div><span>1º Lugar</span></div>
-    <div class="story-balao-mob" onclick="abrirGavetaMobile('desafio')"><span style="font-weight:bold;color:#f3d98b">🎯 Desafio do Dia</span><p id="texto-resumo-desafio-mob">Carregando tema de hoje...</p></div>
-    <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')"><div class="story-avatar-mob" style="background:#9c27b0"><div class="story-avatar-inner" style="background:#121829;color:#f3d98b;font-size:1.8rem">📂</div></div><span>Minha Gaveta</span></div>
-    <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')"><div class="story-avatar-mob" style="background:#2196f3"><div class="story-avatar-inner" style="background:#121829;color:#2196f3;font-size:1.8rem">🌐</div></div><span>Comunidade</span></div>
-  </div></div>
-
-  <div style="text-align:center;margin:4px 0 8px"><span class="contador">Votos de hoje: <span id="curtidasUsadas">0</span>/3</span></div>
-
-  <div class="layout" id="feed-principal">
-    <div id="coluna-esquerda" style="display:flex;flex-direction:column;gap:14px">
-      <div class="card" style="border:2px solid #9c27b0;background:rgba(156,39,176,.08)">
-        <h4 style="color:#f3d98b">🎯 Desafio do Dia</h4>
-        <p id="texto-desafio-dia" style="font-size:.85rem;margin:6px 0">Carregando desafio...</p>
-        <p id="sub-titulo-desafio-esq" style="font-size:.75rem;color:#fff">Carregando desafio...</p>
-        <label style="font-size:.75rem;color:#f3d98b">🔍 Buscar Bias:</label><input id="inputBuscaBiasDesafio" placeholder="Ex: 1 ou Nome..." oninput="filtrarBuscaBiasDesafio(this.value)"><div id="sugestoes-bias-busca" style="display:none"></div>
-        <div id="bloco-envio-desafio-esq" style="margin:10px 0"></div>
-        <button onclick="abrirDesafioNoCentro()" style="width:100%;background:rgba(156,39,176,.3);border:1px solid #9c27b0;color:#fff;padding:6px;border-radius:6px;cursor:pointer">🔍 Ver Fotos das Colegas (Votar)</button>
-        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(243,217,139,.25)">
-        <div style="display:flex;justify-content:space-between"><h3>Meus Bias (1 a 1000)</h3><button onclick="abrirModalBias()" style="background:#ff4757;color:#fff;border:none;padding:4px 8px;border-radius:6px;cursor:pointer">+ Gerenciar</button></div>
-        <div id="lista-bias-container" style="display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto;margin-top:8px"></div>
+  <!-- MODAL DE SUPORTE TÉCNICO -->
+  <div id="modal-suporte" class="modal-custom">
+    <div class="caixa-modal">
+      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Suporte Técnico</h3>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Contato direto com a desenvolvedora:</p>
+      <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc;">
+        <p style="margin-bottom: 6px;"><b>Desenvolvedora:</b> Luana</p>
+        <p style="margin-bottom: 6px;"><b>Contato / E-mail:</b> suporte@newdrama.com</p>
       </div>
-      <div class="card" style="text-align:center"><h3 style="color:#f3d98b">Vitrine & Parceiros</h3><div id="banner-vitrine" onclick="visitarOfertaAtual()" style="height:180px;border-radius:14px;overflow:hidden;cursor:pointer;background:#111"><img id="vitrine-img" style="width:100%;height:100%;object-fit:cover"><p id="vitrine-titulo" style="font-size:.8rem">Carregando ofertas...</p><span id="vitrine-tag">PARCEIRO</span></div></div>
-    </div>
-
-    <div id="coluna-central" style="display:flex;flex-direction:column;gap:14px"><div class="card" id="painel-central-container">
-      <div style="display:flex;justify-content:space-between;align-items:center"><div><h4 id="titulo-feed-atual">Feed Geral da Comunidade</h4><p id="sub-feed-atual" style="color:#ff6b81;font-size:.75rem">Tudo o que a comunidade compartilhou</p></div><div style="display:flex;gap:6px"><button id="btn-adm-comunidade" onclick="verificarSenhaAdm()" style="display:none;background:rgba(243,217,139,.2);color:#f3d98b;border:1px solid #f3d98b;padding:5px 10px;border-radius:6px;cursor:pointer">ADM</button><button id="btn-voltar-geral" onclick="voltarParaFeedPrincipal()" style="display:none;padding:5px 10px;border-radius:6px;cursor:pointer">Voltar ao Geral</button></div></div>
-      <div id="container-subgrupos" style="display:none;margin:15px 0"><h5 style="color:#f3d98b">Subgrupos Internos:</h5><button onclick="abrirModalSubgrupo()" style="padding:3px 8px;border-radius:4px;cursor:pointer">+ Criar Subgrupo</button><div id="lista-subgrupos-interno" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div></div>
-      <div style="margin:15px 0;display:flex;flex-direction:column;gap:8px;background:rgba(0,0,0,.25);padding:12px;border-radius:12px"><textarea id="textoChatComunidade" placeholder="Compartilhe algo..." style="border-radius:10px;height:60px"></textarea><div style="display:flex;gap:6px"><label for="midiaChatComunidade" id="label-midia-chat" style="flex:1;background:rgba(255,255,255,.1);padding:7px;text-align:center;border-radius:8px;cursor:pointer;color:#f3d98b">📁 Arquivo</label><input id="midiaChatComunidade" type="file" accept="image/*,video/*" style="display:none" onchange="verificarESubirMidiaChat(this)"><button type="button" onclick="dispararCameraCelular()" style="flex:1;padding:7px;border-radius:8px;cursor:pointer">📸 Câmera</button><input id="cameraChatComunidadeDireto" type="file" accept="image/*" capture="environment" style="display:none" onchange="verificarESubirMidiaChat(this)"><button onclick="enviarMensagemChatComunidade()" style="background:#2196f3;color:#fff;border:none;border-radius:8px;padding:7px 14px;font-weight:bold;cursor:pointer">Publicar</button></div></div>
-      <div id="mural-chat-comunidade" style="display:flex;flex-direction:column;gap:14px"><div style="text-align:center;padding:30px;color:#aaa">Nenhuma publicação ainda. Seja a primeira!</div></div>
-    </div></div>
-
-    <div id="coluna-direita" style="display:flex;flex-direction:column;gap:14px">
-      <div class="card" style="border:2px solid #f3d98b"><h3 style="color:#f3d98b;text-align:center">Campeão da Semana</h3><p class="small" style="text-align:center">Fixado no trono (Atualizado aos domingos!)</p><div style="display:flex;flex-direction:column;gap:8px"><div onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')" style="cursor:pointer">🥇 1º Lugar (Ouro) — Destaque Ouro</div><div>🥈 2º Lugar (Prata)</div><div>🥉 3º Lugar (Bronze)</div></div></div>
-      <div class="card"><div style="display:flex;justify-content:space-between"><h3 style="color:#f3d98b">Minha Gaveta (Privado)</h3><button onclick="alternarGavetaNoCentro(event)" id="btn-ver-gaveta-centro" style="padding:3px 8px;border-radius:6px;cursor:pointer">📂 Abrir no Centro</button></div><div style="margin-top:8px;background:rgba(255,255,255,.05);padding:10px;border-radius:8px;max-height:180px;overflow-y:auto"><div id="listaGaveta" style="font-size:.8rem;color:#ccc">Nenhum item salvo.</div></div><div style="margin-top:10px;display:flex;flex-direction:column;gap:6px"><textarea id="campoGavetaTexto" placeholder="Escreva nota..." style="border-radius:8px;height:36px"></textarea><div style="display:flex;gap:6px"><label for="campoGavetaFoto" id="label-foto-gaveta" style="flex:1;background:rgba(255,255,255,.1);padding:6px;text-align:center;border-radius:6px;cursor:pointer;color:#f3d98b">Foto Privada</label><input id="campoGavetaFoto" type="file" accept="image/*,video/*" style="display:none" onchange="atualizarNomeFotoGaveta(this)"><button onclick="comentarGaveta()" style="background:#f3d98b;color:#1a1030;border:none;border-radius:6px;padding:6px 10px;font-weight:bold;cursor:pointer">Salvar</button></div></div></div>
-      <div class="card"><div style="display:flex;justify-content:space-between"><h3 style="color:#f3d98b">Fandoms & Comunidades</h3><button onclick="abrirModalNovoTema()" style="padding:3px 8px;border-radius:6px;cursor:pointer">+ Gerenciar</button></div><div id="lista-comunidades-container" style="display:flex;flex-direction:column;gap:8px;max-height:220px;overflow-y:auto;margin-top:10px"></div></div>
+      <button onclick="fecharSuporteDesenvolvedor()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Suporte</button>
     </div>
   </div>
-  <footer><p style="text-align:center;font-size:.75rem;color:#888;margin-top:20px">3 curtidas/dia — Votação New Drama</p></footer>
+
+  <!-- PAINEL DE MODERACAO - CORREÇÃO 2: seu bloco original foi mantido, só acrescentei as 3 áreas abaixo dele -->
+  <div id="modal-adm" class="modal-custom">
+    <div class="caixa-modal" style="max-width: 500px;">
+      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Painel de Moderação</h3>
+      <p id="adm-aviso" style="font-size:.8rem;color:#aaa;text-align:center;margin-bottom:10px"></p>
+      <div style="margin-bottom: 15px; background: rgba(243,217,139,0.1); padding: 12px; border-radius: 10px; border: 1px solid #f3d98b;">
+        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 6px;">Entrar Diretamente em um Fandom:</h4>
+        <div style="display: flex; gap: 8px; flex-direction: column;">
+          <select id="select-fandom-direto" style="font-size: 0.8rem; padding: 8px;">
+            <option value="【entity-BTS¦canonical_name=BTS】">【entity-BTS¦canonical_name=BTS】</option>
+            <option value="【entity-EXO¦canonical_name=EXO】">【entity-EXO¦canonical_name=EXO】</option>
+            <option value="【entity-Super Junior¦canonical_name=Super Junior】">【entity-Super Junior¦canonical_name=Super Junior】</option>
+            <option value="Doramas">Doramas</option>
+            <option value="Anime">Anime</option>
+          </select>
+          <button onclick="entrarFandomPeloPainelAdm()" style="background: #2196f3; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar no Fandom Selecionado</button>
+        </div>
+      </div>
+      <!-- ACRESCENTADO - SOLICITAÇÕES -->
+      <h4 style="color:#f3d98b;font-size:.9rem;margin-bottom:6px">📥 Solicitações de entrada</h4>
+      <div id="lista-solicitacoes-adm" style="margin-bottom:14px"></div>
+      <!-- ACRESCENTADO - COMENTÁRIOS -->
+      <h4 style="color:#f3d98b;font-size:.9rem;margin-bottom:6px">💬 Comentários / publicações para moderar</h4>
+      <div id="lista-comentarios-adm" style="margin-bottom:14px"></div>
+      <!-- ACRESCENTADO - NEGAR ENTRADA -->
+      <h4 style="color:#f3d98b;font-size:.9rem;margin-bottom:6px">🚫 Negar entrada / bloqueados</h4>
+      <div style="display:flex;gap:6px;margin-bottom:8px"><input id="input-bloquear-nome" placeholder="Nome para negar/bloquear" style="flex:1"><button onclick="bloquearUsuarioAdm()" style="background:#ff4757;color:#fff;border:none;padding:8px 12px;border-radius:8px;font-weight:bold;cursor:pointer;white-space:nowrap">Negar / Bloquear</button></div>
+      <div id="lista-bloqueados-adm" style="margin-bottom:10px"></div>
+      <button onclick="fecharPainelAdm()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Painel</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE SOLICITACAO DE ENTRADA NO FANDOM -->
+  <div id="modal-solicitacao" class="modal-custom">
+    <div class="caixa-modal">
+      <h3 style="color: #ff4757; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Fandom Protegido</h3>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;" id="texto-aviso-fandom">Este fandom é blindado. Envie sua solicitação:</p>
+      <div class="grupo-input"><label>Seu Nome / Apelido:</label><input type="text" id="solicitacao-nome" placeholder="Ex: Visitante"></div>
+      <div class="grupo-input">
+        <label>Por que você quer entrar neste fandom?</label>
+        <textarea id="solicitacao-motivo" placeholder="Ex: Sou fã nº 1!" style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button onclick="enviarSolicitacaoFandom()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Enviar Pedido</button>
+        <button onclick="fecharModalSolicitacao()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CADASTRO -->
+  <div id="modal-cadastro" class="modal-custom">
+    <div class="caixa-modal">
+      <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Dados Cadastrais & Senha</h3>
+      <div class="grupo-input"><label>1. Nome ou Apelido na Comunidade:</label><input type="text" id="input-nome" placeholder="Ex: Visitante"></div>
+      <div class="grupo-input"><label>2. Data de Nascimento:</label><input type="text" id="input-nasc" placeholder="Ex: DD/MM/AAAA"></div>
+      <div class="grupo-input"><label>3. Fandom / Artista da Semana:</label><input type="text" id="input-fandom" placeholder="Ex: Artista Principal"></div>
+      <div class="grupo-input"><label>4. E-mail:</label><input type="email" id="input-email" placeholder="seu@email.com"></div>
+      <div class="grupo-input"><label>5. WhatsApp:</label><input type="text" id="input-tel" placeholder="(31) 9xxxx-xxxx"></div>
+      <div class="grupo-input"><label>6. Senha de Acesso:</label><input type="password" id="input-senha" placeholder="Sua senha secreta..."></div>
+      <div class="grupo-input">
+        <label>7. Cor Pessoal do Tema:</label>
+        <div style="display: flex; gap: 10px; align-items: center; margin-bottom: 8px;">
+          <input type="color" id="input-cor-pessoal" value="#ff4757" style="width: 50px; height: 40px; border: none; border-radius: 8px; cursor: pointer; background: transparent;">
+          <span style="font-size: 0.8rem; color: #ccc;">Sua cor favorita na interface!</span>
+        </div>
+      </div>
+      <div class="grupo-input">
+        <label>8. Foto de Perfil:</label>
+        <label for="input-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-perfil">Escolher Foto de Perfil</label>
+        <input type="file" id="input-foto-file" accept="image/*" style="display: none;" onchange="atualizarNomePerfil(this)">
+      </div>
+      <div class="grupo-input">
+        <label>9. Plano de Fundo HD:</label>
+        <label for="input-fundo-perfil-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-fundo-perfil">Escolher Fundo HD</label>
+        <input type="file" id="input-fundo-perfil-file" accept="image/*" style="display: none;" onchange="atualizarNomeFundoPerfil(this)">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button onclick="salvarPerfilPersonalizado()" class="btn-tema-bg" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Salvar Dados</button>
+        <button onclick="fecharModalCadastro()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CRIAR E GERENCIAR FANDOMS -->
+  <div id="modal-novo-tema" class="modal-custom">
+    <div class="caixa-modal">
+      <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Gerenciar Fandoms</h3>
+      <div class="grupo-input">
+        <label>1. Criar Novo Fandom:</label>
+        <input type="text" id="input-novo-tema-nome" placeholder="Ex: Grupo ou Dorama...">
+      </div>
+      <button onclick="salvarNovoTemaPersonalizado()" style="width: 100%; padding: 10px; background: #ff4757; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 0.85rem;">Criar Fandom</button>
+      <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.15); margin-bottom: 12px;">
+      <label style="font-size: 0.8rem; color: #f3d98b; margin-bottom: 6px; display: block;">Fandoms Atuais (Clique para excluir):</label>
+      <div id="lista-fandoms-gerenciar-modal" style="max-height: 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; margin-bottom: 15px;"></div>
+      <button onclick="fecharModalNovoTema()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE ADICIONAR / EDITAR BIAS -->
+  <div id="modal-bias" class="modal-custom">
+    <div class="caixa-modal">
+      <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Gerenciar Meus Bias (1 a 1000)</h3>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">⚠️ Cada posição só pode ser editada <b>1 vez a cada 30 dias</b>!</p>
+      <div class="grupo-input">
+        <label>Posição / Número (1 a 1000):</label>
+        <select id="bias-posicao-select" style="background: rgba(0,0,0,0.5); color: #f3d98b; font-weight: bold;"></select>
+      </div>
+      <div class="grupo-input"><label>Nome do Oppa / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Ex: Nome do Artista"></div>
+      <div class="grupo-input"><label>Categoria (Dorama, Grupo, Filme):</label><input type="text" id="bias-categoria" placeholder="Ex: EXO, Dorama Mine"></div>
+      <div class="grupo-input">
+        <label>Foto Oficial de Referência:</label>
+        <label for="bias-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-bias">Escolher Foto Oficial</label>
+        <input type="file" id="bias-foto-file" accept="image/*" style="display: none;" onchange="atualizarNomeBias(this)">
+      </div>
+      <div style="display: flex; gap: 10px; margin-top: 20px;">
+        <button onclick="salvarBiasPersonalizado()" class="btn-tema-bg" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Salvar na Lista</button>
+        <button onclick="fecharModalBias()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Fechar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGINA DE PERFIL -->
+  <div id="modal-menu">
+    <div style="max-width: 800px; margin: 40px auto; padding: 20px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 15px;">
+        <h2 class="btn-tema-texto" style="color: #f3d98b; margin: 0; font-size: 1.5rem;">Meu Perfil na Comunidade</h2>
+        <button onclick="fecharMenuLateral()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 8px 18px; border-radius: 8px; font-weight: bold; cursor: pointer;">← Voltar ao Feed</button>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px; background: rgba(255,255,255,0.05); padding: 20px; border-radius: 14px; margin-bottom: 20px; border: 1px solid rgba(243,217,139,0.2);">
+        <div style="display: flex; align-items: center; gap: 20px;">
+          <div id="perfil-avatar-grande" style="width: 85px; height: 85px; border-radius: 50%; background: #ff4757; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #f3d98b; font-size: 2.2rem; font-weight: bold; color: white; flex-shrink: 0;">?</div>
+          <div>
+            <h3 id="menu-nome-usuario" style="margin: 0 0 5px 0; font-size: 1.3rem; color: #fff;">Visitante</h3>
+            <p style="margin: 0 0 5px 0; font-size: 0.9rem; color: #ff6b81;" id="menu-fandom-usuario">Artista da Semana: Não informado</p>
+          </div>
+        </div>
+        <div style="flex-grow: 1; max-width: 340px; min-width: 260px; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 10px; border: 1px solid rgba(243,217,139,0.3);">
+          <p class="btn-tema-texto" style="font-size: 0.8rem; color: #f3d98b; margin-bottom: 6px; font-weight: bold;">🎶 Índice de Músicas / Player:</p>
+          <div style="display: flex; gap: 6px; margin-bottom: 6px;">
+            <input type="text" id="termo-busca-yt" placeholder="Buscar música ou artista..." style="padding: 8px; font-size: 0.8rem; border-radius: 6px; flex: 1;">
+            <button onclick="buscarNoYoutubeDireto()" class="btn-tema-bg" style="background: #ff0000; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.8rem; white-space: nowrap;">Buscar</button>
+          </div>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 30px;">
+        <button onclick="configurarPerfil()" class="btn-tema-bg" style="width: 100%; padding: 14px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem;">Alterar Dados Cadastrais & Senha</button>
+        <button onclick="sairDaConta()" style="width: 100%; padding: 14px; background: rgba(255, 71, 87, 0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 10px; font-weight: bold; cursor: pointer; font-size: 1rem;">Sair da Conta / Desconectar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CABECALHO DA LOGO PRINCIPAL COM DUPLO CLIQUE PARA VOLTAR -->
+  <header style="text-align: center; padding: 8px 0 4px;">
+    <div class="logo-container">
+      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" ondblclick="voltarParaFeedPrincipal()" title="Dê um duplo clique aqui para voltar ao início!">New Drama</div>
+    </div>
+    <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
+  </header>
+
+  <!-- BLOCO EXCLUSIVO MOBILE: STORIES / CARROSSEL HORIZONTAL (BOLINHAS GIGANTES 130px) -->
+  <div id="bloco-topo-mobile">
+    <div class="stories-mobile-container">
+      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')">
+        <div class="story-avatar-mob"><div class="story-avatar-inner"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" alt="Ouro"></div></div>
+        <span class="story-nome-mob">1º Lugar</span><span class="story-arroba-mob">Ouro</span>
+      </div>
+      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')">
+        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #c0c0c0, #888);"><div class="story-avatar-inner"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" alt="Prata"></div></div>
+        <span class="story-nome-mob">2º Lugar</span><span class="story-arroba-mob">Prata</span>
+      </div>
+      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')">
+        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #cd7f32, #8b4513);"><div class="story-avatar-inner"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" alt="Bronze"></div></div>
+        <span class="story-nome-mob">3º Lugar</span><span class="story-arroba-mob">Bronze</span>
+      </div>
+      <div class="story-balao-mob" onclick="abrirGavetaMobile('desafio')">
+        <span class="titulo-b">🎯 Desafio do Dia</span>
+        <p class="texto-b" id="texto-resumo-desafio-mob">Carregando tema de hoje...</p>
+      </div>
+      <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
+        <div class="story-avatar-mob" style="background: #9c27b0;"><div class="story-avatar-inner" style="background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;">📂</div></div>
+        <span class="story-nome-mob">Minha Gaveta</span><span class="story-arroba-mob">Privado</span>
+      </div>
+      <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
+        <div class="story-avatar-mob" style="background: #2196f3;"><div class="story-avatar-inner" style="background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;">🌐</div></div>
+        <span class="story-nome-mob">Comunidade</span><span class="story-arroba-mob">Fandoms</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTADOR DE CURTIDAS -->
+  <div style="text-align: center; margin: 4px 0 8px 0;">
+    <div style="font-size: 13px;">
+      <span class="contador"><span id="txt-votos-hoje">Votos de hoje</span>: <span id="curtidasUsadas">0</span>/3</span>
+    </div>
+  </div>
+
+  <!-- LAYOUT PRINCIPAL DE 3 COLUNAS (DESKTOP) -->
+  <div class="layout" id="feed-principal">
+    <div id="coluna-esquerda" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
+      <div class="card" id="card-desafio-esquerda" style="border: 2px solid #9c27b0; background: rgba(156, 39, 176, 0.08); margin-bottom: 0;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: #9c27b0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;" class="btn-tema-bg">🎯</div>
+          <div>
+            <h4 style="margin: 0; font-size: 0.95rem; color: #f3d98b; font-weight: bold;">Desafio do Dia</h4>
+            <p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #fff;" id="sub-titulo-desafio-esq">Carregando desafio...</p>
+          </div>
+        </div>
+        <div style="margin-bottom: 10px; position: relative;">
+          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
+          <input type="text" id="inputBuscaBiasDesafio" placeholder="Ex: 1 ou Nome..." oninput="filtrarBuscaBiasDesafio(this.value)" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
+          <div id="sugestoes-bias-busca" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
+        </div>
+        <div id="bloco-envio-desafio-esq" style="margin-bottom: 12px;"></div>
+        <button onclick="abrirDesafioNoCentro()" class="btn-tema-bg" style="width: 100%; margin-bottom: 14px; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">🔍 Ver Fotos das Colegas (Votar)</button>
+        <hr style="border: none; border-top: 1px solid rgba(243,217,139,0.25); margin: 12px 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 style="margin: 0; font-size: 0.95rem; color: #f3d98b;">Meus Bias (1 a 1000)</h3>
+          <button onclick="abrirModalBias()" class="btn-tema-bg" style="background: #ff4757; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
+        </div>
+        <p style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">Clique em qualquer bias para preencher o desafio:</p>
+        <div id="lista-bias-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto;">
+          <div style="padding: 10px; background: rgba(255,255,255,0.05); border-radius: 8px; text-align: center; color: #aaa; font-size: 0.85rem;">Lista vazia. Clique em "+ Gerenciar" para adicionar seus bias!</div>
+        </div>
+      </div>
+      <div class="card" style="padding: 16px; text-align: center; margin-bottom: 0;">
+        <h3 style="font-size: 1.05rem; margin-bottom: 4px; color: #f3d98b;" class="btn-tema-texto">Vitrine & Parceiros</h3>
+        <p class="small" style="margin-bottom: 12px;">Recomendações:</p>
+        <div id="banner-vitrine" style="position: relative; width: 100%; height: 180px; border-radius: 14px; overflow: hidden; background: #111; border: 1px solid rgba(243,217,139,0.4); display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="visitarOfertaAtual()">
+          <img id="vitrine-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
+          <div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.85), transparent); padding: 15px 10px 8px; text-align: left;">
+            <span id="vitrine-tag" class="btn-tema-bg" style="font-size: 0.65rem; background: #ff4757; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">PARCEIRO</span>
+            <p id="vitrine-titulo" style="font-size: 0.8rem; font-weight: bold; color: #fff; margin-top: 3px; text-shadow: 0 1px 3px #000;">Carregando ofertas...</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="coluna-central" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
+      <div class="card" id="painel-central-container" style="margin-bottom: 0;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;">
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #2196f3; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;" id="icone-feed-titulo" class="btn-tema-bg">💬</div>
+            <div>
+              <h4 style="margin: 0; font-size: 0.95rem; color: #fff;" id="titulo-feed-atual">Feed Geral da Comunidade</h4>
+              <p style="margin: 0; font-size: 0.75rem; color: #ff6b81;" id="sub-feed-atual">Tudo o que a comunidade compartilhou</p>
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <button id="btn-adm-comunidade" onclick="verificarSenhaAdm()" style="display: none; background: rgba(243,217,139,0.2); color: #f3d98b; border: 1px solid #f3d98b; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">ADM</button>
+            <button id="btn-voltar-geral" onclick="voltarParaFeedPrincipal()" style="display: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voltar ao Geral</button>
+          </div>
+        </div>
+        <div id="container-subgrupos" style="display: none; margin-bottom: 15px; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border: 1px dashed rgba(243,217,139,0.4);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+            <h5 style="color: #f3d98b; font-size: 0.85rem; margin: 0;">Subgrupos Internos:</h5>
+            <button onclick="abrirModalSubgrupo()" style="background: rgba(243,217,139,0.2); color: #f3d98b; border: none; padding: 3px 8px; border-radius: 4px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">+ Criar Subgrupo</button>
+          </div>
+          <div id="lista-subgrupos-interno" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+        </div>
+        <div id="bloco-publicacao-geral" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);">
+          <textarea id="textoChatComunidade" placeholder="Compartilhe algo com a comunidade..." style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem;"></textarea>
+          <div style="display: flex; gap: 6px;">
+            <label for="midiaChatComunidade" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 7px; text-align: center; font-size: 0.75rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="label-midia-chat">📁 Arquivo</label>
+            <input type="file" id="midiaChatComunidade" accept="image/*,video/*" style="display: none;" onchange="verificarESubirMidiaChat(this)">
+            <button type="button" onclick="dispararCameraCelular()" style="flex: 1; background: rgba(33,150,243,0.3); border: 1px solid rgba(33,150,243,0.6); border-radius: 8px; padding: 7px; text-align: center; font-size: 0.75rem; cursor: pointer; color: #fff;">📸 Câmera</button>
+            <input type="file" id="cameraChatComunidadeDireto" accept="image/*" capture="environment" style="display: none;" onchange="verificarESubirMidiaChat(this)">
+            <button onclick="enviarMensagemChatComunidade()" class="btn-tema-bg" style="background: #2196f3; color: white; border: none; border-radius: 8px; padding: 7px 14px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Publicar</button>
+          </div>
+        </div>
+        <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
+          <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(0,0,0,0.15); border-radius: 12px; border: 1px dashed rgba(255,255,255,0.1);">Nenhuma publicação no feed ainda. Seja a primeira pessoa a compartilhar algo com a comunidade!</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="coluna-direita" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
+      <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
+        <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;">Campeão da Semana</h3>
+        <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono (Atualizado aos domingos!)</p>
+        <div style="display: flex; flex-direction: column; gap: 8px; padding: 4px;">
+          <div onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')" style="display: flex; align-items: center; justify-content: space-between; background: rgba(243,217,139,0.2); padding: 8px 10px; border-radius: 8px; border: 1px solid #ffd700; cursor: pointer;"><div style="display: flex; align-items: center; gap: 10px;"><div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ffd700; overflow: hidden; background: #111; flex-shrink: 0;"><img src="https://images.unsplash.com/photo-1517841905240-472988babdf9" style="width: 100%; height: 100%; object-fit: cover;"></div><div><span style="font-size: 0.75rem; font-weight: bold; color: #ffd700; display: block;">🥇 1º Lugar (Ouro)</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Ouro</span></div></div><span style="font-size: 0.7rem; color: #f3d98b; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">top 1</span></div>
+          <div onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; border: 1px solid #c0c0c0; cursor: pointer;"><div style="display: flex; align-items: center; gap: 10px;"><div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c0c0c0; overflow: hidden; background: #111; flex-shrink: 0;"><img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb" style="width: 100%; height: 100%; object-fit: cover;"></div><div><span style="font-size: 0.75rem; font-weight: bold; color: #c0c0c0; display: block;">🥈 2º Lugar (Prata)</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Prata</span></div></div><span style="font-size: 0.7rem; color: #ccc; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">Top 2</span></div>
+          <div onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')" style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; border: 1px solid #cd7f32; cursor: pointer;"><div style="display: flex; align-items: center; gap: 10px;"><div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #cd7f32; overflow: hidden; background: #111; flex-shrink: 0;"><img src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1" style="width: 100%; height: 100%; object-fit: cover;"></div><div><span style="font-size: 0.75rem; font-weight: bold; color: #cd7f32; display: block;">🥉 3º Lugar (Bronze)</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Bronze</span></div></div><span style="font-size: 0.7rem; color: #cd7f32; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">Top 3</span></div>
+        </div>
+      </div>
+      <div class="card" id="card-minha-gaveta" style="padding: 16px; margin-bottom: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Minha Gaveta (Privado)</h3>
+          <button onclick="alternarGavetaNoCentro(event)" style="background: rgba(243,217,139,0.2); border: 1px solid #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;" id="btn-ver-gaveta-centro">📂 Abrir no Centro</button>
+        </div>
+        <p class="small">Suas notas, fotos e histórico de interações:</p>
+        <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 180px; overflow-y: auto;">
+          <div id="listaGaveta" style="font-size: 0.8rem; color: #ccc;">Nenhum item salvo na gaveta ainda.</div>
+        </div>
+        <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
+          <textarea id="campoGavetaTexto" placeholder="Escreva nota ou edite algo na gaveta..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
+          <div style="display: flex; gap: 6px; align-items: center;">
+            <label for="campoGavetaFoto" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b;" id="label-foto-gaveta">Foto Privada</label>
+            <input type="file" id="campoGavetaFoto" accept="image/*,video/*" style="display: none;" onchange="atualizarNomeFotoGaveta(this)">
+            <button onclick="comentarGaveta()" class="btn-tema-bg" style="background: #f3d98b; color: #1a1030; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Salvar</button>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="padding: 16px; margin-bottom: 0;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandoms & Comunidades</h3>
+          <button onclick="abrirModalNovoTema()" style="background: rgba(243,217,139,0.15); border: 1px dashed #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
+        </div>
+        <p class="small" style="margin-bottom: 10px;">Comunidades:</p>
+        <div id="lista-comunidades-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;"></div>
+      </div>
+    </div>
+  </div>
+  <footer><p style="text-align: center; font-size: 0.75rem; color: #888; margin-top: 20px;">3 curtidas/dia Votação da comunidade New Drama</p></footer>
 </div>
 
-<div id="modal-subgrupo" class="modal-custom"><div class="caixa-modal"><h3 style="color:#f3d98b;text-align:center">Criar Subgrupo</h3><div class="grupo-input"><label>Nome:</label><input id="input-nome-subgrupo"></div><div style="display:flex;gap:10px"><button onclick="salvarSubgrupoInterno()" style="flex:1;padding:12px;background:#9c27b0;color:#fff;border:none;border-radius:10px;cursor:pointer">Criar</button><button onclick="fecharModalSubgrupo()" style="flex:1;padding:12px;background:rgba(255,255,255,.1);color:#fff;border:none;border-radius:10px;cursor:pointer">Cancelar</button></div></div></div>
+<!-- MODAL DE CRIAR SUBGRUPO -->
+<div id="modal-subgrupo" class="modal-custom">
+  <div class="caixa-modal">
+    <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Criar Subgrupo Interno</h3>
+    <div class="grupo-input"><label>Nome do Subgrupo:</label><input type="text" id="input-nome-subgrupo" placeholder="Ex: Categoria"></div>
+    <div style="display: flex; gap: 10px; margin-top: 20px;">
+      <button onclick="salvarSubgrupoInterno()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Criar</button>
+      <button onclick="fecharModalSubgrupo()" style="flex: 1; padding: 12px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Cancelar</button>
+    </div>
+  </div>
+</div>
 
+<!-- SCRIPT DO SISTEMA - SEU SCRIPT ORIGINAL, SÓ COM OS BLOCOS MARCADOS COMO CORREÇÃO -->
 <script>
-let modoAtualNoCentro="GERAL";
-let comunidadesAprovadas=JSON.parse(localStorage.getItem('fandoms_aprovados')||'["BTS","EXO","Super Junior","Doramas","Anime"]');
-let solicitacoesPendentes=JSON.parse(localStorage.getItem('fandoms_solicitacoes')||'[]');
-let bloqueados=JSON.parse(localStorage.getItem('usuarios_bloqueados')||'[]');
-let comentariosModeracao=JSON.parse(localStorage.getItem('comentarios_moderacao')||'[]');
-let subgruposFandoms=JSON.parse(localStorage.getItem('fandoms_subgrupos')||'{}');
-let fandomAtualSelecionado="",corAtualSelecionada="";
-function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function verificarRolagemTopoMobile(){document.body.classList.toggle('logo-recolhida',window.scrollY>30)}
-function abrirFotoPinterest(u){document.getElementById('img-pinterest-zoom').src=u;document.getElementById('modal-pinterest').style.display='flex'}
-function fecharModalPinterest(){document.getElementById('modal-pinterest').style.display='none'}
-function fecharGavetaMobile(){document.getElementById('gaveta-mobile-overlay').style.display='none'}
-function abrirGavetaMobile(tipo){let o=document.getElementById('gaveta-mobile-overlay'),c=document.getElementById('conteudo-dinamico-gaveta-mobile'),t=document.getElementById('titulo-gaveta-mobile');if(tipo==='desafio'){t.innerText='🎯 Desafio do Dia';c.innerHTML='<p id="texto-desafio-dia-mob">'+esc(window.__desafioGlobal||'Carregando...')+'</p><div id="bloco-envio-desafio-mob"></div>';renderizarCardDesafioEsquerda()}else if(tipo==='gaveta'){t.innerText='📂 Minha Gaveta';c.innerHTML='<div id="listaGavetaMob"></div>';carregarHistoricoNaGavetaMobile()}else{t.innerText='🌐 Comunidade';c.innerHTML='<div id="lista-comunidades-container-mob"></div>';renderizarListaFandomsLateralMobile()}o.style.display='flex'}
-function obterDesafioDoDiaAtual(){return window.__desafioGlobal||"Desafio de hoje — aguardando a criadora publicar."}
-function aplicarDesafioGlobal(texto){window.__desafioGlobal=texto;['texto-desafio-dia','texto-resumo-desafio-mob','sub-titulo-desafio-esq','sub-titulo-desafio-mob','texto-desafio-dia-mob'].forEach(id=>{let el=document.getElementById(id);if(el)el.innerText=texto});let s=document.getElementById('status-desafio-global');if(s)s.innerText='Desafio atual: '+texto;let t=document.getElementById('titulo-feed-atual');if(modoAtualNoCentro==='DESAFIO'&&t)t.innerText='Desafio do Dia: '+texto}
-function renderizarListaFandomsLateral(){let c=document.getElementById('lista-comunidades-container');if(!c)return;c.innerHTML='';comunidadesAprovadas.forEach((n,i)=>{let b=document.createElement('button');b.style.cssText='padding:8px 12px;border-radius:8px;background:rgba(255,255,255,.08);color:#fff;font-weight:bold;cursor:pointer;text-align:left';b.innerHTML='<span>'+esc(n)+'</span>';b.onclick=()=>tentarEntrarComunidade(n,'#2196f3');c.appendChild(b)})}
-function renderizarListaFandomsLateralMobile(){let c=document.getElementById('lista-comunidades-container-mob');if(!c)return;c.innerHTML='';comunidadesAprovadas.forEach(n=>{let b=document.createElement('button');b.style.cssText='padding:10px;border-radius:8px;background:rgba(255,255,255,.08);color:#fff;cursor:pointer;text-align:left';b.textContent=n;b.onclick=()=>{fecharGavetaMobile();tentarEntrarComunidade(n,'#2196f3')};c.appendChild(b)})}
-function renderizarFandomsNoModalGerenciamento(){let c=document.getElementById('lista-fandoms-gerenciar-modal');if(!c)return;c.innerHTML='';comunidadesAprovadas.forEach(f=>{let d=document.createElement('div');d.innerHTML='<span>'+esc(f)+'</span> <button onclick="excluirFandom(\''+esc(f)+'\')">Excluir</button>';c.appendChild(d)})}
-function excluirFandom(n){if(confirm('Excluir "'+n+'"?')){comunidadesAprovadas=comunidadesAprovadas.filter(f=>f!==n);localStorage.setItem('fandoms_aprovados',JSON.stringify(comunidadesAprovadas));renderizarListaFandomsLateral();renderizarFandomsNoModalGerenciamento()}}
-function registrarNoHistoricoGaveta(tipo,desc,foto=null){let h=JSON.parse(localStorage.getItem('minha_gaveta_historico')||'[]');h.unshift({id:Date.now(),tipo,texto:desc,foto,data:new Date().toLocaleString()});localStorage.setItem('minha_gaveta_historico',JSON.stringify(h));carregarHistoricoNaGaveta()}
-function carregarHistoricoNaGaveta(){let g=document.getElementById('listaGaveta');if(!g)return;let h=JSON.parse(localStorage.getItem('minha_gaveta_historico')||'[]');g.innerHTML=h.length?h.map((it,i)=>'<div>'+esc(it.tipo)+': '+esc(it.texto)+' <button onclick="removerItemGaveta('+i+')">X</button></div>').join(''):'Nenhum item salvo.'}
-function carregarHistoricoNaGavetaMobile(){let g=document.getElementById('listaGavetaMob');if(!g)return;let h=JSON.parse(localStorage.getItem('minha_gaveta_historico')||'[]');g.innerHTML=h.length?h.map(it=>'<div>'+esc(it.texto)+'</div>').join(''):'Nenhum item.'}
-function removerItemGaveta(i){let h=JSON.parse(localStorage.getItem('minha_gaveta_historico')||'[]');h.splice(i,1);localStorage.setItem('minha_gaveta_historico',JSON.stringify(h));carregarHistoricoNaGaveta()}
-window.biasSelecionadoValidado=null;
-function selecionarBiasParaDesafio(p,n,f,origem='esq'){window.biasSelecionadoValidado={posicao:p,nome:n,foto:f};let c=document.getElementById('textoDesafioEsq');if(c)c.value='Top #'+p+': '+n+' - Validado!';alert('Bias #'+p+' ('+n+') selecionado!')}
-function filtrarBuscaBiasDesafio(termo,origem='esq'){let d=document.getElementById('sugestoes-bias-busca');if(!d)return;termo=termo.trim().toLowerCase();if(!termo){d.style.display='none';return}let l=JSON.parse(localStorage.getItem('meus_bias_salvos')||'[]');let f=l.filter(b=>String(b.posicao)===termo||b.nome.toLowerCase().includes(termo));d.innerHTML=f.length?f.map(b=>'<div onclick="selecionarBiasParaDesafio('+b.posicao+',\''+esc(b.nome)+'\',\''+(b.foto||'')+'\')" style="padding:8px;cursor:pointer">#'+b.posicao+' - '+esc(b.nome)+'</div>').join(''):'<div style="padding:8px">Nenhum bias</div>';d.style.display='block'}
-function renderizarCardDesafioEsquerda(){let b=document.getElementById('bloco-envio-desafio-esq');if(!b)return;let hoje=new Date().toLocaleDateString();let e=JSON.parse(localStorage.getItem('meu_envio_desafio_hoje')||'null');if(e&&e.data===hoje){b.innerHTML='<p style="color:#4caf50">✅ Desafio já postado hoje!</p><p>'+esc(e.legenda)+'</p>'}else{b.innerHTML='<textarea id="textoDesafioEsq" placeholder="Busque o bias acima..." style="border-radius:8px;height:45px"></textarea><div style="display:flex;gap:4px;margin-top:6px"><label for="inputFotoDesafioEsq" id="label-foto-desafio-esq" style="flex:1;background:rgba(255,255,255,.1);padding:6px;text-align:center;border-radius:6px;cursor:pointer;color:#f3d98b">📁 Foto</label><input id="inputFotoDesafioEsq" type="file" accept="image/*" style="display:none" onchange="processarFotoDesafioEsq(this)"><button onclick="validarECruzarPixelsDesafio()" style="background:#9c27b0;color:#fff;border:none;border-radius:6px;padding:6px 10px;cursor:pointer">Postar</button></div>'}}
-let arquivoFotoDesafioEsq=null;function processarFotoDesafioEsq(i){if(i.files&&i.files[0]){arquivoFotoDesafioEsq=i.files[0];let l=document.getElementById('label-foto-desafio-esq');if(l)l.innerText='📷 '+i.files[0].name}}
-function converterImagemParaHD(file,mw,mh,cb){let r=new FileReader();r.onload=e=>{let img=new Image();img.src=e.target.result;img.onload=()=>{let c=document.createElement('canvas');let w=img.width,h=img.height;if(w>mw||h>mh){if(w>h){h=Math.round(h*mw/w);w=mw}else{w=Math.round(w*mh/h);h=mh}}c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);cb(c.toDataURL('image/jpeg',.92))}};r.readAsDataURL(file)}
-function validarECruzarPixelsDesafio(){if(!localStorage.getItem('usuario_nome')){alert('Faça login para enviar!');return}if(!window.biasSelecionadoValidado){alert('Selecione um bias!');return}if(!arquivoFotoDesafioEsq){alert('Envie a foto!');return}let leg=document.getElementById('textoDesafioEsq')?.value.trim()||'';converterImagemParaHD(arquivoFotoDesafioEsq,400,400,b=>{localStorage.setItem('meu_envio_desafio_hoje',JSON.stringify({data:new Date().toLocaleDateString(),legenda:leg,foto:b,autor:localStorage.getItem('usuario_nome')}));renderizarCardDesafioEsquerda();alert('✅ Validação Aprovada!')})}
-function abrirDesafioNoCentro(){modoAtualNoCentro='DESAFIO';document.getElementById('titulo-feed-atual').innerText='Desafio do Dia: '+obterDesafioDoDiaAtual();document.getElementById('sub-feed-atual').innerText='Veja e vote nas fotos enviadas hoje!';document.getElementById('btn-voltar-geral').style.display='block'}
-function abrirDesafioNoCentroMobile(){abrirDesafioNoCentro();window.scrollTo({top:300,behavior:'smooth'})}
-function alternarGavetaNoCentro(){if(modoAtualNoCentro!=='GAVETA'){modoAtualNoCentro='GAVETA';document.getElementById('titulo-feed-atual').innerText='Minha Gaveta Privada';document.getElementById('btn-voltar-geral').style.display='block';document.getElementById('painel-central-container').innerHTML='<h3>📂 Gaveta</h3><div id="listaGavetaCentro"></div>';let h=JSON.parse(localStorage.getItem('minha_gaveta_historico')||'[]');document.getElementById('listaGavetaCentro').innerHTML=h.map(it=>'<p>'+esc(it.texto)+'</p>').join('')||'<p>Gaveta vazia.</p>'}else location.reload()}
-let midiaChatValidaBase64=null,midiaChatIsVideo=false;
-function dispararCameraCelular(){let d=!(/Android|iPhone|iPad/i.test(navigator.userAgent));if(d){alert('No computador, use Arquivo para enviar foto.')}else document.getElementById('cameraChatComunidadeDireto').click()}
-function verificarESubirMidiaChat(input){if(!localStorage.getItem('usuario_nome')){alert('Faça login para publicar.');input.value='';return}if(input.files&&input.files[0]){let a=input.files[0];if(a.type.startsWith('video')){let r=new FileReader();r.onload=e=>{midiaChatValidaBase64=e.target.result;midiaChatIsVideo=true};r.readAsDataURL(a)}else converterImagemParaHD(a,1200,1200,b=>{midiaChatValidaBase64=b;midiaChatIsVideo=false})}}
-function tentarEntrarComunidade(nome,cor){if(localStorage.getItem('modo_criadora_ativo')==='true'){entrarComunidadeEfetivo(nome,cor);return}if(bloqueados.includes(localStorage.getItem('usuario_nome')||'')){alert('🚫 Sua entrada foi negada pela criadora.');return}if(!localStorage.getItem('usuario_nome')||!localStorage.getItem('usuario_senha')){if(confirm('🔒 Fandom Protegido! Abrir login/cadastro?'))configurarPerfil();return}fandomAtualSelecionado=nome;corAtualSelecionada=cor;document.getElementById('texto-aviso-fandom').innerText='O fandom de '+nome+' é blindado. Envie sua solicitação:';document.getElementById('modal-solicitacao').style.display='flex'}
-function entrarFandomPeloPainelAdm(){let f=document.getElementById('select-fandom-direto').value;fecharPainelAdm();entrarComunidadeEfetivo(f,'#2196f3')}
-function fecharModalSolicitacao(){document.getElementById('modal-solicitacao').style.display='none'}
-function enviarSolicitacaoFandom(){let nome=document.getElementById('solicitacao-nome').value.trim(),mot=document.getElementById('solicitacao-motivo').value.trim();if(!nome||!mot){alert('Preencha nome e motivo!');return}if(bloqueados.includes(nome)){alert('🚫 Este nome está bloqueado.');return}solicitacoesPendentes.push({id:Date.now(),usuario:nome,fandom:fandomAtualSelecionado,motivo:mot,cor:corAtualSelecionada});localStorage.setItem('fandoms_solicitacoes',JSON.stringify(solicitacoesPendentes));fecharModalSolicitacao();alert('Solicitação enviada! Aguarde a criadora aceitar ou negar.')}
-function verificarSenhaAdm(){if(localStorage.getItem('modo_criadora_ativo')!=='true'){alert('Somente a criadora pode abrir o Painel ADM. Ative o modo criadora na gaveta.');return}renderizarPainelAdm();document.getElementById('modal-adm').style.display='flex'}
-function fecharPainelAdm(){document.getElementById('modal-adm').style.display='none'}
-function renderizarPainelAdm(){
-  document.getElementById('adm-aviso').innerText='Logada como criadora • Fandom atual: '+(fandomAtualSelecionado||'—');
-  let s=document.getElementById('lista-solicitacoes-adm');
-  s.innerHTML=solicitacoesPendentes.length?solicitacoesPendentes.map(p=>'<div class="adm-item"><b>'+esc(p.usuario)+'</b> quer entrar em <b>'+esc(p.fandom||'—')+'</b><br><small>'+esc(p.motivo)+'</small><br><button onclick="aceitarSolicitacao('+p.id+')" style="background:#4caf50;color:#fff;margin:6px 6px 0 0">✅ Aceitar</button><button onclick="negarSolicitacao('+p.id+')" style="background:#ff4757;color:#fff">❌ Negar entrada</button></div>').join(''):'<p style="color:#aaa;font-size:.8rem">Nenhuma solicitação pendente.</p>';
-  let c=document.getElementById('lista-comentarios-adm');
-  c.innerHTML=comentariosModeracao.length?comentariosModeracao.map((cm,i)=>'<div class="adm-item"><b>'+esc(cm.autor)+'</b>: '+esc(cm.texto)+'<br><button onclick="removerComentarioAdm('+i+')" style="background:#ff4757;color:#fff;margin-top:6px">🗑️ Remover comentário</button></div>').join(''):'<p style="color:#aaa;font-size:.8rem">Nenhum comentário para moderar.</p>';
-  let b=document.getElementById('lista-bloqueados-adm');
-  b.innerHTML=bloqueados.length?bloqueados.map((n,i)=>'<div class="adm-item">'+esc(n)+' <button onclick="desbloquearUsuarioAdm('+i+')" style="background:#2196f3;color:#fff">Desbloquear</button></div>').join(''):'<p style="color:#aaa;font-size:.8rem">Ninguém bloqueado.</p>';
-}
-function aceitarSolicitacao(id){let p=solicitacoesPendentes.find(x=>x.id===id);solicitacoesPendentes=solicitacoesPendentes.filter(x=>x.id!==id);localStorage.setItem('fandoms_solicitacoes',JSON.stringify(solicitacoesPendentes));renderizarPainelAdm();if(p){alert('✅ '+p.usuario+' aceito(a) em '+p.fandom);entrarComunidadeEfetivo(p.fandom,p.cor||'#2196f3')}}
-function negarSolicitacao(id){let p=solicitacoesPendentes.find(x=>x.id===id);solicitacoesPendentes=solicitacoesPendentes.filter(x=>x.id!==id);localStorage.setItem('fandoms_solicitacoes',JSON.stringify(solicitacoesPendentes));if(p&&!bloqueados.includes(p.usuario)){bloqueados.push(p.usuario);localStorage.setItem('usuarios_bloqueados',JSON.stringify(bloqueados))}renderizarPainelAdm();alert('❌ Entrada negada para '+(p?p.usuario:''))}
-function bloquearUsuarioAdm(){let n=document.getElementById('input-bloquear-nome').value.trim();if(!n){alert('Digite o nome!');return}if(!bloqueados.includes(n)){bloqueados.push(n);localStorage.setItem('usuarios_bloqueados',JSON.stringify(bloqueados))}document.getElementById('input-bloquear-nome').value='';renderizarPainelAdm();alert('🚫 '+n+' bloqueado(a).')}
-function desbloquearUsuarioAdm(i){bloqueados.splice(i,1);localStorage.setItem('usuarios_bloqueados',JSON.stringify(bloqueados));renderizarPainelAdm()}
-function removerComentarioAdm(i){let cm=comentariosModeracao[i];comentariosModeracao.splice(i,1);localStorage.setItem('comentarios_moderacao',JSON.stringify(comentariosModeracao));document.querySelectorAll('[data-comentario-id="'+(cm?cm.id:'')+'"]').forEach(el=>el.remove());renderizarPainelAdm();alert('🗑️ Comentário removido.')}
-function entrarComunidadeEfetivo(nome,cor){fandomAtualSelecionado=nome;modoAtualNoCentro='GERAL';document.getElementById('titulo-feed-atual').innerText='Comunidade: '+nome;document.getElementById('sub-feed-atual').innerText='Espaço exclusivo do fandom';document.getElementById('btn-adm-comunidade').style.display='block';document.getElementById('btn-voltar-geral').style.display='block';document.getElementById('container-subgrupos').style.display='block';let l=document.getElementById('texto-logo-principal');if(l)l.innerText=nome;carregarSubgruposInternos(nome)}
-function voltarParaFeedPrincipal(){location.reload()}
-function aplicarEstiloTema(cor){document.querySelectorAll('.btn-tema-bg').forEach(e=>e.style.background=cor)}
-function abrirModalNovoTema(){renderizarFandomsNoModalGerenciamento();document.getElementById('modal-novo-tema').style.display='flex'}function fecharModalNovoTema(){document.getElementById('modal-novo-tema').style.display='none'}
-function salvarNovoTemaPersonalizado(){let n=document.getElementById('input-novo-tema-nome').value.trim();if(!n){alert('Digite o nome!');return}if(comunidadesAprovadas.includes(n)){alert('Já existe!');return}comunidadesAprovadas.push(n);localStorage.setItem('fandoms_aprovados',JSON.stringify(comunidadesAprovadas));document.getElementById('input-novo-tema-nome').value='';renderizarListaFandomsLateral();renderizarFandomsNoModalGerenciamento();alert('Fandom "'+n+'" criado!')}
-function abrirModalSubgrupo(){if(!fandomAtualSelecionado){alert('Entre em um fandom primeiro!');return}document.getElementById('modal-subgrupo').style.display='flex'}function fecharModalSubgrupo(){document.getElementById('modal-subgrupo').style.display='none'}
-function salvarSubgrupoInterno(){let n=document.getElementById('input-nome-subgrupo').value.trim();if(!n){alert('Digite o subgrupo!');return}if(!subgruposFandoms[fandomAtualSelecionado])subgruposFandoms[fandomAtualSelecionado]=[];subgruposFandoms[fandomAtualSelecionado].push(n);localStorage.setItem('fandoms_subgrupos',JSON.stringify(subgruposFandoms));fecharModalSubgrupo();carregarSubgruposInternos(fandomAtualSelecionado)}
-function carregarSubgruposInternos(n){let c=document.getElementById('lista-subgrupos-interno');if(!c)return;c.innerHTML='';(subgruposFandoms[n]||[]).forEach(s=>{let b=document.createElement('span');b.style.cssText='background:rgba(243,217,139,.15);border:1px solid #f3d98b;color:#f3d98b;padding:3px 8px;border-radius:6px;font-size:.75rem';b.innerText='#'+s;c.appendChild(b)})}
-function enviarMensagemChatComunidade(){let nome=localStorage.getItem('usuario_nome');if(!nome){alert('Faça login!');return}let texto=document.getElementById('textoChatComunidade').value.trim();if(!texto&&!midiaChatValidaBase64){alert('Escreva algo ou envie mídia!');return}criarTopicoChatHTML(nome,texto,midiaChatValidaBase64,midiaChatIsVideo,localStorage.getItem('usuario_cor_tema')||'#ff4757',document.getElementById('mural-chat-comunidade'));document.getElementById('textoChatComunidade').value='';midiaChatValidaBase64=null;midiaChatIsVideo=false}
-function criarTopicoChatHTML(nome,texto,midia,isVideo,cor,mural){if(mural.innerHTML.includes('Nenhuma publicação'))mural.innerHTML='';let id=Date.now();let d=document.createElement('div');d.setAttribute('data-comentario-id',id);d.style.cssText='background:rgba(255,255,255,.07);border:1px solid rgba(243,217,139,.3);border-radius:16px;padding:14px';d.innerHTML='<div style="display:flex;gap:8px;align-items:center"><div style="width:32px;height:32px;border-radius:50%;background:'+cor+';display:flex;align-items:center;justify-content:center;font-weight:bold">'+esc(nome.charAt(0).toUpperCase())+'</div><b style="color:#f3d98b">'+esc(nome)+'</b></div>'+(texto?'<p class="texto-conteudo-post" style="margin:10px 0">'+esc(texto)+'</p>':'')+(midia?(isVideo?'<video src="'+midia+'" controls style="width:100%"></video>':'<img src="'+midia+'" style="width:100%;border-radius:10px">'):'')+'<div class="lista-respostas-chat" style="margin-top:10px"></div><div style="display:flex;gap:6px;margin-top:8px"><input class="input-resposta-chat" placeholder="Responder..." style="flex:1"><button onclick="enviarRespostaChat(this)" style="background:'+cor+';color:#fff;border:none;padding:7px 12px;border-radius:8px;cursor:pointer">Responder</button></div>';mural.prepend(d);comentariosModeracao.unshift({id,autor:nome,texto:texto||'Mídia enviada'});localStorage.setItem('comentarios_moderacao',JSON.stringify(comentariosModeracao))}
-function curtirPostChat(b){let s=b.querySelector('.contador-post-likes');if(s)s.innerText=(parseInt(s.innerText)||0)+1}
-function compartilharPostChat(b){let t=b.closest('div').parentElement.querySelector('.texto-conteudo-post');navigator.clipboard?.writeText(t?t.innerText:'New Drama');alert('Link copiado!')}
-function enviarRespostaChat(b){let nome=localStorage.getItem('usuario_nome');if(!nome){alert('Faça login!');return}let top=b.closest('div').parentElement;let inp=top.querySelector('.input-resposta-chat');let txt=inp.value.trim();if(!txt)return;let l=top.querySelector('.lista-respostas-chat');let d=document.createElement('div');d.style.cssText='background:rgba(0,0,0,.35);padding:8px;border-radius:10px;margin:4px 0 4px 12px';d.innerHTML='<b>'+esc(nome)+'</b><p>'+esc(txt)+'</p>';l.appendChild(d);inp.value=''}
-function atualizarNomePerfil(i){if(i.files&&i.files[0])document.getElementById('label-foto-perfil').innerText=i.files[0].name}function atualizarNomeFundoPerfil(i){}function atualizarNomeBias(i){if(i.files&&i.files[0])document.getElementById('label-foto-bias').innerText=i.files[0].name}function atualizarNomeFotoGaveta(i){if(i.files&&i.files[0])document.getElementById('label-foto-gaveta').innerText=i.files[0].name}
-function configurarPerfil(){document.getElementById('input-nome').value=localStorage.getItem('usuario_nome')||'';document.getElementById('input-nasc').value=localStorage.getItem('usuario_nascimento')||'';document.getElementById('input-fandom').value=localStorage.getItem('usuario_fandom')||'';document.getElementById('input-email').value=localStorage.getItem('usuario_email')||'';document.getElementById('input-tel').value=localStorage.getItem('usuario_telefone')||'';document.getElementById('input-senha').value=localStorage.getItem('usuario_senha')||'';document.getElementById('modal-cadastro').style.display='flex'}function fecharModalCadastro(){document.getElementById('modal-cadastro').style.display='none'}
-function salvarPerfilPersonalizado(){let nome=document.getElementById('input-nome').value.trim();if(nome){localStorage.setItem('usuario_nome',nome);document.getElementById('nome-usuario').innerText=nome;document.getElementById('menu-nome-usuario').innerText=nome;document.getElementById('avatar-usuario').innerText=nome.charAt(0).toUpperCase();document.getElementById('perfil-avatar-grande').innerText=nome.charAt(0).toUpperCase()}localStorage.setItem('usuario_nascimento',document.getElementById('input-nasc').value);localStorage.setItem('usuario_fandom',document.getElementById('input-fandom').value);localStorage.setItem('usuario_email',document.getElementById('input-email').value);localStorage.setItem('usuario_telefone',document.getElementById('input-tel').value);localStorage.setItem('usuario_senha',document.getElementById('input-senha').value);localStorage.setItem('usuario_cor_tema',document.getElementById('input-cor-pessoal').value);fecharModalCadastro();alert('Dados salvos!')}
-function abrirSuporteDesenvolvedor(){document.getElementById('modal-suporte').style.display='flex'}function fecharSuporteDesenvolvedor(){document.getElementById('modal-suporte').style.display='none'}
-function buscarNoYoutubeDireto(){let t=document.getElementById('termo-busca-yt')?.value||'';window.open(t?'https://www.youtube.com/results?search_query='+encodeURIComponent(t):'https://www.youtube.com','_blank')}
-let ofertasVitrine=[{tag:'PARCEIRO',titulo:'Conteúdos e Recomendações',imagem:'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92',link:'https://www.google.com'}];function iniciarVitrine(){document.getElementById('vitrine-img').src=ofertasVitrine[0].imagem;document.getElementById('vitrine-titulo').innerText=ofertasVitrine[0].titulo;document.getElementById('vitrine-tag').innerText=ofertasVitrine[0].tag}function visitarOfertaAtual(){window.open(ofertasVitrine[0].link,'_blank')}
-function popularSelectPosicoes(){let s=document.getElementById('bias-posicao-select');if(!s)return;s.innerHTML='';for(let i=1;i<=1000;i++){let o=document.createElement('option');o.value=i;o.innerText='Posição '+i;s.appendChild(o)}}
-function abrirModalBias(){popularSelectPosicoes();document.getElementById('modal-bias').style.display='flex'}function fecharModalBias(){document.getElementById('modal-bias').style.display='none'}
-function salvarBiasPersonalizado(){let p=parseInt(document.getElementById('bias-posicao-select').value),n=document.getElementById('bias-nome').value.trim(),c=document.getElementById('bias-categoria').value.trim()||'Geral';if(!n){alert('Digite o nome!');return}let l=JSON.parse(localStorage.getItem('meus_bias_salvos')||'[]');let ex=l.find(b=>b.posicao===p);if(ex&&ex.ultimaModificacao&&Date.now()-ex.ultimaModificacao<30*24*60*60*1000){alert('🔒 Posição só pode ser alterada a cada 30 dias.');return}let f=document.getElementById('bias-foto-file');if(f.files&&f.files[0])converterImagemParaHD(f.files[0],600,600,b=>atualizarEGravarListaBias(l,p,n,c,b));else atualizarEGravarListaBias(l,p,n,c,ex?ex.foto:null)}
-function atualizarEGravarListaBias(l,p,n,c,f){l=l.filter(b=>b.posicao!==p);l.push({posicao:p,nome:n,categoria:c,foto:f,ultimaModificacao:Date.now()});l.sort((a,b)=>a.posicao-b.posicao);localStorage.setItem('meus_bias_salvos',JSON.stringify(l));carregarMeusBiasNaInterface();fecharModalBias();alert('Item #'+p+' salvo!')}
-function carregarMeusBiasNaInterface(){let c=document.getElementById('lista-bias-container');if(!c)return;let l=JSON.parse(localStorage.getItem('meus_bias_salvos')||'[]');c.innerHTML=l.length?l.map(b=>'<div onclick="selecionarBiasParaDesafio('+b.posicao+',\''+esc(b.nome)+'\',\''+(b.foto||'')+'\')" style="padding:8px;background:rgba(255,255,255,.05);border-radius:8px;cursor:pointer">#'+b.posicao+' - <b>'+esc(b.nome)+'</b></div>').join(''):'<div style="padding:10px;text-align:center;color:#aaa">Lista vazia. Clique em + Gerenciar!</div>';carregarMeusBiasNaInterfaceMobile()}
-function carregarMeusBiasNaInterfaceMobile(){let c=document.getElementById('lista-bias-container-mob');if(!c)return;let l=JSON.parse(localStorage.getItem('meus_bias_salvos')||'[]');c.innerHTML=l.map(b=>'<div>#'+b.posicao+' - '+esc(b.nome)+'</div>').join('')}
-function removerBias(p){let l=JSON.parse(localStorage.getItem('meus_bias_salvos')||'[]');localStorage.setItem('meus_bias_salvos',JSON.stringify(l.filter(b=>b.posicao!==p)));carregarMeusBiasNaInterface()}
-function abrirMenuLateral(){document.getElementById('modal-menu').style.display='block'}function fecharMenuLateral(){document.getElementById('modal-menu').style.display='none'}
-function sairDaConta(){if(confirm('Sair da conta?')){localStorage.removeItem('usuario_nome');location.reload()}}
-function comentarGaveta(){let texto=document.getElementById('campoGavetaTexto').value.trim();let fi=document.getElementById('campoGavetaFoto');if(!texto&&(!fi.files||!fi.files[0])){alert('Escreva algo ou escolha foto!');return}if(texto.toLowerCase()==='luana'||texto.toLowerCase()==='luanaeandre.ls'){localStorage.setItem('modo_criadora_ativo','true');alert('MODO CRIADORA ATIVADO!');document.getElementById('campoGavetaTexto').value='';document.getElementById('painel-criadora').style.display='block';renderizarPainelAdm();document.getElementById('modal-adm').style.display='flex';return}if(fi.files&&fi.files[0])converterImagemParaHD(fi.files[0],1000,1000(b=>{registrarNoHistoricoGaveta('NOTA / FOTO',texto||'Foto privada',b);document.getElementById('campoGavetaTexto').value=''}));else{registrarNoHistoricoGaveta('NOTA RÁPIDA',texto);document.getElementById('campoGavetaTexto').value=''}}
-function comentarGavetaMobile(){let t=document.getElementById('campoGavetaTextoMob')?.value||'';registrarNoHistoricoGaveta('NOTA',t);abrirGavetaMobile('gaveta')}
-window.addEventListener('DOMContentLoaded',()=>{let n=localStorage.getItem('usuario_nome');if(n){document.getElementById('nome-usuario').innerText=n;document.getElementById('menu-nome-usuario').innerText=n}if(localStorage.getItem('modo_criadora_ativo')==='true'){document.getElementById('painel-criadora').style.display='block'}renderizarListaFandomsLateral();carregarMeusBiasNaInterface();carregarHistoricoNaGaveta();renderizarCardDesafioEsquerda();iniciarVitrine();let local=localStorage.getItem('desafioDoDiaGlobal');if(local)aplicarDesafioGlobal(local)});
-</script>
+  (function protegerCodigoCriadora() {
+    let statusCriadora = localStorage.getItem('status_criadora_autorizada');
+    if (!statusCriadora) { localStorage.setItem('status_criadora_autorizada', 'ativo'); }
+  })(); 
+let modoAtualNoCentro = "GERAL";
+/* CORREÇÃO 2 - variáveis do ADM, acrescentadas sem tocar nas suas */
+let bloqueados = JSON.parse(localStorage.getItem('usuarios_bloqueados') || '[]');
+let comentariosModeracao = JSON.parse(localStorage.getItem('comentarios_moderacao') || '[]');
+function escAdm(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 
-<script type="module">
-import {initializeApp} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import {getAuth,signInWithPopup,GoogleAuthProvider,onAuthStateChanged,signOut} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import {getFirestore,doc,onSnapshot,setDoc,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",authDomain:"new-drama-e729b.firebaseapp.com",projectId:"new-drama-e729b",storageBucket:"new-drama-e729b.firebasestorage.app",messagingSenderId:"1038068499530",appId:"1:1038068499530:web:44fd33a0a628bcad4ad2b3",measurementId:"G-VXNH7S6N36"};
-const app=initializeApp(firebaseConfig);
-const auth=getAuth(app); const db=getFirestore(app); const provider=new GoogleAuthProvider();
-window.clicarBotaoPerfil=function(){if(auth.currentUser){abrirMenuLateral()}else{fazerLoginGoogle()}};
-window.fazerLoginGoogle=function(){signInWithPopup(auth,provider).then(r=>{console.log("Logado:",r.user.displayName)}).catch(e=>{console.error(e);alert("Não foi possível fazer login. Tente novamente.")})};
-window.sairDoGoogle=function(){signOut(auth).then(()=>location.reload())};
-onAuthStateChanged(auth,(user)=>{let b=document.getElementById("btn-acao-perfil");if(!b)return;if(user){b.innerHTML=(user.photoURL?'<img src="'+user.photoURL+'" style="width:24px;height:24px;border-radius:50%;vertical-align:middle;margin-right:5px"> ':'')+'Perfil';let nome=user.displayName||user.email;if(nome){localStorage.setItem('usuario_nome',nome);document.getElementById('nome-usuario').innerText=nome;document.getElementById('menu-nome-usuario').innerText=nome}}else{b.innerText="Entrar"}});
-const refDesafio=doc(db,"config","desafioDoDia");
-onSnapshot(refDesafio,(snap)=>{if(snap.exists()&&snap.data().texto){aplicarDesafioGlobal(snap.data().texto);localStorage.setItem("desafioDoDiaGlobal",snap.data().texto)}},(err)=>{console.warn("Firestore desafio:",err)});
-async function salvarDesafioGlobal(novoTexto){
-  if(localStorage.getItem('modo_criadora_ativo')!=='true'){alert('Somente a criadora pode mudar o desafio.');return}
-  if(!auth.currentUser){alert('Faça login com Google (botão Entrar) antes de mudar o desafio global.');return}
-  try{await setDoc(refDesafio,{texto:novoTexto,atualizadoEm:serverTimestamp(),por:auth.currentUser.email||auth.currentUser.uid});document.getElementById('msg-desafio').innerText='✅ Atualizado para toda a plataforma!';}
-  catch(e){console.error(e);alert('Não consegui salvar no Firestore. Verifique as Regras do Firestore e se você está logada. Erro: '+e.message)}
+function verificarRolagemTopoMobile() {
+  if (window.scrollY > 30) { document.body.classList.add('logo-recolhida'); } else { document.body.classList.remove('logo-recolhida'); }
 }
-window.atualizarDesafioDoDia=async function(){let input=document.getElementById("novo-desafio-input");let novoTexto=(input?.value||'').trim();if(!novoTexto){alert("Digite um texto para o desafio!");return}aplicarDesafioGlobal(novoTexto);await salvarDesafioGlobal(novoTexto);if(input)input.value='';};
-document.getElementById('btn-atualizar-desafio')?.addEventListener('click',()=>window.atualizarDesafioDoDia());
-window.abrirPainelAdmFandom=function(){if(localStorage.getItem('modo_criadora_ativo')!=='true'){alert('Somente a criadora.');return}renderizarPainelAdm();document.getElementById('modal-adm').style.display='flex'};
+function dispararCameraCelular() {
+  const isDesktop = !(/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent));
+  if (isDesktop) { abrirModalWebcamDesktop(); } else { const inputCamera = document.getElementById('cameraChatComunidadeDireto'); if (inputCamera) inputCamera.click(); }
+}
+function abrirModalWebcamDesktop() {
+  let modalExistente = document.getElementById('modal-webcam-pc');
+  if (modalExistente) modalExistente.remove();
+  const modalHtml = `<div id="modal-webcam-pc" style="position: fixed; inset: 0; background: rgba(0,0,0,0.9); z-index: 100000; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px;"><div style="background: #121829; border: 1px solid #f3d98b; padding: 20px; border-radius: 16px; max-width: 500px; width: 100%; text-align: center;"><h3 style="color: #f3d98b; margin-bottom: 10px;">📸 Capturar Foto pela Webcam</h3><video id="videoWebcamPC" autoplay playsinline style="width: 100%; max-height: 300px; background: #000; border-radius: 8px; margin-bottom: 15px;"></video><canvas id="canvasWebcamPC" style="display: none;"></canvas><div style="display: flex; gap: 10px;"><button onclick="tirarFotoWebcamPC()" style="flex: 1; padding: 10px; background: #2196f3; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Tirar Foto</button><button onclick="fecharModalWebcamPC()" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Cancelar</button></div></div></div>`;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+  navigator.mediaDevices.getUserMedia({ video: true, audio: false }).then(stream => { window.streamWebcamGlobal = stream; const videoEl = document.getElementById('videoWebcamPC'); if (videoEl) videoEl.srcObject = stream; }).catch(err => { alert("⚠️ Não foi possível acessar a webcam."); fecharModalWebcamPC(); });
+}
+function fecharModalWebcamPC() { if (window.streamWebcamGlobal) { window.streamWebcamGlobal.getTracks().forEach(track => track.stop()); window.streamWebcamGlobal = null; } let modal = document.getElementById('modal-webcam-pc'); if (modal) modal.remove(); }
+function tirarFotoWebcamPC() { const videoEl = document.getElementById('videoWebcamPC'); const canvasEl = document.getElementById('canvasWebcamPC'); if (!videoEl || !canvasEl) return; canvasEl.width = videoEl.videoWidth || 640; canvasEl.height = videoEl.videoHeight || 480; let ctx = canvasEl.getContext('2d'); ctx.drawImage(videoEl, 0, 0, canvasEl.width, canvasEl.height); let base64Foto = canvasEl.toDataURL('image/jpeg', 0.92); midiaChatValidaBase64 = base64Foto; midiaChatIsVideo = false; let label = document.getElementById('label-midia-chat'); if (label) label.innerText = " 📷 Foto da Webcam (Pronto)"; fecharModalWebcamPC(); alert("✅ Foto capturada!"); }
+
+function abrirGavetaMobile(tipo) {
+  let overlay = document.getElementById('gaveta-mobile-overlay');
+  let container = document.getElementById('conteudo-dinamico-gaveta-mobile');
+  let titulo = document.getElementById('titulo-gaveta-mobile');
+  container.innerHTML = "";
+  if (tipo === 'desafio') {
+    titulo.innerText = "🎯 Desafio do Dia & Envio Integrado (Toque aqui para voltar)";
+    container.innerHTML = `<div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px; margin-bottom: 12px;"><h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">Desafio do Dia</h4><div style="margin-bottom: 10px; position: relative;"><label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label><input type="text" id="inputBuscaBiasDesafioMob" placeholder="Ex: 1 ou Nome..." oninput="filtrarBuscaBiasDesafio(this.value, 'mob')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);"><div id="sugestoes-bias-busca-mob" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px;"></div></div><div id="bloco-envio-desafio-mob" style="margin-bottom: 10px;"></div><button onclick="fecharGavetaMobile(); abrirDesafioNoCentroMobile()" class="btn-tema-bg" style="width: 100%; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 8px; border-radius: 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; margin-top: 5px;">🔍 Ver Fotos das Colegas (Votar)</button></div><div style="background: rgba(255,255,255,0.05); border: 1px solid rgba(243,217,139,0.3); padding: 15px; border-radius: 14px;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;"><h4 style="color: #f3d98b; font-size: 0.95rem; margin: 0;">Meus Bias (1 a 1000)</h4><button onclick="abrirModalBias()" class="btn-tema-bg" style="background: #ff4757; color: white; border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button></div><p style="font-size: 0.7rem; color: #aaa; margin-bottom: 8px;">Clique para selecionar e preencher o desafio:</p><div id="lista-bias-container-mob" style="display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;"></div></div>`;
+    setTimeout(() => { renderizarCardDesafioEsquerda(); carregarMeusBiasNaInterfaceMobile(); }, 50);
+  } else if (tipo === 'gaveta') {
+    titulo.innerText = "📂 Minha Gaveta Privada & Histórico (Toque aqui para voltar)";
+    let htmlGav = `<div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);"><textarea id="campoGavetaTextoMob" placeholder="Escreva nota ou adicione algo na gaveta..." style="border-radius: 10px; height: 50px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;"></textarea><div style="display: flex; gap: 6px; margin-bottom: 12px;"><input type="file" id="campoGavetaFotoMob" accept="image/*" style="display:none;" onchange="document.getElementById('lbl-foto-mob').innerText=this.files[0].name"><label for="campoGavetaFotoMob" id="lbl-foto-mob" style="flex:1; background:rgba(255,255,255,0.1); padding:8px; border-radius:8px; text-align:center; font-size:0.75rem; color:#f3d98b; cursor:pointer;">📁 Foto Privada</label><button onclick="comentarGavetaMobile()" style="background:#f3d98b; color:#1a1030; border:none; padding:8px 14px; border-radius:8px; font-weight:bold; cursor:pointer;">Salvar</button></div><hr style="border:none; border-top:1px solid rgba(255,255,255,0.15); margin-bottom:10px;"><div id="listaGavetaMob" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;"></div></div>`;
+    container.innerHTML = htmlGav;
+    setTimeout(() => carregarHistoricoNaGavetaMobile(), 50);
+  } else if (tipo === 'fandoms') {
+    titulo.innerText = "🌐 Comunidade & Fandoms (Toque aqui para voltar)";
+    container.innerHTML = `<div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);"><button onclick="abrirModalNovoTema()" style="width: 100%; padding: 12px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Gerenciar / Criar Fandom</button><div id="lista-comunidades-container-mob" style="display: flex; flex-direction: column; gap: 8px;"></div></div>`;
+    setTimeout(() => renderizarListaFandomsLateralMobile(), 50);
+  }
+  overlay.style.display = 'flex';
+}
+function fecharGavetaMobile() { document.getElementById('gaveta-mobile-overlay').style.display = 'none'; }
+
+const desafio_segunda = "";
+const desafio_terca   = "";
+const desafio_quarta  = "";
+const desafio_quinta  = "";
+const desafio_sexta   = "";
+const desafio_sabado  = "";
+/* CORREÇÃO 3 - desafio global: se a criadora publicou um desafio global, ele vence o da semana */
+function obterDesafioDoDiaAtual() {
+  if (window.__desafioGlobal) return window.__desafioGlobal;
+  let diaSemana = new Date().getDay();
+  if (diaSemana === 1) return desafio_segunda || "Desafio de Segunda-Feira";
+  if (diaSemana === 2) return desafio_terca || "Desafio de Terça-Feira";
+  if (diaSemana === 3) return desafio_quarta || "Desafio de Quarta-Feira";
+  if (diaSemana === 4) return desafio_quinta || "Desafio de Quinta-Feira";
+  if (diaSemana === 5) return desafio_sexta || "Desafio de Sexta-Feira";
+  if (diaSemana === 6) return desafio_sabado || "Desafio de Sábado";
+  return "Domingo de Descanso - Campeão no Trono 👑";
+}
+/* CORREÇÃO 3 - aplica o desafio global nos seus elementos reais */
+function aplicarDesafioGlobal(texto){
+  window.__desafioGlobal = texto;
+  ['sub-titulo-desafio-esq','texto-resumo-desafio-mob','sub-titulo-desafio-mob'].forEach(id=>{let el=document.getElementById(id); if(el) el.innerText=texto;});
+  let m=document.getElementById('msg-desafio-global'); if(m) m.innerText='Desafio atual: '+texto;
+  localStorage.setItem('desafioDoDiaGlobal', texto);
+}
+function atualizarResumoDesafioMob() { let t = obterDesafioDoDiaAtual(); let el = document.getElementById('texto-resumo-desafio-mob'); if(el) el.innerText = t; }
+function abrirFotoPinterest(urlSrc) { document.getElementById('img-pinterest-zoom').src = urlSrc; document.getElementById('sliderZoomPinterest').value = 1; document.getElementById('img-pinterest-zoom').style.transform = 'scale(1)'; document.getElementById('modal-pinterest').style.display = 'flex'; }
+function fecharModalPinterest() { document.getElementById('modal-pinterest').style.display = 'none'; }
+function aplicarZoomPinterest(valor) { const img = document.getElementById('img-pinterest-zoom'); if (img) img.style.transform = `scale(${valor})`; }
+
+let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["BTS", "EXO", "Super Junior", "Doramas", "Anime"]');
+let solicitacoesPendentes = JSON.parse(localStorage.getItem('fandoms_solicitacoes') || '[]');
+let subgruposFandoms = JSON.parse(localStorage.getItem('fandoms_subgrupos') || '{}');
+let fandomAtualSelecionado = "";
+let corAtualSelecionada = "";
+
+function renderizarListaFandomsLateral() {
+  let container = document.getElementById('lista-comunidades-container'); if (!container) return; container.innerHTML = "";
+  let coresPadroes = ["#2196f3", "#00bcd4", "#9c27b0", "#e91e63", "#4caf50", "#ff9800", "#795548", "#e0a838"];
+  comunidadesAprovadas.forEach((nomeFandom, index) => {
+    let cor = coresPadroes[index % coresPadroes.length];
+    let btn = document.createElement('button');
+    btn.style.cssText = `padding: 8px 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.08); border-left: 4px solid ${cor}; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center;`;
+    btn.innerHTML = `<span>${nomeFandom}</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 5px; border-radius: 4px; color: #f3d98b;">Privado</span>`;
+    btn.onclick = () => tentarEntrarComunidade(nomeFandom, cor);
+    container.appendChild(btn);
+  });
+}
+function renderizarListaFandomsLateralMobile() {
+  let container = document.getElementById('lista-comunidades-container-mob'); if (!container) return; container.innerHTML = "";
+  let coresPadroes = ["#2196f3", "#00bcd4", "#9c27b0", "#e91e63", "#4caf50", "#ff9800", "#795548", "#e0a838"];
+  comunidadesAprovadas.forEach((nomeFandom, index) => {
+    let cor = coresPadroes[index % coresPadroes.length];
+    let btn = document.createElement('button');
+    btn.style.cssText = `padding: 10px 12px; border-radius: 8px; border: none; background: rgba(255,255,255,0.08); border-left: 4px solid ${cor}; color: white; font-weight: bold; cursor: pointer; text-align: left; font-size: 0.9rem; display: flex; justify-content: space-between; align-items: center;`;
+    btn.innerHTML = `<span>${nomeFandom}</span> <span style="font-size: 0.7rem; background: rgba(0,0,0,0.4); padding: 2px 6px; border-radius: 4px; color: #f3d98b;">Acessar</span>`;
+    btn.onclick = () => { fecharGavetaMobile(); tentarEntrarComunidade(nomeFandom, cor); };
+    container.appendChild(btn);
+  });
+}
+function renderizarFandomsNoModalGerenciamento() {
+  let containerModal = document.getElementById('lista-fandoms-gerenciar-modal'); if (!containerModal) return; containerModal.innerHTML = "";
+  comunidadesAprovadas.forEach((fandom) => {
+    let itemDiv = document.createElement('div');
+    itemDiv.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px;";
+    itemDiv.innerHTML = `<span style="font-size: 0.8rem; color: #fff; font-weight: bold;">${fandom}</span> <button onclick="excluirFandom('${fandom}')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>`;
+    containerModal.appendChild(itemDiv);
+  });
+}
+function excluirFandom(nomeFandom) { if (confirm(`Deseja realmente excluir o fandom "${nomeFandom}"?`)) { comunidadesAprovadas = comunidadesAprovadas.filter(f => f !== nomeFandom); localStorage.setItem('fandoms_aprovados', JSON.stringify(comunidadesAprovadas)); renderizarListaFandomsLateral(); renderizarFandomsNoModalGerenciamento(); } }
+function registrarNoHistoricoGaveta(tipo, descricao, fotoMiniaturaBase64 = null) {
+  let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
+  historicoSalvo.unshift({ id: Date.now(), tipo: tipo, texto: descricao, foto: fotoMiniaturaBase64, data: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString().slice(0,5) });
+  if (historicoSalvo.length > 50) historicoSalvo.pop();
+  localStorage.setItem('minha_gaveta_historico', JSON.stringify(historicoSalvo));
+  carregarHistoricoNaGaveta();
+}
+function carregarHistoricoNaGaveta() {
+  let gaveta = document.getElementById('listaGaveta'); if (!gaveta) return;
+  let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
+  if (historicoSalvo.length === 0) { gaveta.innerHTML = "Nenhum item salvo na gaveta ainda."; return; }
+  let htmlConteudo = "";
+  historicoSalvo.forEach((item, index) => {
+    let corBadge = item.tipo === 'CURTIDA' ? '#ff4757' : (item.tipo === 'COMENTÁRIO' ? '#2196f3' : '#f3d98b');
+    htmlConteudo += `<div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid ${corBadge}; position: relative;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;"><span style="font-size: 0.65rem; background: ${corBadge}; color: #fff; padding: 1px 4px; border-radius: 3px; font-weight: bold;">${item.tipo}</span></div><p style="margin: 0 0 4px 0; font-size: 0.75rem; color: #fff; word-break: break-word;">${item.texto}</p>${item.foto ? `<div style="margin-top: 6px; width: 100%; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>` : ''}<button onclick="removerItemGaveta(${index})" style="position: absolute; top: 4px; right: 6px; background: none; border: none; color: #ff4757; cursor: pointer; font-size: 0.75rem;">X</button></div>`;
+  });
+  gaveta.innerHTML = htmlConteudo;
+}
+function carregarHistoricoNaGavetaMobile() {
+  let gaveta = document.getElementById('listaGavetaMob'); if (!gaveta) return;
+  let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
+  if (historicoSalvo.length === 0) { gaveta.innerHTML = "<p style='color:#aaa; font-size:0.8rem; text-align:center;'>Nenhum item salvo na gaveta ainda.</p>"; return; }
+  let htmlConteudo = "";
+  historicoSalvo.forEach((item, index) => {
+    let corBadge = item.tipo === 'CURTIDA' ? '#ff4757' : (item.tipo === 'COMENTÁRIO' ? '#2196f3' : '#f3d98b');
+    htmlConteudo += `<div style="background: rgba(0,0,0,0.35); padding: 10px; border-radius: 8px; border-left: 3px solid ${corBadge}; position: relative;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;"><span style="font-size: 0.7rem; background: ${corBadge}; color: #fff; padding: 2px 6px; border-radius: 4px; font-weight: bold;">${item.tipo}</span><span style="font-size: 0.7rem; color: #aaa;">${item.data}</span></div><p style="margin: 0 0 6px 0; font-size: 0.8rem; color: #fff; word-break: break-word;">${item.texto}</p>${item.foto ? `<div style="margin-top: 6px; width: 100%; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>` : ''}<button onclick="removerItemGaveta(${index}); abrirGavetaMobile('gaveta')" style="position: absolute; top: 8px; right: 8px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">Excluir</button></div>`;
+  });
+  gaveta.innerHTML = htmlConteudo;
+}
+function removerItemGaveta(index) { let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]'); historicoSalvo.splice(index, 1); localStorage.setItem('minha_gaveta_historico', JSON.stringify(historicoSalvo)); carregarHistoricoNaGaveta(); }
+window.biasSelecionadoValidado = null;
+function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64, origem = 'esq') {
+  window.biasSelecionadoValidado = { posicao, nome: nomeBias, foto: fotoBase64 };
+  let campoTexto = document.getElementById('textoDesafioEsq'); if (campoTexto) campoTexto.value = `Top #${posicao}: ${nomeBias} - Validado!`;
+  let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasDesafioMob' : 'inputBuscaBiasDesafio'); if (inputBusca) inputBusca.value = `#${posicao} - ${nomeBias}`;
+  let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-busca-mob' : 'sugestoes-bias-busca'); if (divSugestoes) divSugestoes.style.display = 'none';
+  alert(`Bias #${posicao} (${nomeBias}) selecionado para o desafio!`);
+}
+function filtrarBuscaBiasDesafio(termo, origem = 'esq') {
+  let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-busca-mob' : 'sugestoes-bias-busca'); if (!divSugestoes) return;
+  termo = termo.trim().toLowerCase(); if (!termo) { divSugestoes.style.display = 'none'; return; }
+  let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
+  let filtrados = listaBias.filter(b => b.posicao.toString() === termo || b.nome.toLowerCase().includes(termo) || `#${b.posicao}`.includes(termo));
+  if (filtrados.length === 0) { divSugestoes.innerHTML = `<div style="padding: 8px; font-size: 0.75rem; color: #aaa; text-align: center;">Nenhum bias cadastrado</div>`; divSugestoes.style.display = 'block'; return; }
+  let html = ""; filtrados.forEach(b => { html += `<div onclick="selecionarBiasParaDesafio(${b.posicao}, '${b.nome}', '${b.foto || ''}', '${origem}')" style="padding: 8px 12px; font-size: 0.8rem; color: #fff; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center;"><span><b>#${b.posicao}</b> - ${b.nome}</span><span style="font-size: 0.7rem; color: #f3d98b;">${b.categoria}</span></div>`; });
+  divSugestoes.innerHTML = html; divSugestoes.style.display = 'block';
+}
+function renderizarCardDesafioEsquerda() {
+  let blocoEsq = document.getElementById('bloco-envio-desafio-esq'); let blocoMob = document.getElementById('bloco-envio-desafio-mob');
+  let desafioAtivoHoje = obterDesafioDoDiaAtual();
+  if(document.getElementById('sub-titulo-desafio-esq')) document.getElementById('sub-titulo-desafio-esq').innerText = desafioAtivoHoje;
+  let hojeStr = new Date().toLocaleDateString(); let envioSalvo = JSON.parse(localStorage.getItem('meu_envio_desafio_hoje') || 'null'); let formEnviado = envioSalvo && envioSalvo.data === hojeStr;
+  let htmlConteudo = "";
+  if (formEnviado) { htmlConteudo = `<div style="background: rgba(76,175,80,0.15); border: 1px solid #4caf50; padding: 10px; border-radius: 8px; text-align: center;"><p style="font-size: 0.8rem; color: #4caf50; font-weight: bold; margin-bottom: 6px;">✅ Desafio já postado hoje!</p><p style="font-size: 0.75rem; color: #fff; margin-bottom: 6px;"><b>${envioSalvo.legenda}</b></p>${envioSalvo.foto ? `<div style="width: 100%; height: 140px; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer;" onclick="abrirFotoPinterest('${envioSalvo.foto}')"><img src="${envioSalvo.foto}" style="width: 100%; height: 100%; object-fit: cover;"></div>` : ''}</div>`; }
+  else { htmlConteudo = `<div style="display: flex; flex-direction: column; gap: 6px;"><textarea id="textoDesafioEsq" placeholder="Busque o bias acima para travar..." style="border-radius: 8px; resize: none; height: 45px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea><div style="display: flex; gap: 4px;"><label for="inputFotoDesafioEsq" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(243,217,139,0.4); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b;" id="label-foto-desafio-esq">📁 Foto do Desafio</label><input type="file" id="inputFotoDesafioEsq" accept="image/*" style="display: none;" onchange="processarFotoDesafioEsq(this)"><button onclick="validarECruzarPixelsDesafio()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 6px; padding: 6px 10px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Postar</button></div></div>`; }
+  if (blocoEsq) blocoEsq.innerHTML = htmlConteudo; if (blocoMob) blocoMob.innerHTML = htmlConteudo;
+}
+let arquivoFotoDesafioEsq = null;
+function processarFotoDesafioEsq(input) { if (input.files && input.files[0]) { arquivoFotoDesafioEsq = input.files[0]; let lbl = document.getElementById('label-foto-desafio-esq'); if(lbl) lbl.innerText = "📷 " + input.files[0].name; } }
+function converterImagemParaHD(file, maxWidth, maxHeight, callback) {
+  let reader = new FileReader(); reader.onload = function(e) { let img = new Image(); img.src = e.target.result; img.onload = function() { let canvas = document.createElement('canvas'); let width = img.width, height = img.height; if (width > maxWidth || height > maxHeight) { if (width > height) { height = Math.round((height * maxWidth) / width); width = maxWidth; } else { width = Math.round((width * maxHeight) / height); height = maxHeight; } } canvas.width = width; canvas.height = height; let ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(img, 0, 0, width, height); callback(canvas.toDataURL('image/jpeg', 0.92)); }; }; }; reader.readAsDataURL(file);
+}
+function validarECruzarPixelsDesafio() {
+  let nomeUsuario = localStorage.getItem('usuario_nome'); if (!nomeUsuario) { alert("Faça login para enviar o desafio!"); return; } if (!window.biasSelecionadoValidado) { alert("Erro: Selecione um bias cadastrado antes de enviar!"); return; } if (!arquivoFotoDesafioEsq) { alert("Envie a foto para o desafio!"); return; }
+  let legenda = document.getElementById('textoDesafioEsq')?.value.trim() || "";
+  converterImagemParaHD(arquivoFotoDesafioEsq, 400, 400, function(base64Enviada) { let hojeStr = new Date().toLocaleDateString(); let dadosEnvio = { data: hojeStr, legenda: legenda, foto: base64Enviada, autor: nomeUsuario }; localStorage.setItem('meu_envio_desafio_hoje', JSON.stringify(dadosEnvio)); registrarNoHistoricoGaveta('POSTAGEM', `Desafio do Dia enviado: "${legenda.slice(0, 25)}..."`, base64Enviada); renderizarCardDesafioEsquerda(); alert(`✅ Validação Aprovada!`); });
+}
+function abrirDesafioNoCentro() {
+  modoAtualNoCentro = "DESAFIO"; let painelCentral = document.getElementById('painel-central-container'); let btnVoltarGeral = document.getElementById('btn-voltar-geral');
+  document.getElementById('titulo-feed-atual').innerText = "Desafio do Dia: " + obterDesafioDoDiaAtual(); document.getElementById('sub-feed-atual').innerText = "Veja e vote nas fotos enviadas hoje!"; btnVoltarGeral.style.display = 'block';
+  painelCentral.innerHTML = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;"><h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">🎯 Votação & Pódio do Desafio</h3></div><div style="background: rgba(243,217,139,0.1); border: 1px solid #f3d98b; padding: 12px; border-radius: 10px; margin-bottom: 15px;"><h4 style="color: #f3d98b; font-size: 0.9rem; margin-bottom: 6px;">👑 Pódio da Semana (Fixado)</h4><p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥇 <b>1º Lugar:</b> Destaque Ouro</p><p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥈 <b>2º Lugar:</b> Destaque Prata</p><p style="font-size: 0.8rem; color: #fff; margin: 2px 0;">🥉 <b>3º Lugar:</b> Destaque Bronze</p></div><div id="lista-desafios-colegas" style="display: flex; flex-direction: column; gap: 12px;"><div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem;">Nenhum envio para o desafio hoje ainda.</div></div>`;
+}
+function abrirDesafioNoCentroMobile() { abrirDesafioNoCentro(); window.scrollTo({ top: 300, behavior: 'smooth' }); }
+function alternarGavetaNoCentro(event) {
+  let layoutGrid = document.getElementById('feed-principal'); let painelCentral = document.getElementById('painel-central-container'); let btnVerGaveta = document.getElementById('btn-ver-gaveta-centro');
+  if (modoAtualNoCentro !== "GAVETA") {
+    modoAtualNoCentro = "GAVETA"; if(layoutGrid) layoutGrid.style.gridTemplateColumns = "300px 1fr 240px"; if(btnVerGaveta) btnVerGaveta.innerText = "✖ Fechar Gaveta";
+    document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta Privada (Completa)"; document.getElementById('sub-feed-atual').innerText = "Histórico de curtidas, compartilhamentos, comentários e anotações"; document.getElementById('btn-voltar-geral').style.display = 'block';
+    let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
+    let htmlGavetaCentro = `<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;"><h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">📂 Sua Gaveta & Histórico de Interações</h3></div>`;
+    if (historicoSalvo.length === 0) { htmlGavetaCentro += '<p style="color: #aaa; font-size: 0.85rem; text-align: center; padding: 20px;">Sua gaveta está vazia.</p>'; }
+    else { historicoSalvo.forEach((item, index) => { let corBadge = item.tipo === 'CURTIDA' ? '#ff4757' : (item.tipo === 'COMENTÁRIO' ? '#2196f3' : '#f3d98b'); htmlGavetaCentro += `<div style="background: rgba(0,0,0,0.35); border-radius: 12px; padding: 14px; border-left: 4px solid ${corBadge}; margin-bottom: 12px; position: relative;"><div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;"><span style="font-size: 0.75rem; background: ${corBadge}; color: #fff; padding: 2px 8px; border-radius: 4px; font-weight: bold;">${item.tipo}</span><span style="font-size: 0.75rem; color: #aaa;">${item.data}</span></div><p style="margin: 0 0 10px 0; font-size: 0.9rem; color: #fff;">${item.texto}</p>${item.foto ? `<div style="width: 100%; max-height: 350px; border-radius: 8px; overflow: hidden; background: #000; cursor: pointer;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; max-height: 350px; display: block; object-fit: contain;"></div>` : ''}<button onclick="removerItemGavetaCentro(${index})" style="position: absolute; top: 10px; right: 12px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button></div>`; }); }
+    painelCentral.innerHTML = htmlGavetaCentro;
+  } else { location.reload(); }
+}
+function removerItemGavetaCentro(index) { removerItemGaveta(index); alternarGavetaNoCentro({ preventEvent: true }); }
+let midiaChatValidaBase64 = null; let midiaChatIsVideo = false;
+function verificarESubirMidiaChat(input) {
+  let nomeUsuario = localStorage.getItem('usuario_nome'); if (!nomeUsuario) { alert("Acesso Negado! Faça login para publicar."); input.value = ""; return; }
+  let label = document.getElementById('label-midia-chat');
+  if (input.files && input.files[0]) { let arquivo = input.files[0]; if (arquivo.type.startsWith('video')) { let reader = new FileReader(); midiaChatIsVideo = true; reader.onload = function(e) { midiaChatValidaBase64 = e.target.result; if(label) label.innerText = " " + arquivo.name + " (Pronto)"; }; reader.readAsDataURL(arquivo); } else { midiaChatIsVideo = false; converterImagemParaHD(arquivo, 1200, 1200, function(hdBase64) { midiaChatValidaBase64 = hdBase64; if(label) label.innerText = " " + arquivo.name + " (HD Pronto)"; }); } } else { if(label) label.innerText = "📁 Arquivo"; midiaChatValidaBase64 = null; }
+}
+function tentarEntrarComunidade(nomeComunidade, corTema) {
+  let criadoraLiberada = localStorage.getItem('modo_criadora_ativo') === 'true'; if (criadoraLiberada) { entrarComunidadeEfetivo(nomeComunidade, corTema); return; }
+  /* CORREÇÃO 2 - se o nome estiver bloqueado, nega na hora */
+  if (bloqueados.includes(localStorage.getItem('usuario_nome')||'')) { alert('🚫 Sua entrada foi negada pela criadora.'); return; }
+  let senhaSalva = localStorage.getItem('usuario_senha'); let nomeSalvo = localStorage.getItem('usuario_nome');
+  if (!nomeSalvo || !senhaSalva) { if (confirm(`🔒 Fandom Protegido!\nPara entrar no fandom de "${nomeComunidade}", você precisa fazer login com sua senha de acesso ou enviar uma solicitação.\n\nDeseja abrir o painel de login/cadastro agora?`)) { configurarPerfil(); } return; }
+  fandomAtualSelecionado = nomeComunidade; corAtualSelecionada = corTema;
+  document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Insira sua solicitação de acesso:`;
+  document.getElementById('modal-solicitacao').style.display = 'flex';
+}
+function entrarFandomPeloPainelAdm() {
+  let select = document.getElementById('select-fandom-direto'); let fandomEscolhido = select.value;
+  let coresFandoms = { "BTS": "#9c27b0", "EXO": "#2196f3", "Super Junior": "#00bcd4", "Doramas": "#e91e63", "Anime": "#4caf50" }; let cor = coresFandoms[fandomEscolhido] || "#ff4757";
+  fecharPainelAdm(); entrarComunidadeEfetivo(fandomEscolhido, cor);
+}
+function fecharModalSolicitacao() { document.getElementById('modal-solicitacao').style.display = 'none'; }
+function enviarSolicitacaoFandom() {
+  let nome = document.getElementById('solicitacao-nome').value.trim(); let motivo = document.getElementById('solicitacao-motivo').value.trim();
+  if (!nome || !motivo) { alert("Preencha seu nome e o motivo!"); return; }
+  /* CORREÇÃO 2 - bloqueado não consegue nem enviar solicitação */
+  if (bloqueados.includes(nome)) { alert('🚫 Este nome está bloqueado pela criadora.'); return; }
+  solicitacoesPendentes.push({ id: Date.now(), usuario: nome, fandom: fandomAtualSelecionado, motivo: motivo, cor: corAtualSelecionada });
+  localStorage.setItem('fandoms_solicitacoes', JSON.stringify(solicitacoesPendentes));
+  fecharModalSolicitacao(); alert("Solicitação enviada!");
+}
+/* CORREÇÃO 2 - verificarSenhaAdm agora trava para quem não é criadora e renderiza o painel */
+function verificarSenhaAdm() { if(localStorage.getItem('modo_criadora_ativo')!=='true'){ alert('Somente a criadora pode abrir o Painel ADM.'); return; } renderizarPainelAdm(); document.getElementById('modal-adm').style.display = 'flex'; }
+function fecharPainelAdm() { document.getElementById('modal-adm').style.display = 'none'; }
+/* CORREÇÃO 2 - funções novas do ADM, só acrescentadas */
+function renderizarPainelAdm(){
+  let a=document.getElementById('adm-aviso'); if(a) a.innerText='Logada como criadora • Fandom atual: '+(fandomAtualSelecionado||'—');
+  let s=document.getElementById('lista-solicitacoes-adm');
+  if(s) s.innerHTML=solicitacoesPendentes.length?solicitacoesPendentes.map(p=>'<div class="adm-item"><b>'+escAdm(p.usuario)+'</b> quer entrar em <b>'+escAdm(p.fandom||'—')+'</b><br><small>'+escAdm(p.motivo)+'</small><br><button onclick="aceitarSolicitacao('+p.id+')" style="background:#4caf50;color:#fff;margin:6px 6px 0 0">✅ Aceitar</button><button onclick="negarSolicitacao('+p.id+')" style="background:#ff4757;color:#fff">❌ Negar entrada</button></div>').join(''):'<p style="color:#aaa;font-size:.8rem">Nenhuma solicitação pendente.</p>';
+  let c=document.getElementById('lista-comentarios-adm');
+  if(c) c.innerHTML=comentariosModeracao.length?comentariosModeracao.map((cm,i)=>'<div class="adm-item"><b>'+escAdm(cm.autor)+'</b>: '+escAdm(cm.texto)+'<br><button onclick="removerComentarioAdm('+i+')" style="background:#ff4757;color:#fff;margin-top:6px">🗑️ Remover comentário</button></div>').join(''):'<p style="color:#aaa;font-size:.8rem">Nenhum comentário para moderar.</p>';
+  let b=document.getElementById('lista-bloqueados-adm');
+  if(b) b.innerHTML=bloqueados.length?bloqueados.map((n,i)=>'<div class="adm-item">'+escAdm(n)+' <button onclick="desbloquearUsuarioAdm('+i+')" style="background:#2196f3;color:#fff">Desbloquear</button></div>').join(''):'<p style="color:#aaa;font-size:.8rem">Ninguém bloqueado.</p>';
+}
+function aceitarSolicitacao(id){ let p=solicitacoesPendentes.find(x=>x.id===id); solicitacoesPendentes=solicitacoesPendentes.filter(x=>x.id!==id); localStorage.setItem('fandoms_solicitacoes',JSON.stringify(solicitacoesPendentes)); renderizarPainelAdm(); if(p){ alert('✅ '+p.usuario+' aceito(a) em '+p.fandom); entrarComunidadeEfetivo(p.fandom,p.cor||'#2196f3'); } }
+function negarSolicitacao(id){ let p=solicitacoesPendentes.find(x=>x.id===id); solicitacoesPendentes=solicitacoesPendentes.filter(x=>x.id!==id); localStorage.setItem('fandoms_solicitacoes',JSON.stringify(solicitacoesPendentes)); if(p&&!bloqueados.includes(p.usuario)){ bloqueados.push(p.usuario); localStorage.setItem('usuarios_bloqueados',JSON.stringify(bloqueados)); } renderizarPainelAdm(); alert('❌ Entrada negada para '+(p?p.usuario:'')); }
+function bloquearUsuarioAdm(){ let n=document.getElementById('input-bloquear-nome').value.trim(); if(!n){ alert('Digite o nome!'); return; } if(!bloqueados.includes(n)){ bloqueados.push(n); localStorage.setItem('usuarios_bloqueados',JSON.stringify(bloqueados)); } document.getElementById('input-bloquear-nome').value=''; renderizarPainelAdm(); alert('🚫 '+n+' bloqueado(a).'); }
+function desbloquearUsuarioAdm(i){ bloqueados.splice(i,1); localStorage.setItem('usuarios_bloqueados',JSON.stringify(bloqueados)); renderizarPainelAdm(); }
+function removerComentarioAdm(i){ let cm=comentariosModeracao[i]; comentariosModeracao.splice(i,1); localStorage.setItem('comentarios_moderacao',JSON.stringify(comentariosModeracao)); if(cm) document.querySelectorAll('[data-comentario-id="'+cm.id+'"]').forEach(el=>el.remove()); renderizarPainelAdm(); alert('🗑️ Comentário removido.'); }
+
+function entrarComunidadeEfetivo(nomeComunidade, corTema) {
+  fandomAtualSelecionado = nomeComunidade; modoAtualNoCentro = "GERAL";
+  document.getElementById('titulo-feed-atual').innerText = "Comunidade: " + nomeComunidade; document.getElementById('sub-feed-atual').innerText = "Espaço exclusivo do fandom";
+  document.getElementById('icone-feed-titulo').innerText = nomeComunidade.charAt(0).toUpperCase();
+  document.getElementById('btn-adm-comunidade').style.display = 'block'; document.getElementById('btn-voltar-geral').style.display = 'block'; document.getElementById('container-subgrupos').style.display = 'block';
+  let logoEl = document.getElementById('texto-logo-principal'); if(logoEl) logoEl.innerText = nomeComunidade;
+  carregarSubgruposInternos(nomeComunidade);
+}
+function voltarParaFeedPrincipal() { location.reload(); }
+function aplicarEstiloTema(cor) { document.querySelectorAll('.btn-tema-bg').forEach(el => el.style.background = cor); document.querySelectorAll('.btn-tema-texto').forEach(el => el.style.color = cor); }
+function abrirModalNovoTema() { renderizarFandomsNoModalGerenciamento(); document.getElementById('modal-novo-tema').style.display = 'flex'; }
+function fecharModalNovoTema() { document.getElementById('modal-novo-tema').style.display = 'none'; }
+function salvarNovoTemaPersonalizado() {
+  let nomeTema = document.getElementById('input-novo-tema-nome').value.trim(); if (!nomeTema) { alert("Digite o nome do fandom!"); return; } if (comunidadesAprovadas.includes(nomeTema)) { alert("Este fandom já existe!"); return; }
+  comunidadesAprovadas.push(nomeTema); localStorage.setItem('fandoms_aprovados', JSON.stringify(comunidadesAprovadas)); document.getElementById('input-novo-tema-nome').value = ""; renderizarListaFandomsLateral(); renderizarFandomsNoModalGerenciamento(); alert(`Fandom "${nomeTema}" criado com sucesso!`);
+}
+function abrirModalSubgrupo() { if (!fandomAtualSelecionado) { alert("Entre em um fandom primeiro!"); return; } document.getElementById('modal-subgrupo').style.display = 'flex'; }
+function fecharModalSubgrupo() { document.getElementById('modal-subgrupo').style.display = 'none'; }
+function salvarSubgrupoInterno() {
+  let nomeSub = document.getElementById('input-nome-subgrupo').value.trim(); if (!nomeSub) { alert("Digite o subgrupo!"); return; }
+  if (!subgruposFandoms[fandomAtualSelecionado]) subgruposFandoms[fandomAtualSelecionado] = []; subgruposFandoms[fandomAtualSelecionado].push(nomeSub); localStorage.setItem('fandoms_subgrupos', JSON.stringify(subgruposFandoms)); fecharModalSubgrupo(); carregarSubgruposInternos(fandomAtualSelecionado);
+}
+function carregarSubgruposInternos(nomeFandom) {
+  let containerSub = document.getElementById('lista-subgrupos-interno'); if(!containerSub) return; containerSub.innerHTML = "";
+  let subs = subgruposFandoms[nomeFandom] || []; subs.forEach(s => { let badge = document.createElement('span'); badge.style.cssText = "background: rgba(243,217,139,0.15); border: 1px solid #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold;"; badge.innerText = "#" + s; containerSub.appendChild(badge); });
+}
+function enviarMensagemChatComunidade() {
+  let nomeUsuario = localStorage.getItem('usuario_nome'); if (!nomeUsuario) { alert("Faça login para publicar no feed!"); return; }
+  let texto = document.getElementById('textoChatComunidade').value.trim(); if (!texto && !midiaChatValidaBase64) { alert("Escreva algo ou envie uma mídia!"); return; }
+  let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757'; let mural = document.getElementById('mural-chat-comunidade');
+  criarTopicoChatHTML(nomeUsuario, texto, midiaChatValidaBase64, midiaChatIsVideo, corPessoal, mural);
+  registrarNoHistoricoGaveta('COMENTÁRIO', `Você publicou no feed: "${texto ? texto.slice(0, 30) + '...' : 'Mídia enviada'}"`, midiaChatValidaBase64 && !midiaChatIsVideo ? midiaChatValidaBase64 : null);
+  document.getElementById('textoChatComunidade').value = ""; document.getElementById('midiaChatComunidade').value = ""; document.getElementById('cameraChatComunidadeDireto').value = ""; midiaChatValidaBase64 = null; midiaChatIsVideo = false;
+}
+function criarTopicoChatHTML(nome, texto, midiaBase64, isVideo, corCorrente, mural) {
+  if (mural.innerHTML.includes("Nenhuma publicação")) mural.innerHTML = "";
+  const topicoDiv = document.createElement('div');
+  /* CORREÇÃO 2 - marca o post com id para o ADM conseguir remover */
+  const idComentario = Date.now();
+  topicoDiv.setAttribute('data-comentario-id', idComentario);
+  topicoDiv.style.cssText = `background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(243,217,139,0.3); border-radius: 16px; padding: 14px; margin-bottom: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);`;
+  let html = `<div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;"><div style="width: 32px; height: 32px; border-radius: 50%; background: ${corCorrente}; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; font-weight: bold; border: 1px solid #f3d98b;">${nome.charAt(0).toUpperCase()}</div><span style="font-size: 0.9rem; font-weight: bold; color: #f3d98b;">${nome}</span><span style="font-size: 0.7rem; color: #aaa; margin-left: auto;">Agora mesmo</span></div>${texto ? `<div style="background: rgba(0,0,0,0.25); border-radius: 12px; padding: 10px 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.08);"><p class="texto-conteudo-post" style="margin: 0; font-size: 0.85rem; color: #fff; word-break: break-word;">${texto}</p></div>` : ''}`;
+  if (midiaBase64) { html += isVideo ? `<video src="${midiaBase64}" controls style="width: 100%; height: auto; border-radius: 10px; margin-bottom: 8px; display: block;"></video>` : `<div style="cursor: pointer; width: 100%; border-radius: 10px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center; margin-bottom: 8px;" onclick="abrirFotoPinterest('${midiaBase64}')"><img src="${midiaBase64}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>`; }
+  html += `<div class="lista-respostas-chat" style="margin-top: 10px; display: flex; flex-direction: column; gap: 8px;"></div><div style="margin-top: 10px; display: flex; gap: 12px; justify-content: flex-end; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 6px;"><button onclick="curtirPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;"><span class="contador-post-likes">0</span> Curtir</button><button onclick="compartilharPostChat(this)" style="background: none; border: none; color: white; cursor: pointer; font-size: 0.75rem;">Compartilhar</button></div><div style="margin-top: 8px; display: flex; gap: 6px;"><input type="text" class="input-resposta-chat" placeholder="Responder (@Nome ou comentário)..." style="padding: 7px 10px; font-size: 0.75rem; border-radius: 8px; flex: 1; background: rgba(0,0,0,0.4);"><button onclick="enviarRespostaChat(this)" class="btn-tema-bg" style="background: ${corCorrente}; color: white; border: none; padding: 7px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Responder</button></div>`;
+  topicoDiv.innerHTML = html; mural.prepend(topicoDiv);
+  /* CORREÇÃO 2 - registra esse comentário na lista do ADM */
+  comentariosModeracao.unshift({id:idComentario, autor:nome, texto:texto||'Mídia enviada'}); localStorage.setItem('comentarios_moderacao', JSON.stringify(comentariosModeracao));
+}
+function curtirPostChat(botao) { let nomeUsuario = localStorage.getItem('usuario_nome'); if (!nomeUsuario) { alert("Faça login para curtir."); return; } const span = botao.querySelector('.contador-post-likes'); let total = parseInt(span.innerText) || 0; total++; span.innerText = total; botao.style.color = '#ff4757'; registrarNoHistoricoGaveta('CURTIDA', 'Você curtiu uma publicação no feed.'); }
+function compartilharPostChat(botao) { let nomeUsuario = localStorage.getItem('usuario_nome'); if (!nomeUsuario) { alert("Fa```html
+  if (!nomeUsuario) { alert("Faça login para compartilhar."); return; }
+  let postCard = botao.closest('div').parentElement;
+  let textoEl = postCard.querySelector('.texto-conteudo-post');
+  let textoCompartilhar = textoEl ? textoEl.innerText : "Confira no New Drama!";
+  if (navigator.share) { navigator.share({ title: 'New Drama', text: textoCompartilhar, url: window.location.href }).catch(() => {}); }
+  else { navigator.clipboard.writeText(textoCompartilhar); alert("Link copiado!"); }
+  registrarNoHistoricoGaveta('COMPARTILHAMENTO', 'Você compartilhou uma publicação.');
+}
+
+function enviarRespostaChat(botao) {
+  let nomeUsuario = localStorage.getItem('usuario_nome');
+  if (!nomeUsuario) { alert("Faça login para comentar."); return; }
+  let topico = botao.closest('div').parentElement;
+  let input = topico.querySelector('.input-resposta-chat');
+  let textoResp = input.value.trim();
+  if (!textoResp) return;
+  let listaRespostas = topico.querySelector('.lista-respostas-chat');
+  let corPessoal = localStorage.getItem('usuario_cor_tema') || '#2196f3';
+  let respDiv = document.createElement('div');
+  respDiv.style.cssText = `background: rgba(0, 0, 0, 0.35); border-left: 3px solid ${corPessoal}; padding: 8px 10px; border-radius: 10px; margin-left: 12px; margin-top: 4px; border: 1px solid rgba(255,255,255,0.06);`;
+  respDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 6px; margin-bottom: 2px;"><span style="font-size: 0.75rem; font-weight: bold; color: ${corPessoal};">${nomeUsuario}</span><span style="font-size: 0.65rem; color: #aaa; margin-left: auto;">Agora</span></div><p style="font-size: 0.8rem; color: #fff; margin: 0; word-break: break-word;">${textoResp}</p>`;
+  listaRespostas.appendChild(respDiv);
+  input.value = "";
+  registrarNoHistoricoGaveta('COMENTÁRIO', `Você comentou: "${textoResp.slice(0, 25)}..."`);
+}
+
+function atualizarNomePerfil(input) { if (input.files && input.files[0]) document.getElementById('label-foto-perfil').innerText = " " + input.files[0].name; }
+function atualizarNomeFundoPerfil(input) { if (input.files && input.files[0]) document.getElementById('label-fundo-perfil').innerText = " " + input.files[0].name; }
+function atualizarNomeBias(input) { if (input.files && input.files[0]) document.getElementById('label-foto-bias').innerText = " " + input.files[0].name; }
+function atualizarNomeFotoGaveta(input) { if (input.files && input.files[0]) document.getElementById('label-foto-gaveta').innerText = " " + input.files[0].name; }
+
+function configurarPerfil() {
+  document.getElementById('input-nome').value = localStorage.getItem('usuario_nome') || "";
+  document.getElementById('input-nasc').value = localStorage.getItem('usuario_nascimento') || "";
+  document.getElementById('input-fandom').value = localStorage.getItem('usuario_fandom') || "";
+  document.getElementById('input-email').value = localStorage.getItem('usuario_email') || "";
+  document.getElementById('input-tel').value = localStorage.getItem('usuario_telefone') || "";
+  document.getElementById('input-senha').value = localStorage.getItem('usuario_senha') || "";
+  document.getElementById('input-cor-pessoal').value = localStorage.getItem('usuario_cor_tema') || "#ff4757";
+  document.getElementById('modal-cadastro').style.display = 'flex';
+}
+function fecharModalCadastro() { document.getElementById('modal-cadastro').style.display = 'none'; }
+
+function salvarPerfilPersonalizado() {
+  let nome = document.getElementById('input-nome').value.trim();
+  let nascimento = document.getElementById('input-nasc').value.trim();
+  let fandom = document.getElementById('input-fandom').value.trim();
+  let email = document.getElementById('input-email').value.trim();
+  let telefone = document.getElementById('input-tel').value.trim();
+  let senha = document.getElementById('input-senha').value.trim();
+  let corPessoal = document.getElementById('input-cor-pessoal').value;
+  let fileInput = document.getElementById('input-foto-file');
+  let fundoFileInput = document.getElementById('input-fundo-perfil-file');
+  if (nome) {
+    localStorage.setItem('usuario_nome', nome);
+    document.getElementById('nome-usuario').innerText = nome;
+    document.getElementById('menu-nome-usuario').innerText = nome;
+    document.getElementById('avatar-usuario').innerText = nome.charAt(0).toUpperCase();
+    document.getElementById('perfil-avatar-grande').innerText = nome.charAt(0).toUpperCase();
+  }
+  if (nascimento) localStorage.setItem('usuario_nascimento', nascimento);
+  if (fandom) localStorage.setItem('usuario_fandom', fandom);
+  if (senha) localStorage.setItem('usuario_senha', senha);
+  if (telefone) localStorage.setItem('usuario_telefone', telefone);
+  if (email) localStorage.setItem('usuario_email', email);
+  if (corPessoal) { localStorage.setItem('usuario_cor_tema', corPessoal); aplicarEstiloTema(corPessoal); }
+  if (fileInput.files && fileInput.files[0]) {
+    converterImagemParaHD(fileInput.files[0], 400, 400, function(hdBase64) {
+      localStorage.setItem('usuario_foto', hdBase64);
+      document.getElementById('avatar-usuario').innerHTML = `<img src="${hdBase64}" style="width: 100%; height: 100%; object-fit: cover;">`;
+      document.getElementById('perfil-avatar-grande').innerHTML = `<img src="${hdBase64}" style="width: 100%; height: 100%; object-fit: cover;">`;
+    });
+  }
+  if (fundoFileInput.files && fundoFileInput.files[0]) {
+    converterImagemParaHD(fundoFileInput.files[0], 1920, 1080, function(hdFundoBase64) {
+      document.body.style.background = `#060a1e url('${hdFundoBase64}') no-repeat center center fixed`;
+      document.body.style.backgroundSize = 'cover';
+      localStorage.setItem('tema_fundo_custom', hdFundoBase64);
+    });
+  }
+  fecharModalCadastro();
+  alert("Dados salvos com sucesso!");
+}
+
+function abrirSuporteDesenvolvedor() { document.getElementById('modal-suporte').style.display = 'flex'; }
+function fecharSuporteDesenvolvedor() { document.getElementById('modal-suporte').style.display = 'none'; }
+function buscarNoYoutubeDireto() {
+  let termo = document.getElementById('termo-busca-yt').value.trim();
+  window.open(termo ? `https://www.youtube.com/results?search_query=${encodeURIComponent(termo)}` : 'https://www.youtube.com', '_blank');
+}
+
+const ofertasVitrine = [
+  {tag: "PARCEIRO", titulo: "Conteúdos e Recomendações", imagem: "https://images.unsplash.com/photo-1583847268964-b28dc8f51f92", link: "https://www.google.com"}
+];
+let indiceOfertaAtual = 0;
+function iniciarVitrine() { renderizarOferta(); }
+function renderizarOferta() {
+  const oferta = ofertasVitrine[indiceOfertaAtual];
+  document.getElementById('vitrine-img').src = oferta.imagem;
+  document.getElementById('vitrine-tag').innerText = oferta.tag;
+  document.getElementById('vitrine-titulo').innerText = oferta.titulo;
+}
+function visitarOfertaAtual() { window.open(ofertasVitrine[indiceOfertaAtual].link, '_blank'); }
+
+function popularSelectPosicoes() {
+  const select = document.getElementById('bias-posicao-select');
+  if (!select) return;
+  select.innerHTML = "";
+  for (let i = 1; i <= 1000; i++) {
+    let opt = document.createElement('option');
+    opt.value = i;
+    opt.innerText = `Posição ${i}`;
+    select.appendChild(opt);
+  }
+}
+function abrirModalBias() { popularSelectPosicoes(); document.getElementById('modal-bias').style.display = 'flex'; }
+function fecharModalBias() { document.getElementById('modal-bias').style.display = 'none'; }
+
+function salvarBiasPersonalizado() {
+  let posicao = parseInt(document.getElementById('bias-posicao-select').value);
+  let nomeBias = document.getElementById('bias-nome').value.trim();
+  let categoria = document.getElementById('bias-categoria').value.trim() || "Geral";
+  let fileInput = document.getElementById('bias-foto-file');
+  if (!nomeBias) { alert("Digite o nome!"); return; }
+  let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
+  let existente = listaBias.find(b => b.posicao === posicao);
+  if (existente && existente.ultimaModificacao) {
+    let agora = Date.now();
+    let trintaDiasMs = 30 * 24 * 60 * 60 * 1000;
+    if (agora - existente.ultimaModificacao < trintaDiasMs) {
+      alert(`🔒 Trava de Segurança: A posição #${posicao} só pode ser alterada a cada 30 dias.`);
+      return;
+    }
+  }
+  if (fileInput.files && fileInput.files[0]) {
+    converterImagemParaHD(fileInput.files[0], 600, 600, function(hdBase64) { atualizarEGravarListaBias(listaBias, posicao, nomeBias, categoria, hdBase64); });
+  } else {
+    let fotoAntiga = existente ? existente.foto : null;
+    atualizarEGravarListaBias(listaBias, posicao, nomeBias, categoria, fotoAntiga);
+  }
+}
+function atualizarEGravarListaBias(listaBias, posicao, nomeBias, categoria, fotoBase64) {
+  listaBias = listaBias.filter(b => b.posicao !== posicao);
+  listaBias.push({ posicao, nome: nomeBias, categoria, foto: fotoBase64, ultimaModificacao: Date.now() });
+  listaBias.sort((a, b) => a.posicao - b.posicao);
+  localStorage.setItem('meus_bias_salvos', JSON.stringify(listaBias));
+  carregarMeusBiasNaInterface();
+  fecharModalBias();
+  alert(`Item #${posicao} (${nomeBias}) salvo!`);
+}
+function carregarMeusBiasNaInterface() {
+  const container = document.getElementById('lista-bias-container');
+  if(!container) return;
+  let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
+  if (listaBias.length === 0) {
+    container.innerHTML = `<div style="padding: 10px; text-align: center; color: #aaa; font-size: 0.85rem;">Lista vazia. Clique em "+ Gerenciar" para adicionar!</div>`;
+    return;
+  }
+  container.innerHTML = "";
+  let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757';
+  listaBias.forEach(bias => {
+    const itemDiv = document.createElement('div');
+    itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81; cursor: pointer;";
+    itemDiv.onclick = () => selecionarBiasParaDesafio(bias.posicao, bias.nome, bias.foto);
+    itemDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 10px; pointer-events: none;"><div style="width: 40px; height: 40px; border-radius: 6px; background: #333; overflow: hidden; display: flex; align-items: center; justify-content: center;">${bias.foto ? `<img src="${bias.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span style="font-size:0.7rem; color:#aaa;">Sem foto</span>'}</div><div><span style="font-size: 0.75rem; background: ${corPessoal}; color: white; padding: 2px 6px; border-radius: 4px; font-weight: bold;">#${bias.posicao}</span><b style="font-size: 0.9rem; margin-left: 5px; color: #fff;">${bias.nome}</b><p style="margin: 2px 0 0 0; font-size: 0.75rem; color: #aaa;">${bias.categoria}</p></div></div><button onclick="event.stopPropagation(); removerBias(${bias.posicao})" style="background: none; border: none; color: #ff4757; cursor: pointer; font-size: 1rem; padding: 4px;">✕</button>`;
+    container.appendChild(itemDiv);
+  });
+}
+function carregarMeusBiasNaInterfaceMobile() {
+  const container = document.getElementById('lista-bias-container-mob');
+  if(!container) return;
+  let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
+  if (listaBias.length === 0) {
+    container.innerHTML = `<div style="padding: 10px; text-align: center; color: #aaa; font-size: 0.85rem;">Lista vazia. Adicione seus bias!</div>`;
+    return;
+  }
+  container.innerHTML = "";
+  let corPessoal = localStorage.getItem('usuario_cor_tema') || '#ff4757';
+  listaBias.forEach(bias => {
+    const itemDiv = document.createElement('div');
+    itemDiv.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.05); padding: 8px 12px; border-radius: 8px; border-left: 3px solid #ff6b81; cursor: pointer;";
+    itemDiv.onclick = () => selecionarBiasParaDesafio(bias.posicao, bias.nome, bias.foto, 'mob');
+    itemDiv.innerHTML = `<div style="display: flex; align-items: center; gap: 10px; pointer-events: none;"><div style="width: 36px; height: 36px; border-radius: 6px; background: #333; overflow: hidden; display: flex; align-items: center; justify-content: center;">${bias.foto ? `<img src="${bias.foto}" style="width: 100%; height: 100%; object-fit: cover;">` : '<span style="font-size:0.6rem; color:#aaa;">Sem foto</span>'}</div><div><span style="font-size: 0.7rem; background: ${corPessoal}; color: white; padding: 2px 5px; border-radius: 4px; font-weight: bold;">#${bias.posicao}</span><b style="font-size: 0.85rem; margin-left: 4px; color: #fff;">${bias.nome}</b><p style="margin: 2px 0 0 0; font-size: 0.7rem; color: #aaa;">${bias.categoria}</p></div></div><button onclick="event.stopPropagation(); removerBias(${bias.posicao}); abrirGavetaMobile('desafio')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Excluir</button>`;
+    container.appendChild(itemDiv);
+  });
+}
+function removerBias(posicao) {
+  if (confirm(`Deseja remover da posição #${posicao}?`)) {
+    let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
+    listaBias = listaBias.filter(b => b.posicao !== posicao);
+    localStorage.setItem('meus_bias_salvos', JSON.stringify(listaBias));
+    carregarMeusBiasNaInterface();
+    carregarMeusBiasNaInterfaceMobile();
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  let fundoSalvo = localStorage.getItem('tema_fundo_custom');
+  if (fundoSalvo) {
+    document.body.style.background = `#060a1e url('${fundoSalvo}') no-repeat center center fixed`;
+    document.body.style.backgroundSize = 'cover';
+  }
+  let corSalva = localStorage.getItem('usuario_cor_tema');
+  if (corSalva) aplicarEstiloTema(corSalva);
+  let nomeSalvo = localStorage.getItem('usuario_nome');
+  let fotoSalva = localStorage.getItem('usuario_foto');
+  if (nomeSalvo) {
+    document.getElementById('nome-usuario').innerText = nomeSalvo;
+    document.getElementById('menu-nome-usuario').innerText = nomeSalvo;
+    document.getElementById('avatar-usuario').innerText = nomeSalvo.charAt(0).toUpperCase();
+    document.getElementById('perfil-avatar-grande').innerText = nomeSalvo.charAt(0).toUpperCase();
+  }
+  if (fotoSalva) {
+    document.getElementById('avatar-usuario').innerHTML = `<img src="${fotoSalva}" style="width: 100%; height: 100%; object-fit: cover;">`;
+    document.getElementById('perfil-avatar-grande').innerHTML = `<img src="${fotoSalva}" style="width: 100%; height: 100%; object-fit: cover;">`;
+  }
+  /* CORREÇÃO 3 - mostra o desafio global salvo, se houver */
+  let desafioSalvo = localStorage.getItem('desafioDoDiaGlobal');
+  if (desafioSalvo) aplicarDesafioGlobal(desafioSalvo);
+  if (localStorage.getItem('modo_criadora_ativo') === 'true') {
+    let pc = document.getElementById('painel-criadora');
+    if (pc) pc.style.display = 'block';
+  }
+  renderizarListaFandomsLateral();
+  carregarMeusBiasNaInterface();
+  carregarHistoricoNaGaveta();
+  renderizarCardDesafioEsquerda();
+  atualizarResumoDesafioMob();
+  iniciarVitrine();
+});
+
+function abrirMenuLateral() { document.getElementById('modal-menu').style.display = 'block'; }
+function fecharMenuLateral() { document.getElementById('modal-menu').style.display = 'none'; }
+function sairDaConta() {
+  if (confirm("Deseja realmente sair da conta?")) {
+    localStorage.removeItem('usuario_nome');
+    localStorage.removeItem('usuario_cor_tema');
+    localStorage.removeItem('usuario_foto');
+    location.reload();
+  }
+}
+function comentarGaveta() {
+  let texto = document.getElementById('campoGavetaTexto').value.trim();
+  let fileInput = document.getElementById('campoGavetaFoto');
+  if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo ou escolha uma foto para a gaveta!"); return; }
+  if (texto.toLowerCase() === "luana" || texto.toLowerCase() === "luanaeandre.ls") {
+    localStorage.setItem('modo_criadora_ativo', 'true');
+    alert("MODO CRIADORA ATIVADO! Painel de moderação e edição abertos.");
+    document.getElementById('campoGavetaTexto').value = "";
+    let painelAdm = document.getElementById('modal-adm');
+    if (painelAdm) { renderizarPainelAdm(); painelAdm.style.display = 'flex'; }
+    let painelCriadora = document.getElementById('painel-criadora');
+    if (painelCriadora) painelCriadora.style.display = 'block';
+    return;
+  }
+  if (fileInput.files && fileInput.files[0]) {
+    converterImagemParaHD(fileInput.files[0], 1000, 1000, function(hdBase64) {
+      registrarNoHistoricoGaveta('NOTA / FOTO', texto || 'Foto privada', hdBase64);
+      document.getElementById('campoGavetaTexto').value = "";
+      document.getElementById('campoGavetaFoto').value = "";
+      document.getElementById('label-foto-gaveta').innerText = "Foto Privada";
+    });
+  } else {
+    registrarNoHistoricoGaveta('NOTA RÁPIDA', texto);
+    document.getElementById('campoGavetaTexto').value = "";
+  }
+}
+function comentarGavetaMobile() {
+  let texto = document.getElementById('campoGavetaTextoMob').value.trim();
+  let fileInput = document.getElementById('campoGavetaFotoMob');
+  if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo ou escolha uma foto!"); return; }
+  if (fileInput.files && fileInput.files[0]) {
+    converterImagemParaHD(fileInput.files[0], 1000, 1000, function(hdBase64) {
+      registrarNoHistoricoGaveta('NOTA / FOTO', texto || 'Foto privada', hdBase64);
+      abrirGavetaMobile('gaveta');
+    });
+  } else {
+    registrarNoHistoricoGaveta('NOTA RÁPIDA', texto);
+    abrirGavetaMobile('gaveta');
+  }
+}
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getFirestore, doc, onSnapshot, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
+    authDomain: "new-drama-e729b.firebaseapp.com",
+    projectId: "new-drama-e729b",
+    storageBucket: "new-drama-e729b.firebasestorage.app",
+    messagingSenderId: "1038068499530",
+    appId: "1:1038068499530:web:44fd33a0a628bcad4ad2b3",
+    measurementId: "G-VXNH7S6N36"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
+  const db = getFirestore(app);
+
+  window.fazerLoginGoogle = function() {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        console.log("Logado com sucesso:", result.user.displayName);
+        location.reload();
+      })
+      .catch((error) => {
+        console.error("Erro ao fazer login:", error.message);
+        alert("Não foi possível realizar o login. Tente novamente.");
+      });
+  };
+
+  window.clicarBotaoPerfil = function() {
+    const user = auth.currentUser;
+    if (user) {
+      if (typeof abrirMenuLateral === 'function') abrirMenuLateral();
+    } else {
+      fazerLoginGoogle();
+    }
+  };
+
+  onAuthStateChanged(auth, (user) => {
+    const botaoPerfil = document.getElementById("btn-acao-perfil");
+    if (botaoPerfil) {
+      if (user) {
+        if (user.photoURL) {
+          botaoPerfil.innerHTML = `<img src="${user.photoURL}" style="width: 24px; height: 24px; border-radius: 50%; vertical-align: middle; margin-right: 5px;"> Perfil`;
+        } else {
+          botaoPerfil.innerText = "Perfil";
+        }
+      } else {
+        botaoPerfil.innerText = "Entrar";
+      }
+    }
+  });
+
+  window.abrirPainelAdmFandom = function() {
+    let painelCriadora = document.getElementById('painel-criadora');
+    if (painelCriadora) {
+      painelCriadora.style.display = (painelCriadora.style.display === 'none' || painelCriadora.style.display === '') ? 'block' : 'none';
+    }
+  };
+
+  // CORREÇÃO 3 - desafio global via Firestore
+  const refDesafio = doc(db, "config", "desafioDoDia");
+  onSnapshot(refDesafio, (snap) => {
+    if (snap.exists() && snap.data().texto) {
+      aplicarDesafioGlobal(snap.data().texto);
+      renderizarCardDesafioEsquerda();
+      atualizarResumoDesafioMob();
+    }
+  }, (err) => { console.warn("Firestore desafio:", err); });
+
+  window.atualizarDesafioDoDia = async function() {
+    const novoTexto = document.getElementById("novo-desafio-input").value.trim();
+    if (!novoTexto) { alert("Digite um texto para o desafio!"); return; }
+    if (localStorage.getItem('modo_criadora_ativo') !== 'true') { alert("Somente a criadora pode mudar o desafio."); return; }
+    if (!auth.currentUser) { alert("Faça login com Google (botão Entrar) antes de mudar o desafio global."); return; }
+    aplicarDesafioGlobal(novoTexto);
+    renderizarCardDesafioEsquerda();
+    atualizarResumoDesafioMob();
+    try {
+      await setDoc(refDesafio, { texto: novoTexto, atualizadoEm: serverTimestamp(), por: auth.currentUser.email || auth.currentUser.uid });
+      document.getElementById("novo-desafio-input").value = "";
+      alert("Desafio atualizado com sucesso para todo mundo!");
+    } catch(e) {
+      console.error(e);
+      alert("Não consegui salvar no Firestore. Verifique as Regras do Firestore e se você está logada. Erro: " + e.message);
+    }
+  };
 </script>
 </body>
-</html>
+        </html>
