@@ -1884,7 +1884,7 @@ function comentarGavetaMobile() {
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
-  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
@@ -1901,28 +1901,55 @@ function comentarGavetaMobile() {
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
   const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
-  // Função do botão de perfil/login
+  // Função do botão de login/perfil via Popup do Google
+  window.fazerLoginGoogle = function() {
+    signInWithPopup(auth, provider)
+      .then((result) => {
+        const user = result.user;
+        console.log("Logado com sucesso:", user.displayName);
+        location.reload();
+      })
+      .catch((error) => {
+        console.error("Erro ao fazer login:", error.message);
+        alert("Não foi possível realizar o login. Tente novamente.");
+      });
+  };
+
+  // Função do botão de perfil/login (mantém a compatibilidade do clique)
   window.clicarBotaoPerfil = function() {
     const user = auth.currentUser;
     if (user) {
       if (typeof abrirMenuLateral === 'function') abrirMenuLateral(); 
     } else {
-      alert("Por favor, faça o login para acessar o perfil.");
+      fazerLoginGoogle(); // Se não estiver logado, já dispara o login do Google direto!
     }
   };
 
-  // Monitora para mudar o texto do botão automaticamente (com o ID correto: btn-acao-perfil)
+  // Monitora para mudar o texto/foto do botão automaticamente sem piscar
   onAuthStateChanged(auth, (user) => {
     const botaoPerfil = document.getElementById("btn-acao-perfil");
     if (botaoPerfil) {
       if (user) {
-        botaoPerfil.innerText = "Perfil";
+        if (user.photoURL) {
+          botaoPerfil.innerHTML = `<img src="${user.photoURL}" style="width: 24px; height: 24px; border-radius: 50%; vertical-align: middle; margin-right: 5px;"> Perfil`;
+        } else {
+          botaoPerfil.innerText = "Perfil";
+        }
       } else {
         botaoPerfil.innerText = "Entrar";
       }
     }
   });
+
+  // Função para abrir o painel de moderação/criadora ao clicar no ADM do fandom específico
+  window.abrirPainelAdmFandom = function() {
+    let painelCriadora = document.getElementById('painel-criadora');
+    if (painelCriadora) {
+      painelCriadora.style.display = (painelCriadora.style.display === 'none' || painelCriadora.style.display === '') ? 'block' : 'none';
+    }
+  };
 
   // Função chamada quando você clica em atualizar o desafio
   window.atualizarDesafioDoDia = function() {
