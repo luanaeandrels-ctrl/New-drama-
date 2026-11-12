@@ -287,7 +287,11 @@ border-radius:999px; display:inline-block;}
     <p style="font-size: 0.85rem; color: #aaa; margin-bottom: 20px;">Linha mestre de segurança violada. Este código pertence exclusivamente à criadora autorizada.</p>
   </div>
 </div>
-
+<div id="painel-criadora" style="display: none; margin-top: 15px; padding: 10px; background: #f3e5f5; border-radius: 8px;">
+  <p style="font-weight: bold; color: #7b1fa2; margin-bottom: 5px;">👑 Painel da Criadora</p>
+  <input type="text" id="novo-desafio-input" placeholder="Digite o novo desafio do dia..." style="width: 100%; padding: 6px; border: 1px solid #ccc; border-radius: 4px; margin-bottom: 8px;">
+  <button onclick="atualizarDesafioDoDia()" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold;">Atualizar Desafio</button>
+</div>
 <!-- GAVETA MOBILE EXCLUSIVA -->
 <div id="gaveta-mobile-overlay">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
@@ -1859,6 +1863,25 @@ function comentarGavetaMobile() {
       }
     }
   });
+  // Função chamada quando você clica em atualizar o desafio
+window.atualizarDesafioDoDia = function() {
+  const novoTexto = document.getElementById("novo-desafio-input").value;
+  if (!novoTexto) {
+    alert("Digite um texto para o desafio!");
+    return;
+  }
+
+  // Atualiza o texto na tela de todo mundo que estiver acessando
+  const elementoDesafioNaTela = document.getElementById("texto-desafio-dia"); // substitua pelo ID do elemento do desafio no seu HTML
+  if (elementoDesafioNaTela) {
+    elementoDesafioNaTela.innerText = novoTexto;
+  }
+
+  // Salva no localStorage para persistir (ou você pode mandar para o Firebase se preferir salvar na nuvem)
+  localStorage.setItem("desafioDoDiaGlobal", novoTexto);
+  
+  alert("Desafio atualizado com sucesso para todo mundo!");
+};
 </script>
 </body>
 </html>
