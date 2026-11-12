@@ -299,6 +299,76 @@ border-radius:999px; display:inline-block;}
   overflow-y: auto;
 }
 
+/* ==================================== */
+/* ESTILIZAÇÃO DO CHAT                  */
+/* ==================================== */
+.chat-wrapper {
+    display: flex;
+    background: rgba(20, 20, 20, 0.9);
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    border-radius: 12px;
+    color: #fff;
+    width: 100%;
+    height: 380px;
+    font-family: sans-serif;
+    margin-bottom: 14px;
+}
+.chat-sidebar {
+    width: 35%;
+    border-right: 1px solid #444;
+    padding: 10px;
+    overflow-y: auto;
+}
+.chat-sidebar h3 { font-size: 13px; color: #d4af37; margin-bottom: 8px; }
+.chat-sidebar ul { list-style: none; padding: 0; }
+.chat-sidebar li { font-size: 12px; margin-bottom: 6px; padding: 4px; border-radius: 4px; }
+.chat-sidebar li.online::after { content: ' 🟢'; font-size: 9px; }
+.chat-sidebar li.offline::after { content: ' ⚪'; font-size: 9px; }
+
+.chat-main {
+    width: 65%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 10px;
+}
+.chat-messages-box {
+    flex: 1;
+    overflow-y: auto;
+    border-bottom: 1px solid #444;
+    padding-bottom: 8px;
+    font-size: 12px;
+}
+.message { margin-bottom: 6px; padding: 5px 8px; border-radius: 6px; max-width: 85%; }
+.message.received { background: #333; align-self: flex-start; }
+.message.sent { background: #d4af37; color: #000; align-self: flex-end; margin-left: auto; }
+.message img { max-width: 100%; border-radius: 4px; margin-top: 4px; }
+
+.chat-input-area {
+    display: flex;
+    gap: 4px;
+    margin-top: 8px;
+}
+.chat-input-area input[type="text"] {
+    flex: 1;
+    background: #222;
+    border: 1px solid #554;
+    border-radius: 4px;
+    color: #fff;
+    padding: 5px;
+    font-size: 0.8rem;
+}
+.chat-input-area button {
+    background: #d4af37;
+    border: none;
+    border-radius: 4px;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    padding: 5px 8px;
+    font-size: 0.75rem;
+}
+
 @media (max-width:1000px){
   .layout{display:block;}
   #bloco-topo-mobile { display: block; }
@@ -316,7 +386,7 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- POPUP FLUTUANTE DA CRIADORA (DESAFIO DO DIA GLOBAL) -->
+<!-- POPUP FLUTUANTE DA CRIADORA -->
 <div id="modal-popup-criadora-desafio" class="modal-custom" style="z-index: 100001;">
   <div class="caixa-modal" style="border: 2px solid #9c27b0; box-shadow: 0 0 30px rgba(156, 39, 176, 0.6);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -357,7 +427,7 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- MODAL PARA CRIAR NOVA PUBLICAÇÃO (FEED GERAL) -->
+<!-- MODAL PARA CRIAR NOVA PUBLICAÇÃO -->
 <div id="modal-criar-publicacao" class="modal-custom">
   <div class="caixa-modal" style="border: 2px solid var(--cor-tema-ativa, #2196f3); box-shadow: 0 0 30px rgba(33,150,243,0.4);">
     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
@@ -365,7 +435,6 @@ border-radius:999px; display:inline-block;}
       <button onclick="fecharModalPublicacao()" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✕</button>
     </div>
 
-    <!-- ÁREA DO BALÃO DE PRÉ-VISUALIZAÇÃO DA MÍDIA -->
     <div id="preview-container-midia" style="width: 100%; height: 160px; background: rgba(0,0,0,0.4); border-radius: 14px; border: 1px dashed rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; position: relative; padding: 6px;">
       <span id="preview-placeholder-txt" style="font-size: 0.8rem; color: #aaa;">Nenhuma foto ou vídeo selecionado</span>
       <img id="preview-img-tag" src="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; display: none;">
@@ -373,7 +442,7 @@ border-radius:999px; display:inline-block;}
     </div>
 
     <div class="grupo-input">
-      <textarea id="textoChatComunidade" placeholder="O que vamos proteger hoje" style="border-radius: 12px; resize: none; height: 75px; padding: 10px; font-size: 0.9rem; background: rgba(0,0,0,0.4); color: #fff;"></textarea>
+      <textarea id="textoChatComunidade" placeholder="Estamos torcendo por você" style="border-radius: 12px; resize: none; height: 75px; padding: 10px; font-size: 0.9rem; background: rgba(0,0,0,0.4); color: #fff;"></textarea>
     </div>
     <div style="display: flex; gap: 8px; margin-bottom: 15px;">
       <label for="midiaChatComunidade" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-midia-chat">📁 Galeria</label>
@@ -395,19 +464,19 @@ border-radius:999px; display:inline-block;}
     </div>
     <div style="display: flex; gap: 6px; align-items: center;">
       <button id="btn-acao-perfil" onclick="clicarBotaoPerfil()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 5px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Entrar</button>
-      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">⋮</button>
+      <button onclick="abrirNotificacoesGotinha()" style="background: rgba(255,255,255,0.1); color: #f3d98b; border: 1px solid rgba(243,217,139,0.3); padding: 5px 10px; border-radius: 999px; font-weight: bold; cursor: pointer; font-size: 0.8rem; display: flex; align-items: center; gap: 4px;" title="Notificações">💧 <span id="contador-gotinha">0</span></button>
     </div>
   </div>
 
-  <!-- MODAL DE SUPORTE -->
-  <div id="modal-suporte" class="modal-custom">
+  <!-- MODAL DE NOTIFICAÇÕES -->
+  <div id="modal-notificacoes" class="modal-custom">
     <div class="caixa-modal">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Suporte</h3>
-        <button onclick="fecharSuporteDesenvolvedor()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+        <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">💧 Notificações</h3>
+        <button onclick="fecharNotificacoesGotinha()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
       </div>
-      <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc;">
-        <p style="margin-bottom: 6px;"><b>E-mail:</b> umbrella.suporte@gmail.com</p>
+      <div id="lista-notificacoes-conteudo" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+        <p style="font-size: 0.8rem; color: #aaa; text-align: center;">Nenhuma notificação nova.</p>
       </div>
     </div>
   </div>
@@ -451,7 +520,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE SOLICITACAO DE FANDOM / ABRIGO (ESTILO DORAMA) -->
+  <!-- MODAL DE SOLICITACAO DE FANDOM / ABRIGO -->
   <div id="modal-solicitacao" class="modal-custom">
     <div class="caixa-modal">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -573,7 +642,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- CABECALHO DA LOGO PRINCIPAL COM ALINHAMENTO DE BONEQUINHOS -->
+  <!-- CABECALHO DA LOGO PRINCIPAL -->
   <header style="text-align: center; padding: 8px 0 4px;">
     <div class="logo-container">
       <img src="homem.jpg" alt="Homem" class="boneco-logo" onerror="this.style.display='none'">
@@ -604,9 +673,9 @@ border-radius:999px; display:inline-block;}
       </div>
       <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
         <div class="story-avatar-mob" style="background: #9c27b0; overflow: hidden; padding: 0;">
-          <img src="gaveta.jpg" alt="Gaveta" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>📂</div>'">
+          <img src="umbrella.png" alt="Bate-Papo" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>💬</div>'">
         </div>
-        <span class="story-nome-mob">Gaveta</span><span class="story-arroba-mob">Privado</span>
+        <span class="story-nome-mob">Bate-Papo</span><span class="story-arroba-mob">Privado</span>
       </div>
       <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
         <div class="story-avatar-mob" style="background: #2196f3; overflow: hidden; padding: 0;">
@@ -629,6 +698,31 @@ border-radius:999px; display:inline-block;}
     
     <!-- COLUNA ESQUERDA -->
     <div id="coluna-esquerda" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
+      
+      <!-- SEÇÃO DO BATE-PAPO UMBRELLA -->
+      <div class="card" id="umbrella-chat-container" style="padding: 14px; margin-bottom: 0; background: rgba(20, 20, 20, 0.85); border: 1px solid rgba(212, 175, 55, 0.3);">
+        <div class="chat-sidebar" style="width: 100%; max-height: 90px; border-right: none; border-bottom: 1px solid #444; padding-bottom: 8px; margin-bottom: 8px;">
+          <h3>Amigos Online</h3>
+          <ul id="friends-list" style="display: flex; gap: 10px; overflow-x: auto;">
+            <li class="offline" style="white-space: nowrap;">Carolyne (Offline)</li>
+            <li class="online" style="white-space: nowrap;">Suporte Umbrella (Online)</li>
+          </ul>
+        </div>
+        
+        <div class="chat-main" style="width: 100%;">
+          <div id="chat-messages" class="chat-messages-box" style="height: 180px;">
+            <div class="message system" style="background: rgba(212,175,55,0.15); color: #f3d98b; border: 1px solid #d4af37;">Bem-vindo ao chat do Umbrella!</div>
+          </div>
+          
+          <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Aceita uma bebida e uma boa companhia hoje?[span_0](start_span)"[span_0](end_span) />
+            <input type="file" id="image-input" accept="image/jpeg" style="display: none;" />
+            <button onclick="document.getElementById('image-input').click()" title="Foto">📷</button>
+            <button onclick="enviarMensagem()">Enviar</button>
+          </div>
+        </div>
+      </div>
+
       <div class="card" id="card-desafio-esquerda" style="border: 2px solid #9c27b0; background: rgba(156, 39, 176, 0.08); margin-bottom: 0;">
         <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
           <div style="width: 38px; height: 38px; border-radius: 50%; background: #9c27b0; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;" class="btn-tema-bg">🎯</div>
@@ -638,14 +732,12 @@ border-radius:999px; display:inline-block;}
           </div>
         </div>
 
-        <!-- PAINEL DA CRIADORA GLOBAL -->
         <div id="painel-criadora">
           <h4>Painel Global</h4>
           <input type="text" id="novo-desafio-input" placeholder="Novo desafio...">
           <button onclick="atualizarDesafioDoDiaGlobal()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; width: 100%;">Atualizar</button>
         </div>
 
-        <!-- PAINEL UNIFICADO DO DESAFIO (BLOCO ÚNICO FLUIDO) -->
         <div id="bloco-envio-desafio-esq" style="margin-bottom: 12px;"></div>
 
         <button onclick="abrirDesafioNoCentro()" class="btn-tema-bg" style="width: 100%; margin-bottom: 14px; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Ver Envio das Colegas</button>
@@ -690,7 +782,6 @@ border-radius:999px; display:inline-block;}
             <button id="btn-adm-comunidade" onclick="verificarSenhaAdm()" style="display: none; background: rgba(243,217,139,0.2); color: #f3d98b; border: 1px solid #f3d98b; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">👑 ADM</button>
             <button id="btn-voltar-geral" onclick="voltarParaFeedPrincipal()" style="display: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voltar</button>
             
-            <!-- BOTÃO DE DISPARO COM CAMERA.JPG -->
             <button onclick="abrirModalPublicacao()" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Disparar Foto">
               <div style="width: 44px; height: 44px; border-radius: 50%; background: #111; border: 2px solid #f3d98b; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 15px rgba(243,217,139,0.4);">
                 <img src="camera.jpg" alt="Câmera" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='camera.jpg'; this.onerror=function(){this.style.display='none';}">
@@ -707,7 +798,6 @@ border-radius:999px; display:inline-block;}
           <div id="lista-subgrupos-interno" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
         </div>
 
-        <!-- MURAL DO FEED (FLUIDO E LIVRE) -->
         <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
           <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">
             Carregando publicações...
@@ -746,13 +836,18 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
 
-      <!-- MINHA GAVETA -->
+      <!-- MINHA GAVETA COM O SÍMBOLO OFICIAL (UMBRELLA.PNG) -->
       <div class="card" id="card-minha-gaveta" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Minha Gaveta</h3>
           <button onclick="alternarGavetaNoCentro(event)" style="background: rgba(243,217,139,0.2); border: 1px solid #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;" id="btn-ver-gaveta-centro">Abrir</button>
         </div>
-        <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.04); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 180px; overflow-y: auto;">
+        
+        <div style="margin: 10px 0; width: 100%; height: 160px; border-radius: 12px; overflow: hidden; background: #000; border: 2px solid #f3d98b; display: flex; align-items: center; justify-content: center;">
+          <img src="umbrella.png" alt="Guarda-chuva Oficial" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+        </div>
+
+        <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.04); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 140px; overflow-y: auto;">
           <div id="listaGaveta" style="font-size: 0.8rem; color: #ccc;">Nenhum item salvo.</div>
         </div>
         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
@@ -796,7 +891,22 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- SCRIPT GERAL DO SISTEMA -->
+<!-- MODAL DE LISTA DE COMENTÁRIOS -->
+<div id="modal-feed-comentarios" class="modal-custom">
+  <div class="caixa-modal" style="max-width: 500px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 8px;">
+      <h3 style="color: #f3d98b; font-size: 1rem; margin: 0;">Comentários do Abrigo</h3>
+      <button onclick="fecharFeedComentarios()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+    </div>
+    <div id="lista-comentarios-total-modal" style="max-height: 300px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;"></div>
+    <div style="display: flex; gap: 6px;">
+      <input type="text" id="input-novo-comentario-modal" placeholder="Escreva sua resposta..." style="flex: 1; padding: 8px; font-size: 0.8rem;">
+      <button onclick="enviarComentarioModalGeral()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Enviar</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCRIPT GERAL -->
 <script>
 let modoAtualNoCentro = "GERAL";
 
@@ -808,6 +918,14 @@ function abrirModalPublicacao() {
 function fecharModalPublicacao() {
   let modal = document.getElementById('modal-criar-publicacao');
   if (modal) modal.style.display = 'none';
+}
+
+function abrirNotificacoesGotinha() {
+  document.getElementById('modal-notificacoes').style.display = 'flex';
+}
+
+function fecharNotificacoesGotinha() {
+  document.getElementById('modal-notificacoes').style.display = 'none';
 }
 
 function verificarChaveCriadora(textoDigitado) {
@@ -1160,28 +1278,58 @@ window.biasDesafioSelecionadoNome = "";
 function selecionarBiasParaDesafioUnificado(posicao, nomeBias, origem = 'esq') {
   window.biasDesafioSelecionadoId = posicao;
   window.biasDesafioSelecionadoNome = nomeBias;
-  let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasUnificadoMob' : 'inputBuscaBiasUnificado');
-  if (inputBusca) inputBusca.value = `#${posicao} - ${nomeBias}`;
+  
+  let tagTopo = document.getElementById(origem === 'mob' ? 'bias-tag-topo-mob' : 'bias-tag-topo');
+  if (tagTopo) {
+    tagTopo.innerHTML = `✨ Marcado: <b>@${nomeBias}</b> (#${posicao})`;
+    tagTopo.style.display = 'block';
+  }
+
+  let textarea = document.getElementById(origem === 'mob' ? 'textoDesafioUnificadoMob' : 'textoDesafioUnificado');
+  if (textarea) {
+    if (!textarea.value.includes(nomeBias)) {
+      textarea.value = `@${nomeBias} ${textarea.value}`.trim();
+    }
+  }
+
   let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-unificado-mob' : 'sugestoes-bias-unificado');
   if (divSugestoes) divSugestoes.style.display = 'none';
 }
 
 function filtrarBuscaBiasUnificado(termo, origem = 'esq') {
   if (verificarChaveCriadora(termo)) {
-    let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasUnificadoMob' : 'inputBuscaBiasUnificado');
-    if (inputBusca) inputBusca.value = "";
+    let textarea = document.getElementById(origem === 'mob' ? 'textoDesafioUnificadoMob' : 'textoDesafioUnificado');
+    if (textarea) textarea.value = "";
     return;
+  }
+
+  let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
+  let termoLower = termo.trim().toLowerCase();
+  
+  let biasEncontrado = listaBias.find(b => termoLower.includes(b.nome.toLowerCase()) || termoLower.includes(`#${b.posicao}`));
+  let tagTopo = document.getElementById(origem === 'mob' ? 'bias-tag-topo-mob' : 'bias-tag-topo');
+
+  if (biasEncontrado) {
+    window.biasDesafioSelecionadoId = biasEncontrado.posicao;
+    window.biasDesafioSelecionadoNome = biasEncontrado.nome;
+    if (tagTopo) {
+      tagTopo.innerHTML = `✨ Marcado: <b>@${biasEncontrado.nome}</b> (#${biasEncontrado.posicao})`;
+      tagTopo.style.display = 'block';
+    }
+  } else if (!termoLower) {
+    if (tagTopo) tagTopo.style.display = 'none';
   }
 
   let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-unificado-mob' : 'sugestoes-bias-unificado');
   if (!divSugestoes) return;
-  termo = termo.trim().toLowerCase();
-  if (!termo) { divSugestoes.style.display = 'none'; return; }
-  let listaBias = JSON.parse(localStorage.getItem('meus_bias_salvos') || '[]');
-  let filtrados = listaBias.filter(b => b.posicao.toString() === termo || b.nome.toLowerCase().includes(termo) || `#${b.posicao}`.includes(termo));
+  if (!termoLower) { divSugestoes.style.display = 'none'; return; }
+
+  let ultimasPalavras = termoLower.split(' ').pop();
+  if (ultimasPalavras.length < 2) { divSugestoes.style.display = 'none'; return; }
+
+  let filtrados = listaBias.filter(b => b.posicao.toString() === ultimasPalavras || b.nome.toLowerCase().includes(ultimasPalavras));
   if (filtrados.length === 0) {
-    divSugestoes.innerHTML = `<div style="padding: 8px; font-size: 0.75rem; color: #aaa; text-align: center;">Nenhum bias encontrado</div>`;
-    divSugestoes.style.display = 'block';
+    divSugestoes.style.display = 'none';
     return;
   }
   let html = "";
@@ -1214,28 +1362,18 @@ function renderizarCardDesafioEsquerda() {
       </div>
     `;
   } else {
-    // BLOCO ÚNICO INTEGRADO COM BOTÃO REDONDO MINIMALISTA (SEM CAIXA QUADRADA DE WINDOWS XP)
     htmlConteudo = `
       <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid rgba(243,217,139,0.3);">
-        
-        <!-- BUSCA E SELEÇÃO DO BIAS DOS 1 A 1000 -->
+        <div id="bias-tag-topo" style="display: none; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: #f3d98b;"></div>
+
         <div style="position: relative;">
-          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Selecionar Bias (1 a 1000):</label>
-          <input type="text" id="inputBuscaBiasUnificado" placeholder="Digite o nome ou número (ex: 1)..." oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
+          <textarea id="textoDesafioUnificado" placeholder="Estamos torcendo por você" oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="border-radius: 10px; resize: none; height: 65px; padding: 10px; font-size: 0.85rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25); outline: none;"></textarea>
           <div id="sugestoes-bias-unificado" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 140px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
 
-        <!-- COMENTÁRIO / CONTEXTO DO DESAFIO -->
-        <div style="position: relative;">
-          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Contexto do Desafio:</label>
-          <textarea id="textoDesafioUnificado" placeholder="O que vamos proteger hoje" style="border-radius: 8px; resize: none; height: 50px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
-        </div>
-
-        <!-- BOTÃO REDONDO MINIMALISTA DE FOTO + ENVIO -->
         <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: 2px;">
-          
           <div style="display: flex; align-items: center; gap: 8px;">
-            <label for="inputFotoDesafioUnificado" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid #f3d98b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: all 0.2s;" title="Escolher Foto do Bias" id="label-circulo-foto-desafio">
+            <label for="inputFotoDesafioUnificado" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid #f3d98b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: all 0.2s;" title="Escolher foto" id="label-circulo-foto-desafio">
               <span style="font-size: 1rem; color: #f3d98b;">📷</span>
             </label>
             <input type="file" id="inputFotoDesafioUnificado" accept="image/*" style="display: none;" onchange="processarFotoDesafioUnificado(this)">
@@ -1249,7 +1387,6 @@ function renderizarCardDesafioEsquerda() {
 
           <button onclick="validarECruzarPixelsDesafioUnificado()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Enviar Desafio</button>
         </div>
-
       </div>
     `;
   }
@@ -1274,7 +1411,7 @@ function processarFotoDesafioUnificado(input) {
       if (labelCirculo) labelCirculo.style.display = 'none';
       if (miniImg) miniImg.src = base64Enviada;
       if (previewMini) previewMini.style.display = 'block';
-      if (statusTxt) { statusTxt.innerText = "Foto anexada!"; statusTxt.style.color = "#4caf50"; }
+      if (statusTxt) { statusTxt.innerText = "Foto pronta!"; statusTxt.style.color = "#4caf50"; }
     });
   }
 }
@@ -1306,8 +1443,8 @@ function validarECruzarPixelsDesafioUnificado() {
   let legenda = document.getElementById('textoDesafioUnificado')?.value.trim() || "";
   let nomeUsuario = localStorage.getItem('usuario_nome');
   if (!nomeUsuario) { alert("Faça login!"); return; }
-  if (!window.biasDesafioSelecionadoId) { alert("Selecione um bias da sua lista (1 a 1000)!"); return; }
-  if (!window.arquivoFotoDesafioUnificado && !window.fotoBiasBase64Temp) { alert("Selecione a foto para o desafio!"); return; }
+  if (!window.biasDesafioSelecionadoId) { alert("Selecione o bias na lista!"); return; }
+  if (!window.arquivoFotoDesafioUnificado && !window.fotoBiasBase64Temp) { alert("Selecione a foto!"); return; }
 
   let processarEnvioComBase64 = (base64Enviada) => {
     let hojeStr = new Date().toLocaleDateString();
@@ -1322,7 +1459,7 @@ function validarECruzarPixelsDesafioUnificado() {
     localStorage.setItem('meu_envio_desafio_hoje', JSON.stringify(dadosEnvio));
     registrarNoHistoricoGaveta('POSTAGEM', `Desafio do dia: #${window.biasDesafioSelecionadoId} - ${window.biasDesafioSelecionadoNome}`, base64Enviada);
     renderizarCardDesafioEsquerda();
-    alert("Enviado para o desafio das colegas com sucesso!");
+    alert("Enviado com sucesso!");
   };
 
   if (window.fotoBiasBase64Temp) {
@@ -1617,9 +1754,6 @@ function salvarPerfilPersonalizado() {
   fecharModalCadastro();
 }
 
-function abrirSuporteDesenvolvedor() { document.getElementById('modal-suporte').style.display = 'flex'; }
-function fecharSuporteDesenvolvedor() { document.getElementById('modal-suporte').style.display = 'none'; }
-
 function buscarNoYoutubeDireto() {
   let termo = document.getElementById('termo-busca-yt').value.trim();
   window.open(termo ? `https://www.youtube.com/results?search_query=${encodeURIComponent(termo)}` : 'https://www.youtube.com', '_blank');
@@ -1851,10 +1985,49 @@ function comentarGavetaMobile() {
     abrirGavetaMobile('gaveta');
   }
 }
+
+// ====================================
+// CHAT
+// ====================================
+function enviarMensagem() {
+    const input = document.getElementById('chat-input');
+    const box = document.getElementById('chat-messages');
+    
+    if (input.value.trim() !== "") {
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message sent';
+        msgDiv.innerText = input.value;
+        box.appendChild(msgDiv);
+        input.value = "";
+        box.scrollTop = box.scrollHeight;
+    }
+}
+
+document.getElementById('image-input').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+    if (file && file.type === "image/jpeg") {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const box = document.getElementById('chat-messages');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = 'message sent';
+            
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            msgDiv.appendChild(img);
+            
+            box.appendChild(msgDiv);
+            box.scrollTop = box.scrollHeight;
+        }
+        reader.readAsDataURL(file);
+    } else {
+        alert("Por favor, selecione apenas arquivos no formato JPG.");
+    }
+});
 </script>
 
 <!-- ======================================================== -->
-<!-- SCRIPT FIREBASE (FIRESTORE) EM TEMPO REAL                -->
+<!-- FIREBASE (FIRESTORE) EM TEMPO REAL                       -->
 <!-- ======================================================== -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -2002,7 +2175,6 @@ function comentarGavetaMobile() {
     }
   };
 
-  // Escuta em tempo real do Feed (Firestore onSnapshot)
   function escutarPostsTempoReal() {
     let mural = document.getElementById('mural-chat-comunidade');
     if (!mural) return;
@@ -2056,26 +2228,161 @@ function comentarGavetaMobile() {
         <span style="font-size: 0.9rem; font-weight: bold; color: #f3d98b;">${nome}</span>
         ${ehCriadora ? `<button onclick="deletarPostFirestore('${postId}')" style="background:rgba(255,71,87,0.2); border:1px solid #ff4757; color:#ff6b81; border-radius:4px; padding:2px 6px; font-size:0.65rem; cursor:pointer; margin-left:auto;">✕</button>` : ''}
       </div>
-      <!-- BALÃO DE FOTO / VÍDEO & CONTEÚDO -->
       <div style="background: rgba(0,0,0,0.3); border-radius: 14px; padding: 12px; margin-bottom: 10px; border: 1px solid rgba(243,217,139,0.15);">
         ${texto ? `<p class="texto-conteudo-post" style="margin: 0 0 ${midiaBase64 ? '8px' : '0'}; font-size: 0.85rem; color: #fff; word-break: break-word;">${texto}</p>` : ''}
         ${midiaBase64 ? (isVideo ? `<video src="${midiaBase64}" controls style="width: 100%; height: auto; border-radius: 10px; display: block;"></video>` : `<div style="cursor: pointer; width: 100%; border-radius: 10px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('${midiaBase64}')"><img src="${midiaBase64}" style="width: 100%; height: auto; display: block; object-fit: contain; border-radius: 10px;"></div>`) : ''}
       </div>
+
+      <div id="container-comentario-destaque-${postId}" style="margin-bottom: 10px; font-size: 0.8rem; color: #ccc;"></div>
+
+      <div id="caixa-digitar-comentario-${postId}" style="display: none; margin-bottom: 10px; display: flex; gap: 6px;">
+        <input type="text" id="input-comentario-post-${postId}" placeholder="Estamos torcendo por você" style="flex: 1; padding: 8px; font-size: 0.8rem;">
+        <button onclick="publicarComentarioPost('${postId}')" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 8px; padding: 6px 12px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Publicar</button>
+      </div>
+
       <div style="margin-top: 6px; display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
-        <!-- BOTÃO DE CURTIR GUARDA-CHUVINHA CUSTOMIZADO (SVG) -->
-        <button onclick="curtirPostFirestore('${postId}', this)" style="background: rgba(243,217,139,0.1); border: 1px solid #f3d98b; color: #f3d98b; padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 6px;" title="Proteger com guarda-chuva">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f3d98b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <button onclick="curtirPostFirestore('${postId}', this)" style="background: rgba(243,217,139,0.1); border: 1px solid #f3d98b; color: #f3d98b; padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 6px;" title="Curtir">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f3d98b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2v10"></path>
             <path d="M12 12c-4 0-8-2-10-5 2-3 6-5 10-5s8 2 10 5c-2 3-6 5-10 5z"></path>
             <path d="M12 12v7a2 2 0 0 0 2 2h1"></path>
           </svg>
           <span class="contador-post-likes">${likesCount}</span>
         </button>
+
+        <button onclick="alternarCaixaComentar('${postId}')" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 5px 10px; border-radius: 999px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">
+          comentar
+        </button>
+
+        <button onclick="compartilharUmbrellaPost('${postId}')" style="background: rgba(156,39,176,0.2); border: 1px solid #9c27b0; color: #f3d98b; padding: 5px 10px; border-radius: 999px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">
+          compartilhar umbrella
+        </button>
       </div>
     `;
     topicoDiv.innerHTML = html;
     mural.appendChild(topicoDiv);
+    carregarPrimeiroComentarioPost(postId);
   }
+
+  window.alternarCaixaComentar = function(postId) {
+    let caixa = document.getElementById(`caixa-digitar-comentario-${postId}`);
+    if (caixa) {
+      caixa.style.display = caixa.style.display === 'flex' ? 'none' : 'flex';
+    }
+  };
+
+  window.publicarComentarioPost = async function(postId) {
+    let nomeUsuario = localStorage.getItem('usuario_nome');
+    if (!nomeUsuario) { alert("Faça login!"); return; }
+    let textoInput = document.getElementById(`input-comentario-post-${postId}`);
+    let texto = textoInput ? textoInput.value.trim() : "";
+    if (!texto) { alert("Escreva um comentário!"); return; }
+
+    try {
+      await addDoc(collection(db, "posts", postId, "comentarios"), {
+        autor: nomeUsuario,
+        mensagem: texto,
+        criadoEm: serverTimestamp()
+      });
+      if (textoInput) textoInput.value = "";
+      let caixa = document.getElementById(`caixa-digitar-comentario-${postId}`);
+      if (caixa) caixa.style.display = 'none';
+      carregarPrimeiroComentarioPost(postId);
+      registrarNoHistoricoGaveta('COMENTÁRIO', `Comentou: "${texto.slice(0, 20)}..."`);
+    } catch(e) {
+      alert("Erro ao comentar.");
+    }
+  };
+
+  async function carregarPrimeiroComentarioPost(postId) {
+    let container = document.getElementById(`container-comentario-destaque-${postId}`);
+    if (!container) return;
+    try {
+      const q = query(collection(db, "posts", postId, "comentarios"), orderBy("criadoEm", "asc"));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        container.innerHTML = "";
+        return;
+      }
+      let primeiroDoc = snapshot.docs[0].data();
+      container.innerHTML = `
+        <div onclick="abrirFeedCompletoComentarios('${postId}')" style="background: rgba(0,0,0,0.25); padding: 8px 12px; border-radius: 8px; border-left: 2px solid #f3d98b; cursor: pointer;" title="Ver todos os comentários">
+          <span style="font-weight: bold; color: #f3d98b; font-size: 0.78rem;">${primeiroDoc.autor}:</span> 
+          <span style="color: #fff; font-size: 0.78rem;">${primeiroDoc.mensagem}</span>
+          ${snapshot.size > 1 ? `<span style="display:block; font-size:0.65rem; color:#aaa; margin-top:2px;">Ver todos os ${snapshot.size} comentários...</span>` : ''}
+        </div>
+      `;
+    } catch(e) {}
+  }
+
+  window.abrirFeedCompletoComentarios = async function(postId) {
+    window.postIdModalAtual = postId;
+    let modal = document.getElementById('modal-feed-comentarios');
+    let listaModal = document.getElementById('lista-comentarios-total-modal');
+    if (!modal || !listaModal) return;
+
+    listaModal.innerHTML = `<p style="font-size:0.8rem; color:#aaa; text-align:center;">Carregando...</p>`;
+    modal.style.display = 'flex';
+
+    try {
+      const q = query(collection(db, "posts", postId, "comentarios"), orderBy("criadoEm", "asc"));
+      const snapshot = await getDocs(q);
+      if (snapshot.empty) {
+        listaModal.innerHTML = `<p style="font-size:0.8rem; color:#aaa; text-align:center;">Nenhum comentário ainda.</p>`;
+        return;
+      }
+      let html = "";
+      snapshot.forEach(docSnap => {
+        let c = docSnap.data();
+        html += `
+          <div style="background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 8px; border-left: 2px solid #2196f3;">
+            <b style="color: #f3d98b; font-size: 0.8rem;">${c.autor}:</b>
+            <p style="color: #fff; font-size: 0.8rem; margin: 2px 0 0 0;">${c.mensagem}</p>
+          </div>
+        `;
+      });
+      listaModal.innerHTML = html;
+    } catch(e) {}
+  };
+
+  window.fecharFeedComentarios = function() {
+    document.getElementById('modal-feed-comentarios').style.display = 'none';
+  };
+
+  window.enviarComentarioModalGeral = async function() {
+    let postId = window.postIdModalAtual;
+    if (!postId) return;
+    let input = document.getElementById('input-novo-comentario-modal');
+    let texto = input ? input.value.trim() : "";
+    if (!texto) { alert("Escreva algo!"); return; }
+
+    let nomeUsuario = localStorage.getItem('usuario_nome');
+    if (!nomeUsuario) { alert("Faça login!"); return; }
+
+    try {
+      await addDoc(collection(db, "posts", postId, "comentarios"), {
+        autor: nomeUsuario,
+        mensagem: texto,
+        criadoEm: serverTimestamp()
+      });
+      if (input) input.value = "";
+      abrirFeedCompletoComentarios(postId);
+      carregarPrimeiroComentarioPost(postId);
+    } catch(e) {}
+  };
+
+  window.compartilharUmbrellaPost = function(postId) {
+    if (navigator.share) {
+      navigator.share({
+        title: 'Umbrella',
+        text: 'Veja esta publicação no Umbrella!',
+        url: window.location.href
+      }).catch(() => {});
+    } else {
+      navigator.clipboard.writeText(window.location.href);
+      alert("Link copiado para a área de transferência!");
+    }
+  };
 
   window.curtirPostFirestore = async function(postId, botao) {
     let nomeUsuario = localStorage.getItem('usuario_nome');
@@ -2180,4 +2487,4 @@ function comentarGavetaMobile() {
 </script>
 
 </body>
-  </html>
+</html>
