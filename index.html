@@ -78,8 +78,7 @@
 #modal-menu {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
-  background: #060a1e url('img/fundo.jpg') no-repeat center center fixed;
-  background-size: cover;
+  background: #060a1e;
   z-index: 999;
   overflow-y: auto;
   display: none;
@@ -118,9 +117,7 @@
 .grupo-input label { display: block; font-size: 0.8rem; color: #f3d98b; margin-bottom: 4px; }
 *{margin:0;padding:0;box-sizing:border-box;font-family: 'Segoe UI', Arial, sans-serif}
 body {
-  background: #060a1e url('fundo.jpeg') no-repeat center center fixed;
-  background-size: cover;
-  image-rendering: -webkit-optimize-contrast;
+  background: #060a1e;
   color: #fff;
   min-height: 100vh;
   margin: 0;
@@ -157,7 +154,6 @@ body::before {
 }
 .subtitle{font-size:18px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease;}
 
-/* ANIMAÇÃO DE RECOLHER LOGO NO MOBILE AO ROLAR */
 body.logo-recolhida .logo {
   font-size: 32px !important;
   text-shadow: 0 0 10px #f3d98b;
@@ -183,9 +179,6 @@ select option { background: #121829; color: #fff; }
 .contador{font-size:13px; background:rgba(243,217,139,0.15); border:1px solid #f3d98b; padding:6px 10px;
 border-radius:999px; display:inline-block;}
 
-/* ==================================== */
-/* NOVO MOBILE REESTRUTURADO (STORIES IG - BOLINHAS GIGANTES 130px REAIS) */
-/* ==================================== */
 #bloco-topo-mobile { display: none; }
 
 .stories-mobile-container {
@@ -248,7 +241,6 @@ border-radius:999px; display:inline-block;}
   max-width: 132px;
 }
 
-/* BALÃO DO DESAFIO DO DIA COM 130px EXATOS */
 .story-balao-mob {
   display: flex;
   flex-direction: column;
@@ -285,7 +277,6 @@ border-radius:999px; display:inline-block;}
   line-height: 1.2;
 }
 
-/* GAVETA MOBILE DE TELA CHEIA */
 #gaveta-mobile-overlay {
   position: fixed;
   inset: 0;
@@ -315,13 +306,13 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
-<!-- POPUP FLUTUANTE EXCLUSIVO DA CRIADORA (DESAFIO DO DIA GLOBAL) -->
+<!-- POPUP FLUTUANTE DA CRIADORA (DESAFIO DO DIA GLOBAL) -->
 <div id="modal-popup-criadora-desafio" class="modal-custom" style="z-index: 100001;">
   <div class="caixa-modal" style="border: 2px solid #9c27b0; box-shadow: 0 0 30px rgba(156, 39, 176, 0.6);">
     <div style="text-align: center; margin-bottom: 12px;">
       <span style="font-size: 2rem;">👑</span>
       <h3 style="color: #f3d98b; font-size: 1.25rem; margin-top: 4px;">Modo Criadora Ativado!</h3>
-      <p style="font-size: 0.78rem; color: #ccc;">Atualize o <b>Desafio do Dia</b> para toda a plataforma conectada:</p>
+      <p style="font-size: 0.78rem; color: #ccc;">Atualize o <b>Desafio do Dia</b> para toda a plataforma:</p>
     </div>
     <div class="grupo-input">
       <label>Novo Desafio do Dia (Visível para todos):</label>
@@ -343,7 +334,7 @@ border-radius:999px; display:inline-block;}
   <div id="conteudo-dinamico-gaveta-mobile" style="display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px;"></div>
 </div>
 
-<!-- MODAL ESTILO PINTEREST (ZOOM FOTOS) -->
+<!-- MODAL ZOOM FOTOS -->
 <div id="modal-pinterest" style="position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999; display: none; flex-direction: column; align-items: center; justify-content: center; overflow: auto; padding: 10px;">
   <button onclick="fecharModalPinterest()" style="position: fixed; top: 20px; right: 25px; background: rgba(255,255,255,0.25); border: none; color: white; font-size: 1.4rem; width: 42px; height: 42px; border-radius: 50%; cursor: pointer; font-weight: bold; z-index: 100000;">✕</button>
   
@@ -366,30 +357,29 @@ border-radius:999px; display:inline-block;}
     </div>
     <div style="display: flex; gap: 6px; align-items: center;">
       <button id="btn-acao-perfil" onclick="clicarBotaoPerfil()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 5px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Entrar</button>
-      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;" title="Suporte com Desenvolvedora">⋮</button>
+      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;" title="Suporte">⋮</button>
     </div>
   </div>
 
-  <!-- MODAL DE SUPORTE TÉCNICO -->
+  <!-- MODAL DE SUPORTE -->
   <div id="modal-suporte" class="modal-custom">
     <div class="caixa-modal">
       <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Suporte Técnico</h3>
-      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Contato direto com a desenvolvedora:</p>
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 15px; text-align: center;">Contato com a moderação:</p>
       <div style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px; margin-bottom: 15px; font-size: 0.85rem; color: #ccc;">
-        <p style="margin-bottom: 6px;"><b>Desenvolvedora:</b> Luana</p>
-        <p style="margin-bottom: 6px;"><b>Contato / E-mail:</b> suporte@newdrama.com</p>
+        <p style="margin-bottom: 6px;"><b>Suporte:</b> Atendimento ao Usuário</p>
+        <p style="margin-bottom: 6px;"><b>E-mail:</b> suporte@newdrama.com</p>
       </div>
       <button onclick="fecharSuporteDesenvolvedor()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Suporte</button>
     </div>
   </div>
 
-  <!-- PAINEL DE MODERACAO & CRIADORA (COMPLETO) -->
+  <!-- PAINEL DE MODERACAO & CRIADORA -->
   <div id="modal-adm" class="modal-custom">
     <div class="caixa-modal" style="max-width: 520px;">
       <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">👑 Painel de Moderação & Criadora</h3>
       <p style="font-size: 0.75rem; color: #aaa; text-align: center; margin-bottom: 15px;">Gerencie solicitações, fandoms e feed global.</p>
       
-      <!-- ALTERAR DESAFIO DO DIA -->
       <div style="margin-bottom: 15px; background: rgba(243,217,139,0.1); padding: 12px; border-radius: 10px; border: 1px solid #f3d98b;">
         <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 6px;">🎯 Mudar Desafio do Dia Global:</h4>
         <div style="display: flex; gap: 6px;">
@@ -398,7 +388,6 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
 
-      <!-- APROVAR / NEGAR SOLICITAÇÕES DE FANDOM -->
       <div style="margin-bottom: 15px; background: rgba(156,39,176,0.15); padding: 12px; border-radius: 10px; border: 1px solid #9c27b0;">
         <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 8px;">📥 Solicitações Pendentes de Fandoms:</h4>
         <div id="lista-solicitacoes-adm" style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
@@ -406,7 +395,6 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
 
-      <!-- ENTRAR DIRETAMENTE EM UM FANDOM -->
       <div style="margin-bottom: 15px; background: rgba(33,150,243,0.15); padding: 12px; border-radius: 10px; border: 1px solid #2196f3;">
         <h4 style="font-size: 0.9rem; color: #2196f3; margin-bottom: 6px;">🌐 Entrar Diretamente em um Fandom:</h4>
         <div style="display: flex; gap: 8px; flex-direction: column;">
@@ -425,7 +413,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE SOLICITACAO DE ENTRADA NO FANDOM -->
+  <!-- MODAL DE SOLICITACAO DE FANDOM -->
   <div id="modal-solicitacao" class="modal-custom">
     <div class="caixa-modal">
       <h3 style="color: #ff4757; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Fandom Protegido</h3>
@@ -452,12 +440,12 @@ border-radius:999px; display:inline-block;}
         <span>G</span> Entrar rápido com conta Google
       </button>
 
-      <div class="grupo-input"><label>1. Nome ou Apelido na Comunidade:</label><input type="text" id="input-nome" placeholder="Ex: Luana"></div>
-      <div class="grupo-input"><label>2. Data de Nascimento:</label><input type="text" id="input-nasc" placeholder="Ex: DD/MM/AAAA"></div>
-      <div class="grupo-input"><label>3. Fandom / Artista da Semana:</label><input type="text" id="input-fandom" placeholder="Ex: Park Chanyeol"></div>
+      <div class="grupo-input"><label>1. Nome ou Apelido na Comunidade:</label><input type="text" id="input-nome" placeholder="Seu apelido"></div>
+      <div class="grupo-input"><label>2. Data de Nascimento:</label><input type="text" id="input-nasc" placeholder="DD/MM/AAAA"></div>
+      <div class="grupo-input"><label>3. Fandom / Artista da Semana:</label><input type="text" id="input-fandom" placeholder="Nome do artista"></div>
       <div class="grupo-input"><label>4. E-mail:</label><input type="email" id="input-email" placeholder="seu@email.com"></div>
-      <div class="grupo-input"><label>5. WhatsApp:</label><input type="text" id="input-tel" placeholder="(31) 9xxxx-xxxx"></div>
-      <div class="grupo-input"><label>6. Senha de Acesso:</label><input type="password" id="input-senha" placeholder="Sua senha secreta..."></div>
+      <div class="grupo-input"><label>5. WhatsApp:</label><input type="text" id="input-tel" placeholder="(00) 00000-0000"></div>
+      <div class="grupo-input"><label>6. Senha de Acesso:</label><input type="password" id="input-senha" placeholder="Sua senha..."></div>
       
       <div class="grupo-input">
         <label>7. Cor Pessoal do Tema:</label>
@@ -483,13 +471,13 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE CRIAR E GERENCIAR FANDOMS -->
+  <!-- MODAL GERENCIAR FANDOMS -->
   <div id="modal-novo-tema" class="modal-custom">
     <div class="caixa-modal">
       <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Gerenciar Fandoms</h3>
       <div class="grupo-input">
         <label>1. Criar Novo Fandom:</label>
-        <input type="text" id="input-novo-tema-nome" placeholder="Ex: Grupo ou Dorama...">
+        <input type="text" id="input-novo-tema-nome" placeholder="Nome do grupo ou dorama...">
       </div>
       <button onclick="salvarNovoTemaPersonalizado()" style="width: 100%; padding: 10px; background: #ff4757; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 15px; font-size: 0.85rem;">Criar Fandom</button>
       <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.15); margin-bottom: 12px;">
@@ -499,7 +487,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE ADICIONAR / EDITAR BIAS -->
+  <!-- MODAL GERENCIAR BIAS -->
   <div id="modal-bias" class="modal-custom">
     <div class="caixa-modal">
       <h3 class="btn-tema-texto" style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Gerenciar Meus Bias (1 a 1000)</h3>
@@ -510,8 +498,8 @@ border-radius:999px; display:inline-block;}
         <select id="bias-posicao-select" style="background: rgba(0,0,0,0.5); color: #f3d98b; font-weight: bold;"></select>
       </div>
 
-      <div class="grupo-input"><label>Nome do Oppa / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Ex: Nome do Artista"></div>
-      <div class="grupo-input"><label>Categoria (Dorama, Grupo, Filme):</label><input type="text" id="bias-categoria" placeholder="Ex: EXO, Dorama Mine"></div>
+      <div class="grupo-input"><label>Nome do Artista / Bias / Personagem:</label><input type="text" id="bias-nome" placeholder="Nome..."></div>
+      <div class="grupo-input"><label>Categoria (Dorama, Grupo, Filme):</label><input type="text" id="bias-categoria" placeholder="Ex: K-Pop, Dorama..."></div>
       <div class="grupo-input">
         <label>Foto Oficial de Referência:</label>
         <label for="bias-foto-file" style="display: block; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 8px; padding: 8px; text-align: center; font-size: 0.8rem; cursor: pointer; color: #f3d98b;" id="label-foto-bias">Escolher Foto Oficial</label>
@@ -557,7 +545,7 @@ border-radius:999px; display:inline-block;}
   <!-- CABECALHO DA LOGO PRINCIPAL -->
   <header style="text-align: center; padding: 8px 0 4px;">
     <div class="logo-container">
-      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" ondblclick="voltarParaFeedPrincipal()" title="Dê um duplo clique aqui para voltar ao início!">New Drama</div>
+      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" title="Dê um clique para voltar ao início!">New Drama</div>
     </div>
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
@@ -613,7 +601,7 @@ border-radius:999px; display:inline-block;}
           </div>
         </div>
 
-        <!-- PAINEL DA CRIADORA GLOBAL PARA MUDAR O DESAFIO -->
+        <!-- PAINEL DA CRIADORA GLOBAL -->
         <div id="painel-criadora">
           <h4>👑 Painel Global da Criadora</h4>
           <input type="text" id="novo-desafio-input" placeholder="Digite o novo desafio do dia para toda a plataforma...">
@@ -622,7 +610,7 @@ border-radius:999px; display:inline-block;}
 
         <div style="margin-bottom: 10px; position: relative;">
           <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
-          <input type="text" id="inputBuscaBiasDesafio" placeholder="Ex: 1 ou Nome..." oninput="filtrarBuscaBiasDesafio(this.value)" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
+          <input type="text" id="inputBuscaBiasDesafio" placeholder="Busque o bias acima para travar..." oninput="filtrarBuscaBiasDesafio(this.value)" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
           <div id="sugestoes-bias-busca" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
 
@@ -774,13 +762,13 @@ border-radius:999px; display:inline-block;}
   </footer>
 </div>
 
-<!-- MODAL DE CRIAR SUBGRUPO -->
+<!-- MODAL CRIAR SUBGRUPO -->
 <div id="modal-subgrupo" class="modal-custom">
   <div class="caixa-modal">
     <h3 style="color: #f3d98b; margin-bottom: 5px; font-size: 1.2rem; text-align: center;">Criar Subgrupo Interno</h3>
     <div class="grupo-input">
       <label>Nome do Subgrupo:</label>
-      <input type="text" id="input-nome-subgrupo" placeholder="Ex: Categoria">
+      <input type="text" id="input-nome-subgrupo" placeholder="Ex: Categoria...">
     </div>
     <div style="display: flex; gap: 10px; margin-top: 20px;">
       <button onclick="salvarSubgrupoInterno()" style="flex: 1; padding: 12px; background: #9c27b0; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;">Criar</button>
@@ -793,7 +781,6 @@ border-radius:999px; display:inline-block;}
 <script>
 let modoAtualNoCentro = "GERAL";
 
-// FUNÇÃO CENTRAL PARA VERIFICAR PALAVRAS-CHAVE DO MODO CRIADORA
 function verificarChaveCriadora(textoDigitado) {
   if (!textoDigitado) return false;
   let chave = textoDigitado.trim().toLowerCase();
@@ -807,7 +794,6 @@ function verificarChaveCriadora(textoDigitado) {
   return false;
 }
 
-// CONTROLE DO POPUP FLUTUANTE DA CRIADORA
 function abrirPopupCriadoraDesafio() {
   let popup = document.getElementById('modal-popup-criadora-desafio');
   let input = document.getElementById('input-popup-desafio-global');
@@ -822,30 +808,21 @@ function fecharPopupCriadoraDesafio() {
 
 function salvarDesafioPeloPopupCriadora() {
   let novoTexto = document.getElementById('input-popup-desafio-global').value.trim();
-  if (!novoTexto) {
-    alert("Digite o texto do desafio!");
-    return;
-  }
+  if (!novoTexto) { alert("Digite o texto do desafio!"); return; }
   aplicarAtualizacaoDesafioGlobal(novoTexto);
   fecharPopupCriadoraDesafio();
 }
 
 function salvarDesafioPeloPainelAdm() {
   let novoTexto = document.getElementById('input-adm-desafio-rapido').value.trim();
-  if (!novoTexto) {
-    alert("Digite o novo desafio!");
-    return;
-  }
+  if (!novoTexto) { alert("Digite o novo desafio!"); return; }
   aplicarAtualizacaoDesafioGlobal(novoTexto);
   document.getElementById('input-adm-desafio-rapido').value = "";
 }
 
 function atualizarDesafioDoDiaGlobal() {
   const novoTexto = document.getElementById("novo-desafio-input").value.trim();
-  if (!novoTexto) {
-    alert("Digite o novo desafio do dia!");
-    return;
-  }
+  if (!novoTexto) { alert("Digite o novo desafio do dia!"); return; }
   aplicarAtualizacaoDesafioGlobal(novoTexto);
   document.getElementById("novo-desafio-input").value = "";
 }
@@ -854,13 +831,10 @@ function aplicarAtualizacaoDesafioGlobal(novoTexto) {
   localStorage.setItem("desafioDoDiaGlobal", novoTexto);
   let subEsq = document.getElementById('sub-titulo-desafio-esq');
   if (subEsq) subEsq.innerText = novoTexto;
-  let subMob = document.getElementById('sub-titulo-desafio-mob');
-  if (subMob) subMob.innerText = novoTexto;
   atualizarResumoDesafioMob();
-  alert("🎯 Desafio atualizado com sucesso para toda a plataforma conectada!");
+  alert("🎯 Desafio atualizado com sucesso para toda a plataforma!");
 }
 
-// CONTROLE DO BOTÃO ENTRAR / PERFIL SEM TRAVAMENTO
 function clicarBotaoPerfil() {
   let nomeLocal = localStorage.getItem('usuario_nome');
   if (nomeLocal) {
@@ -914,7 +888,7 @@ function abrirModalWebcamDesktop() {
       if (videoEl) videoEl.srcObject = stream;
     })
     .catch(err => {
-      alert("⚠️ Não foi possível acessar a webcam do computador.");
+      alert("⚠️ Não foi possível acessar a webcam.");
       fecharModalWebcamPC();
     });
 }
@@ -955,13 +929,13 @@ function abrirGavetaMobile(tipo) {
   container.innerHTML = "";
 
   if (tipo === 'desafio') {
-    titulo.innerText = "🎯 Desafio do Dia & Envio Integrado (Toque aqui para voltar)";
+    titulo.innerText = "🎯 Desafio do Dia (Toque aqui para voltar)";
     container.innerHTML = `
       <div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px; margin-bottom: 12px;">
         <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">${obterDesafioDoDiaAtual()}</h4>
         <div style="margin-bottom: 10px; position: relative;">
           <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">🔍 Buscar por Número ou Nome do Bias:</label>
-          <input type="text" id="inputBuscaBiasDesafioMob" placeholder="Ex: 1 ou Nome..." oninput="filtrarBuscaBiasDesafio(this.value, 'mob')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
+          <input type="text" id="inputBuscaBiasDesafioMob" placeholder="Busque o bias acima para travar..." oninput="filtrarBuscaBiasDesafio(this.value, 'mob')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
           <div id="sugestoes-bias-busca-mob" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 150px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
         <div id="bloco-envio-desafio-mob" style="margin-bottom: 10px;"></div>
@@ -981,8 +955,8 @@ function abrirGavetaMobile(tipo) {
       carregarMeusBiasNaInterfaceMobile();
     }, 50);
   } else if (tipo === 'gaveta') {
-    titulo.innerText = "📂 Minha Gaveta Privada & Histórico (Toque aqui para voltar)";
-    let htmlGav = `
+    titulo.innerText = "📂 Minha Gaveta Privada (Toque aqui para voltar)";
+    container.innerHTML = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
         <textarea id="campoGavetaTextoMob" placeholder="Escreva nota ou ative criadora..." style="border-radius: 10px; height: 50px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;"></textarea>
         <div style="display: flex; gap: 6px; margin-bottom: 12px;">
@@ -994,7 +968,6 @@ function abrirGavetaMobile(tipo) {
         <div id="listaGavetaMob" style="display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto;"></div>
       </div>
     `;
-    container.innerHTML = htmlGav;
     setTimeout(() => carregarHistoricoNaGavetaMobile(), 50);
   } else if (tipo === 'fandoms') {
     titulo.innerText = "🌐 Comunidade & Fandoms (Toque aqui para voltar)";
@@ -1169,8 +1142,6 @@ window.biasSelecionadoValidado = null;
 
 function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64, origem = 'esq') {
   window.biasSelecionadoValidado = { posicao, nome: nomeBias, foto: fotoBase64 };
-  let campoTexto = document.getElementById('textoDesafioEsq');
-  if (campoTexto) campoTexto.value = `Top #${posicao}: ${nomeBias} - Validado!`;
   let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasDesafioMob' : 'inputBuscaBiasDesafio');
   if (inputBusca) inputBusca.value = `#${posicao} - ${nomeBias}`;
   let divSugestoes = document.getElementById(origem === 'mob' ? 'sugestoes-bias-busca-mob' : 'sugestoes-bias-busca');
@@ -1179,7 +1150,6 @@ function selecionarBiasParaDesafio(posicao, nomeBias, fotoBase64, origem = 'esq'
 }
 
 function filtrarBuscaBiasDesafio(termo, origem = 'esq') {
-  // Verifica se digitou a chave da criadora diretamente na busca do bias
   if (verificarChaveCriadora(termo)) {
     let inputBusca = document.getElementById(origem === 'mob' ? 'inputBuscaBiasDesafioMob' : 'inputBuscaBiasDesafio');
     if (inputBusca) inputBusca.value = "";
@@ -1228,7 +1198,7 @@ function renderizarCardDesafioEsquerda() {
   } else {
     htmlConteudo = `
       <div style="display: flex; flex-direction: column; gap: 6px;">
-        <textarea id="textoDesafioEsq" oninput="if(verificarChaveCriadora(this.value)) this.value='';" placeholder="Busque o bias acima para travar..." style="border-radius: 8px; resize: none; height: 45px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
+        <textarea id="textoDesafioEsq" placeholder="Escreva a legenda do seu envio..." style="border-radius: 8px; resize: none; height: 45px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
         <div style="display: flex; gap: 4px;">
           <label for="inputFotoDesafioEsq" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(243,217,139,0.4); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" id="label-foto-desafio-esq">📁 Foto do Desafio</label>
           <input type="file" id="inputFotoDesafioEsq" accept="image/*" style="display: none;" onchange="processarFotoDesafioEsq(this)">
@@ -1276,11 +1246,6 @@ function converterImagemParaHD(file, maxWidth, maxHeight, callback) {
 
 function validarECruzarPixelsDesafio() {
   let legenda = document.getElementById('textoDesafioEsq')?.value.trim() || "";
-  if (verificarChaveCriadora(legenda)) {
-    document.getElementById('textoDesafioEsq').value = "";
-    return;
-  }
-
   let nomeUsuario = localStorage.getItem('usuario_nome');
   if (!nomeUsuario) { alert("Faça login para enviar o desafio!"); return; }
   if (!window.biasSelecionadoValidado) { alert("Erro: Selecione um bias cadastrado antes de enviar!"); return; }
@@ -1692,10 +1657,7 @@ function fecharModalCadastro() { document.getElementById('modal-cadastro').style
 
 function salvarPerfilPersonalizado() {
   let nome = document.getElementById('input-nome').value.trim();
-  if (!nome) {
-    alert("Por favor, digite seu nome ou apelido para entrar!");
-    return;
-  }
+  if (!nome) { alert("Por favor, digite seu nome ou apelido para entrar!"); return; }
 
   let nascimento = document.getElementById('input-nasc').value.trim();
   let fandom = document.getElementById('input-fandom').value.trim();
@@ -1740,7 +1702,7 @@ function salvarPerfilPersonalizado() {
     });
   }
   fecharModalCadastro();
-  alert(`Bem-vinda, ${nome}! Login realizado com sucesso.`);
+  alert(`Bem-vinda(o), ${nome}! Login realizado com sucesso.`);
 }
 
 function abrirSuporteDesenvolvedor() { document.getElementById('modal-suporte').style.display = 'flex'; }
@@ -1947,7 +1909,6 @@ function comentarGaveta() {
   let fileInput = document.getElementById('campoGavetaFoto');
   if (!texto && (!fileInput.files || !fileInput.files[0])) { alert("Escreva algo ou escolha uma foto!"); return; }
 
-  // ATIVAÇÃO DO MODO CRIADORA
   if (verificarChaveCriadora(texto)) {
     document.getElementById('campoGavetaTexto').value = "";
     return;
@@ -1988,7 +1949,7 @@ function comentarGavetaMobile() {
 }
 </script>
 
-<!-- FIREBASE (OPCIONAL COM FALLBACK SEGURO PARA NÃO TRAVAR O BOTÃO ENTRAR) -->
+<!-- FIREBASE COM FALLBACK SEGURO -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -2026,8 +1987,8 @@ function comentarGavetaMobile() {
         location.reload();
       })
       .catch((error) => {
-        console.warn("Popup Google bloqueado ou domínio não autorizado:", error.code);
-        alert("O login rápido do Google foi bloqueado pelo navegador. Preencha seu nome no formulário abaixo para entrar!");
+        console.warn("Popup Google bloqueado:", error.code);
+        alert("O login rápido do Google foi bloqueado pelo navegador. Preencha seus dados no formulário abaixo para entrar!");
       });
   };
 
