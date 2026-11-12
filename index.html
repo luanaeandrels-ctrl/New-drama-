@@ -1404,7 +1404,9 @@ function entrarFandomPeloPainelAdm() {
 function fecharModalSolicitacao() { document.getElementById('modal-solicitacao').style.display = 'none'; }
 
 function verificarSenhaAdm() {
-  renderizarSolicitacoesAdmNuvem();
+  if (window.renderizarSolicitacoesAdmNuvem) {
+    window.renderizarSolicitacoesAdmNuvem();
+  }
   document.getElementById('modal-adm').style.display = 'flex';
 }
 function fecharPainelAdm() { document.getElementById('modal-adm').style.display = 'none'; }
@@ -2039,7 +2041,7 @@ function comentarGavetaMobile() {
     try {
       const querySnapshot = await getDocs(collection(db, "solicitacoes_fandoms"));
       if (querySnapshot.empty) {
-        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente na nuvem.</p>";`;
+        container.innerHTML = `<p style="font-size:0.75rem; color:#aaa; text-align:center;">Nenhuma solicitação pendente na nuvem.</p>`;
         return;
       }
       let html = "";
