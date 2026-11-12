@@ -1950,9 +1950,17 @@ function comentarGavetaMobile() {
 </script>
 
 <!-- FIREBASE COM FALLBACK SEGURO -->
+<!-- FIREBASE CORRIGIDO PARA CELULAR (REDIRECT) E PC -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+  import { 
+    getAuth, 
+    signInWithRedirect, 
+    getRedirectResult, 
+    GoogleAuthProvider, 
+    onAuthStateChanged,
+    signOut
+  } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
@@ -1964,48 +1972,80 @@ function comentarGavetaMobile() {
     measurementId: "G-VXNH7S6N36"
   };
 
-  let auth = null;
-  let provider = null;
-  try {
-    const app = initializeApp(firebaseConfig);
-    auth = getAuth(app);
-    provider = new GoogleAuthProvider();
-  } catch (e) {
-    console.warn("Firebase inicializado em modo offline:", e);
-  }
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const provider = new GoogleAuthProvider();
 
+  // 1. Captura o retorno do login do Google no celular/PC
+  getRedirectResult(auth)
+    .then((result) => {
+      if (result && result.user) {
+        aplicarDadosGoogleNaInterface(result.user);
+        alert(`Bem-vinda(o), ${result.user.displayName}! Login com Google integrado.`);
+      }
+    })
+    .catch((error) => {
+      console.error("Erro no retorno do Google:", error);
+      alert("Erro ao conectar com o Google (" + error.code + "). Verifique se 'new-drama1.vercel.app' está nos Domínios Autorizados do Firebase.");
+    });
+
+  // 2. Dispara o redirecionamento oficial do Google (não abre about:blank no celular)
   window.tentarLoginGoogleDireto = function() {
-    if (!auth || !provider) {
-      alert("Login rápido via Google indisponível neste navegador/arquivo local. Preencha seu nome e dados abaixo para entrar normalmente!");
-      return;
-    }
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        const user = result.user;
-        localStorage.setItem('usuario_nome', user.displayName);
-        if (user.photoURL) localStorage.setItem('usuario_foto', user.photoURL);
-        location.reload();
-      })
-      .catch((error) => {
-        console.warn("Popup Google bloqueado:", error.code);
-        alert("O login rápido do Google foi bloqueado pelo navegador. Preencha seus dados no formulário abaixo para entrar!");
-      });
+    // Limpa cache antigo antes de autenticar com o Google
+    localStorage.removeItem('usuario_nome');
+    localStorage.removeItem('usuario_email');
+    localStorage.removeItem('usuario_foto');
+    signInWithRedirect(auth, provider);
   };
 
-  if (auth) {
-    onAuthStateChanged(auth, (user) => {
-      const botaoPerfil = document.getElementById("btn-acao-perfil");
-      if (botaoPerfil && user) {
-        localStorage.setItem('usuario_nome', user.displayName);
-        if (user.photoURL) {
-          localStorage.setItem('usuario_foto', user.photoURL);
-          botaoPerfil.innerHTML = `<img src="${user.photoURL}" style="width: 20px; height: 20px; border-radius: 50%; vertical-align: middle; margin-right: 4px;"> Perfil`;
-        } else {
-          botaoPerfil.innerText = "Perfil";
-        }
-      }
-    });
+  // 3. Mantém o usuário sincronizado e preenche os dados reais do Google
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      aplicarDadosGoogleNaInterface(user);
+    }
+  });
+
+  function aplicarDadosGoogleNaInterface(user) {
+    const nomeGoogle = user.displayName || "Usuário Google";
+    const emailGoogle = user.email || "";
+    const fotoGoogle = user.photoURL || "";
+
+    localStorage.setItem('usuario_nome', nomeGoogle);
+    localStorage.setItem('usuario_email', emailGoogle);
+    if (fotoGoogle) localStorage.setItem('usuario_foto', fotoGoogle);
+
+    const nomeTopo = document.getElementById('nome-usuario');
+    const menuNome = document.getElementById('menu-nome-usuario');
+    const avatarTopo = document.getElementById('avatar-usuario');
+    const avatarGrande = document.getElementById('perfil-avatar-grande');
+    const btnPerfil = document.getElementById('btn-acao-perfil');
+
+    if (nomeTopo) nomeTopo.innerText = nomeGoogle;
+    if (menuNome) menuNome.innerText = nomeGoogle;
+    if (btnPerfil) btnPerfil.innerText = "Perfil";
+
+    if (fotoGoogle) {
+      if (avatarTopo) avatarTopo.innerHTML = `<img src="${fotoGoogle}" style="width: 100%; height: 100%; object-fit: cover;">`;
+      if (avatarGrande) avatarGrande.innerHTML = `<img src="${fotoGoogle}" style="width: 100%; height: 100%; object-fit: cover;">`;
+    }
+
+    // Preenche os inputs do modal caso você abra para editar o restante
+    const inputNome = document.getElementById('input-nome');
+    const inputEmail = document.getElementById('input-email');
+    if (inputNome) inputNome.value = nomeGoogle;
+    if (inputEmail) inputEmail.value = emailGoogle;
   }
+
+  // Sobrescreve o sairDaConta para desconectar também do Firebase
+  const sairOriginal = window.sairDaConta;
+  window.sairDaConta = function() {
+    if (confirm("Deseja realmente sair da conta?")) {
+      signOut(auth).finally(() => {
+        localStorage.clear();
+        location.reload();
+      });
+    }
+  };
 </script>
 </body>
 </html>
