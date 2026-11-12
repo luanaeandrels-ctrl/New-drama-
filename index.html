@@ -393,25 +393,12 @@ border-radius:999px; display:inline-block;}
             <option value="Doramas">Doramas</option>
             <option value="Anime">Anime</option>
           </select>
-<div id="painel-criadora" style="display: none; margin-top: 15px; padding: 15px; background: #f3e5f5; border: 2px solid #9c27b0; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
-  <p style="font-weight: bold; color: #7b1fa2; margin-bottom: 12px;">🛡️ Painel do Fandom: Gerenciamento e Solicitações de Entrada</p>
-  
-  <!-- Seção de Solicitações de Entrada -->
-  <div style="background: white; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
-    <strong>Solicitações Pendentes:</strong>
-    <div id="lista-solicitacoes" style="margin-top: 8px; font-size: 0.9rem; color: #333;">
-      Nenhuma solicitação no momento.
+          <button onclick="entrarFandomPeloPainelAdm()" style="background: #2196f3; color: white; border: none; padding: 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Entrar no Fandom Selecionado</button>
+        </div>
+      </div>
+      <button onclick="fecharPainelAdm()" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.1); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Fechar Painel</button>
     </div>
   </div>
-
-  <!-- Controles Administrativos -->
-  <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
-    <button onclick="promoverParaAdmin()" style="background: #9c27b0; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Promover a ADM</button>
-    <button onclick="ativarModoExclusaoComentarios()" style="background: #d32f2f; color: white; border: none; padding: 8px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Gerenciar Comentários</button>
-  </div>
-
-  <button onclick="fecharPainelAdm()" style="width: 100%; padding: 8px; background: rgba(0,0,0,0.05); color: #333; border: 1px solid #ccc; border-radius: 6px; font-weight: bold; cursor: pointer;">Fechar Painel</button>
-</div>
 
   <!-- MODAL DE SOLICITACAO DE ENTRADA NO FANDOM -->
   <div id="modal-solicitacao" class="modal-custom">
@@ -1892,6 +1879,7 @@ function comentarGavetaMobile() {
     abrirGavetaMobile('gaveta');
   }
 }
+</script>
 <script type="module">
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -1924,17 +1912,12 @@ function comentarGavetaMobile() {
     }
   };
 
-  // Monitora o login sem deixar a foto sumir ou piscar errado
+  // Monitora para mudar o texto do botão automaticamente (com o ID correto: btn-acao-perfil)
   onAuthStateChanged(auth, (user) => {
     const botaoPerfil = document.getElementById("btn-acao-perfil");
     if (botaoPerfil) {
       if (user) {
-        // Se tem foto do Google, exibe a foto e o texto Perfil de forma segura
-        if (user.photoURL) {
-          botaoPerfil.innerHTML = `<img src="${user.photoURL}" style="width: 24px; height: 24px; border-radius: 50%; vertical-align: middle; margin-right: 5px;"> Perfil`;
-        } else {
-          botaoPerfil.innerText = "Perfil";
-        }
+        botaoPerfil.innerText = "Perfil";
       } else {
         botaoPerfil.innerText = "Entrar";
       }
@@ -1949,11 +1932,13 @@ function comentarGavetaMobile() {
       return;
     }
 
+    // Atualiza o texto na tela de todo mundo que estiver acessando
     const elementoDesafioNaTela = document.getElementById("texto-desafio-dia"); 
     if (elementoDesafioNaTela) {
       elementoDesafioNaTela.innerText = novoTexto;
     }
 
+    // Salva no localStorage para persistir
     localStorage.setItem("desafioDoDiaGlobal", novoTexto);
     
     alert("Desafio atualizado com sucesso para todo mundo!");
