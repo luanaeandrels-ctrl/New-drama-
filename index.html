@@ -681,7 +681,7 @@ border-radius:999px; display:inline-block;}
                 <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Ouro</span>
               </div>
             </div>
-            <span style="font-size: 0.7rem; color: #f3d98b; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">Trisavô</span>
+            <span style="font-size: 0.7rem; color: #f3d98b; background: rgba(0,0,0,0.4); padding: 3px 6px; border-radius: 4px;">top 1</span>
           </div>
 
           <!-- 2º LUGAR (PRATA) -->
@@ -1041,11 +1041,11 @@ function carregarHistoricoNaGaveta() {
       <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid ${corBadge}; position: relative;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
           <span style="font-size: 0.65rem; background: ${corBadge}; color: #fff; padding: 1px 4px; border-radius: 3px; font-weight: bold;">${item.tipo}</span>
-          <span style="font-size: 0.7rem; color: #aaa;">${item.data}</span>
+          // <span style="font-size: 0.7rem; color: #aaa;margin-right: 25px">${item.data}</span>
         </div>
         <p style="margin: 0 0 4px 0; font-size: 0.75rem; color: #fff; word-break: break-word;">${item.texto}</p>
         ${item.foto ? `<div style="margin-top: 6px; width: 100%; border-radius: 4px; overflow: hidden; background: #000; cursor: pointer; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>` : ''}
-        <button onclick="removerItemGaveta(${index})" style="position: absolute; top: 4px; right: 6px; background: none; border: none; color: #ff4757; cursor: pointer; font-size: 0.75rem;" title="Excluir item">X</button>
+        <button onclick="removerItemGaveta(${index})" style="position: absolute; top: 4px; right: 6px; background: none; border: none; color: #ff4757; cursor: pointer; font-size: 0.75rem;" title="x">X</button>
       </div>
     `;
   });
