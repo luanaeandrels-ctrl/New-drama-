@@ -2004,24 +2004,35 @@ function comentarGavetaMobile() {
     }
   };
 
+  // FUNÇÃO CORRIGIDA E EXPOSTA GLOBALMENTE NO ESCOPO MODULE
   window.enviarSolicitacaoFandomNuvem = async function() {
-    let nome = document.getElementById('solicitacao-nome').value.trim();
-    let motivo = document.getElementById('solicitacao-motivo').value.trim();
-    if (!nome || !motivo) { alert("Preencha seu nome e o motivo!"); return; }
+    let nomeInput = document.getElementById('solicitacao-nome');
+    let motivoInput = document.getElementById('solicitacao-motivo');
+    
+    let nome = nomeInput ? nomeInput.value.trim() : "";
+    let motivo = motivoInput ? motivoInput.value.trim() : "";
+    
+    if (!nome || !motivo) { 
+      alert("Por favor, preencha seu nome e o motivo antes de enviar!"); 
+      return; 
+    }
     
     try {
       await addDoc(collection(db, "solicitacoes_fandoms"), {
         usuario: nome,
-        fandom: fandomAtualSelecionado,
+        fandom: window.fandomAtualSelecionado || "Geral",
         motivo: motivo,
-        cor: corAtualSelecionada,
+        cor: window.corAtualSelecionada || "#9c27b0",
         criadoEm: serverTimestamp()
       });
-      fecharModalSolicitacao();
-      alert("✅ Solicitação enviada com sucesso para a nuvem da ADM!");
+      
+      let modalSol = document.getElementById('modal-solicitacao');
+      if (modalSol) modalSol.style.display = 'none';
+      
+      alert("✅ Solicitação enviada com sucesso para a nuvem da ADM! Aguarde a aprovação.");
     } catch (e) {
       console.error("Erro ao enviar solicitação para o Firestore:", e);
-      alert("Erro ao enviar solicitação. Verifique sua conexão.");
+      alert("Erro ao enviar solicitação. Verifique sua conexão com a internet.");
     }
   };
 
