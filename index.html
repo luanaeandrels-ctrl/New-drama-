@@ -1827,6 +1827,7 @@ function comentarGavetaMobile() {
   // Import the functions you need from the SDKs you need
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
   // Your web app's Firebase configuration
   const firebaseConfig = {
@@ -1842,19 +1843,21 @@ function comentarGavetaMobile() {
   // Initialize Firebase
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
- // Função do botão de perfil/login
+  const auth = getAuth(app);
+
+  // Função do botão de perfil/login
   window.clicarBotaoPerfil = function() {
     const user = auth.currentUser;
     if (user) {
-      abrirMenuLateral(); 
+      if (typeof abrirMenuLateral === 'function') abrirMenuLateral(); 
     } else {
       alert("Por favor, faça o login para acessar o perfil.");
     }
   };
 
-  // Monitora para mudar o texto do botão automaticamente
+  // Monitora para mudar o texto do botão automaticamente (com o ID correto: btn-acao-perfil)
   onAuthStateChanged(auth, (user) => {
-    const botaoPerfil = document.getElementById("acao-perfil");
+    const botaoPerfil = document.getElementById("btn-acao-perfil");
     if (botaoPerfil) {
       if (user) {
         botaoPerfil.innerText = "Perfil";
@@ -1863,25 +1866,26 @@ function comentarGavetaMobile() {
       }
     }
   });
+
   // Função chamada quando você clica em atualizar o desafio
-window.atualizarDesafioDoDia = function() {
-  const novoTexto = document.getElementById("novo-desafio-input").value;
-  if (!novoTexto) {
-    alert("Digite um texto para o desafio!");
-    return;
-  }
+  window.atualizarDesafioDoDia = function() {
+    const novoTexto = document.getElementById("novo-desafio-input").value;
+    if (!novoTexto) {
+      alert("Digite um texto para o desafio!");
+      return;
+    }
 
-  // Atualiza o texto na tela de todo mundo que estiver acessando
-  const elementoDesafioNaTela = document.getElementById("texto-desafio-dia"); // substitua pelo ID do elemento do desafio no seu HTML
-  if (elementoDesafioNaTela) {
-    elementoDesafioNaTela.innerText = novoTexto;
-  }
+    // Atualiza o texto na tela de todo mundo que estiver acessando
+    const elementoDesafioNaTela = document.getElementById("texto-desafio-dia"); 
+    if (elementoDesafioNaTela) {
+      elementoDesafioNaTela.innerText = novoTexto;
+    }
 
-  // Salva no localStorage para persistir (ou você pode mandar para o Firebase se preferir salvar na nuvem)
-  localStorage.setItem("desafioDoDiaGlobal", novoTexto);
-  
-  alert("Desafio atualizado com sucesso para todo mundo!");
-};
+    // Salva no localStorage para persistir
+    localStorage.setItem("desafioDoDiaGlobal", novoTexto);
+    
+    alert("Desafio atualizado com sucesso para todo mundo!");
+  };
 </script>
 </body>
 </html>
