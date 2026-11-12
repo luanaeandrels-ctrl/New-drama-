@@ -1950,7 +1950,7 @@ function comentarGavetaMobile() {
 </script>
 
 <!-- FIREBASE COM FALLBACK SEGURO -->
-<!-- FIREBASE HÍBRIDO (POP-UP COM FALLBACK PARA REDIRECT) -->
+<!-- FIREBASE CORRIGIDO: LOGIN DIRETO PARA O FEED -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
   import { 
@@ -1977,11 +1977,11 @@ function comentarGavetaMobile() {
   const auth = getAuth(app);
   const provider = new GoogleAuthProvider();
 
-  // Processa o retorno caso tenha usado redirect
+  // Processa o retorno do redirect (caso ocorra no celular)
   getRedirectResult(auth)
     .then((result) => {
       if (result && result.user) {
-        aplicarDadosGoogleNaInterface(result.user);
+        efetivarLoginComGoogle(result.user);
       }
     }).catch((error) => {
       console.warn("Erro no redirect:", error);
@@ -1993,24 +1993,32 @@ function comentarGavetaMobile() {
     localStorage.removeItem('usuario_email');
     localStorage.removeItem('usuario_foto');
 
-    // Tenta via Popup primeiro (melhor para PC)
     signInWithPopup(auth, provider)
       .then((result) => {
-        aplicarDadosGoogleNaInterface(result.user);
-        alert(`Bem-vinda(o), ${result.user.displayName}!`);
+        efetivarLoginComGoogle(result.user);
       })
       .catch((error) => {
         console.warn("Popup bloqueado, tentando por redirect...", error);
-        // Se o navegador bloquear o popup (comum no celular), usa o redirect automático
         signInWithRedirect(auth, provider);
       });
   };
 
   onAuthStateChanged(auth, (user) => {
     if (user) {
+      // Se já estiver logado na sessão do Firebase, atualiza a interface discretamente
       aplicarDadosGoogleNaInterface(user);
     }
   });
+
+  function efetivarLoginComGoogle(user) {
+    aplicarDadosGoogleNaInterface(user);
+
+    // Fecha o modal de cadastro/login imediatamente
+    let modalCadastro = document.getElementById('modal-cadastro');
+    if (modalCadastro) modalCadastro.style.display = 'none';
+
+    alert(`Bem-vinda(o), ${user.displayName}! Login realizado com sucesso.`);
+  }
 
   function aplicarDadosGoogleNaInterface(user) {
     const nomeGoogle = user.displayName || "Usuário Google";
@@ -2035,18 +2043,13 @@ function comentarGavetaMobile() {
       if (avatarTopo) avatarTopo.innerHTML = `<img src="${fotoGoogle}" style="width: 100%; height: 100%; object-fit: cover;">`;
       if (avatarGrande) avatarGrande.innerHTML = `<img src="${fotoGoogle}" style="width: 100%; height: 100%; object-fit: cover;">`;
     }
-
-    const inputNome = document.getElementById('input-nome');
-    const inputEmail = document.getElementById('input-email');
-    if (inputNome) inputNome.value = nomeGoogle;
-    if (inputEmail) inputEmail.value = emailGoogle;
   }
 
   window.sairDaConta = function() {
     if (confirm("Deseja realmente sair da conta?")) {
       signOut(auth).finally(() => {
         localStorage.clear();
-        location.log ? location.reload() : window.location.href = window.location.href;
+        location.reload();
       });
     }
   };
