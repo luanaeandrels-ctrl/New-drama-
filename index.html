@@ -1911,7 +1911,6 @@ function comentarGavetaMobile() {
   import { 
     getFirestore, 
     collection, 
-    addCollection, 
     addDoc, 
     getDocs, 
     deleteDoc, 
@@ -1934,7 +1933,6 @@ function comentarGavetaMobile() {
   const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
 
-  // Processa o retorno do redirect (caso ocorra no celular)
   getRedirectResult(auth)
     .then((result) => {
       if (result && result.user) {
@@ -1944,7 +1942,6 @@ function comentarGavetaMobile() {
       console.warn("Erro no redirect:", error);
     });
 
-  // Botão de login inteligente
   window.tentarLoginGoogleDireto = function() {
     localStorage.removeItem('usuario_nome');
     localStorage.removeItem('usuario_email');
@@ -1968,10 +1965,8 @@ function comentarGavetaMobile() {
 
   function efetivarLoginComGoogle(user) {
     aplicarDadosGoogleNaInterface(user);
-
     let modalCadastro = document.getElementById('modal-cadastro');
     if (modalCadastro) modalCadastro.style.display = 'none';
-
     alert(`Bem-vinda(o), ${user.displayName}! Login realizado com sucesso.`);
   }
 
@@ -2009,9 +2004,6 @@ function comentarGavetaMobile() {
     }
   };
 
-  // ==========================================
-  // FIRESTORE: SOLICITAÇÕES DE FANDOM NA NUVEM
-  // ==========================================
   window.enviarSolicitacaoFandomNuvem = async function() {
     let nome = document.getElementById('solicitacao-nome').value.trim();
     let motivo = document.getElementById('solicitacao-motivo').value.trim();
@@ -2049,14 +2041,14 @@ function comentarGavetaMobile() {
         let sol = documento.data();
         let docId = documento.id;
         html += `
-          <div style="background: rgba(0,0,0,0.3); padding: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div style="background: rgba(0,0,0,0.4); padding: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; border: 1px solid rgba(243,217,139,0.2);">
             <div>
-              <b style="font-size:0.8rem; color:#f3d98b;">${sol.usuario}</b> <span style="font-size:0.7rem; color:#aaa;">(${sol.fandom})</span>
-              <p style="font-size:0.7rem; color:#fff; margin:2px 0 0 0;">"${sol.motivo}"</p>
+              <b style="font-size:0.85rem; color:#f3d98b;">${sol.usuario}</b> <span style="font-size:0.75rem; color:#ff6b81;">(${sol.fandom})</span>
+              <p style="font-size:0.75rem; color:#fff; margin:3px 0 0 0;">"${sol.motivo}"</p>
             </div>
-            <div style="display: flex; gap: 4px;">
-              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}', '${sol.cor}')" style="background:#4caf50; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Aceitar</button>
-              <button onclick="negarSolicitacaoNuvem('${docId}')" style="background:#ff4757; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:0.7rem; font-weight:bold; cursor:pointer;">Negar</button>
+            <div style="display: flex; gap: 6px;">
+              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}', '${sol.cor}')" style="background:#4caf50; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Aceitar</button>
+              <button onclick="negarSolicitacaoNuvem('${docId}')" style="background:#ff4757; color:#fff; border:none; padding:6px 12px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Negar</button>
             </div>
           </div>
         `;
