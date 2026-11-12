@@ -1012,8 +1012,8 @@ function aplicarZoomPinterest(valor) {
 
 let comunidadesAprovadas = JSON.parse(localStorage.getItem('fandoms_aprovados') || '["BTS", "EXO", "Super Junior", "Doramas", "Anime"]');
 let subgruposFandoms = JSON.parse(localStorage.getItem('fandoms_subgrupos') || '{}');
-let fandomAtualSelecionado = "";
-let corAtualSelecionada = "";
+window.fandomAtualSelecionado = "";
+window.corAtualSelecionada = "";
 
 function renderizarListaFandomsLateral() {
   let container = document.getElementById('lista-comunidades-container');
@@ -1376,20 +1376,18 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
     return; 
   }
   
+  window.fandomAtualSelecionado = nomeComunidade;
+  window.corAtualSelecionada = corTema;
   let nomeSalvo = localStorage.getItem('usuario_nome');
   
-  if (nomeSalvo) {
-    fandomAtualSelecionado = nomeComunidade;
-    corAtualSelecionada = corTema;
-    let inputNomeSol = document.getElementById('solicitacao-nome');
-    if (inputNomeSol) inputNomeSol.value = nomeSalvo;
-    document.getElementById('texto-aviso-fandom').innerText = `O fandom de ${nomeComunidade} é blindado. Insira sua solicitação de acesso:`;
-    document.getElementById('modal-solicitacao').style.display = 'flex';
-  } else {
-    if (confirm(`🔒 Fandom Protegido!\nPara entrar no fandom de "${nomeComunidade}", você precisa estar logada.\n\nDeseja abrir o painel de login agora?`)) {
-      configurarPerfil();
-    }
-  }
+  let inputNomeSol = document.getElementById('solicitacao-nome');
+  if (inputNomeSol && nomeSalvo) inputNomeSol.value = nomeSalvo;
+  
+  let avisoEl = document.getElementById('texto-aviso-fandom');
+  if (avisoEl) avisoEl.innerText = `O fandom de ${nomeComunidade} é blindado. Envie sua solicitação:`;
+  
+  let modalSol = document.getElementById('modal-solicitacao');
+  if (modalSol) modalSol.style.display = 'flex';
 }
 
 function entrarFandomPeloPainelAdm() {
@@ -1412,7 +1410,7 @@ function verificarSenhaAdm() {
 function fecharPainelAdm() { document.getElementById('modal-adm').style.display = 'none'; }
 
 function entrarComunidadeEfetivo(nomeComunidade, corTema) {
-  fandomAtualSelecionado = nomeComunidade;
+  window.fandomAtualSelecionado = nomeComunidade;
   modoAtualNoCentro = "GERAL";
   document.getElementById('titulo-feed-atual').innerText = "Comunidade: " + nomeComunidade;
   document.getElementById('sub-feed-atual').innerText = "Espaço exclusivo do fandom";
@@ -1453,7 +1451,7 @@ function salvarNovoTemaPersonalizado() {
 }
 
 function abrirModalSubgrupo() {
-  if (!fandomAtualSelecionado) { alert("Entre em um fandom primeiro!"); return; }
+  if (!window.fandomAtualSelecionado) { alert("Entre em um fandom primeiro!"); return; }
   document.getElementById('modal-subgrupo').style.display = 'flex';
 }
 function fecharModalSubgrupo() { document.getElementById('modal-subgrupo').style.display = 'none'; }
@@ -1461,11 +1459,11 @@ function fecharModalSubgrupo() { document.getElementById('modal-subgrupo').style
 function salvarSubgrupoInterno() {
   let nomeSub = document.getElementById('input-nome-subgrupo').value.trim();
   if (!nomeSub) { alert("Digite o subgrupo!"); return; }
-  if (!subgruposFandoms[fandomAtualSelecionado]) subgruposFandoms[fandomAtualSelecionado] = [];
-  subgruposFandoms[fandomAtualSelecionado].push(nomeSub);
+  if (!subgruposFandoms[window.fandomAtualSelecionado]) subgruposFandoms[window.fandomAtualSelecionado] = [];
+  subgruposFandoms[window.fandomAtualSelecionado].push(nomeSub);
   localStorage.setItem('fandoms_subgrupos', JSON.stringify(subgruposFandoms));
   fecharModalSubgrupo();
-  carregarSubgruposInternos(fandomAtualSelecionado);
+  carregarSubgruposInternos(window.fandomAtualSelecionado);
 }
 
 function carregarSubgruposInternos(nomeFandom) {
@@ -2004,7 +2002,7 @@ function comentarGavetaMobile() {
     }
   };
 
-  // FUNÇÃO CORRIGIDA E EXPOSTA GLOBALMENTE NO ESCOPO MODULE
+  // FUNÇÃO CORRIGIDA COM FEEDBACK VISUAL E REDIRECIONAMENTO AUTOMÁTICO
   window.enviarSolicitacaoFandomNuvem = async function() {
     let nomeInput = document.getElementById('solicitacao-nome');
     let motivoInput = document.getElementById('solicitacao-motivo');
@@ -2018,6 +2016,17 @@ function comentarGavetaMobile() {
     }
     
     try {
+      // Feedback visual imediato para o usuário saber que o envio começou
+      let modalSol = document.getElementById('modal-solicitacao');
+      if (modalSol) {
+        modalSol.innerHTML = `
+          <div class="caixa-modal" style="text-align: center; padding: 30px;">
+            <h3 style="color: #f3d98b; margin-bottom: 10px; font-size: 1.2rem;">Enviando solicitação...</h3>
+            <p style="font-size: 0.85rem; color: #aaa;">Aguarde um instante.</p>
+          </div>
+        `;
+      }
+
       await addDoc(collection(db, "solicitacoes_fandoms"), {
         usuario: nome,
         fandom: window.fandomAtualSelecionado || "Geral",
@@ -2026,13 +2035,27 @@ function comentarGavetaMobile() {
         criadoEm: serverTimestamp()
       });
       
-      let modalSol = document.getElementById('modal-solicitacao');
-      if (modalSol) modalSol.style.display = 'none';
-      
-      alert("✅ Solicitação enviada com sucesso para a nuvem da ADM! Aguarde a aprovação.");
+      // Mensagem solicitada: Solicitação enviada, aguarde a aprovação e redireciona para o feed
+      if (modalSol) {
+        modalSol.innerHTML = `
+          <div class="caixa-modal" style="text-align: center; padding: 30px;">
+            <h3 style="color: #4caf50; margin-bottom: 10px; font-size: 1.3rem;">✅ Solicitação Enviada!</h3>
+            <p style="font-size: 0.9rem; color: #fff; margin-bottom: 15px;">Aguarde a aprovação da administração.</p>
+            <p style="font-size: 0.75rem; color: #aaa;">Redirecionando para o feed...</p>
+          </div>
+        `;
+      }
+
+      setTimeout(() => {
+        if (modalSol) modalSol.style.display = 'none';
+        location.reload(); // Redireciona/retorna limpo para o feed principal
+      }, 2000);
+
     } catch (e) {
       console.error("Erro ao enviar solicitação para o Firestore:", e);
       alert("Erro ao enviar solicitação. Verifique sua conexão com a internet.");
+      let modalSol = document.getElementById('modal-solicitacao');
+      if (modalSol) modalSol.style.display = 'none';
     }
   };
 
