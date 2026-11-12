@@ -2168,6 +2168,37 @@ function comentarGavetaMobile() {
       renderizarSolicitacoesAdmNuvem();
     } catch (e) {
       alert("Erro ao processar negação.");
+      // Importa o Firestore que a gente precisa para salvar e ler os posts
+import { getFirestore, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebasejs-firestore.js";
+
+// Inicializa o Firestore no app
+const db = getFirestore();
+
+// Função para enviar um novo post para a comunidade
+async function criarPost(mensagemTexto) {
+    try {
+        const docRef = await addDoc(collection(db, "posts"), {
+            mensagem: mensagemTexto,
+            criadoEm: new Date()
+        });
+        console.log("Post enviado com sucesso! ID:", docRef.id);
+    } catch (e) {
+        console.error("Erro ao enviar o post: ", e);
+    }
+}
+
+// Função para buscar e mostrar os posts na tela
+async function carregarPosts() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "posts"));
+        querySnapshot.forEach((doc) => {
+            console.log(`${doc.id} => `, doc.data());
+        });
+    } catch (e) {
+        console.error("Erro ao carregar os posts: ", e);
+    }
+}
+
     }
   };
 </script>
