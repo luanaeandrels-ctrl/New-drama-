@@ -953,7 +953,7 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR (COM BOLINHA DO PERFIL PULSANTE ESTILO SPOTIFY) -->
+    <!-- BARRA SUPERIOR -->
     <div class="unified-top-bar">
         <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Música">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
@@ -1275,7 +1275,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v37';
+        const LOCAL_KEY = 'umbrella_clean_state_v38';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1292,7 +1292,7 @@
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
-            fandoms: [],
+            fandoms: [], // Carregado do Firestore em tempo real
             subgroups: {},
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
@@ -1324,16 +1324,25 @@
         }
 
         function initFirebaseSync() {
-            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-            onSnapshot(q, (snapshot) => {
+            // Sincronização de Posts em tempo real
+            const qPosts = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            onSnapshot(qPosts, (snapshot) => {
                 postsFromFirebase = [];
                 snapshot.forEach((docSnap) => {
                     postsFromFirebase.push({ id: docSnap.id, ...docSnap.data() });
                 });
                 renderAll();
-            }, (error) => {
-                console.error("Erro ao sincronizar Firestore: ", error);
-            });
+            }, (error) => { console.error("Erro ao sincronizar posts:", error); });
+
+            // Sincronização de Fandoms em tempo real para todas as contas e dispositivos
+            const qFandoms = query(collection(db, "fandoms"));
+            onSnapshot(qFandoms, (snapshot) => {
+                appState.fandoms = [];
+                snapshot.forEach((docSnap) => {
+                    appState.fandoms.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderAll();
+            }, (error) => { console.error("Erro ao sincronizar fandoms:", error); });
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -1344,7 +1353,6 @@
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
 
-                // Sincroniza perfil com Firestore para salvar a música do usuário
                 const userRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userRef);
                 if (userDoc.exists()) {
@@ -1499,7 +1507,6 @@
             }
         };
 
-        // PERFIL & TRILHA SONORA DO USUÁRIO
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1592,9 +1599,7 @@
                     audioUrl: appState.user.audioUrl,
                     audioTitle: appState.user.audioTitle
                 }, { merge: true });
-            } catch (e) {
-                console.error("Erro ao salvar dados do usuário no Firestore:", e);
-            }
+            } catch (e) { console.error("Erro ao salvar dados do usuário:", e); }
         }
 
         window.selectAndPlayPresetMusic = async function(url, title) {
@@ -1604,7 +1609,7 @@
             saveLocal();
             playAudioUrl(url);
             closeUmbrellaModal();
-            alert(`Trilha sonora definida e tocando: ${title}`);
+            alert(`Trilha sonora definida: ${title}`);
         };
 
         function playAudioUrl(url) {
@@ -1615,7 +1620,7 @@
             audioEl.loop = true;
             audioEl.play().then(() => {
                 profileBtn.classList.add('playing');
-            }).catch(e => { console.log("Autoplay bloqueado pelo navegador", e); });
+            }).catch(e => { console.log("Autoplay bloqueado", e); });
         }
 
         window.toggleGlobalAudioPlay = function() {
@@ -1647,8 +1652,7 @@
             closeUmbrellaModal();
         };
 
-        // AO CLICAR NA FOTO OU NOME DE ALGUÉM, TOCA A MÚSICA DELE (VISITAR PERFIL)
-        window.visitUserProfile = async function(authorUid, authorName, defaultAvatar) {
+        window.visitUserProfile = async function(authorUid, authorName) {
             if (!authorUid) {
                 alert(`Perfil de ${authorName}`);
                 return;
@@ -1659,16 +1663,14 @@
                     const uData = userDoc.data();
                     if (uData.audioUrl) {
                         playAudioUrl(uData.audioUrl);
-                        alert(`🎧 Entrando no perfil de ${authorName}. Tocando trilha sonora: ${uData.audioTitle || 'Música do Perfil'}`);
+                        alert(`🎧 Entrando no perfil de ${authorName}. Tocando trilha sonora: ${uData.audioTitle || 'Música'}`);
                     } else {
-                        alert(`Perfil de ${authorName} (Sem trilha sonora ativa no momento).`);
+                        alert(`Perfil de ${authorName} (Sem trilha sonora ativa).`);
                     }
                 } else {
                     alert(`Perfil de ${authorName}`);
                 }
-            } catch (e) {
-                alert(`Perfil de ${authorName}`);
-            }
+            } catch (e) { alert(`Perfil de ${authorName}`); }
         };
 
         window.openMediaActionSheet = function () {
@@ -2079,6 +2081,7 @@
             });
         };
 
+        // CRIAR FANDOM DIRETAMENTE NO FIRESTORE (SINCRONIZADO PARA TODOS)
         window.openCreateFandomModal = function () {
             requireAuthForAction(() => {
                 showUmbrellaModal({
@@ -2104,7 +2107,7 @@
                         {
                             label: 'Criar Fandom',
                             primary: true,
-                            onClick: () => {
+                            onClick: async () => {
                                 const name = document.getElementById('newFandomNameInput').value.trim();
                                 const borderColor = document.getElementById('newFandomBorderColor').value;
                                 const dotColor = document.getElementById('newFandomDotColor').value;
@@ -2112,18 +2115,21 @@
                                 if (name) {
                                     const exists = appState.fandoms.find(f => f.name === name);
                                     if (!exists) {
-                                        appState.fandoms.push({
-                                            name,
-                                            borderColor,
-                                            dotColor,
-                                            creatorUid: appState.user.uid,
-                                            admins: [appState.user.uid]
-                                        });
-                                        saveLocal();
-                                        renderAll();
+                                        try {
+                                            await addDoc(collection(db, "fandoms"), {
+                                                name,
+                                                borderColor,
+                                                dotColor,
+                                                creatorUid: appState.user.uid,
+                                                admins: [appState.user.uid],
+                                                createdAt: serverTimestamp()
+                                            });
+                                            closeUmbrellaModal();
+                                        } catch (e) { alert("Erro ao criar fandom: " + e.message); }
+                                    } else {
+                                        alert("Já existe um fandom com esse nome!");
                                     }
                                 }
-                                closeUmbrellaModal();
                             }
                         }
                     ]
@@ -2136,7 +2142,7 @@
             const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
 
             let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeUmbrellaModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Administradores</button>` : '';
-            let deleteHtml = isCreatorOrAdmin ? `<button class="btn-danger-pill" style="width:100%; padding:10px;" onclick="closeUmbrellaModal(); confirmDeleteFandom('${activeFandomFilter}')">🗑️ Excluir Fandom</button>` : '';
+            let deleteHtml = isCreatorOrAdmin ? `<button class="btn-danger-pill" style="width:100%; padding:10px;" onclick="closeUmbrellaModal(); confirmDeleteFandom('${fandomObj.id}', '${activeFandomFilter}')">🗑️ Excluir Fandom</button>` : '';
 
             showUmbrellaModal({
                 title: `Opções • ${activeFandomFilter}`,
@@ -2171,8 +2177,8 @@
                         </div>
                         <div>
                             ${isAdmin ? 
-                                `<button class="btn-danger-pill" style="font-size:10px;" onclick="demoteAdmin('${fandomName}', '${uid}')">Remover</button>` : 
-                                `<button class="btn-pill-gold" style="font-size:10px;" onclick="promoteAdmin('${fandomName}', '${uid}')">Promover a Admin</button>`
+                                `<button class="btn-danger-pill" style="font-size:10px;" onclick="demoteAdmin('${fandomObj.id}', '${fandomName}', '${uid}')">Remover</button>` : 
+                                `<button class="btn-pill-gold" style="font-size:10px;" onclick="promoteAdmin('${fandomObj.id}', '${fandomName}', '${uid}')">Promover a Admin</button>`
                             }
                         </div>
                     </div>
@@ -2189,20 +2195,21 @@
             });
         };
 
-        window.promoteAdmin = function(fandomName, uid) {
+        window.promoteAdmin = async function(fandomId, fandomName, uid) {
             const fandomObj = appState.fandoms.find(f => f.name === fandomName);
             if (fandomObj) {
                 if (!fandomObj.admins) fandomObj.admins = [];
                 if (!fandomObj.admins.includes(uid)) {
                     fandomObj.admins.push(uid);
-                    saveLocal();
-                    renderAll();
-                    openManageAdminsModal(fandomName);
+                    try {
+                        await updateDoc(doc(db, "fandoms", fandomId), { admins: fandomObj.admins });
+                        openManageAdminsModal(fandomName);
+                    } catch (e) { alert("Erro ao promover: " + e.message); }
                 }
             }
         };
 
-        window.demoteAdmin = function(fandomName, uid) {
+        window.demoteAdmin = async function(fandomId, fandomName, uid) {
             const fandomObj = appState.fandoms.find(f => f.name === fandomName);
             if (fandomObj && fandomObj.admins) {
                 if (fandomObj.creatorUid === uid) {
@@ -2210,9 +2217,10 @@
                     return;
                 }
                 fandomObj.admins = fandomObj.admins.filter(id => id !== uid);
-                saveLocal();
-                renderAll();
-                openManageAdminsModal(fandomName);
+                try {
+                    await updateDoc(doc(db, "fandoms", fandomId), { admins: fandomObj.admins });
+                    openManageAdminsModal(fandomName);
+                } catch (e) { alert("Erro ao remover admin: " + e.message); }
             }
         };
 
@@ -2245,7 +2253,7 @@
             });
         };
 
-        window.confirmDeleteFandom = function (fandomName) {
+        window.confirmDeleteFandom = function (fandomId, fandomName) {
             showUmbrellaModal({
                 title: '🗑️ Excluir Fandom',
                 htmlBody: `Você realmente deseja apagar o fandom <strong>${fandomName}</strong>?`,
@@ -2254,11 +2262,13 @@
                     {
                         label: 'Sim, Apagar',
                         primary: true,
-                        onClick: () => {
-                            appState.fandoms = appState.fandoms.filter(f => f.name !== fandomName);
-                            delete appState.subgroups[fandomName];
-                            closeCurrentFandom();
-                            closeUmbrellaModal();
+                        onClick: async () => {
+                            try {
+                                await deleteDoc(doc(db, "fandoms", fandomId));
+                                delete appState.subgroups[fandomName];
+                                closeCurrentFandom();
+                                closeUmbrellaModal();
+                            } catch (e) { alert("Erro ao excluir fandom: " + e.message); }
                         }
                     }
                 ]
@@ -2343,7 +2353,7 @@
             return `
                 <article class="post-card-clean">
                     <div class="post-header">
-                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}', '${post.avatar}')" title="Visitar perfil e ouvir trilha sonora">
+                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}')" title="Visitar perfil e ouvir trilha sonora">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">
