@@ -113,7 +113,6 @@
             top: 0;
         }
 
-        /* BOTÃO DE PERFIL COM ONDULAÇÃO/PULSO QUANDO A MÚSICA ESTIVER ATIVA */
         .header-left-btn {
             position: relative;
             width: 38px;
@@ -929,7 +928,6 @@
 
         .lightbox-caption { margin-top: 12px; font-size: 13px; color: var(--gold-accent); text-align: center; }
 
-        /* PLAYER OCULTO QUE CONTINUA TOCANDO A MÚSICA EM SEGUNDO PLANO GLOBALMENTE */
         #globalAudioPlayerContainer {
             display: none;
         }
@@ -971,14 +969,14 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR UNIFICADA COM O BOTÃO DE PERFIL (COM PULSO) E CHAVE MESTRA -->
+    <!-- BARRA SUPERIOR COM DICA LIMPA *usuário E BOTÃO DE PERFIL COM PULSO -->
     <div class="unified-top-bar">
         <button class="header-left-btn playing" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil / Player Ativo">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
         <div class="search-balao-fininho">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário ou chave mestra" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
             <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
         </div>
 
@@ -1111,7 +1109,7 @@
         <!-- TELA 3: FANDOMS -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
-                <span class="section-title">Fandoms da Comunidade (Trancados)</span>
+                <span class="section-title">Fandoms da Comunidade</span>
                 <div style="display:flex; gap:6px;">
                     <button class="btn-pill-gold" onclick="openCreateFandomModal()">+ Adicionar Fandom</button>
                     <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
@@ -1273,7 +1271,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v29';
+        const LOCAL_KEY = 'umbrella_clean_state_v30';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1289,7 +1287,7 @@
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
-            unlockedFandoms: [],
+            unlockedFandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'], // Todos abertos por padrão para facilitar o teste com o André
             subgroups: {},
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
@@ -1758,17 +1756,21 @@
             document.getElementById('mediaPreviewStrip').style.display = 'none';
         };
 
-        // CHAVE MESTRA E BUSCA GLOBAL FUNCIONANDO NA BARRA SUPERIOR
+        // CHAVES SECRETAS / MESTRA FUNCIONANDO NA BARRA SUPERIOR SEM NENHUM TEXTO VISÍVEL
         window.executeGlobalSearch = function () {
             const input = document.getElementById('globalSearchInput');
             const val = input.value.trim();
             const cleanVal = val.toLowerCase();
 
+            // SENHA SECRETA DA CRIADORA / ANDRE / LUANA
             if (cleanVal === '*luanaeandrels' || cleanVal === '*luanaeandre' || cleanVal.includes('luana') || cleanVal.includes('andre')) {
                 input.value = '';
+                appState.unlockedFandoms = [...appState.fandoms]; // Libera todos os Fandoms automaticamente
+                saveLocal();
+                renderAll();
                 showUmbrellaModal({
-                    title: '✨ Chave Mestra Ativada',
-                    htmlBody: '<strong>Painel de Administradora:</strong> Acesso total liberado para gerenciar solicitações, aprovar entradas nos Fandoms e apagar publicações ou comentários ofensivos.',
+                    title: '✨ Acesso Mestre Ativado',
+                    htmlBody: '<strong>Status:</strong> Todos os Fandoms foram destravados e o painel de moderação de comentários e aprovações está totalmente ativo!',
                     buttons: [{ label: 'Abrir Painel Mestre', primary: true, onClick: openMasterAdminPanel }]
                 });
                 return;
@@ -1852,7 +1854,7 @@
                 }
 
                 if (isFandomView && !activeFandomFilter) {
-                    showUmbrellaModal({ title: 'Selecione um Fandom', htmlBody: 'Clique em um Fandom aberto para postar nele.' });
+                    showUmbrellaModal({ title: 'Selecione um Fandom', htmlBody: 'Clique em um Fandom para postar nele.' });
                     return;
                 }
 
@@ -2114,6 +2116,7 @@
                                 const val = document.getElementById('newFandomNameInput').value.trim();
                                 if (val && !appState.fandoms.includes(val)) {
                                     appState.fandoms.push(val);
+                                    appState.unlockedFandoms.push(val);
                                     saveLocal();
                                     renderAll();
                                 }
@@ -2153,7 +2156,7 @@
                 showUmbrellaModal({
                     title: `Fandom ${fandomName} Trancado 🔒`,
                     htmlBody: `
-                        <p style="margin-bottom:10px;">Este fandom está fechado por padrão. Deseja enviar uma solicitação de acesso para a administradora?</p>
+                        <p style="margin-bottom:10px;">Este fandom está fechado. Deseja enviar uma solicitação de acesso ou usar a chave mestra na barra superior?</p>
                     `,
                     buttons: [
                         { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
@@ -2456,4 +2459,4 @@
         initFirebaseSync();
     </script>
 </body>
-</html>
+    </html>
