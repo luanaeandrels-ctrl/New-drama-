@@ -641,7 +641,7 @@ border-radius:999px; display:inline-block;}
           <button onclick="atualizarDesafioDoDiaGlobal()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; width: 100%;">Atualizar</button>
         </div>
 
-        <!-- PAINEL UNIFICADO DO DESAFIO (BLOCO ÚNICO FLUIDO) -->
+        <!-- PAINEL UNIFICADO DO DESAFIO (BLOCO ÚNICO FLUIDO COM BUSCA AUTOMÁTICA) -->
         <div id="bloco-envio-desafio-esq" style="margin-bottom: 12px;"></div>
 
         <button onclick="abrirDesafioNoCentro()" class="btn-tema-bg" style="width: 100%; margin-bottom: 14px; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Ver Envio das Colegas</button>
@@ -704,11 +704,7 @@ border-radius:999px; display:inline-block;}
         </div>
 
         <!-- MURAL DO FEED (FLUIDO E LIVRE) -->
-        <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
-          <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">
-            Carregando publicações...
-          </div>
-        </div>
+        <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;"></div>
       </div>
     </div>
 
@@ -1210,28 +1206,22 @@ function renderizarCardDesafioEsquerda() {
       </div>
     `;
   } else {
-    // BLOCO ÚNICO INTEGRADO COM BOTÃO REDONDO MINIMALISTA (SEM CAIXA QUADRADA DE WINDOWS XP)
+    // BLOCO ÚNICO INTEGRADO: CÂMERA À ESQUERDA, CAMPO DE DIGITAÇÃO NO CENTRO E BOTÃO DE ENVIAR À DIREITA
     htmlConteudo = `
       <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid rgba(243,217,139,0.3);">
         
-        <!-- BUSCA E SELEÇÃO DO BIAS DOS 1 A 1000 -->
+        <!-- BUSCA E SELEÇÃO DO BIAS COM ENCONTRAR AUTOMÁTICO PELO BANCO DE DADOS -->
         <div style="position: relative;">
-          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Selecionar Bias (1 a 1000):</label>
-          <input type="text" id="inputBuscaBiasUnificado" placeholder="Digite o nome ou número (ex: 1)..." oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
+          <input type="text" id="inputBuscaBiasUnificado" placeholder="Digite o nome ou número do bias..." oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="padding: 8px 12px; font-size: 0.8rem; background: rgba(0,0,0,0.4); border-radius: 999px;">
           <div id="sugestoes-bias-unificado" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 140px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
 
-        <!-- COMENTÁRIO / CONTEXTO DO DESAFIO -->
-        <div style="position: relative;">
-          <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Contexto do Desafio:</label>
-          <textarea id="textoDesafioUnificado" placeholder="Ex: Ele segurando o guarda-chuva na série tal..." style="border-radius: 8px; resize: none; height: 50px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
-        </div>
-
-        <!-- BOTÃO REDONDO MINIMALISTA DE FOTO + ENVIO -->
-        <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: 2px;">
+        <!-- LINHA UNIFICADA COM CÂMERA À ESQUERDA, TEXTO NO CENTRO E BOTÃO DE ENVIAR À DIREITA -->
+        <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
           
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <label for="inputFotoDesafioUnificado" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid #f3d98b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: all 0.2s;" title="Escolher Foto do Bias" id="label-circulo-foto-desafio">
+          <!-- CÂMERA / FOTO À ESQUERDA -->
+          <div style="display: flex; align-items: center; flex-shrink: 0;">
+            <label for="inputFotoDesafioUnificado" style="width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 1px solid #f3d98b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); transition: all 0.2s;" title="Câmera / Foto" id="label-circulo-foto-desafio">
               <span style="font-size: 1rem; color: #f3d98b;">📷</span>
             </label>
             <input type="file" id="inputFotoDesafioUnificado" accept="image/*" style="display: none;" onchange="processarFotoDesafioUnificado(this)">
@@ -1239,11 +1229,14 @@ function renderizarCardDesafioEsquerda() {
             <div id="preview-mini-container" style="display: none; width: 38px; height: 38px; border-radius: 50%; overflow: hidden; border: 2px solid #f3d98b; cursor: pointer;" onclick="abrirFotoPinterest(window.fotoBiasBase64Temp)">
               <img id="preview-mini-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
-
-            <span id="label-texto-status-foto" style="font-size: 0.75rem; color: #aaa;">Foto do Bias</span>
           </div>
 
-          <button onclick="validarECruzarPixelsDesafioUnificado()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 8px; padding: 8px 16px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Enviar Desafio</button>
+          <!-- CAMPO DE DIGITAÇÃO NO CENTRO -->
+          <input type="text" id="textoDesafioUnificado" placeholder="Escreva sua legenda..." style="flex: 1; padding: 8px 12px; font-size: 0.8rem; background: rgba(0,0,0,0.4); color: #fff; border-radius: 999px; border: 1px solid rgba(255,255,255,0.25);">
+
+          <!-- BOTÃO DE ENVIAR À DIREITA -->
+          <button onclick="validarECruzarPixelsDesafioUnificado()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 999px; padding: 8px 14px; font-weight: bold; cursor: pointer; font-size: 0.75rem; white-space: nowrap; flex-shrink: 0;">Enviar</button>
+
         </div>
 
       </div>
@@ -1265,12 +1258,10 @@ function processarFotoDesafioUnificado(input) {
       let labelCirculo = document.getElementById('label-circulo-foto-desafio');
       let previewMini = document.getElementById('preview-mini-container');
       let miniImg = document.getElementById('preview-mini-img');
-      let statusTxt = document.getElementById('label-texto-status-foto');
 
       if (labelCirculo) labelCirculo.style.display = 'none';
       if (miniImg) miniImg.src = base64Enviada;
       if (previewMini) previewMini.style.display = 'block';
-      if (statusTxt) { statusTxt.innerText = "Foto anexada!"; statusTxt.style.color = "#4caf50"; }
     });
   }
 }
@@ -2006,7 +1997,7 @@ function comentarGavetaMobile() {
     const q = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
     onSnapshot(q, (snapshot) => {
       if (snapshot.empty) {
-        mural.innerHTML = `<div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">Nenhuma publicação no abrigo ainda.</div>`;
+        mural.innerHTML = "";
         return;
       }
 
@@ -2027,7 +2018,7 @@ function comentarGavetaMobile() {
     try {
       const querySnapshot = await getDocs(collection(db, "posts"));
       if (querySnapshot.empty) {
-        mural.innerHTML = `<div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">Nenhuma publicação no abrigo ainda.</div>`;
+        mural.innerHTML = "";
         return;
       }
       mural.innerHTML = "";
