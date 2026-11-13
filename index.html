@@ -103,7 +103,7 @@
             top: 0;
         }
 
-        /* BOLINHA DO PERFIL COM ANIMAÇÃO SPOTIFY QUANDO TOCA MÚSICA */
+        /* BOLINHA DO PERFIL COM ANIMAÇÃO SPOTIFY */
         .header-left-btn {
             position: relative;
             width: 38px;
@@ -467,19 +467,6 @@
             box-shadow: 0 0 8px currentColor;
         }
 
-        .fandom-card-settings-btn {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 14px;
-            cursor: pointer;
-            padding: 2px 6px;
-        }
-        .fandom-card-settings-btn:hover { color: var(--gold-accent); }
-
         .feed-list { display: flex; flex-direction: column; gap: 14px; }
 
         .empty-state-box {
@@ -490,80 +477,73 @@
             line-height: 1.5;
         }
 
-        .post-card { padding: 16px; }
+        /* POSTAGEM LIMPA SEM CAIXA PESADA EM VOLTA */
+        .post-card-clean {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.15);
+            margin-bottom: 10px;
+        }
 
         .post-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .post-author-box { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 
         .post-avatar {
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
             object-fit: cover;
         }
 
-        .post-author-name { font-size: 13.5px; font-weight: 600; color: var(--gold-accent); display: flex; align-items: center; gap: 6px; }
+        .post-author-name { font-size: 13px; font-weight: 600; color: var(--gold-accent); display: flex; align-items: center; gap: 6px; }
         .post-author-name:hover { text-decoration: underline; }
-        .post-meta { font-size: 11px; color: var(--text-muted); }
+        .post-meta { font-size: 10.5px; color: var(--text-muted); }
 
         .admin-badge {
-            font-size: 9.5px;
+            font-size: 9px;
             background: rgba(251, 191, 36, 0.2);
             border: 1px solid var(--gold-border);
             color: var(--gold-accent);
-            padding: 1px 6px;
+            padding: 1px 5px;
             border-radius: 99px;
             font-weight: 700;
         }
 
-        .post-tag {
-            font-size: 10px;
-            padding: 3px 9px;
-            border-radius: 99px;
-            border: 1px solid var(--gold-border);
-            color: var(--gold-accent);
-            background: rgba(251, 191, 36, 0.1);
-        }
-
-        .post-text { font-size: 14px; line-height: 1.5; margin-bottom: 10px; word-break: break-word; }
+        .post-text { font-size: 13.5px; line-height: 1.5; margin-bottom: 8px; word-break: break-word; color: var(--text-main); }
 
         .post-media {
             width: 100%;
-            max-height: 420px;
+            max-height: 400px;
             object-fit: cover;
-            border-radius: 14px;
+            border-radius: 12px;
             border: 1px solid var(--gold-border);
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             cursor: zoom-in;
             display: block;
         }
 
-        /* ESTILO FACEBOOK DE COMENTÁRIOS NATIVOS EM FLUXO CONTÍNUO */
-        .comments-section-fb {
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(251, 191, 36, 0.15);
+        /* COMENTÁRIOS E AÇÕES LIMPOS */
+        .comments-section-clean {
+            margin-top: 6px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
         }
 
-        .comment-item-fb {
+        .comment-item-clean {
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 6px 10px;
+            border-radius: 10px;
             display: flex;
-            align-items: flex-start;
             justify-content: space-between;
-            gap: 8px;
-            font-size: 12.5px;
-            background: rgba(255, 255, 255, 0.04);
-            padding: 8px 12px;
-            border-radius: 12px;
+            align-items: center;
         }
 
         .comment-input-row {
@@ -572,41 +552,39 @@
             margin-top: 6px;
         }
 
-        .comment-input-fb {
+        .comment-input-clean {
             flex: 1;
-            background: rgba(10, 14, 28, 0.5);
+            background: rgba(10, 14, 28, 0.4);
             border: 1px solid var(--gold-border);
             border-radius: 99px;
-            padding: 6px 14px;
+            padding: 5px 12px;
             color: var(--text-main);
-            font-size: 12px;
+            font-size: 11.5px;
             outline: none;
         }
 
-        .post-actions {
+        .post-actions-clean {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding-top: 8px;
-            border-top: 1px solid rgba(251, 191, 36, 0.15);
-            position: relative;
+            padding-top: 4px;
         }
 
         .like-umbrella-btn {
             display: flex;
             align-items: center;
-            gap: 7px;
+            gap: 6px;
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 2px 6px;
         }
 
         .umbrella-icon-css {
-            font-size: 18px;
+            font-size: 16px;
             transition: transform 0.2s ease, filter 0.2s ease;
         }
 
@@ -616,46 +594,6 @@
         }
 
         .like-umbrella-btn.liked span { color: var(--gold-accent); }
-
-        .dots-menu-btn {
-            background: transparent;
-            border: none;
-            color: var(--text-muted);
-            font-size: 19px;
-            letter-spacing: 2px;
-            cursor: pointer;
-            padding: 2px 10px;
-        }
-
-        .dots-dropdown {
-            position: absolute;
-            right: 0;
-            bottom: 36px;
-            z-index: 30;
-            min-width: 190px;
-            padding: 6px;
-            display: none;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .dots-dropdown.open { display: flex; }
-
-        .dots-dropdown button {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 12.5px;
-            text-align: left;
-            padding: 9px 12px;
-            border-radius: 12px;
-            cursor: pointer;
-        }
-
-        .dots-dropdown button:hover {
-            background: rgba(251, 191, 36, 0.15);
-            color: var(--gold-accent);
-        }
 
         .floating-composer-wrapper {
             position: fixed;
@@ -1152,7 +1090,7 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS (PRIVADOS E COM GESTÃO DE ADMS) -->
+        <!-- TELA 3: FANDOMS (LISTA DE ENTRADA) -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms Particulares</span>
@@ -1163,7 +1101,25 @@
             </div>
 
             <div class="fandoms-grid-container" id="fandomsGridContainer"></div>
-            <div id="selectedFandomFeed" class="feed-list"></div>
+        </section>
+
+        <!-- TELA 3.1: DENTRO DO FANDOM (PORTA ABERTA) -->
+        <section class="view-section" id="view-inside-fandom">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="font-size:16px;">🔒</span>
+                    <div>
+                        <span id="insideFandomTitle" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Fandom</span>
+                        <span id="insideFandomActiveCount" style="font-size:11px; color:var(--text-muted); display:block;">• Grupo Ativo</span>
+                    </div>
+                </div>
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <button class="dots-menu-btn" onclick="openFandomOptionsMenu()" title="Opções">•••</button>
+                    <button onclick="closeCurrentFandom()" style="background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); color:#fda4af; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:700;" title="Fechar Fandom">✕</button>
+                </div>
+            </div>
+
+            <div class="feed-list" id="insideFandomFeedList"></div>
         </section>
 
         <!-- TELA 4: AMIGOS -->
@@ -1292,7 +1248,9 @@
             query,
             orderBy,
             updateDoc,
-            serverTimestamp
+            serverTimestamp,
+            setDoc,
+            getDoc
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import {
             getStorage,
@@ -1317,7 +1275,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v35';
+        const LOCAL_KEY = 'umbrella_clean_state_v37';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1334,7 +1292,7 @@
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
-            fandoms: [], // { name, borderColor, dotColor, creatorUid, admins: [uid] }
+            fandoms: [],
             subgroups: {},
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
@@ -1378,13 +1336,30 @@
             });
         }
 
-        onAuthStateChanged(auth, (user) => {
+        onAuthStateChanged(auth, async (user) => {
             if (user) {
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
                 appState.user.name = user.displayName || 'Usuário Umbrella';
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
+
+                // Sincroniza perfil com Firestore para salvar a música do usuário
+                const userRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userRef);
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    if (data.audioUrl) appState.user.audioUrl = data.audioUrl;
+                    if (data.audioTitle) appState.user.audioTitle = data.audioTitle;
+                } else {
+                    await setDoc(userRef, {
+                        name: appState.user.name,
+                        avatar: appState.user.avatar,
+                        audioUrl: appState.user.audioUrl,
+                        audioTitle: appState.user.audioTitle
+                    }, { merge: true });
+                }
+
                 saveLocal();
                 applyUserTheme();
                 renderAll();
@@ -1416,9 +1391,7 @@
                 applyUserTheme();
                 closeAuthGate();
                 renderAll();
-            } catch (error) {
-                alert('Erro no login com Google: ' + error.message);
-            }
+            } catch (error) { alert('Erro no login com Google: ' + error.message); }
         };
 
         window.showManualRegisterForm = function () {
@@ -1526,6 +1499,7 @@
             }
         };
 
+        // PERFIL & TRILHA SONORA DO USUÁRIO
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1542,7 +1516,7 @@
             const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
 
             showUmbrellaModal({
-                title: `Perfil & Player de ${appState.user.name}`,
+                title: `Perfil & Música de ${appState.user.name}`,
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:14px;">
                         <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
@@ -1559,22 +1533,15 @@
                         <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
                         <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
                     </div>
-                    <div class="form-group">
-                        <label class="form-label">Cor de Acento do Tema</label>
-                        <div style="display:flex; gap:10px; align-items:center;">
-                            <input type="color" id="obThemeColor" value="${appState.user.themeAccentColor || '#060a1e'}" style="width:45px; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
-                            <span style="font-size:12px; color:var(--text-muted);">Personalize a cor base</span>
-                        </div>
-                    </div>
 
                     <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Trilha Sonora (Estilo Spotify)</label>
-                        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Escolha uma trilha sonora abaixo:</p>
+                        <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Trilha Sonora do Perfil</label>
+                        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Quem visitar seu perfil ou post vai ouvir esta música:</p>
                         ${musicOptionsHtml}
 
                         <div style="display:flex; gap:8px; margin-top:10px;">
-                            <button class="btn-gold" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pausar Música' : '▶️ Retomar Música'}</button>
-                            <button class="btn-danger-pill" onclick="stopGlobalAudio()">⏹️ Desligar Som</button>
+                            <button class="btn-gold" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pausar' : '▶️ Tocar'}</button>
+                            <button class="btn-danger-pill" onclick="stopGlobalAudio()">⏹️ Desligar</button>
                         </div>
                     </div>
 
@@ -1587,17 +1554,16 @@
                     {
                         label: 'Salvar Alterações',
                         primary: true,
-                        onClick: () => {
+                        onClick: async () => {
                             const name = document.getElementById('obName').value.trim();
                             if (name) appState.user.name = name;
-                            const themeColor = document.getElementById('obThemeColor').value;
-                            if (themeColor) appState.user.themeAccentColor = themeColor;
 
                             const avatarInput = document.getElementById('obAvatarFile');
                             if (avatarInput.files && avatarInput.files[0]) {
                                 const reader = new FileReader();
-                                reader.onload = (e) => {
+                                reader.onload = async (e) => {
                                     appState.user.avatar = e.target.result;
+                                    await saveUserDataToFirestore();
                                     saveLocal();
                                     applyUserTheme();
                                     renderAll();
@@ -1605,6 +1571,7 @@
                                 };
                                 reader.readAsDataURL(avatarInput.files[0]);
                             } else {
+                                await saveUserDataToFirestore();
                                 saveLocal();
                                 applyUserTheme();
                                 renderAll();
@@ -1616,25 +1583,39 @@
             });
         };
 
-        window.selectAndPlayPresetMusic = function(url, title) {
+        async function saveUserDataToFirestore() {
+            if (!appState.user.uid) return;
+            try {
+                await setDoc(doc(db, "users", appState.user.uid), {
+                    name: appState.user.name,
+                    avatar: appState.user.avatar,
+                    audioUrl: appState.user.audioUrl,
+                    audioTitle: appState.user.audioTitle
+                }, { merge: true });
+            } catch (e) {
+                console.error("Erro ao salvar dados do usuário no Firestore:", e);
+            }
+        }
+
+        window.selectAndPlayPresetMusic = async function(url, title) {
             appState.user.audioUrl = url;
             appState.user.audioTitle = title;
+            await saveUserDataToFirestore();
             saveLocal();
             playAudioUrl(url);
             closeUmbrellaModal();
-            alert(`Tocando agora: ${title}`);
+            alert(`Trilha sonora definida e tocando: ${title}`);
         };
 
         function playAudioUrl(url) {
             const audioEl = document.getElementById('globalActiveAudio');
             const profileBtn = document.getElementById('headerProfileBtn');
+            if (!url) return;
             audioEl.src = url;
             audioEl.loop = true;
             audioEl.play().then(() => {
                 profileBtn.classList.add('playing');
-            }).catch(e => {
-                console.log("Autoplay impedido pelo navegador", e);
-            });
+            }).catch(e => { console.log("Autoplay bloqueado pelo navegador", e); });
         }
 
         window.toggleGlobalAudioPlay = function() {
@@ -1661,8 +1642,33 @@
             audioEl.currentTime = 0;
             profileBtn.classList.remove('playing');
             appState.user.audioUrl = '';
+            saveUserDataToFirestore();
             saveLocal();
             closeUmbrellaModal();
+        };
+
+        // AO CLICAR NA FOTO OU NOME DE ALGUÉM, TOCA A MÚSICA DELE (VISITAR PERFIL)
+        window.visitUserProfile = async function(authorUid, authorName, defaultAvatar) {
+            if (!authorUid) {
+                alert(`Perfil de ${authorName}`);
+                return;
+            }
+            try {
+                const userDoc = await getDoc(doc(db, "users", authorUid));
+                if (userDoc.exists()) {
+                    const uData = userDoc.data();
+                    if (uData.audioUrl) {
+                        playAudioUrl(uData.audioUrl);
+                        alert(`🎧 Entrando no perfil de ${authorName}. Tocando trilha sonora: ${uData.audioTitle || 'Música do Perfil'}`);
+                    } else {
+                        alert(`Perfil de ${authorName} (Sem trilha sonora ativa no momento).`);
+                    }
+                } else {
+                    alert(`Perfil de ${authorName}`);
+                }
+            } catch (e) {
+                alert(`Perfil de ${authorName}`);
+            }
         };
 
         window.openMediaActionSheet = function () {
@@ -1851,9 +1857,7 @@
                 } else {
                     showUmbrellaModal({ title: 'Busca Umbrella', htmlBody: `Nenhuma publicação encontrada para <strong>${val}</strong>.` });
                 }
-            } else if (val === '') {
-                renderAll();
-            }
+            } else if (val === '') { renderAll(); }
         };
 
         window.switchView = function (viewName) {
@@ -1868,7 +1872,9 @@
             } else if (viewName === 'desafio') {
                 composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
             } else if (viewName === 'fandom') {
-                composerInput.placeholder = activeFandomFilter ? `Escreva no Fandom ${activeFandomFilter} (Privado)...` : "Selecione um Fandom para escrever...";
+                composerInput.placeholder = "Selecione um Fandom para abrir...";
+            } else if (viewName === 'inside-fandom') {
+                composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
             } else if (viewName === 'aconchego') {
                 composerInput.placeholder = "Escreva no seu Aconchego pessoal...";
             } else if (viewName === 'amigos') {
@@ -1912,15 +1918,15 @@
 
                 const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
                 const isAconchegoView = document.getElementById('view-aconchego').classList.contains('active');
-                const isFandomView = document.getElementById('view-fandom').classList.contains('active');
+                const isInsideFandomView = document.getElementById('view-inside-fandom').classList.contains('active');
 
                 if (isChallengeView && !appState.bias.id) {
                     showUmbrellaModal({ title: 'Bias Obrigatório', htmlBody: 'Cadastre seu Bias representante antes de postar no Desafio.' });
                     return;
                 }
 
-                if (isFandomView && !activeFandomFilter) {
-                    showUmbrellaModal({ title: 'Selecione um Fandom', htmlBody: 'Clique em um Fandom para postar nele.' });
+                if (isInsideFandomView && !activeFandomFilter) {
+                    showUmbrellaModal({ title: 'Fandom não selecionado', htmlBody: 'Abra um Fandom primeiro.' });
                     return;
                 }
 
@@ -1935,7 +1941,7 @@
                         mediaType = currentAttachedFileObj.type.startsWith('video/') ? 'video' : 'image';
                     }
 
-                    const targetFandom = isFandomView ? activeFandomFilter : 'Geral';
+                    const targetFandom = isInsideFandomView ? activeFandomFilter : 'Geral';
 
                     await addDoc(collection(db, "posts"), {
                         author: appState.user.name,
@@ -2010,14 +2016,6 @@
             });
         };
 
-        window.toggleDotsMenu = function (postId) {
-            document.querySelectorAll('.dots-dropdown').forEach(el => {
-                if (el.id !== 'dots-' + postId) el.classList.remove('open');
-            });
-            const menu = document.getElementById('dots-' + postId);
-            if (menu) menu.classList.toggle('open');
-        };
-
         window.replyToUserInComment = function (authorName) {
             const input = document.getElementById('mainComposerInput');
             if (input) {
@@ -2027,7 +2025,6 @@
             }
         };
 
-        // Comentários em fluxo contínuo direto no feed estilo Facebook
         window.submitInlineComment = async function (postId) {
             requireAuthForAction(async () => {
                 const input = document.getElementById(`inlineCommentInput_${postId}`);
@@ -2052,20 +2049,6 @@
             try {
                 await updateDoc(doc(db, "posts", postId), { comments });
             } catch (e) { alert("Erro ao apagar comentário: " + e.message); }
-        };
-
-        // FANDOM PRIVADO: Sem compartilhamento externo, apenas para o grupo
-        window.shareUmbrellaPost = async function (postId) {
-            requireAuthForAction(() => {
-                toggleDotsMenu(postId);
-                const post = postsFromFirebase.find(p => p.id === postId);
-                if (!post) return;
-                if (post.fandom && post.fandom !== 'Geral') {
-                    showUmbrellaModal({ title: 'Fandom Privado', htmlBody: 'Conteúdos dentro dos Fandoms particulares não podem ser compartilhados para fora.' });
-                    return;
-                }
-                // Se for do feed geral, permite compartilhar
-            });
         };
 
         window.openNotificationsModal = function () {
@@ -2134,7 +2117,7 @@
                                             borderColor,
                                             dotColor,
                                             creatorUid: appState.user.uid,
-                                            admins: [appState.user.uid] // Criador começa como admin
+                                            admins: [appState.user.uid]
                                         });
                                         saveLocal();
                                         renderAll();
@@ -2148,18 +2131,33 @@
             });
         };
 
+        window.openFandomOptionsMenu = function () {
+            const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
+            const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
+
+            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeUmbrellaModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Administradores</button>` : '';
+            let deleteHtml = isCreatorOrAdmin ? `<button class="btn-danger-pill" style="width:100%; padding:10px;" onclick="closeUmbrellaModal(); confirmDeleteFandom('${activeFandomFilter}')">🗑️ Excluir Fandom</button>` : '';
+
+            showUmbrellaModal({
+                title: `Opções • ${activeFandomFilter}`,
+                htmlBody: `
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Gerencie as configurações deste espaço particular:</p>
+                    ${adminHtml}
+                    <button class="btn-pill-gold" style="width:100%; margin-bottom:8px;" onclick="closeUmbrellaModal(); openCreateSubgroupModal('${activeFandomFilter}')">✨ Criar Subgrupo</button>
+                    ${deleteHtml}
+                `,
+                buttons: [{ label: 'Fechar', primary: false, onClick: closeUmbrellaModal }]
+            });
+        };
+
         window.openManageAdminsModal = function (fandomName) {
             const fandomObj = appState.fandoms.find(f => f.name === fandomName);
             if (!fandomObj) return;
 
-            // Pega todos os autores que já postaram ou participam
             const membersMap = {};
             postsFromFirebase.filter(p => p.fandom === fandomName).forEach(p => {
-                if (p.authorUid && p.author) {
-                    membersMap[p.authorUid] = p.author;
-                }
+                if (p.authorUid && p.author) { membersMap[p.authorUid] = p.author; }
             });
-            // Garante o usuário atual
             if (appState.user.uid) membersMap[appState.user.uid] = appState.user.name;
 
             let membersHtml = '';
@@ -2173,7 +2171,7 @@
                         </div>
                         <div>
                             ${isAdmin ? 
-                                `<button class="btn-danger-pill" style="font-size:10px;" onclick="demoteAdmin('${fandomName}', '${uid}')">Remover Admin</button>` : 
+                                `<button class="btn-danger-pill" style="font-size:10px;" onclick="demoteAdmin('${fandomName}', '${uid}')">Remover</button>` : 
                                 `<button class="btn-pill-gold" style="font-size:10px;" onclick="promoteAdmin('${fandomName}', '${uid}')">Promover a Admin</button>`
                             }
                         </div>
@@ -2182,10 +2180,10 @@
             }
 
             showUmbrellaModal({
-                title: `Gerenciar Administradores • ${fandomName}`,
+                title: `Administradores • ${fandomName}`,
                 htmlBody: `
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Promova membros a administradores após conversar com eles:</p>
-                    <div style="max-height:220px; overflow-y:auto;">${membersHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhum outro membro no fandom ainda.</p>'}</div>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Promova membros a administradores após conversa:</p>
+                    <div style="max-height:220px; overflow-y:auto;">${membersHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhum membro ativo ainda.</p>'}</div>
                 `,
                 buttons: [{ label: 'Concluir', primary: true, onClick: closeUmbrellaModal }]
             });
@@ -2218,6 +2216,35 @@
             }
         };
 
+        window.openCreateSubgroupModal = function (fandomName) {
+            showUmbrellaModal({
+                title: `Criar Subgrupo em ${fandomName}`,
+                htmlBody: `
+                    <div class="form-group">
+                        <label class="form-label">Nome do Subgrupo</label>
+                        <input type="text" id="subGroupNameInput" class="glass-input" placeholder="Ex: Fotos e Memes">
+                    </div>
+                `,
+                buttons: [
+                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                    {
+                        label: 'Criar Subgrupo',
+                        primary: true,
+                        onClick: () => {
+                            const subName = document.getElementById('subGroupNameInput').value.trim();
+                            if (subName) {
+                                if (!appState.subgroups[fandomName]) appState.subgroups[fandomName] = [];
+                                appState.subgroups[fandomName].push(subName);
+                                saveLocal();
+                                alert(`Subgrupo "${subName}" criado com sucesso!`);
+                            }
+                            closeUmbrellaModal();
+                        }
+                    }
+                ]
+            });
+        };
+
         window.confirmDeleteFandom = function (fandomName) {
             showUmbrellaModal({
                 title: '🗑️ Excluir Fandom',
@@ -2230,9 +2257,7 @@
                         onClick: () => {
                             appState.fandoms = appState.fandoms.filter(f => f.name !== fandomName);
                             delete appState.subgroups[fandomName];
-                            activeFandomFilter = null;
-                            saveLocal();
-                            renderAll();
+                            closeCurrentFandom();
                             closeUmbrellaModal();
                         }
                     }
@@ -2242,33 +2267,13 @@
 
         window.selectFandom = function (fandomName) {
             activeFandomFilter = fandomName;
-            const filtered = postsFromFirebase.filter(p => p.fandom === fandomName);
-            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
-            const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
+            document.getElementById('insideFandomTitle').textContent = fandomName;
+            switchView('inside-fandom');
+        };
 
-            const container = document.getElementById('selectedFandomFeed');
-            let html = `
-                <div class="glass-panel" style="padding:14px; margin-bottom:12px;">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <div>
-                            <span style="font-size:14px; color:var(--gold-accent); font-weight:700;">🔒 Fandom Privado: ${fandomName}</span>
-                            <p style="font-size:11px; color:var(--text-muted);">Espaço exclusivo e particular do grupo.</p>
-                        </div>
-                        <div style="display:flex; gap:6px;">
-                            ${isCreatorOrAdmin ? `<button class="btn-pill-gold" onclick="openManageAdminsModal('${fandomName}')">🛡️ Adms</button>` : ''}
-                            <button class="btn-danger-pill" onclick="confirmDeleteFandom('${fandomName}')">Excluir</button>
-                            <button class="btn-pill-gold" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Fechar</button>
-                        </div>
-                    </div>
-                </div>
-            `;
-
-            if (filtered.length === 0) {
-                html += `<div class="glass-panel empty-state-box">Este fandom está privadamente silencioso. Compartilhe a primeira foto linda que você achou!</div>`;
-            } else {
-                html += filtered.map(p => renderPostCardHTML(p, false, fandomName)).join('');
-            }
-            container.innerHTML = html;
+        window.closeCurrentFandom = function () {
+            activeFandomFilter = null;
+            switchView('fandom');
         };
 
         function openMasterAdminPanel() {
@@ -2307,21 +2312,16 @@
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
-            if (appState.user.themeAccentColor) {
-                document.documentElement.style.setProperty('--theme-color-accent', appState.user.themeAccentColor);
-            }
             if (appState.user.audioUrl) {
                 playAudioUrl(appState.user.audioUrl);
             }
         }
 
-        // Renderiza post com comentários visíveis diretamente no fluxo (Estilo Facebook sem pop-up)
-        function renderPostCardHTML(post, isAconchegoTab = false, currentFandomContext = null) {
+        function renderPostCardHTML(post, isAconchegoTab = false) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
 
-            // Verifica se o autor é admin neste fandom
             let isAdmin = false;
             if (post.fandom && post.fandom !== 'Geral') {
                 const fandomObj = appState.fandoms.find(f => f.name === post.fandom);
@@ -2331,55 +2331,46 @@
             }
 
             const comments = post.comments || [];
-            // Mostra os comentários em fluxo contínuo
             const commentsHtml = comments.map((c, idx) => `
-                <div class="comment-item-fb">
+                <div class="comment-item-clean">
                     <span style="flex:1;">${c}</span>
-                    <button class="btn-danger-pill" style="font-size:9px; padding:1px 5px;" onclick="confirmDeleteComment('${post.id}', ${idx})">✕</button>
+                    <button class="btn-danger-pill" style="font-size:8px; padding:1px 4px;" onclick="confirmDeleteComment('${post.id}', ${idx})">✕</button>
                 </div>
             `).join('');
 
             const showDelete = (isAconchegoTab || post.fandom !== 'Geral') && appState.user.loggedIn && post.author === appState.user.name;
 
             return `
-                <article class="glass-panel post-card">
+                <article class="post-card-clean">
                     <div class="post-header">
-                        <div class="post-author-box" onclick="replyToUserInComment('${post.author}')">
+                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}', '${post.avatar}')" title="Visitar perfil e ouvir trilha sonora">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">
                                     ${post.author}
                                     ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
                                 </div>
-                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)}</div>
+                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)} (🎵 Ouvir perfil)</div>
                             </div>
                         </div>
-                        <div style="display:flex; align-items:center; gap:8px;">
-                            <span class="post-tag">${post.isChallenge ? 'Votação' : (post.isAconchego ? 'Aconchego' : post.fandom)}</span>
-                            ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar Publicação">✕</button>` : ''}
-                        </div>
+                        ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar">✕</button>` : ''}
                     </div>
 
                     ${post.text ? `<p class="post-text">${post.text}</p>` : ''}
                     ${mediaHtml}
 
-                    <div class="post-actions">
+                    <div class="post-actions-clean">
                         <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
                             <span class="umbrella-icon-css">☔</span>
                             <span>${post.likes || 0}</span>
                         </button>
-                        <button class="dots-menu-btn" onclick="toggleDotsMenu('${post.id}')">•••</button>
-                        <div class="glass-panel dots-dropdown" id="dots-${post.id}">
-                            ${post.fandom === 'Geral' ? `<button onclick="shareUmbrellaPost('${post.id}')">☔ Compartilhar umbrella</button>` : `<button disabled style="opacity:0.5; cursor:not-allowed;">🔒 Fandom Privado</button>`}
-                        </div>
                     </div>
 
-                    <!-- COMENTÁRIOS NATIVOS EM FLUXO CONTÍNUO (SEM POP-UP) -->
-                    <div class="comments-section-fb">
+                    <div class="comments-section-clean">
                         ${commentsHtml}
                         <div class="comment-input-row">
-                            <input type="text" id="inlineCommentInput_${post.id}" class="comment-input-fb" placeholder="Escreva um comentário (use * para marcar)..." onkeypress="if(event.key==='Enter') submitInlineComment('${post.id}')">
-                            <button class="btn-pill-gold" style="padding:4px 10px; font-size:11px;" onclick="submitInlineComment('${post.id}')">Enviar</button>
+                            <input type="text" id="inlineCommentInput_${post.id}" class="comment-input-clean" placeholder="Responder..." onkeypress="if(event.key==='Enter') submitInlineComment('${post.id}')">
+                            <button class="btn-pill-gold" style="padding:3px 8px; font-size:10.5px;" onclick="submitInlineComment('${post.id}')">Enviar</button>
                         </div>
                     </div>
                 </article>
@@ -2425,6 +2416,12 @@
                         </div>
                     `;
                 }).join('');
+            }
+
+            if (activeFandomFilter) {
+                const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
+                const container = document.getElementById('insideFandomFeedList');
+                container.innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p, false)).join('') : `<div class="empty-state-box">Este fandom está privadamente silencioso. Compartilhe a primeira foto linda que você achou!</div>`;
             }
 
             const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && !p.isAconchego && (!p.fandom || p.fandom === 'Geral'));
