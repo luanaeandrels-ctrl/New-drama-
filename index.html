@@ -6,33 +6,27 @@
     <title>Umbrella</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#060a1e">
-    
-    <!-- Fontes -->
+    <link rel="icon" type="image/png" href="logo.png">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Firebase SDK (Compat para funcionamento direto em arquivo único) -->
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
     <style>
         /* ==========================================================================
-           1. IDENTIDADE VISUAL, CORES E ESTÉTICA (GLASSMORPHISM AVANÇADO)
+           1. IDENTIDADE VISUAL & GLASSMORPHISM AVANÇADO (SEM FUNDOS BRANCOS)
            ========================================================================== */
         :root {
             --bg-base: #060a1e;
             --glass-bg: rgba(20, 24, 42, 0.78);
-            --glass-bg-hover: rgba(28, 34, 58, 0.85);
+            --glass-dark: rgba(10, 14, 28, 0.85);
             --gold-border: rgba(251, 191, 36, 0.38);
-            --gold-glow: rgba(251, 191, 36, 0.18);
+            --gold-glow: rgba(251, 191, 36, 0.22);
             --gold-accent: #fbbf24;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --danger: #f43f5e;
-            --success: #10b981;
-            --user-tint: rgba(6, 10, 30, 0.65);
+            --user-tint: rgba(6, 10, 30, 0.62);
         }
 
         * {
@@ -49,99 +43,87 @@
             background-color: var(--bg-base);
             color: var(--text-main);
             overflow-x: hidden;
+            color-scheme: dark;
         }
 
-        /* Item 1 & 2: Fundo Nativo Fixo + Desfoque (Blur ~10%) + Gradiente Escuro */
+        /* Fundo Nativo Fixo + Blur Suave (~10%) + Gradiente Escuro */
         .fixed-background {
             position: fixed;
             inset: 0;
             z-index: -2;
+            background-color: #060a1e;
             background-image: url('fundo.jpeg');
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
-            background-attachment: fixed;
         }
 
         .fixed-backdrop-overlay {
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: linear-gradient(180deg, rgba(6, 10, 30, 0.55) 0%, var(--user-tint) 60%, rgba(6, 10, 30, 0.92) 100%);
+            background: radial-gradient(circle at top, rgba(6, 10, 30, 0.45) 0%, var(--user-tint) 65%, rgba(6, 10, 30, 0.94) 100%);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }
 
-        /* Item 3 & 4: Classe Base Glassmorphism + Fiozinho Dourado Sutil */
+        /* Containers Glassmorphism com Fiozinho Dourado Sutil */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             border: 1px solid var(--gold-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 0 12px rgba(251, 191, 36, 0.04);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.48), inset 0 0 12px rgba(251, 191, 36, 0.04);
             border-radius: 20px;
         }
 
-        .glass-pill {
-            background: var(--glass-bg);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
-            border: 1px solid var(--gold-border);
-            border-radius: 9999px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        }
-
         /* ==========================================================================
-           3. LAYOUT TOTALMENTE UNIFICADO (MOBILE E DESKTOP IDÊNTICOS)
+           2. LAYOUT TOTALMENTE UNIFICADO (MOBILE E DESKTOP IDÊNTICOS)
            ========================================================================== */
         .app-shell {
             width: 100%;
-            max-width: 520px; /* Mantém a mesma proporção e experiência limpa no desktop e celular */
+            max-width: 500px;
             margin: 0 auto;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            padding-bottom: 110px;
+            padding-bottom: 115px;
             position: relative;
         }
 
         /* ==========================================================================
-           2. TOPO, LOGO DINÂMICA E GOTINHA DE NOTIFICAÇÕES
+           3. TOPO, LOGO DINÂMICA E GOTINHA DE NOTIFICAÇÕES
            ========================================================================== */
         .top-header {
             position: sticky;
             top: 0;
             z-index: 40;
-            padding: 14px 18px 10px;
+            padding: 14px 16px 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
             background: linear-gradient(180deg, rgba(6, 10, 30, 0.85) 0%, rgba(6, 10, 30, 0) 100%);
         }
 
-        /* Item 7 & 8: Logo pura centralizada que diminui no scroll */
         .logo-container {
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: transform 0.25s ease;
         }
 
         .brand-logo {
-            height: 76px;
+            height: 78px;
             width: auto;
             object-fit: contain;
-            transition: height 0.25s cubic-bezier(0.22, 1, 0.36, 1), transform 0.25s ease;
-            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+            transition: height 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.65));
         }
 
         .top-header.scrolled .brand-logo {
-            height: 42px;
+            height: 44px;
         }
 
-        /* Botão Perfil Esquerdo */
         .header-left-btn {
             position: absolute;
             left: 16px;
@@ -154,38 +136,32 @@
             background: var(--glass-bg);
             overflow: hidden;
             cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            padding: 0;
         }
 
         .header-left-btn img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
         }
 
-        /* Item 39: Gotinha de Notificações no Canto Superior Direito */
         .droplet-btn {
             position: absolute;
             right: 16px;
             top: 50%;
             transform: translateY(-50%);
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             background: var(--glass-bg);
             border: 1px solid var(--gold-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 19px;
+            font-size: 18px;
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        .droplet-btn:active {
-            transform: translateY(-50%) scale(0.92);
+            color: var(--text-main);
         }
 
         .droplet-badge {
@@ -196,39 +172,36 @@
             color: #060a1e;
             font-size: 10px;
             font-weight: 800;
-            min-width: 18px;
-            height: 18px;
+            min-width: 17px;
+            height: 17px;
             border-radius: 99px;
-            display: flex;
+            display: none;
             align-items: center;
             justify-content: center;
             padding: 0 4px;
-            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.6);
         }
 
         /* ==========================================================================
-           3. BOLINHAS DE NAVEGAÇÃO (PÓDIO 1, 2, 3 + DESAFIO, FANDOM, AMIGOS, ACONCHEGO)
+           4. BOLINHAS DO PÓDIO (1, 2, 3) & CARROSSEL HORIZONTAL DE NAVEGAÇÃO
            ========================================================================== */
         .nav-bubbles-wrapper {
-            padding: 8px 14px 16px;
+            padding: 6px 14px 16px;
             display: flex;
             flex-direction: column;
             gap: 14px;
         }
 
-        /* Linha das Bolinhas do Pódio */
         .podium-row {
             display: flex;
             justify-content: center;
             align-items: flex-end;
-            gap: 18px;
+            gap: 20px;
         }
 
         .podium-bubble-item {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 5px;
             cursor: pointer;
             transition: transform 0.2s ease;
         }
@@ -240,23 +213,17 @@
         .podium-circle {
             border-radius: 50%;
             border: 2px solid var(--gold-accent);
-            background: var(--glass-bg);
+            background: var(--glass-dark);
             overflow: hidden;
-            position: relative;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 12px var(--gold-glow);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55), 0 0 14px var(--gold-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .podium-circle.rank-1 {
-            width: 74px;
-            height: 74px;
-            border-width: 2.5px;
-        }
-
+        .podium-circle.rank-1 { width: 74px; height: 74px; border-width: 2.5px; }
         .podium-circle.rank-2,
-        .podium-circle.rank-3 {
-            width: 58px;
-            height: 58px;
-        }
+        .podium-circle.rank-3 { width: 58px; height: 58px; }
 
         .podium-circle img {
             width: 100%;
@@ -265,26 +232,37 @@
         }
 
         .podium-rank-tag {
-            background: rgba(20, 24, 42, 0.92);
+            background: rgba(12, 16, 32, 0.95);
             border: 1px solid var(--gold-border);
             color: var(--gold-accent);
             font-size: 10px;
             font-weight: 700;
-            padding: 2px 8px;
+            padding: 2px 9px;
             border-radius: 99px;
-            margin-top: -12px;
+            margin-top: -11px;
             z-index: 2;
         }
 
-        /* Linha das Bolinhas Principais: Desafio, Fandom, Amigos, Aconchego */
-        .main-bubbles-row {
+        /* Carrossel Horizontal Fluido (Puxar para o lado) */
+        .horizontal-carousel {
             display: flex;
-            justify-content: space-around;
             align-items: center;
-            padding: 10px 8px;
+            gap: 12px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding: 10px 12px;
+        }
+
+        .horizontal-carousel::-webkit-scrollbar {
+            display: none;
         }
 
         .nav-bubble {
+            flex: 0 0 auto;
+            min-width: 74px;
+            scroll-snap-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -293,32 +271,25 @@
             background: transparent;
             border: none;
             color: var(--text-main);
-            transition: transform 0.2s ease;
-        }
-
-        .nav-bubble:active {
-            transform: scale(0.93);
         }
 
         .nav-bubble-circle {
             width: 54px;
             height: 54px;
             border-radius: 50%;
-            background: var(--glass-bg);
+            background: var(--glass-dark);
             border: 1px solid var(--gold-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            padding: 11px;
             transition: all 0.25s ease;
-            overflow: hidden;
-            padding: 10px;
         }
 
         .nav-bubble.active .nav-bubble-circle {
             border: 1.5px solid var(--gold-accent);
             box-shadow: 0 0 18px rgba(251, 191, 36, 0.35);
-            background: rgba(35, 42, 72, 0.9);
+            background: rgba(32, 38, 66, 0.92);
         }
 
         .nav-bubble-circle img {
@@ -331,7 +302,6 @@
             font-size: 11px;
             font-weight: 600;
             color: var(--text-muted);
-            letter-spacing: 0.3px;
         }
 
         .nav-bubble.active .nav-bubble-label {
@@ -339,12 +309,12 @@
         }
 
         /* ==========================================================================
-           CONTEÚDO DAS TELAS / ABAS
+           5. TELAS / ABAS E CARROSSEL DE FANDOMS
            ========================================================================== */
         .view-section {
             display: none;
             padding: 0 14px;
-            animation: fadeIn 0.28s ease forwards;
+            animation: fadeIn 0.25s ease forwards;
         }
 
         .view-section.active {
@@ -352,7 +322,7 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
@@ -365,24 +335,65 @@
         }
 
         .section-title {
-            font-size: 15px;
+            font-size: 14.5px;
             font-weight: 700;
             color: var(--gold-accent);
-            letter-spacing: 0.3px;
         }
 
-        .btn-back-feed {
+        .btn-pill-gold {
             background: rgba(251, 191, 36, 0.12);
             border: 1px solid var(--gold-border);
-            color: var(--text-main);
-            font-size: 12px;
+            color: var(--gold-accent);
+            font-size: 11.5px;
+            font-weight: 600;
             padding: 5px 12px;
             border-radius: 99px;
             cursor: pointer;
         }
 
+        /* Carrossel Horizontal para Fandoms */
+        .fandom-carousel {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 10px;
+            margin-bottom: 12px;
+        }
+
+        .fandom-carousel::-webkit-scrollbar {
+            display: none;
+        }
+
+        .fandom-card {
+            flex: 0 0 142px;
+            scroll-snap-align: start;
+            padding: 14px 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+
+        .fandom-card:hover {
+            border-color: var(--gold-accent);
+            transform: translateY(-2px);
+        }
+
+        .fandom-card h4 {
+            font-size: 13.5px;
+            color: var(--gold-accent);
+            margin-bottom: 4px;
+        }
+
+        .fandom-card p {
+            font-size: 10.5px;
+            color: var(--text-muted);
+        }
+
         /* ==========================================================================
-           4. PERFIL COMPACTO & TRILHA SONORA SPOTIFY
+           6. CARTÃO DE PERFIL, SPOTIFY E FEED LIMPO
            ========================================================================== */
         .profile-card {
             padding: 16px;
@@ -392,12 +403,12 @@
         .profile-top {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: 13px;
         }
 
         .profile-avatar-lg {
-            width: 62px;
-            height: 62px;
+            width: 58px;
+            height: 58px;
             border-radius: 50%;
             border: 1.5px solid var(--gold-accent);
             object-fit: cover;
@@ -405,7 +416,7 @@
         }
 
         .profile-info h3 {
-            font-size: 16px;
+            font-size: 15.5px;
             font-weight: 700;
         }
 
@@ -415,7 +426,6 @@
             margin-top: 2px;
         }
 
-        /* Item 18 & 38: Frase Interativa "Quero assistir um dorama" */
         .dorama-phrase-btn {
             margin-top: 12px;
             width: 100%;
@@ -431,23 +441,16 @@
             align-items: center;
             justify-content: center;
             gap: 8px;
-            transition: background 0.2s ease;
         }
 
-        .dorama-phrase-btn:hover {
-            background: rgba(251, 191, 36, 0.2);
-        }
-
-        /* Item 19 & 20: Spotify Compacto + Play/Pause discreto */
         .spotify-bar {
-            margin-top: 12px;
-            padding: 8px 12px;
+            margin-top: 10px;
+            padding: 7px 11px;
             border-radius: 14px;
-            background: rgba(10, 14, 28, 0.65);
+            background: var(--glass-dark);
             border: 1px solid var(--gold-border);
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: 8px;
         }
 
@@ -460,30 +463,23 @@
             outline: none;
         }
 
-        .spotify-btn {
-            background: rgba(251, 191, 36, 0.15);
-            border: 1px solid var(--gold-border);
-            color: var(--gold-accent);
-            font-size: 11px;
-            font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 99px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        /* ==========================================================================
-           FEED CARDS, CURTIDA GUARDA-CHUVA & TRÊS PONTINHOS (...)
-           ========================================================================== */
+        /* Posts do Feed */
         .feed-list {
             display: flex;
             flex-direction: column;
             gap: 14px;
         }
 
+        .empty-state-box {
+            padding: 28px 18px;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
         .post-card {
             padding: 15px;
-            transition: transform 0.2s ease;
         }
 
         .post-header {
@@ -531,7 +527,6 @@
             font-size: 14px;
             line-height: 1.5;
             margin-bottom: 10px;
-            color: var(--text-main);
             word-break: break-word;
         }
 
@@ -546,7 +541,6 @@
             display: block;
         }
 
-        /* Item 9 & 46: Curtir com guarda-chuva.png + Menu Três Pontinhos (...) */
         .post-actions {
             display: flex;
             align-items: center;
@@ -566,26 +560,21 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            padding: 4px 8px;
-            border-radius: 12px;
-            transition: background 0.2s ease, transform 0.15s ease;
-        }
-
-        .like-umbrella-btn:active {
-            transform: scale(0.92);
+            padding: 4px 6px;
         }
 
         .like-umbrella-btn img {
             width: 22px;
             height: 22px;
             object-fit: contain;
-            filter: grayscale(40%) opacity(0.8);
-            transition: all 0.2s ease;
+            opacity: 0.85;
+            transition: transform 0.2s ease, filter 0.2s ease;
         }
 
         .like-umbrella-btn.liked img {
-            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.85)) brightness(1.15);
-            transform: scale(1.1);
+            opacity: 1;
+            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.9));
+            transform: scale(1.12);
         }
 
         .like-umbrella-btn.liked span {
@@ -596,22 +585,16 @@
             background: transparent;
             border: none;
             color: var(--text-muted);
-            font-size: 20px;
+            font-size: 19px;
             letter-spacing: 2px;
             cursor: pointer;
             padding: 2px 10px;
-            border-radius: 10px;
-        }
-
-        .dots-menu-btn:hover {
-            color: var(--gold-accent);
-            background: rgba(251, 191, 36, 0.08);
         }
 
         .dots-dropdown {
             position: absolute;
             right: 0;
-            bottom: 38px;
+            bottom: 36px;
             z-index: 30;
             min-width: 190px;
             padding: 6px;
@@ -641,7 +624,7 @@
         }
 
         /* ==========================================================================
-           5 & 47. BARRA DE POSTAGEM FLUTUANTE MINIMALISTA (ESTILO GEMINI)
+           7. BARRA DE POSTAGEM FLUTUANTE MINIMALISTA (ESTILO GEMINI LIMPO)
            ========================================================================== */
         .floating-composer-wrapper {
             position: fixed;
@@ -649,7 +632,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: calc(100% - 24px);
-            max-width: 496px;
+            max-width: 476px;
             z-index: 50;
         }
 
@@ -657,39 +640,40 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 7px 10px;
-            background: rgba(16, 20, 38, 0.92);
+            padding: 6px 10px;
+            background: rgba(14, 18, 34, 0.92);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             border: 1px solid var(--gold-border);
             border-radius: 9999px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 15px rgba(251, 191, 36, 0.12);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
         }
 
+        /* Botão + limpo e sem caixa pesada */
         .composer-plus-btn {
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
-            background: rgba(251, 191, 36, 0.12);
+            background: transparent;
             color: var(--gold-accent);
             font-size: 22px;
             font-weight: 400;
+            line-height: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             flex-shrink: 0;
-            position: relative;
+            transition: background 0.2s ease, transform 0.15s ease;
         }
 
-        .composer-plus-btn img.cam-badge {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            width: 14px;
-            height: 14px;
-            object-fit: contain;
+        .composer-plus-btn:hover {
+            background: rgba(251, 191, 36, 0.12);
+        }
+
+        .composer-plus-btn:active {
+            transform: scale(0.92);
         }
 
         .composer-input {
@@ -699,7 +683,7 @@
             color: var(--text-main);
             font-size: 13.5px;
             outline: none;
-            padding: 4px 6px;
+            padding: 6px 4px;
         }
 
         .composer-input::placeholder {
@@ -707,24 +691,23 @@
         }
 
         .composer-send-btn {
-            width: 36px;
-            height: 36px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
-            background: var(--gold-accent);
-            color: #060a1e;
-            font-size: 16px;
-            font-weight: 700;
+            background: rgba(251, 191, 36, 0.18);
+            color: var(--gold-accent);
+            font-size: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             flex-shrink: 0;
-            transition: transform 0.15s ease;
+            transition: background 0.2s ease, transform 0.15s ease;
         }
 
-        .composer-send-btn:active {
-            transform: scale(0.9);
+        .composer-send-btn:hover {
+            background: rgba(251, 191, 36, 0.3);
         }
 
         .media-preview-strip {
@@ -735,26 +718,11 @@
             margin-bottom: 6px;
             font-size: 12px;
             color: var(--gold-accent);
+            border-radius: 99px;
         }
 
         /* ==========================================================================
-           45. RODAPÉ FIXO COM E-MAIL DE SUPORTE OFICIAL
-           ========================================================================== */
-        .app-footer {
-            position: fixed;
-            bottom: 3px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 10.5px;
-            color: rgba(248, 250, 252, 0.55);
-            z-index: 45;
-            pointer-events: none;
-            letter-spacing: 0.3px;
-        }
-
-        /* ==========================================================================
-           6, 7, 8, 9 & 10. FORMULÁRIOS, DESAFIOS, FANDOMS E ACONCHEGO
+           8. FORMULÁRIOS GLASSMORPHISM (SEM NENHUM ELEMENTO BRANCO)
            ========================================================================== */
         .form-group {
             margin-bottom: 12px;
@@ -771,69 +739,59 @@
             width: 100%;
             padding: 10px 13px;
             border-radius: 13px;
-            background: rgba(10, 14, 28, 0.72);
+            background: rgba(10, 14, 28, 0.85);
             border: 1px solid var(--gold-border);
             color: var(--text-main);
-            font-size: 13.5px;
+            font-size: 13px;
             outline: none;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+
+        .glass-select option {
+            background-color: #0e1326;
+            color: #f8fafc;
         }
 
         .glass-input:focus, .glass-select:focus {
             border-color: var(--gold-accent);
         }
 
+        .custom-file-trigger {
+            width: 100%;
+            padding: 10px 13px;
+            border-radius: 13px;
+            background: rgba(10, 14, 28, 0.85);
+            border: 1px dashed var(--gold-border);
+            color: var(--gold-accent);
+            font-size: 12.5px;
+            text-align: center;
+            cursor: pointer;
+            display: block;
+        }
+
         .btn-gold {
             width: 100%;
             padding: 11px 16px;
             border-radius: 14px;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(251, 191, 36, 0.12));
+            background: rgba(251, 191, 36, 0.16);
             border: 1px solid var(--gold-accent);
             color: var(--gold-accent);
             font-size: 13.5px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.2s ease;
         }
 
         .btn-gold:hover {
-            background: rgba(251, 191, 36, 0.3);
+            background: rgba(251, 191, 36, 0.28);
         }
 
-        .fandom-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-bottom: 14px;
-        }
-
-        .fandom-card {
-            padding: 14px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-        }
-
-        .fandom-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--gold-accent);
-        }
-
-        .fandom-card h4 {
-            font-size: 14px;
-            color: var(--gold-accent);
-            margin-bottom: 4px;
-        }
-
-        .fandom-card p {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        /* Item 42 & 45: Campo Administrativo Totalmente Neutro e Discreto no Aconchego */
+        /* Campo Administrativo Totalmente Neutro no Aconchego */
         .stealth-field-box {
-            margin-top: 26px;
+            margin-top: 28px;
             padding: 8px 12px;
-            opacity: 0.45;
+            opacity: 0.35;
             transition: opacity 0.25s ease;
         }
 
@@ -845,7 +803,7 @@
             width: 100%;
             background: transparent;
             border: none;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.18);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
             color: var(--text-main);
             font-size: 12px;
             padding: 4px 2px;
@@ -853,15 +811,27 @@
         }
 
         /* ==========================================================================
-           5 & 46. MODAIS EXCLUSIVOS GLASSMORPHISM & LIGHTBOX PINTEREST
+           9. RODAPÉ FIXO & MODAIS EXCLUSIVOS GLASSMORPHISM
            ========================================================================== */
+        .app-footer {
+            position: fixed;
+            bottom: 4px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10.5px;
+            color: rgba(248, 250, 252, 0.52);
+            z-index: 45;
+            pointer-events: none;
+        }
+
         .modal-backdrop {
             position: fixed;
             inset: 0;
             z-index: 100;
-            background: rgba(4, 7, 18, 0.78);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(4, 7, 18, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -877,7 +847,6 @@
             width: 100%;
             max-width: 420px;
             padding: 22px;
-            position: relative;
             max-height: 88vh;
             overflow-y: auto;
         }
@@ -902,7 +871,7 @@
             justify-content: flex-end;
         }
 
-        /* Item 14 & 44: Lightbox Estilo Pinterest & Pódio Tela Cheia */
+        /* Lightbox Estilo Pinterest */
         .lightbox-overlay {
             position: fixed;
             inset: 0;
@@ -931,7 +900,6 @@
             color: var(--gold-accent);
             font-size: 18px;
             cursor: pointer;
-            z-index: 125;
         }
 
         .lightbox-media {
@@ -949,22 +917,21 @@
             text-align: center;
         }
 
-        /* Balões de Chat Privado (Item 41) */
+        /* Chat Privado Glassmorphism */
         .chat-messages {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 300px;
+            max-height: 280px;
             overflow-y: auto;
             margin-bottom: 12px;
-            padding: 4px;
         }
 
         .chat-bubble {
-            max-width: 80%;
+            max-width: 82%;
             padding: 9px 13px;
             border-radius: 16px;
-            background: var(--glass-bg);
+            background: var(--glass-dark);
             border: 1px solid var(--gold-border);
             font-size: 13px;
             line-height: 1.4;
@@ -982,152 +949,134 @@
 </head>
 <body>
 
-    <!-- Fundo Fixo e Camada de Desfoque -->
     <div class="fixed-background"></div>
-    <div class="fixed-backdrop-overlay" id="backdropOverlay"></div>
+    <div class="fixed-backdrop-overlay"></div>
 
-    <!-- Container Principal Unificado (Idêntico Mobile e Desktop) -->
     <div class="app-shell">
 
-        <!-- TOPO COM LOGO DINÂMICA E GOTINHA DE NOTIFICAÇÕES -->
+        <!-- TOPO COM LOGO DINÂMICA E GOTINHA -->
         <header class="top-header" id="topHeader">
             <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
-                <img id="headerUserAvatar" src="aconchego.png" alt="Perfil">
+                <img id="headerUserAvatar" src="aconchego.png" alt="">
             </button>
 
-            <!-- Item 7: Apenas a imagem pura logo.png -->
             <div class="logo-container" onclick="switchView('feed')">
                 <img src="logo.png" alt="" class="brand-logo" id="brandLogo">
             </div>
 
-            <!-- Item 39: Gotinha de Notificações -->
             <button class="droplet-btn" onclick="openNotificationsModal()" title="Notificações">
                 💧
-                <span class="droplet-badge" id="notifBadge">1</span>
+                <span class="droplet-badge" id="notifBadge">0</span>
             </button>
         </header>
 
-        <!-- ARQUITETURA DE NAVEGAÇÃO POR BOLINHAS -->
+        <!-- NAVEGAÇÃO POR BOLINHAS (PÓDIO 1, 2, 3 + CARROSSEL HORIZONTAL) -->
         <nav class="nav-bubbles-wrapper">
-            <!-- Bolinhas do Pódio 1, 2 e 3 -->
             <div class="podium-row">
-                <!-- Pódio 2 -->
                 <div class="podium-bubble-item" onclick="openPodiumFullscreen(2)">
                     <div class="podium-circle rank-2">
-                        <img id="podiumImg2" src="fandom.png" alt="2º Lugar">
+                        <img id="podiumImg2" src="fandom.png" alt="">
                     </div>
                     <span class="podium-rank-tag">2º</span>
                 </div>
 
-                <!-- Pódio 1 -->
                 <div class="podium-bubble-item" onclick="openPodiumFullscreen(1)">
                     <div class="podium-circle rank-1">
-                        <img id="podiumImg1" src="guarda-chuva.png" alt="1º Lugar">
+                        <img id="podiumImg1" src="guarda-chuva.png" alt="">
                     </div>
                     <span class="podium-rank-tag">1º</span>
                 </div>
 
-                <!-- Pódio 3 -->
                 <div class="podium-bubble-item" onclick="openPodiumFullscreen(3)">
                     <div class="podium-circle rank-3">
-                        <img id="podiumImg3" src="amigos.png" alt="3º Lugar">
+                        <img id="podiumImg3" src="amigos.png" alt="">
                     </div>
                     <span class="podium-rank-tag">3º</span>
                 </div>
             </div>
 
-            <!-- Bolinhas Principais: Desafio, Fandom, Amigos, Aconchego -->
-            <div class="main-bubbles-row glass-panel">
+            <!-- Carrossel Horizontal de Abas -->
+            <div class="glass-panel horizontal-carousel">
                 <button class="nav-bubble" id="nav-desafio" onclick="switchView('desafio')">
                     <div class="nav-bubble-circle">
-                        <img src="guarda-chuva.png" alt="Desafio">
+                        <img src="guarda-chuva.png" alt="">
                     </div>
                     <span class="nav-bubble-label">Desafio</span>
                 </button>
 
                 <button class="nav-bubble" id="nav-fandom" onclick="switchView('fandom')">
                     <div class="nav-bubble-circle">
-                        <img src="fandom.png" alt="Fandom">
+                        <img src="fandom.png" alt="">
                     </div>
                     <span class="nav-bubble-label">Fandom</span>
                 </button>
 
                 <button class="nav-bubble" id="nav-amigos" onclick="switchView('amigos')">
                     <div class="nav-bubble-circle">
-                        <img src="amigos.png" alt="Amigos">
+                        <img src="amigos.png" alt="">
                     </div>
                     <span class="nav-bubble-label">Amigos</span>
                 </button>
 
                 <button class="nav-bubble" id="nav-aconchego" onclick="switchView('aconchego')">
                     <div class="nav-bubble-circle">
-                        <img src="aconchego.png" alt="Aconchego">
+                        <img src="aconchego.png" alt="">
                     </div>
                     <span class="nav-bubble-label">Aconchego</span>
                 </button>
             </div>
         </nav>
 
-        <!-- ======================================================================
-             TELA 1: FEED PRINCIPAL (PADRÃO)
-             ====================================================================== -->
+        <!-- TELA 1: FEED PRINCIPAL -->
         <main class="view-section active" id="view-feed">
-            <!-- Cartão de Perfil Compacto no Topo do Feed -->
             <div class="glass-panel profile-card">
                 <div class="profile-top">
-                    <img id="profileCardAvatar" src="aconchego.png" alt="Avatar" class="profile-avatar-lg">
+                    <img id="profileCardAvatar" src="aconchego.png" alt="" class="profile-avatar-lg">
                     <div class="profile-info">
-                        <h3 id="profileCardName">Visitante Umbrella</h3>
-                        <p id="profileCardEmail">Conecte sua conta Google</p>
+                        <h3 id="profileCardName">Conectar Conta</h3>
+                        <p id="profileCardEmail">Toque no ícone superior esquerdo para entrar</p>
                         <p id="profileCardBias" style="color: var(--gold-accent); margin-top: 3px;">Bias: Não definido</p>
                     </div>
                 </div>
 
-                <!-- Item 18: Frase Interativa Padrão -->
-                <button class="dorama-phrase-btn" onclick="triggerDoramaInvite('Comunidade Umbrella')">
+                <button class="dorama-phrase-btn" onclick="triggerDoramaInvite()">
                     🎬 Quero assistir um dorama
                 </button>
 
-                <!-- Item 19 & 20: Trilha Sonora do Spotify + Pause Discreto -->
                 <div class="spotify-bar">
                     <input type="text" id="spotifyLinkInput" class="spotify-input" placeholder="Cole o link da música do Spotify...">
-                    <button class="spotify-btn" onclick="saveSpotifyTrack()">Salvar</button>
-                    <button class="spotify-btn" id="spotifyPlayPauseBtn" onclick="toggleAmbientMusic()">⏸ Pausar</button>
+                    <button class="btn-pill-gold" onclick="saveSpotifyTrack()">Salvar</button>
+                    <button class="btn-pill-gold" id="spotifyPlayPauseBtn" onclick="toggleAmbientMusic()">⏸</button>
                 </div>
                 <div id="spotifyEmbedContainer" style="margin-top:8px; display:none;"></div>
             </div>
 
-            <!-- Lista de Postagens do Feed -->
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
-        <!-- ======================================================================
-             TELA 2: DESAFIO SEMANAL, BIAS (1-1000) E VOTOS DIÁRIOS
-             ====================================================================== -->
+        <!-- TELA 2: DESAFIO SEMANAL -->
         <section class="view-section" id="view-desafio">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Desafio Semanal</span>
-                <button class="btn-back-feed" onclick="switchView('feed')">Voltar ao Feed</button>
+                <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
 
-            <!-- Diretriz Semanal da ADM e Regras do Bias -->
             <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
-                <p style="font-size:12px; color:var(--gold-accent); font-weight:700;">DIRETRIZ DA SEMANA (DOMINGO)</p>
+                <p style="font-size:11.5px; color:var(--gold-accent); font-weight:700;">DIRETRIZ DA SEMANA (DOMINGO)</p>
                 <p id="weeklyDirectiveText" style="font-size:13.5px; margin:6px 0 12px; line-height:1.5;">
-                    Tema oficial: <strong>Sorriso sob a Chuva</strong>. Escolha seu representante fixo para toda a semana. Votos acumulados de segunda a sexta definem o Pódio oficial do fim de semana!
+                    Tema oficial: <strong>Sob o Mesmo Guarda-Chuva</strong>. Escolha seu representante fixo para toda a semana. Votos de segunda a sexta definem o Pódio!
                 </p>
                 <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); border-top:1px solid rgba(251,191,36,0.18); padding-top:8px;">
-                    <span>Votos restantes hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
+                    <span>Votos hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
                     <span>Reset: <strong>00:00:00</strong></span>
                 </div>
             </div>
 
-            <!-- Módulo de Cadastro de Bias (1 a 1000) com Trava de 30 Dias e Validação de Pixels -->
             <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
                 <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:10px;">Meu Bias Representante (ID 1 a 1000)</h4>
                 <div class="form-group">
                     <label class="form-label">Nome do Bias</label>
-                    <input type="text" id="biasNameInput" class="glass-input" placeholder="Ex: Kim Taehyung, Park Bo-gum...">
+                    <input type="text" id="biasNameInput" class="glass-input" placeholder="Nome do artista">
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
                     <div class="form-group">
@@ -1144,86 +1093,73 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Foto de Referência Oficial do Bias (Para validação de pixels)</label>
-                    <input type="file" id="biasRefFileInput" accept="image/*" class="glass-input" style="font-size:12px;">
+                    <label class="form-label">Foto de Referência Oficial do Bias</label>
+                    <label for="biasRefFileInput" class="custom-file-trigger" id="biasRefFileLabel">Selecionar imagem de referência</label>
+                    <input type="file" id="biasRefFileInput" accept="image/*" style="display:none;" onchange="document.getElementById('biasRefFileLabel').textContent = this.files[0]?.name || 'Selecionar imagem'">
                 </div>
                 <p id="biasLockStatus" style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;"></p>
-                <button class="btn-gold" onclick="saveBiasRegistration()">Salvar / Travar Representante</button>
+                <button class="btn-gold" onclick="saveBiasRegistration()">Salvar Representante</button>
             </div>
 
-            <!-- Feed de Participações do Desafio -->
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- ======================================================================
-             TELA 3: FANDOMS E SUBGRUPOS
-             ====================================================================== -->
+        <!-- TELA 3: FANDOMS (ROLAGEM HORIZONTAL) -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
-                <span class="section-title">Comunidades & Fandoms</span>
-                <button class="btn-back-feed" onclick="switchView('feed')">Voltar ao Feed</button>
+                <span class="section-title">Fandoms & Subgrupos</span>
+                <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
 
-            <div class="fandom-grid" id="fandomGrid">
+            <div class="fandom-carousel">
                 <div class="glass-panel fandom-card" onclick="selectFandom('BTS')">
                     <h4>BTS</h4>
-                    <p>ARMY • Interações ativas</p>
+                    <p>Comunidade Oficial</p>
                 </div>
                 <div class="glass-panel fandom-card" onclick="selectFandom('Super Junior')">
                     <h4>Super Junior</h4>
-                    <p>E.L.F • Interações ativas</p>
+                    <p>Comunidade Oficial</p>
                 </div>
                 <div class="glass-panel fandom-card" onclick="selectFandom('EXO')">
                     <h4>EXO</h4>
-                    <p>EXO-L • Interações ativas</p>
+                    <p>Comunidade Oficial</p>
                 </div>
                 <div class="glass-panel fandom-card" onclick="selectFandom('Dorama')">
                     <h4>Dorama</h4>
-                    <p>K-Dramas & OSTs</p>
+                    <p>Comunidade Oficial</p>
                 </div>
                 <div class="glass-panel fandom-card" onclick="selectFandom('Animes')">
                     <h4>Animes</h4>
-                    <p>Animações & Mangás</p>
+                    <p>Comunidade Oficial</p>
                 </div>
                 <div class="glass-panel fandom-card" onclick="openCreateSubgroupModal()">
                     <h4>+ Subgrupo</h4>
-                    <p>Criar espaço vinculado</p>
+                    <p>Criar novo espaço</p>
                 </div>
             </div>
 
             <div id="selectedFandomFeed" class="feed-list"></div>
         </section>
 
-        <!-- ======================================================================
-             TELA 4: AMIGOS E CHAT PRIVADO
-             ====================================================================== -->
+        <!-- TELA 4: AMIGOS -->
         <section class="view-section" id="view-amigos">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meus Amigos</span>
-                <button class="btn-back-feed" onclick="switchView('feed')">Voltar ao Feed</button>
+                <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
-
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
-        <!-- ======================================================================
-             TELA 5: ACONCHEGO (HISTÓRICO PESSOAL + CAMPO DISCRETO)
-             ====================================================================== -->
+        <!-- TELA 5: ACONCHEGO -->
         <section class="view-section" id="view-aconchego">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meu Aconchego</span>
-                <button class="btn-back-feed" onclick="switchView('feed')">Voltar ao Feed</button>
-            </div>
-
-            <div class="glass-panel" style="padding:14px; margin-bottom:14px;">
-                <p style="font-size:13px; color:var(--text-muted);">
-                    Seu histórico pessoal de compartilhamentos, curtidas com guarda-chuva e interações na comunidade.
-                </p>
+                <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
 
             <div class="feed-list" id="aconchegoHistoryList"></div>
 
-            <!-- Item 42 & 45: Campo Administrativo Totalmente Neutro (Sem texto ou pista) -->
+            <!-- Campo Administrativo Totalmente Neutro e Discreto -->
             <div class="stealth-field-box">
                 <input type="password" id="stealthAdminInput" class="stealth-input" autocomplete="off" onkeyup="checkStealthAccess(this.value)">
             </div>
@@ -1231,45 +1167,27 @@
 
     </div>
 
-    <!-- ==========================================================================
-         BARRA FLUTUANTE DE POSTAGEM / CHAT (ESTILO GEMINI - ITEM 21 E 47)
-         ========================================================================== -->
+    <!-- BARRA DE POSTAGEM FLUTUANTE MINIMALISTA (ESTILO GEMINI LIMPO) -->
     <div class="floating-composer-wrapper">
-        <div class="glass-pill media-preview-strip" id="mediaPreviewStrip">
+        <div class="glass-panel media-preview-strip" id="mediaPreviewStrip">
             <span id="mediaPreviewName">Mídia anexada</span>
             <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700;">✕</button>
         </div>
 
         <div class="gemini-composer">
-            <!-- Botão + à esquerda com ícone oficial câmera.png -->
-            <button type="button" class="composer-plus-btn" onclick="triggerNativeCameraGallery()" title="Câmera e Galeria">
-                +
-                <img src="câmera.png" alt="" class="cam-badge">
-            </button>
-
-            <!-- Input oculto sem capture rígido para habilitar Super Câmera + Quadradinho da Galeria -->
+            <button type="button" class="composer-plus-btn" onclick="triggerNativeCameraGallery()" title="Câmera e Galeria">+</button>
             <input type="file" id="nativeMediaInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
-
-            <!-- Campo de Texto Central -->
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva algo no Umbrella..." onkeypress="if(event.key==='Enter') submitPost()">
-
-            <!-- Botão de Envio com Seta (➤) -->
-            <button type="button" class="composer-send-btn" onclick="submitPost()" title="Enviar">
-                ➤
-            </button>
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella..." onkeypress="if(event.key==='Enter') submitPost()">
+            <button type="button" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
 
-    <!-- ==========================================================================
-         RODAPÉ FIXO COM E-MAIL OFICIAL DE SUPORTE (ITEM 45)
-         ========================================================================== -->
+    <!-- RODAPÉ OFICIAL -->
     <footer class="app-footer">
         umbrella.suporte@gmail.com
     </footer>
 
-    <!-- ==========================================================================
-         MODAIS CUSTOMIZADOS EXCLUSIVOS EM GLASSMORPHISM (ITEM 5 E 46)
-         ========================================================================== -->
+    <!-- MODAIS EXCLUSIVOS GLASSMORPHISM -->
     <div class="modal-backdrop" id="customModalBackdrop">
         <div class="glass-panel modal-box">
             <h3 class="modal-title" id="customModalTitle">Umbrella</h3>
@@ -1278,51 +1196,68 @@
         </div>
     </div>
 
-    <!-- LIGHTBOX ESTILO PINTEREST & PÓDIO EM TELA CHEIA (ITEM 14 E 44) -->
+    <!-- LIGHTBOX PINTEREST & PÓDIO TELA CHEIA -->
     <div class="lightbox-overlay" id="pinterestLightbox">
         <button class="lightbox-close" onclick="closeLightbox()">✕</button>
         <div id="lightboxMediaContainer" style="display:flex; justify-content:center; align-items:center; width:100%;"></div>
         <p class="lightbox-caption" id="lightboxCaption"></p>
     </div>
 
-    <!-- Áudio de fundo discreto -->
-    <audio id="ambientAudioPlayer" loop></audio>
+    <!-- FIREBASE MODULAR SDK (new-drama-e729b) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import {
+            getAuth,
+            signInWithPopup,
+            signInWithRedirect,
+            getRedirectResult,
+            GoogleAuthProvider,
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            getDocs,
+            deleteDoc,
+            doc,
+            onSnapshot,
+            query,
+            orderBy,
+            updateDoc,
+            increment,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    <script>
-        /* ==========================================================================
-           CONFIGURAÇÃO FIREBASE (SUBSTITUA PELAS CHAVES DO SEU PROJETO)
-           ========================================================================== */
         const firebaseConfig = {
-            apiKey: "SUA_API_KEY_AQUI",
-            authDomain: "seu-projeto.firebaseapp.com",
-            projectId: "seu-projeto",
-            storageBucket: "seu-projeto.appspot.com",
-            messagingSenderId: "000000000000",
-            appId: "1:000000000000:web:000000000000"
+            apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
+            authDomain: "new-drama-e729b.firebaseapp.com",
+            projectId: "new-drama-e729b",
+            storageBucket: "new-drama-e729b.firebasestorage.app",
+            messagingSenderId: "1038068499530",
+            appId: "1:1038068499530:web:44fd33a0a628bcad4ad2b3",
+            measurementId: "G-VXNH7S6N36"
         };
 
-        let firebaseInitialized = false;
-        try {
-            if (firebaseConfig.apiKey !== "SUA_API_KEY_AQUI") {
-                firebase.initializeApp(firebaseConfig);
-                firebaseInitialized = true;
-            }
-        } catch (e) {
-            console.warn("Modo local ativo até inserir as chaves do Firebase.");
-        }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
 
         /* ==========================================================================
-           ESTADO GLOBAL DO APLICATIVO UMBRELLA
+           ESTADO LIMPO (SEM NENHUM DADO FICTÍCIO)
            ========================================================================== */
-        const STORAGE_KEY = 'umbrella_app_state_v1';
+        const LOCAL_KEY = 'umbrella_clean_state_v2';
 
-        const defaultState = {
+        const cleanInitialState = {
             user: {
+                uid: '',
                 loggedIn: false,
-                name: 'Visitante Umbrella',
-                email: 'umbrella.suporte@gmail.com',
+                name: 'Conectar Conta',
+                email: 'Toque no ícone superior esquerdo para entrar',
                 phone: '',
-                bgColor: 'rgba(6, 10, 30, 0.65)',
+                bgColor: 'rgba(6, 10, 30, 0.62)',
                 avatar: 'aconchego.png',
                 spotifyUrl: ''
             },
@@ -1337,124 +1272,121 @@
                 date: new Date().toDateString(),
                 used: 0
             },
-            directive: 'Tema oficial: Sorriso sob a Chuva. Poste uma foto do seu Bias representando o tema!',
+            directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             podium: {
-                1: { img: 'guarda-chuva.png', title: '1º Lugar - Campeã da Semana (Kim Taehyung #007)' },
-                2: { img: 'fandom.png', title: '2º Lugar - Vice-Campeã (Park Bo-gum #042)' },
-                3: { img: 'amigos.png', title: '3º Lugar - Destaque da Semana (Lee Dong-wook #118)' }
+                1: { img: 'guarda-chuva.png', title: '1º Lugar • Pódio Oficial da Semana' },
+                2: { img: 'fandom.png', title: '2º Lugar • Pódio Oficial da Semana' },
+                3: { img: 'amigos.png', title: '3º Lugar • Pódio Oficial da Semana' }
             },
-            posts: [
-                {
-                    id: 'post_1',
-                    author: 'Luna Star',
-                    avatar: 'fandom.png',
-                    text: 'Preparada para o desafio desta semana! Meu Bias já está escolhido 💜☔',
-                    media: 'fundo.jpeg',
-                    mediaType: 'image',
-                    likes: 18,
-                    likedByMe: false,
-                    fandom: 'BTS',
-                    isChallenge: true,
-                    createdAt: Date.now() - 3600000,
-                    comments: ['Que foto linda!', 'Já deixei meu guarda-chuva!']
-                },
-                {
-                    id: 'post_2',
-                    author: 'Hana Kim',
-                    avatar: 'amigos.png',
-                    text: 'Alguém quer maratonar dorama hoje à noite com trilha sonora na chuva?',
-                    media: '',
-                    mediaType: '',
-                    likes: 12,
-                    likedByMe: false,
-                    fandom: 'Dorama',
-                    isChallenge: false,
-                    createdAt: Date.now() - 7200000,
-                    comments: []
-                }
-            ],
-            friends: [
-                { id: 'f_1', name: 'Luna Star', avatar: 'fandom.png', status: 'Online • Quero assistir um dorama', messages: [{ sender: 'them', text: 'Oi! Vamos assistir o episódio novo hoje?' }] },
-                { id: 'f_2', name: 'Hana Kim', avatar: 'amigos.png', status: 'Fandom: EXO & Dorama', messages: [] }
-            ],
-            notifications: [
-                { id: 'n_1', from: 'Soraia Lee', avatar: 'aconchego.png', text: 'Soraia clicou em "Quero assistir um dorama" no seu perfil e enviou um convite!' }
-            ],
-            subgroups: [
-                { name: 'BTS • Poemas na Chuva', parent: 'BTS', creator: 'Luna Star', lastActive: Date.now(), moderator: 'Luna Star' }
-            ],
+            posts: [],
+            friends: [],
+            notifications: [],
+            subgroups: [],
             history: []
         };
 
-        let appState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultState;
+        let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || cleanInitialState;
         let currentAttachedMedia = null;
         let currentAttachedType = null;
         let activeFandomFilter = null;
         let ambientPlaying = false;
 
-        function saveState() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        function saveLocal() {
+            localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
         }
 
         /* ==========================================================================
-           INICIALIZAÇÃO, SCROLL DA LOGO & RESET À MEIA-NOITE
+           AUTENTICAÇÃO GOOGLE & FIRESTORE EM TEMPO REAL
            ========================================================================== */
-        window.addEventListener('DOMContentLoaded', () => {
-            checkMidnightVoteReset();
-            migrateOldChallengePosts();
-            applyUserTheme();
-            renderAll();
+        getRedirectResult(auth).catch(() => {});
 
-            // Se for o primeiro acesso, abre o Painel de Cadastro Inicial (Item 16)
-            if (!appState.user.loggedIn) {
-                openOnboardingModal();
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                appState.user.uid = user.uid;
+                appState.user.loggedIn = true;
+                appState.user.name = user.displayName || appState.user.name;
+                appState.user.email = user.email || appState.user.email;
+                if (user.photoURL) appState.user.avatar = user.photoURL;
+                saveLocal();
+                applyUserTheme();
+                renderAll();
             }
         });
 
-        // Item 8: Diminuição suave da logo ao rolar para cima
-        window.addEventListener('scroll', () => {
-            const header = document.getElementById('topHeader');
-            if (window.scrollY > 30) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
-        });
-
-        // Item 32: Reset automático de votos à meia-noite (00:00:00)
-        function checkMidnightVoteReset() {
-            const todayStr = new Date().toDateString();
-            if (appState.dailyVotes.date !== todayStr) {
-                appState.dailyVotes = { date: todayStr, used: 0 };
-                saveState();
-            }
-            const now = new Date();
-            const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1) - now;
-            setTimeout(() => {
-                appState.dailyVotes = { date: new Date().toDateString(), used: 0 };
-                saveState();
-                updateVoteUI();
-            }, msUntilMidnight);
-        }
-
-        // Item 33: Migração automática de posts de desafio após 24h para o feed geral
-        function migrateOldChallengePosts() {
-            const twentyFourHours = 24 * 60 * 60 * 1000;
-            const now = Date.now();
-            let changed = false;
-            appState.posts.forEach(p => {
-                if (p.isChallenge && (now - p.createdAt) >= twentyFourHours) {
-                    p.isChallenge = false;
-                    changed = true;
+        // Escuta postagens reais do Firestore em tempo real
+        try {
+            const postsQuery = query(collection(db, "umbrella_posts"), orderBy("createdAt", "desc"));
+            onSnapshot(postsQuery, (snapshot) => {
+                const remotePosts = [];
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    remotePosts.push({
+                        id: docSnap.id,
+                        author: data.author || 'Usuária Umbrella',
+                        avatar: data.avatar || 'aconchego.png',
+                        text: data.text || '',
+                        media: data.media || '',
+                        mediaType: data.mediaType || '',
+                        likes: data.likes || 0,
+                        likedByMe: (data.likedBy || []).includes(appState.user.uid),
+                        fandom: data.fandom || 'Geral',
+                        isChallenge: Boolean(data.isChallenge),
+                        createdAt: data.createdAtMs || Date.now(),
+                        comments: data.comments || []
+                    });
+                });
+                if (remotePosts.length > 0) {
+                    appState.posts = remotePosts;
+                    migrateOldChallengePosts();
+                    renderAll();
                 }
             });
-            if (changed) saveState();
+        } catch (e) {
+            console.warn("Aguardando permissão de leitura do Firestore:", e.message);
         }
 
         /* ==========================================================================
-           MODAIS CUSTOMIZADOS EXCLUSIVOS (ITEM 5 & 46)
+           FUNÇÕES GLOBAIS EXPOSTAS PARA A INTERFACE
            ========================================================================== */
-        function showUmbrellaModal({ title, htmlBody, buttons = [] }) {
+        window.loginWithGoogle = async function () {
+            try {
+                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+                if (isMobile) {
+                    await signInWithRedirect(auth, provider);
+                } else {
+                    const result = await signInWithPopup(auth, provider);
+                    if (result.user) {
+                        appState.user.uid = result.user.uid;
+                        appState.user.loggedIn = true;
+                        appState.user.name = result.user.displayName || 'Usuária Umbrella';
+                        appState.user.email = result.user.email || '';
+                        if (result.user.photoURL) appState.user.avatar = result.user.photoURL;
+                        saveLocal();
+                        applyUserTheme();
+                        renderAll();
+                        closeUmbrellaModal();
+                    }
+                }
+            } catch (err) {
+                showUmbrellaModal({
+                    title: 'Autenticação Google',
+                    htmlBody: 'Não foi possível abrir a janela de login agora: ' + err.message
+                });
+            }
+        };
+
+        window.logoutUser = async function () {
+            try {
+                await signOut(auth);
+            } catch (e) {}
+            appState.user.loggedIn = false;
+            appState.user.uid = '';
+            saveLocal();
+            closeUmbrellaModal();
+            renderAll();
+        };
+
+        window.showUmbrellaModal = function ({ title, htmlBody, buttons = [] }) {
             const backdrop = document.getElementById('customModalBackdrop');
             document.getElementById('customModalTitle').textContent = title;
             document.getElementById('customModalBody').innerHTML = htmlBody;
@@ -1463,89 +1395,79 @@
             actionsEl.innerHTML = '';
 
             if (buttons.length === 0) {
-                buttons = [{ label: 'Entendi', primary: true, onClick: closeUmbrellaModal }];
+                buttons = [{ label: 'Fechar', primary: true, onClick: closeUmbrellaModal }];
             }
 
             buttons.forEach(btn => {
                 const b = document.createElement('button');
                 b.textContent = btn.label;
-                b.className = btn.primary ? 'btn-gold' : 'btn-back-feed';
+                b.className = btn.primary ? 'btn-gold' : 'btn-pill-gold';
                 b.style.width = 'auto';
-                b.onclick = () => {
-                    if (btn.onClick) btn.onClick();
-                    else closeUmbrellaModal();
-                };
+                b.onclick = () => btn.onClick ? btn.onClick() : closeUmbrellaModal();
                 actionsEl.appendChild(b);
             });
 
             backdrop.classList.add('open');
-        }
+        };
 
-        function closeUmbrellaModal() {
+        window.closeUmbrellaModal = function () {
             document.getElementById('customModalBackdrop').classList.remove('open');
-        }
+        };
 
-        /* ==========================================================================
-           LOGIN GOOGLE & CADASTRO INICIAL (ITENS 15, 16, 17)
-           ========================================================================== */
-        function openOnboardingModal() {
+        window.openProfileModal = function () {
             showUmbrellaModal({
-                title: 'Bem-vinda ao Umbrella',
+                title: 'Perfil Umbrella',
                 htmlBody: `
-                    <p style="margin-bottom:12px;">Configure seu perfil para entrar na comunidade:</p>
-                    <button class="btn-gold" style="margin-bottom:12px;" onclick="loginWithGoogle()">
+                    <button class="btn-gold" style="margin-bottom:14px;" onclick="loginWithGoogle()">
                         Entrar com Conta Google
                     </button>
                     <div class="form-group">
                         <label class="form-label">Nome</label>
-                        <input type="text" id="obName" class="glass-input" value="${appState.user.name !== 'Visitante Umbrella' ? appState.user.name : ''}" placeholder="Seu nome">
+                        <input type="text" id="obName" class="glass-input" value="${appState.user.loggedIn ? appState.user.name : ''}" placeholder="Seu nome">
                     </div>
                     <div class="form-group">
                         <label class="form-label">E-mail</label>
-                        <input type="email" id="obEmail" class="glass-input" value="${appState.user.email}" placeholder="seu@email.com">
+                        <input type="email" id="obEmail" class="glass-input" value="${appState.user.loggedIn ? appState.user.email : ''}" placeholder="seu@email.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Telefone</label>
                         <input type="tel" id="obPhone" class="glass-input" value="${appState.user.phone}" placeholder="(00) 00000-0000">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Tonalidade de Fundo Personalizada</label>
-                        <input type="color" id="obColor" value="#060a1e" style="width:100%; height:36px; border-radius:10px; border:1px solid var(--gold-border); background:transparent;">
-                    </div>
-                    <div class="form-group">
                         <label class="form-label">Foto de Perfil</label>
-                        <input type="file" id="obAvatarFile" accept="image/*" class="glass-input" style="font-size:12px;">
+                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Escolher foto do aparelho</label>
+                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Escolher foto'">
                     </div>
                 `,
                 buttons: [
+                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                     {
-                        label: 'Salvar Perfil',
+                        label: 'Salvar',
                         primary: true,
                         onClick: () => {
-                            const name = document.getElementById('obName').value.trim() || 'Usuária Umbrella';
-                            const email = document.getElementById('obEmail').value.trim() || 'usuaria@umbrella.com';
+                            const name = document.getElementById('obName').value.trim();
+                            const email = document.getElementById('obEmail').value.trim();
                             const phone = document.getElementById('obPhone').value.trim();
-                            const hexColor = document.getElementById('obColor').value;
                             const fileInput = document.getElementById('obAvatarFile');
 
-                            appState.user.name = name;
-                            appState.user.email = email;
+                            if (name) appState.user.name = name;
+                            if (email) appState.user.email = email;
                             appState.user.phone = phone;
-                            appState.user.bgColor = hexToRgba(hexColor, 0.72);
                             appState.user.loggedIn = true;
+                            if (!appState.user.uid) appState.user.uid = 'local_' + Date.now();
 
                             if (fileInput.files && fileInput.files[0]) {
                                 const reader = new FileReader();
                                 reader.onload = (e) => {
                                     appState.user.avatar = e.target.result;
-                                    saveState();
+                                    saveLocal();
                                     applyUserTheme();
                                     renderAll();
                                     closeUmbrellaModal();
                                 };
                                 reader.readAsDataURL(fileInput.files[0]);
                             } else {
-                                saveState();
+                                saveLocal();
                                 applyUserTheme();
                                 renderAll();
                                 closeUmbrellaModal();
@@ -1554,70 +1476,9 @@
                     }
                 ]
             });
-        }
+        };
 
-        function openProfileModal() {
-            openOnboardingModal();
-        }
-
-        async function loginWithGoogle() {
-            if (!firebaseInitialized) {
-                appState.user.loggedIn = true;
-                appState.user.name = 'Usuária Google';
-                appState.user.email = 'usuaria.google@gmail.com';
-                saveState();
-                applyUserTheme();
-                renderAll();
-                closeUmbrellaModal();
-                showUmbrellaModal({
-                    title: 'Conectado!',
-                    htmlBody: 'Perfil sincronizado com sucesso. (Insira suas chaves Firebase no código para autenticação real em produção).'
-                });
-                return;
-            }
-            try {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                const result = await firebase.auth().signInWithPopup(provider);
-                appState.user.loggedIn = true;
-                appState.user.name = result.user.displayName || 'Usuária Umbrella';
-                appState.user.email = result.user.email || '';
-                if (result.user.photoURL) appState.user.avatar = result.user.photoURL;
-                saveState();
-                applyUserTheme();
-                renderAll();
-                closeUmbrellaModal();
-            } catch (err) {
-                showUmbrellaModal({
-                    title: 'Aviso de Autenticação',
-                    htmlBody: 'Não foi possível completar o pop-up do Google agora: ' + err.message
-                });
-            }
-        }
-
-        function hexToRgba(hex, alpha) {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        }
-
-        function applyUserTheme() {
-            document.documentElement.style.setProperty('--user-tint', appState.user.bgColor);
-            document.getElementById('headerUserAvatar').src = appState.user.avatar;
-            document.getElementById('profileCardAvatar').src = appState.user.avatar;
-            document.getElementById('profileCardName').textContent = appState.user.name;
-            document.getElementById('profileCardEmail').textContent = appState.user.email;
-            document.getElementById('spotifyLinkInput').value = appState.user.spotifyUrl || '';
-
-            if (appState.bias && appState.bias.id) {
-                document.getElementById('profileCardBias').textContent = `Bias: ${appState.bias.name} (${appState.bias.role} #${appState.bias.id})`;
-            }
-        }
-
-        /* ==========================================================================
-           NAVEGAÇÃO UNIFICADA POR BOLINHAS (ITEM 12, 13, 14)
-           ========================================================================== */
-        function switchView(viewName) {
+        window.switchView = function (viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.nav-bubble').forEach(el => el.classList.remove('active'));
 
@@ -1629,22 +1490,18 @@
 
             window.scrollTo({ top: 0, behavior: 'smooth' });
             renderAll();
-        }
+        };
 
-        // Item 14: Ao clicar em qualquer bolinha do pódio (1, 2 ou 3), abre a foto inteira na tela
-        function openPodiumFullscreen(rank) {
+        window.openPodiumFullscreen = function (rank) {
             const item = appState.podium[rank];
             if (!item) return;
             openLightbox(item.img, 'image', item.title);
-        }
+        };
 
-        /* ==========================================================================
-           TRILHA SONORA SPOTIFY & ÁUDIO DE FUNDO (ITENS 19 E 20)
-           ========================================================================== */
-        function saveSpotifyTrack() {
+        window.saveSpotifyTrack = function () {
             const url = document.getElementById('spotifyLinkInput').value.trim();
             appState.user.spotifyUrl = url;
-            saveState();
+            saveLocal();
 
             const container = document.getElementById('spotifyEmbedContainer');
             if (url.includes('spotify.com')) {
@@ -1652,48 +1509,40 @@
                 container.innerHTML = `<iframe style="border-radius:12px" src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
                 container.style.display = 'block';
                 ambientPlaying = true;
-                document.getElementById('spotifyPlayPauseBtn').textContent = '⏸ Pausar';
+                document.getElementById('spotifyPlayPauseBtn').textContent = '⏸';
             } else {
                 showUmbrellaModal({
                     title: 'Trilha Sonora',
-                    htmlBody: 'Cole um link válido de música ou playlist do Spotify para tocar no seu perfil.'
+                    htmlBody: 'Cole um link válido de música ou playlist do Spotify.'
                 });
             }
-        }
+        };
 
-        function toggleAmbientMusic() {
+        window.toggleAmbientMusic = function () {
             const container = document.getElementById('spotifyEmbedContainer');
             const btn = document.getElementById('spotifyPlayPauseBtn');
             if (ambientPlaying) {
                 container.style.display = 'none';
                 ambientPlaying = false;
-                btn.textContent = '▶ Tocar';
-            } else {
-                if (appState.user.spotifyUrl) {
-                    container.style.display = 'block';
-                    ambientPlaying = true;
-                    btn.textContent = '⏸ Pausar';
-                }
+                btn.textContent = '▶';
+            } else if (appState.user.spotifyUrl) {
+                container.style.display = 'block';
+                ambientPlaying = true;
+                btn.textContent = '⏸';
             }
-        }
+        };
 
-        /* ==========================================================================
-           MECÂNICA NATIVA DE CÂMERA E GALERIA (ITENS 21, 22, 23, 24)
-           ========================================================================== */
-        async function triggerNativeCameraGallery() {
-            // Solicita permissão de mídia para liberar o quadradinho da galeria e recursos nativos da câmera
+        window.triggerNativeCameraGallery = async function () {
             try {
                 if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
                     const stream = await navigator.mediaDevices.getUserMedia({ video: true });
                     stream.getTracks().forEach(t => t.stop());
                 }
-            } catch (e) {
-                // Prossegue normalmente para o seletor nativo do dispositivo
-            }
+            } catch (e) {}
             document.getElementById('nativeMediaInput').click();
-        }
+        };
 
-        function handleMediaSelected(event) {
+        window.handleMediaSelected = function (event) {
             const file = event.target.files[0];
             if (!file) return;
 
@@ -1706,18 +1555,15 @@
                 document.getElementById('mediaPreviewStrip').style.display = 'flex';
             };
             reader.readAsDataURL(file);
-        }
+        };
 
-        function clearAttachedMedia() {
+        window.clearAttachedMedia = function () {
             currentAttachedMedia = null;
             currentAttachedType = null;
             document.getElementById('nativeMediaInput').value = '';
             document.getElementById('mediaPreviewStrip').style.display = 'none';
-        }
+        };
 
-        /* ==========================================================================
-           GESTÃO DE BIAS (1 A 1000), TRAVA DE 30 DIAS & VALIDAÇÃO DE PIXELS (ITENS 25-28)
-           ========================================================================== */
         function computeImageHistogram(dataUrl) {
             return new Promise((resolve) => {
                 const img = new Image();
@@ -1734,23 +1580,22 @@
                         g += data[i + 1];
                         b += data[i + 2];
                     }
-                    const totalPixels = 32 * 32;
-                    resolve({ r: r / totalPixels, g: g / totalPixels, b: b / totalPixels });
+                    const total = 32 * 32;
+                    resolve({ r: r / total, g: g / total, b: b / total });
                 };
                 img.src = dataUrl;
             });
         }
 
-        async function saveBiasRegistration() {
+        window.saveBiasRegistration = async function () {
             const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
             const now = Date.now();
 
-            // Item 26: Trava estrita de 30 dias
             if (appState.bias.id && (now - appState.bias.lastUpdated) < thirtyDaysMs) {
                 const daysLeft = Math.ceil((thirtyDaysMs - (now - appState.bias.lastUpdated)) / (24 * 60 * 60 * 1000));
                 showUmbrellaModal({
-                    title: 'Trava de Segurança Ativa',
-                    htmlBody: `Para evitar fraudes nas dinâmicas, seu Bias <strong>${appState.bias.name} (#${appState.bias.id})</strong> está travado. Você poderá alterar novamente em <strong>${daysLeft} dia(s)</strong>.`
+                    title: 'Trava de Segurança (30 Dias)',
+                    htmlBody: `Seu Bias <strong>${appState.bias.name} (#${appState.bias.id})</strong> está travado. Nova alteração liberada em <strong>${daysLeft} dia(s)</strong>.`
                 });
                 return;
             }
@@ -1763,7 +1608,7 @@
             if (!name || isNaN(idNum) || idNum < 1 || idNum > 1000) {
                 showUmbrellaModal({
                     title: 'Dados Incompletos',
-                    htmlBody: 'Informe o nome do seu Bias e uma numeração oficial entre <strong>1 e 1000</strong>.'
+                    htmlBody: 'Informe o nome do Bias e uma numeração oficial entre <strong>1 e 1000</strong>.'
                 });
                 return;
             }
@@ -1778,47 +1623,42 @@
                 hist = await computeImageHistogram(dataUrl);
             }
 
-            appState.bias = {
-                name,
-                role,
-                id: idNum,
-                lastUpdated: now,
-                refHistogram: hist
-            };
-            saveState();
+            appState.bias = { name, role, id: idNum, lastUpdated: now, refHistogram: hist };
+            saveLocal();
             applyUserTheme();
             renderAll();
 
             showUmbrellaModal({
-                title: 'Representante Confirmado!',
-                htmlBody: `Seu Bias <strong>${name}</strong> (${role} • ID #${idNum}) foi cadastrado com sucesso e travado por 30 dias.`
+                title: 'Representante Salvo!',
+                htmlBody: `Bias <strong>${name}</strong> (${role} • #${idNum}) cadastrado e travado por 30 dias.`
             });
-        }
+        };
 
-        // Item 27 & 28: Validação de pixels antes de publicar no desafio
         async function validatePhotoAgainstBias(photoDataUrl) {
             if (!appState.bias.refHistogram) return true;
             const postHist = await computeImageHistogram(photoDataUrl);
             const ref = appState.bias.refHistogram;
             const diff = Math.abs(postHist.r - ref.r) + Math.abs(postHist.g - ref.g) + Math.abs(postHist.b - ref.b);
-            return diff < 260; // Tolerância de iluminação mantendo assinatura cromática do cadastro
+            return diff < 260;
         }
 
-        /* ==========================================================================
-           CRIAÇÃO DE POSTAGENS, CURTIDAS GUARDA-CHUVA E VOTOS
-           ========================================================================== */
-        async function submitPost() {
+        window.submitPost = async function () {
             const input = document.getElementById('mainComposerInput');
             const text = input.value.trim();
             if (!text && !currentAttachedMedia) return;
+
+            if (!appState.user.loggedIn) {
+                openProfileModal();
+                return;
+            }
 
             const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
 
             if (isChallengeView) {
                 if (!appState.bias.id) {
                     showUmbrellaModal({
-                        title: 'Escolha seu Representante',
-                        htmlBody: 'Cadastre seu Bias (ID 1 a 1000) acima antes de publicar no Desafio Semanal.'
+                        title: 'Bias Obrigatório',
+                        htmlBody: 'Cadastre seu Bias representante antes de participar do Desafio.'
                     });
                     return;
                 }
@@ -1826,15 +1666,15 @@
                     const valid = await validatePhotoAgainstBias(currentAttachedMedia);
                     if (!valid) {
                         showUmbrellaModal({
-                            title: 'Aviso Carinhoso do Umbrella ☔',
-                            htmlBody: `Ops! Esta imagem diverge da referência cadastrada para o seu Bias <strong>${appState.bias.name} (#${appState.bias.id})</strong>. Envie uma foto correspondente ao representante escolhido para a semana.`
+                            title: 'Aviso Carinhoso ☔',
+                            htmlBody: `A imagem enviada diverge da referência do seu Bias <strong>${appState.bias.name} (#${appState.bias.id})</strong>.`
                         });
                         return;
                     }
                 }
             }
 
-            const newPost = {
+            const newPostObj = {
                 id: 'post_' + Date.now(),
                 author: appState.user.name,
                 avatar: appState.user.avatar,
@@ -1849,28 +1689,48 @@
                 comments: []
             };
 
-            appState.posts.unshift(newPost);
+            appState.posts.unshift(newPostObj);
             appState.history.unshift({
-                action: isChallengeView ? 'Participou do Desafio Semanal' : 'Publicou no Feed',
-                detail: text || 'Mídia compartilhada',
+                action: isChallengeView ? 'Participou do Desafio' : 'Publicou no Feed',
+                detail: text || 'Mídia anexada',
                 time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
             });
 
             input.value = '';
             clearAttachedMedia();
-            saveState();
+            saveLocal();
             renderAll();
-        }
 
-        function toggleLikeUmbrella(postId) {
+            // Grava no seu Firestore real (new-drama-e729b)
+            try {
+                await addDoc(collection(db, "umbrella_posts"), {
+                    author: newPostObj.author,
+                    avatar: newPostObj.avatar,
+                    text: newPostObj.text,
+                    media: newPostObj.media,
+                    mediaType: newPostObj.mediaType,
+                    likes: 0,
+                    likedBy: [],
+                    fandom: newPostObj.fandom,
+                    isChallenge: newPostObj.isChallenge,
+                    createdAt: serverTimestamp(),
+                    createdAtMs: Date.now(),
+                    comments: []
+                });
+            } catch (e) {
+                console.warn("Salvo localmente (verifique regras do Firestore):", e.message);
+            }
+        };
+
+        window.toggleLikeUmbrella = async function (postId) {
             const post = appState.posts.find(p => p.id === postId);
             if (!post) return;
 
             if (post.isChallenge && !post.likedByMe) {
                 if (appState.dailyVotes.used >= 3) {
                     showUmbrellaModal({
-                        title: 'Limite Diário Atingido',
-                        htmlBody: 'Você já utilizou seus <strong>3 votos diários</strong> no desafio de hoje. Seus votos serão renovados automaticamente à meia-noite (00:00:00).'
+                        title: 'Limite de 3 Votos Diários',
+                        htmlBody: 'Você já usou seus 3 votos de hoje. Novo ciclo às 00:00:00.'
                     });
                     return;
                 }
@@ -1885,38 +1745,47 @@
             if (post.likedByMe) {
                 appState.history.unshift({
                     action: 'Curtiu com guarda-chuva',
-                    detail: `Publicação de ${post.author}`,
+                    detail: `Postagem de ${post.author}`,
                     time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
                 });
             }
 
-            saveState();
+            saveLocal();
             renderAll();
-        }
 
-        // Item 46: Menu de Três Pontinhos (...) -> Comentar ou Compartilhar Umbrella
-        function toggleDotsMenu(postId) {
+            try {
+                if (!postId.startsWith('post_')) {
+                    await updateDoc(doc(db, "umbrella_posts", postId), {
+                        likes: increment(post.likedByMe ? 1 : -1)
+                    });
+                }
+            } catch (e) {}
+        };
+
+        window.toggleDotsMenu = function (postId) {
             document.querySelectorAll('.dots-dropdown').forEach(el => {
                 if (el.id !== 'dots-' + postId) el.classList.remove('open');
             });
             const menu = document.getElementById('dots-' + postId);
             if (menu) menu.classList.toggle('open');
-        }
+        };
 
-        function openCommentModal(postId) {
+        window.openCommentModal = function (postId) {
             toggleDotsMenu(postId);
             const post = appState.posts.find(p => p.id === postId);
             if (!post) return;
 
-            const existing = post.comments.map(c => `<div style="padding:6px 10px; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:6px; font-size:12.5px;">💬 ${c}</div>`).join('');
+            const existing = post.comments.map(c =>
+                `<div style="padding:6px 10px; background:rgba(255,255,255,0.04); border-radius:10px; margin-bottom:6px; font-size:12.5px;">${c}</div>`
+            ).join('');
 
             showUmbrellaModal({
                 title: 'Comentários',
                 htmlBody: `
                     <div style="max-height:180px; overflow-y:auto; margin-bottom:10px;">
-                        ${existing || '<p style="color:var(--text-muted); font-size:12px;">Seja a primeira a comentar!</p>'}
+                        ${existing || '<p style="color:var(--text-muted); font-size:12px;">Nenhum comentário ainda.</p>'}
                     </div>
-                    <input type="text" id="newCommentInput" class="glass-input" placeholder="Escreva um comentário...">
+                    <input type="text" id="newCommentInput" class="glass-input" placeholder="Escreva seu comentário...">
                 `,
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
@@ -1927,7 +1796,7 @@
                             const val = document.getElementById('newCommentInput').value.trim();
                             if (val) {
                                 post.comments.push(`${appState.user.name}: ${val}`);
-                                saveState();
+                                saveLocal();
                                 renderAll();
                             }
                             closeUmbrellaModal();
@@ -1935,15 +1804,15 @@
                     }
                 ]
             });
-        }
+        };
 
-        function shareUmbrellaPost(postId) {
+        window.shareUmbrellaPost = function (postId) {
             toggleDotsMenu(postId);
             const post = appState.posts.find(p => p.id === postId);
             if (!post) return;
 
             appState.posts.unshift({
-                id: 'share_' + Date.now(),
+                id: 'post_' + Date.now(),
                 author: appState.user.name,
                 avatar: appState.user.avatar,
                 text: `☔ Compartilhado de ${post.author}: "${post.text}"`,
@@ -1956,58 +1825,48 @@
                 createdAt: Date.now(),
                 comments: []
             });
-            saveState();
+            saveLocal();
             renderAll();
-            showUmbrellaModal({
-                title: 'Umbrella Compartilhado!',
-                htmlBody: 'A postagem foi recompartilhada no seu feed.'
-            });
-        }
+        };
 
-        /* ==========================================================================
-           FLUXO SOCIAL: "QUERO ASSISTIR UM DORAMA", GOTINHA E CHAT PRIVADO (ITENS 38-41)
-           ========================================================================== */
-        function triggerDoramaInvite(targetUser) {
+        window.triggerDoramaInvite = function (targetUser) {
+            if (!targetUser || targetUser === appState.user.name) {
+                showUmbrellaModal({
+                    title: 'Quero assistir um dorama 🎬',
+                    htmlBody: 'Seu status interativo está ativo no perfil para outros membros clicarem!'
+                });
+                return;
+            }
             appState.notifications.unshift({
                 id: 'notif_' + Date.now(),
                 from: targetUser,
                 avatar: 'amigos.png',
-                text: `${targetUser} recebeu seu sinal "Quero assistir um dorama" 🎬💧`
+                text: `Você enviou um pedido "Quero assistir um dorama" para ${targetUser} 💧`
             });
-            saveState();
+            saveLocal();
             updateNotifBadge();
-            showUmbrellaModal({
-                title: 'Pedido Enviado 💧',
-                htmlBody: `Seu convite <strong>"Quero assistir um dorama"</strong> foi disparado para a gotinha de notificações!`
-            });
-        }
+        };
 
-        function updateNotifBadge() {
-            const badge = document.getElementById('notifBadge');
-            badge.textContent = appState.notifications.length;
-            badge.style.display = appState.notifications.length > 0 ? 'flex' : 'none';
-        }
-
-        function openNotificationsModal() {
+        window.openNotificationsModal = function () {
             if (appState.notifications.length === 0) {
                 showUmbrellaModal({
                     title: 'Gotinha de Notificações 💧',
-                    htmlBody: 'Nenhuma nova solicitação no momento.'
+                    htmlBody: 'Nenhuma solicitação pendente no momento.'
                 });
                 return;
             }
 
             const notif = appState.notifications[0];
             showUmbrellaModal({
-                title: 'Solicitação Recebida 💧',
-                htmlBody: `<p>${notif.text}</p><p style="margin-top:8px; font-size:12px; color:var(--text-muted);">Deseja aceitar e liberar a amizade e o chat privado?</p>`,
+                title: 'Solicitação de Amizade 💧',
+                htmlBody: `<p>${notif.text}</p>`,
                 buttons: [
                     {
                         label: 'Não',
                         primary: false,
                         onClick: () => {
                             appState.notifications.shift();
-                            saveState();
+                            saveLocal();
                             updateNotifBadge();
                             closeUmbrellaModal();
                         }
@@ -2017,26 +1876,26 @@
                         primary: true,
                         onClick: () => {
                             appState.notifications.shift();
-                            const newFriend = {
+                            const friend = {
                                 id: 'friend_' + Date.now(),
                                 name: notif.from,
                                 avatar: notif.avatar,
-                                status: 'Amizade aceita • Chat liberado',
-                                messages: [{ sender: 'them', text: 'Oi! Aceitei seu convite para assistirmos juntas!' }]
+                                status: 'Amizade aceita',
+                                messages: []
                             };
-                            appState.friends.unshift(newFriend);
-                            saveState();
+                            appState.friends.unshift(friend);
+                            saveLocal();
                             updateNotifBadge();
                             renderAll();
                             closeUmbrellaModal();
-                            openPrivateChat(newFriend.id);
+                            openPrivateChat(friend.id);
                         }
                     }
                 ]
             });
-        }
+        };
 
-        function openPrivateChat(friendId) {
+        window.openPrivateChat = function (friendId) {
             const friend = appState.friends.find(f => f.id === friendId);
             if (!friend) return;
 
@@ -2045,51 +1904,47 @@
             ).join('');
 
             showUmbrellaModal({
-                title: `Chat Privado • ${friend.name}`,
+                title: `Chat • ${friend.name}`,
                 htmlBody: `
-                    <div class="chat-messages" id="privateChatBox">${msgsHtml || '<p style="font-size:12px; color:var(--text-muted);">Inicie a conversa...</p>'}</div>
-                    <div class="gemini-composer" style="padding:5px 8px;">
+                    <div class="chat-messages">${msgsHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhuma mensagem ainda.</p>'}</div>
+                    <div class="gemini-composer" style="padding:4px 8px;">
                         <button type="button" class="composer-plus-btn" style="width:30px; height:30px; font-size:18px;" onclick="triggerNativeCameraGallery()">+</button>
                         <input type="text" id="privateChatInput" class="composer-input" placeholder="Mensagem...">
                         <button type="button" class="composer-send-btn" style="width:30px; height:30px; font-size:14px;" onclick="sendPrivateMessage('${friend.id}')">➤</button>
                     </div>
                 `,
-                buttons: [{ label: 'Fechar Chat', primary: false, onClick: closeUmbrellaModal }]
+                buttons: [{ label: 'Fechar', primary: false, onClick: closeUmbrellaModal }]
             });
-        }
+        };
 
-        function sendPrivateMessage(friendId) {
+        window.sendPrivateMessage = function (friendId) {
             const friend = appState.friends.find(f => f.id === friendId);
             const inp = document.getElementById('privateChatInput');
             if (!friend || !inp || !inp.value.trim()) return;
-
             friend.messages.push({ sender: 'me', text: inp.value.trim() });
-            saveState();
+            saveLocal();
             openPrivateChat(friendId);
-        }
+        };
 
-        /* ==========================================================================
-           FANDOMS & SUBGRUPOS COM FAIL-SAFE DE MODERAÇÃO (ITENS 35-37)
-           ========================================================================== */
-        function selectFandom(fandomName) {
+        window.selectFandom = function (fandomName) {
             activeFandomFilter = fandomName;
             const filtered = appState.posts.filter(p => p.fandom === fandomName);
             const container = document.getElementById('selectedFandomFeed');
 
-            let html = `<div class="glass-panel" style="padding:12px 14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-size:13px; color:var(--gold-accent); font-weight:700;">Comunidade: ${fandomName}</span>
-                <button class="btn-back-feed" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Limpar</button>
+            let html = `<div class="glass-panel" style="padding:11px 14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:13px; color:var(--gold-accent); font-weight:700;">Fandom: ${fandomName}</span>
+                <button class="btn-pill-gold" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Fechar</button>
             </div>`;
 
             if (filtered.length === 0) {
-                html += `<div class="glass-panel" style="padding:16px; text-align:center; font-size:13px; color:var(--text-muted);">Nenhuma postagem ainda em ${fandomName}. Use a barra inferior para postar aqui!</div>`;
+                html += `<div class="glass-panel empty-state-box">Nenhuma publicação neste fandom ainda. Use a barra abaixo para iniciar!</div>`;
             } else {
                 html += filtered.map(renderPostCardHTML).join('');
             }
             container.innerHTML = html;
-        }
+        };
 
-        function openCreateSubgroupModal() {
+        window.openCreateSubgroupModal = function () {
             showUmbrellaModal({
                 title: 'Criar Subgrupo',
                 htmlBody: `
@@ -2105,9 +1960,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Nome do Subgrupo</label>
-                        <input type="text" id="sgName" class="glass-input" placeholder="Ex: Maratona Doramas Clássicos">
+                        <input type="text" id="sgName" class="glass-input" placeholder="Nome do subgrupo">
                     </div>
-                    <p style="font-size:11px; color:var(--text-muted);">Fail-safe ativo: em caso de inatividade prolongada da criadora, a moderação passa automaticamente para a usuária mais ativa.</p>
                 `,
                 buttons: [
                     { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
@@ -2125,7 +1979,7 @@
                                     moderator: appState.user.name,
                                     lastActive: Date.now()
                                 });
-                                saveState();
+                                saveLocal();
                                 selectFandom(parent);
                             }
                             closeUmbrellaModal();
@@ -2133,40 +1987,37 @@
                     }
                 ]
             });
-        }
+        };
 
-        /* ==========================================================================
-           PAINEL ADM MESTRE OCULTO NO ACONCHEGO (ITENS 42, 43 E 45)
-           ========================================================================== */
-        function checkStealthAccess(val) {
+        window.checkStealthAccess = function (val) {
             const clean = val.trim().toLowerCase();
             if (clean === 'luanaeandrels' || clean === 'luanaeandre') {
                 document.getElementById('stealthAdminInput').value = '';
                 openMasterAdminPanel();
             }
-        }
+        };
 
         function openMasterAdminPanel() {
             showUmbrellaModal({
-                title: 'Painel Mestre • Gestão Umbrella',
+                title: 'Painel Mestre • Administração',
                 htmlBody: `
                     <div class="form-group">
                         <label class="form-label">Diretriz Semanal (Domingo)</label>
                         <input type="text" id="admDirective" class="glass-input" value="${appState.directive}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Apuração Automática do Pódio (Sexta-Feira)</label>
-                        <button class="btn-gold" onclick="calculateFridayPodium()">Apurar Pódio Oficial Agora</button>
+                        <label class="form-label">Apuração Oficial (Sexta-Feira)</label>
+                        <button class="btn-gold" onclick="calculateFridayPodium()">Atualizar Pódio Agora</button>
                     </div>
                 `,
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
                     {
-                        label: 'Salvar Diretriz',
+                        label: 'Salvar',
                         primary: true,
                         onClick: () => {
                             appState.directive = document.getElementById('admDirective').value.trim();
-                            saveState();
+                            saveLocal();
                             renderAll();
                             closeUmbrellaModal();
                         }
@@ -2175,25 +2026,17 @@
             });
         }
 
-        // Item 34: Apuração de Pódio na Sexta-Feira
-        function calculateFridayPodium() {
+        window.calculateFridayPodium = function () {
             const sorted = [...appState.posts].sort((a, b) => b.likes - a.likes);
-            if (sorted[0]) appState.podium[1] = { img: sorted[0].media || sorted[0].avatar, title: `1º Lugar - ${sorted[0].author} (${sorted[0].likes} votos)` };
-            if (sorted[1]) appState.podium[2] = { img: sorted[1].media || sorted[1].avatar, title: `2º Lugar - ${sorted[1].author} (${sorted[1].likes} votos)` };
-            if (sorted[2]) appState.podium[3] = { img: sorted[2].media || sorted[2].avatar, title: `3º Lugar - ${sorted[2].author} (${sorted[2].likes} votos)` };
-            saveState();
+            if (sorted[0]) appState.podium[1] = { img: sorted[0].media || sorted[0].avatar, title: `1º Lugar • ${sorted[0].author} (${sorted[0].likes} votos)` };
+            if (sorted[1]) appState.podium[2] = { img: sorted[1].media || sorted[1].avatar, title: `2º Lugar • ${sorted[1].author} (${sorted[1].likes} votos)` };
+            if (sorted[2]) appState.podium[3] = { img: sorted[2].media || sorted[2].avatar, title: `3º Lugar • ${sorted[2].author} (${sorted[2].likes} votos)` };
+            saveLocal();
             renderAll();
             closeUmbrellaModal();
-            showUmbrellaModal({
-                title: 'Pódio Atualizado!',
-                htmlBody: 'As 3 bolinhas do Pódio oficial foram atualizadas com os mais votados da semana.'
-            });
-        }
+        };
 
-        /* ==========================================================================
-           LIGHTBOX ESTILO PINTEREST (ITEM 44)
-           ========================================================================== */
-        function openLightbox(src, type, caption = '') {
+        window.openLightbox = function (src, type, caption = '') {
             if (!src) return;
             const lb = document.getElementById('pinterestLightbox');
             const container = document.getElementById('lightboxMediaContainer');
@@ -2205,17 +2048,46 @@
                 container.innerHTML = `<img src="${src}" class="lightbox-media" alt="">`;
             }
             lb.classList.add('open');
-        }
+        };
 
-        function closeLightbox() {
+        window.closeLightbox = function () {
             const lb = document.getElementById('pinterestLightbox');
             document.getElementById('lightboxMediaContainer').innerHTML = '';
             lb.classList.remove('open');
-        }
+        };
 
         /* ==========================================================================
-           RENDERIZAÇÃO GERAL DA INTERFACE
+           HELPERS DE RENDERIZAÇÃO & CICLOS AUTOMÁTICOS
            ========================================================================== */
+        function migrateOldChallengePosts() {
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            appState.posts.forEach(p => {
+                if (p.isChallenge && (now - p.createdAt) >= twentyFourHours) {
+                    p.isChallenge = false;
+                }
+            });
+        }
+
+        function updateNotifBadge() {
+            const badge = document.getElementById('notifBadge');
+            badge.textContent = appState.notifications.length;
+            badge.style.display = appState.notifications.length > 0 ? 'flex' : 'none';
+        }
+
+        function applyUserTheme() {
+            document.documentElement.style.setProperty('--user-tint', appState.user.bgColor);
+            document.getElementById('headerUserAvatar').src = appState.user.avatar;
+            document.getElementById('profileCardAvatar').src = appState.user.avatar;
+            document.getElementById('profileCardName').textContent = appState.user.name;
+            document.getElementById('profileCardEmail').textContent = appState.user.email;
+            document.getElementById('spotifyLinkInput').value = appState.user.spotifyUrl || '';
+
+            if (appState.bias && appState.bias.id) {
+                document.getElementById('profileCardBias').textContent = `Bias: ${appState.bias.name} (${appState.bias.role} #${appState.bias.id})`;
+            }
+        }
+
         function renderPostCardHTML(post) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video'
@@ -2233,7 +2105,7 @@
                                 <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : post.fandom}</div>
                             </div>
                         </div>
-                        <span class="post-tag">${post.isChallenge ? 'Votação Ativa' : post.fandom}</span>
+                        <span class="post-tag">${post.isChallenge ? 'Votação' : post.fandom}</span>
                     </div>
 
                     ${post.text ? `<p class="post-text">${post.text}</p>` : ''}
@@ -2241,7 +2113,7 @@
 
                     <div class="post-actions">
                         <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
-                            <img src="guarda-chuva.png" alt="Curtir">
+                            <img src="guarda-chuva.png" alt="">
                             <span>${post.likes}</span>
                         </button>
 
@@ -2256,25 +2128,15 @@
             `;
         }
 
-        function updateVoteUI() {
-            const counterEl = document.getElementById('dailyVotesCounter');
-            if (counterEl) {
-                counterEl.textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
-            }
-        }
-
         function renderAll() {
-            // Pódio
             document.getElementById('podiumImg1').src = appState.podium[1].img;
             document.getElementById('podiumImg2').src = appState.podium[2].img;
             document.getElementById('podiumImg3').src = appState.podium[3].img;
 
-            // Diretriz & Votos
             document.getElementById('weeklyDirectiveText').textContent = appState.directive;
-            updateVoteUI();
+            document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
             updateNotifBadge();
 
-            // Status do Bias
             if (appState.bias.id) {
                 document.getElementById('biasNameInput').value = appState.bias.name;
                 document.getElementById('biasRoleInput').value = appState.bias.role;
@@ -2282,40 +2144,60 @@
                 document.getElementById('biasLockStatus').textContent = `Representante travado por 30 dias: ${appState.bias.name} (#${appState.bias.id})`;
             }
 
-            // Feed Geral
+            // Feed Geral (Sem dados fictícios)
             const generalPosts = appState.posts.filter(p => !p.isChallenge);
-            document.getElementById('mainFeedList').innerHTML = generalPosts.map(renderPostCardHTML).join('');
+            document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0
+                ? generalPosts.map(renderPostCardHTML).join('')
+                : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar algo!</div>`;
 
-            // Feed Desafio
+            // Feed Desafio (Sem dados fictícios)
             const challengePosts = appState.posts.filter(p => p.isChallenge);
-            document.getElementById('challengeFeedList').innerHTML = challengePosts.map(renderPostCardHTML).join('');
+            document.getElementById('challengeFeedList').innerHTML = challengePosts.length > 0
+                ? challengePosts.map(renderPostCardHTML).join('')
+                : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio desta semana ainda.</div>`;
 
-            // Lista de Amigos
-            document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
-                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${f.avatar}" style="width:44px; height:44px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
-                        <div>
-                            <div style="font-size:14px; font-weight:700;">${f.name}</div>
-                            <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
+            // Lista de Amigos (Sem pessoas fictícias)
+            document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0
+                ? appState.friends.map(f => `
+                    <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${f.avatar}" style="width:44px; height:44px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                            <div>
+                                <div style="font-size:14px; font-weight:700;">${f.name}</div>
+                                <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
+                            </div>
                         </div>
+                        <button class="btn-pill-gold" onclick="openPrivateChat('${f.id}')">Chat</button>
                     </div>
-                    <button class="spotify-btn" onclick="openPrivateChat('${f.id}')">Chat</button>
-                </div>
-            `).join('');
+                `).join('')
+                : `<div class="glass-panel empty-state-box">Sua lista de amigos está vazia.<br>Clique em "Quero assistir um dorama" nos perfis para conectar!</div>`;
 
-            // Histórico Aconchego
-            const histHtml = appState.history.length > 0
+            // Histórico Aconchego (Sem dados fictícios)
+            document.getElementById('aconchegoHistoryList').innerHTML = appState.history.length > 0
                 ? appState.history.map(h => `
                     <div class="glass-panel" style="padding:12px 14px; font-size:12.5px;">
                         <strong style="color:var(--gold-accent);">${h.action}</strong> • <span style="color:var(--text-muted);">${h.time}</span>
                         <p style="margin-top:4px;">${h.detail}</p>
                     </div>
                 `).join('')
-                : `<div class="glass-panel" style="padding:16px; text-align:center; font-size:13px; color:var(--text-muted);">Suas interações e memórias aparecerão aqui.</div>`;
-
-            document.getElementById('aconchegoHistoryList').innerHTML = histHtml;
+                : `<div class="glass-panel empty-state-box">Seu histórico pessoal aparecerá aqui conforme você interagir.</div>`;
         }
+
+        // Scroll dinâmico da logo
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('topHeader');
+            if (window.scrollY > 30) header.classList.add('scrolled');
+            else header.classList.remove('scrolled');
+        });
+
+        // Inicialização
+        const todayStr = new Date().toDateString();
+        if (appState.dailyVotes.date !== todayStr) {
+            appState.dailyVotes = { date: todayStr, used: 0 };
+            saveLocal();
+        }
+        applyUserTheme();
+        renderAll();
     </script>
 </body>
-  </html>
+</html>
