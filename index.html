@@ -6,7 +6,7 @@
     <title>Umbrella</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#060a1e">
-    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="icon" type="image/png" href="./logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,11 +14,9 @@
 
     <style>
         :root {
-            --bg-base: transparent;
             --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-dark: rgba(14, 18, 34, 0.22);
+            --glass-dark: rgba(14, 18, 34, 0.25);
             --gold-border: rgba(251, 191, 36, 0.45);
-            --gold-glow: rgba(251, 191, 36, 0.25);
             --gold-accent: #fbbf24;
             --text-main: #f8fafc;
             --text-muted: #e2e8f0;
@@ -36,32 +34,24 @@
         html, body {
             width: 100%;
             min-height: 100vh;
-            background-color: #060a1e;
+            background: transparent !important;
             color: var(--text-main);
             overflow-x: hidden;
             color-scheme: dark;
         }
 
-        /* FUNDO EXPANDIDO POR TODA A TELA DO MONITOR */
-        .fixed-background {
+        /* FUNDO DIRETO POR IMAGEM REAL - COBRE 100% DA TELA SEM BARREIRA */
+        #bgImageLayer {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            z-index: -2;
-            background-color: #060a1e;
-            background-image: var(--custom-bg-image, url('fundo.png'));
-            background-size: cover;
-            background-position: center center;
-            background-repeat: no-repeat;
-        }
-
-        .fixed-backdrop-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            background: transparent;
+            object-fit: cover;
+            object-position: center center;
+            z-index: -10;
+            pointer-events: none;
+            display: block;
         }
 
         .glass-panel {
@@ -73,16 +63,16 @@
             border-radius: 22px;
         }
 
-        /* CONTAINER CENTRALIZADO NO DESKTOP */
+        /* TELA LIVRE SEM CORTES LATERAIS */
         .app-shell {
             width: 100%;
-            max-width: 850px;
-            margin: 0 auto;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            align-items: center;
             padding-bottom: 115px;
             position: relative;
+            z-index: 1;
         }
 
         .unified-top-bar {
@@ -100,8 +90,8 @@
         }
 
         .header-left-btn {
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             border: 1.5px solid var(--gold-accent);
             background: var(--glass-dark);
@@ -179,16 +169,27 @@
             padding: 0 3px;
         }
 
+        /* LOGO CENTRAL QUE SOME SUAVEMENTE AO ROLAR */
         .logo-section {
             width: 100%;
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 8px 24px 14px;
+            padding: 6px 24px 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            max-height: 190px;
+            opacity: 1;
             overflow: hidden;
+            transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+                        opacity 0.25s ease,
+                        padding 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .logo-section.scrolled {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            pointer-events: none;
         }
 
         .logo-container {
@@ -196,39 +197,48 @@
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .brand-logo {
-            height: 150px;
+            max-height: 155px;
+            max-width: 90%;
             width: auto;
+            height: auto;
             object-fit: contain;
-            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.6));
+            display: block;
+            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
         }
 
-        .logo-section.scrolled {
-            padding: 0;
-            height: 0;
-            opacity: 0;
-            pointer-events: none;
-        }
-
+        /* CARROSSEL / BARRA DE NAVEGAÇÃO PRINCIPAL */
         .main-carousel-wrapper {
-            padding: 6px 24px 20px;
+            width: 100%;
+            padding: 6px 24px 22px;
             display: flex;
-            gap: 16px;
+            gap: 18px;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             align-items: center;
-            width: 100%;
             cursor: grab;
         }
 
         .main-carousel-wrapper:active { cursor: grabbing; }
         .main-carousel-wrapper::-webkit-scrollbar { display: none; }
+
+        /* DESKTOP: TELA LIVRE, DESAFIO EXATAMENTE NO CENTRO (EMBAIXO DO LOGO),
+           1º 2º 3º À ESQUERDA E FANDOM, AMIGOS, ACONCHEGO À DIREITA */
+        @media (min-width: 769px) {
+            .main-carousel-wrapper {
+                overflow-x: visible;
+                justify-content: center;
+                gap: 24px;
+                cursor: default;
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+            .main-carousel-wrapper:active { cursor: default; }
+        }
 
         .carousel-item-clean {
             flex: 0 0 auto;
@@ -244,7 +254,7 @@
 
         .carousel-item-clean:hover { transform: translateY(-2px); }
 
-        .podium-item-box { width: 95px; }
+        .podium-item-box { width: 92px; }
 
         .podium-circle-clean {
             width: 72px;
@@ -273,7 +283,7 @@
         }
 
         .challenge-card-clean {
-            width: 250px;
+            width: 260px;
             background: var(--glass-bg);
             border: 1.5px solid var(--gold-accent);
             border-radius: 18px;
@@ -304,38 +314,51 @@
             overflow: hidden;
         }
 
-        .tab-item-box { width: 95px; }
+        /* ABAS SEM BOLINHA / SEM DELIMITAÇÃO / SEM FUNDO - SÓ A IMAGEM LIVRE */
+        .tab-item-box {
+            width: 92px;
+            background: transparent;
+            border: none;
+        }
 
-        .tab-icon-clean {
-            width: 72px;
-            height: 72px;
-            border-radius: 50%;
-            border: 1.5px solid var(--gold-border);
-            background: var(--glass-bg);
-            padding: 14px;
+        .tab-icon-free {
+            width: 74px;
+            height: 74px;
             margin-bottom: 6px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
             display: flex;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            box-shadow: none;
         }
 
-        .tab-icon-clean img { width: 100%; height: 100%; object-fit: contain; }
+        .tab-icon-free img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
+        }
 
         .tab-label-clean {
             font-size: 12px;
             font-weight: 600;
             color: var(--text-main);
             white-space: nowrap;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.7);
+            text-shadow: 0 1px 5px rgba(0,0,0,0.85);
         }
 
+        /* CONTEÚDO DO FEED CENTRALIZADO NA TELA LIVRE */
         .view-section {
             display: none;
+            width: 100%;
+            max-width: 780px;
+            margin: 0 auto;
             padding: 0 24px;
             animation: fadeIn 0.25s ease forwards;
-            width: 100%;
         }
 
         .view-section.active { display: block; }
@@ -540,7 +563,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 850px;
+            max-width: 780px;
             padding: 0 24px;
             z-index: 50;
         }
@@ -667,7 +690,8 @@
             width: 100%;
             text-align: center;
             font-size: 10.5px;
-            color: rgba(248, 250, 252, 0.65);
+            color: rgba(248, 250, 252, 0.75);
+            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
             z-index: 45;
             pointer-events: none;
         }
@@ -857,13 +881,13 @@
 </head>
 <body>
 
-    <div class="fixed-background" id="fixedBgContainer"></div>
-    <div class="fixed-backdrop-overlay"></div>
+    <!-- IMAGEM DE FUNDO DIRETA EM TELA CHEIA -->
+    <img id="bgImageLayer" src="./fundo.png" alt="">
 
     <!-- BARRA SUPERIOR UNIFICADA -->
     <div class="unified-top-bar">
         <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
-            <img id="headerUserAvatar" src="aconchego.png" alt="" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'">
+            <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
         <div class="search-balao-fininho">
@@ -878,36 +902,39 @@
 
     <div class="app-shell">
 
-        <!-- LOGO CENTRAL -->
+        <!-- LOGO CENTRAL (SOME SUAVEMENTE AO EMPURRAR/ROLAR PARA CIMA) -->
         <div class="logo-section" id="logoSection">
             <div class="logo-container" onclick="switchView('feed')">
-                <img src="logo.png" alt="Umbrella" class="brand-logo" id="brandLogo" onerror="this.src='https://placehold.co/300x150/transparent/fbbf24?text=Umbrella'">
+                <img src="./logo.png" alt="Umbrella" class="brand-logo" id="brandLogo">
             </div>
         </div>
 
-        <!-- CARROSSEL -->
+        <!-- NAVEGAÇÃO PRINCIPAL:
+             DESKTOP = 1º, 2º, 3º À ESQUERDA | DESAFIO NO CENTRO (EMBAIXO DO LOGO) | FANDOM, AMIGOS, ACONCHEGO À DIREITA
+             MOBILE = CARROSSEL HORIZONTAL NORMAL -->
         <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
-                    <img id="podiumImg1" src="guarda-chuva.png" alt="" onerror="this.src='https://placehold.co/100/transparent/fbbf24?text=1'">
+                    <img id="podiumImg1" src="./guarda-chuva.png" alt="">
                 </div>
                 <span class="podium-label-clean">1º Pódio</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(2)">
                 <div class="podium-circle-clean podium-circle-2">
-                    <img id="podiumImg2" src="fandom.png" alt="" onerror="this.src='https://placehold.co/100/transparent/cbd5e1?text=2'">
+                    <img id="podiumImg2" src="./amigos.png" alt="">
                 </div>
                 <span class="podium-label-clean">2º Pódio</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(3)">
                 <div class="podium-circle-clean podium-circle-3">
-                    <img id="podiumImg3" src="amigos.png" alt="" onerror="this.src='https://placehold.co/100/transparent/d97706?text=3'">
+                    <img id="podiumImg3" src="./aconchego.png" alt="">
                 </div>
                 <span class="podium-label-clean">3º Pódio</span>
             </div>
 
+            <!-- CENTRO EXATO NO DESKTOP (EMBAIXO DO LOGO) -->
             <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
                     <span>☔ Desafio do Dia</span>
@@ -918,18 +945,25 @@
                 <span style="font-size:10px; color:var(--gold-accent);">Ver desafio ➔</span>
             </div>
 
+            <!-- DIREITA NO DESKTOP: FANDOM, AMIGOS, ACONCHEGO -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
-                <div class="tab-icon-clean"><img src="fandom.png" alt="" onerror="this.src='https://placehold.co/100/transparent/fbbf24?text=F'"></div>
+                <div class="tab-icon-free">
+                    <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./guarda-chuva.png';">
+                </div>
                 <span class="tab-label-clean">Fandom</span>
             </div>
 
             <div class="carousel-item-clean tab-item-box" onclick="switchView('amigos')">
-                <div class="tab-icon-clean"><img src="amigos.png" alt="" onerror="this.src='https://placehold.co/100/transparent/fbbf24?text=A'"></div>
+                <div class="tab-icon-free">
+                    <img src="./amigos.png" alt="Amigos">
+                </div>
                 <span class="tab-label-clean">Amigos</span>
             </div>
 
             <div class="carousel-item-clean tab-item-box" onclick="switchView('aconchego')">
-                <div class="tab-icon-clean"><img src="aconchego.png" alt="" onerror="this.src='https://placehold.co/100/transparent/fbbf24?text=❤️'"></div>
+                <div class="tab-icon-free">
+                    <img src="./aconchego.png" alt="Aconchego">
+                </div>
                 <span class="tab-label-clean">Aconchego</span>
             </div>
         </nav>
@@ -1034,7 +1068,6 @@
 
         <div class="gemini-composer">
             <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria">+</button>
-            <!-- Inputs abertos para aceitar TODOS OS TIPOS DE IMAGEM E VÍDEO -->
             <input type="file" id="cameraDirectInput" accept="image/*,video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
@@ -1117,18 +1150,7 @@
             GoogleAuthProvider,
             onAuthStateChanged
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import {
-            getFirestore,
-            collection,
-            addDoc,
-            doc,
-            onSnapshot,
-            query,
-            orderBy,
-            updateDoc,
-            increment,
-            serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
@@ -1145,7 +1167,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v17';
+        const LOCAL_KEY = 'umbrella_clean_state_v19';
 
         const cleanInitialState = {
             user: {
@@ -1153,23 +1175,23 @@
                 loggedIn: false,
                 name: 'Luana',
                 email: 'luanaeandrels@gmail.com',
-                avatar: 'aconchego.png',
-                bgImage: ''
+                avatar: './aconchego.png',
+                bgImage: './fundo.png'
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             podium: {
-                1: { img: 'guarda-chuva.png', title: '1º Lugar • Pódio Oficial da Semana' },
-                2: { img: 'fandom.png', title: '2º Lugar • Pódio Oficial da Semana' },
-                3: { img: 'amigos.png', title: '3º Lugar • Pódio Oficial da Semana' }
+                1: { img: './guarda-chuva.png', title: '1º Lugar • Pódio Oficial da Semana' },
+                2: { img: './amigos.png', title: '2º Lugar • Pódio Oficial da Semana' },
+                3: { img: './aconchego.png', title: '3º Lugar • Pódio Oficial da Semana' }
             },
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
             unlockedFandoms: [],
             subgroups: {},
             posts: [],
             friends: [
-                { id: 'f_1', name: 'Amiga Dorama', avatar: 'amigos.png', status: 'Amizade ativa' }
+                { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
             ],
             notifications: [],
             history: []
@@ -1418,7 +1440,7 @@
                 title: `Perfil de ${appState.user.name}`,
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:14px;">
-                        <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'">
+                        <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
                         <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
                         <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || ''}</p>
                     </div>
@@ -1599,12 +1621,11 @@
             renderAll();
         };
 
-        // FUNÇÃO DE EXCLUSÃO DE POSTAGEM COM CONFIRMAÇÃO SEGURA (ADM / DONA)
         window.confirmDeletePost = function (postId) {
             toggleDotsMenu(postId);
             showUmbrellaModal({
                 title: '🗑️ Excluir Publicação',
-                htmlBody: 'Tem certeza absoluta de que deseja apagar esta foto/publicação? Esta ação não pode ser desfeita.',
+                htmlBody: 'Você realmente deseja apagar essa foto/publicação?',
                 buttons: [
                     { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                     {
@@ -1655,12 +1676,12 @@
             const existing = post.comments.map((c, idx) => `
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:rgba(255,255,255,0.04); border-radius:10px; margin-bottom:6px; font-size:12.5px;">
                     <span>${c}</span>
-                    <button class="btn-danger-pill" onclick="confirmDeleteComment('${postId}', ${idx})">✕ Apagar</button>
+                    <button class="btn-danger-pill" onclick="confirmDeleteComment('${postId}', ${idx})">✕</button>
                 </div>
             `).join('');
 
             showUmbrellaModal({
-                title: 'Comentários (Gerenciamento ADM)',
+                title: 'Comentários',
                 htmlBody: `
                     <div style="max-height:180px; overflow-y:auto; margin-bottom:10px;">${existing || '<p style="color:var(--text-muted); font-size:12px;">Nenhum comentário ainda.</p>'}</div>
                     <input type="text" id="newCommentInput" class="glass-input" placeholder="Escreva seu comentário...">
@@ -1687,7 +1708,7 @@
         window.confirmDeleteComment = function (postId, commentIndex) {
             showUmbrellaModal({
                 title: '🗑️ Excluir Comentário',
-                htmlBody: 'Você realmente deseja apagar este comentário?',
+                htmlBody: 'Você realmente deseja apagar esse comentário?',
                 buttons: [
                     { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                     {
@@ -1738,7 +1759,7 @@
             appState.notifications.unshift({
                 id: 'notif_' + Date.now(),
                 from: targetUser,
-                avatar: 'amigos.png',
+                avatar: './amigos.png',
                 text: `Pedido enviado para ${targetUser} 💧`,
                 type: 'invite'
             });
@@ -1808,11 +1829,11 @@
         window.confirmDeleteFandom = function (fandomName) {
             showUmbrellaModal({
                 title: '🗑️ Excluir Fandom',
-                htmlBody: `Deseja realmente apagar o fandom <strong>${fandomName}</strong> e todas as suas configurações?`,
+                htmlBody: `Você realmente deseja apagar o fandom <strong>${fandomName}</strong>?`,
                 buttons: [
                     { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                     {
-                        label: 'Sim, Apagar Fandom',
+                        label: 'Sim, Apagar',
                         primary: true,
                         onClick: () => {
                             appState.fandoms = appState.fandoms.filter(f => f !== fandomName);
@@ -1893,7 +1914,7 @@
                         <span style="font-size:14px; color:var(--gold-accent); font-weight:700;">Fandom: ${fandomName} (Aberto)</span>
                         <div style="display:flex; gap:6px;">
                             <button class="btn-pill-gold" onclick="openCreateSubgroupModal('${fandomName}')">+ Subgrupo</button>
-                            <button class="btn-danger-pill" onclick="confirmDeleteFandom('${fandomName}')">Excluir Fandom</button>
+                            <button class="btn-danger-pill" onclick="confirmDeleteFandom('${fandomName}')">✕ Fandom</button>
                             <button class="btn-pill-gold" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Fechar</button>
                         </div>
                     </div>
@@ -1943,7 +1964,7 @@
         window.confirmDeleteSubgroup = function (fandomName, subIndex) {
             showUmbrellaModal({
                 title: '🗑️ Excluir Subgrupo',
-                htmlBody: 'Deseja realmente apagar este subgrupo?',
+                htmlBody: 'Você realmente deseja apagar esse subgrupo?',
                 buttons: [
                     { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                     {
@@ -1996,11 +2017,10 @@
         }
 
         function applyUserTheme() {
-            document.getElementById('headerUserAvatar').src = appState.user.avatar;
-            if (appState.user.bgImage) {
-                document.documentElement.style.setProperty('--custom-bg-image', `url(${appState.user.bgImage})`);
-            } else {
-                document.documentElement.style.setProperty('--custom-bg-image', `url('fundo.png')`);
+            document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
+            const bgEl = document.getElementById('bgImageLayer');
+            if (bgEl) {
+                bgEl.src = appState.user.bgImage || './fundo.png';
             }
         }
 
@@ -2013,7 +2033,7 @@
                 <article class="glass-panel post-card">
                     <div class="post-header">
                         <div class="post-author-box" onclick="triggerDoramaInvite('${post.author}')">
-                            <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'">
+                            <img src="${post.avatar}" alt="" class="post-avatar">
                             <div>
                                 <div class="post-author-name">${post.author}</div>
                                 <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : post.fandom}</div>
@@ -2030,7 +2050,7 @@
 
                     <div class="post-actions">
                         <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
-                            <img src="guarda-chuva.png" alt="" onerror="this.src='https://placehold.co/24/transparent/fbbf24?text=☔'">
+                            <img src="./guarda-chuva.png" alt="">
                             <span>${post.likes}</span>
                         </button>
                         <button class="dots-menu-btn" onclick="toggleDotsMenu('${post.id}')">•••</button>
@@ -2078,7 +2098,7 @@
             document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0 ? appState.friends.map(f => `
                 <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${f.avatar}" style="width:48px; height:48px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'">
+                        <img src="${f.avatar}" style="width:48px; height:48px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
                         <div>
                             <div style="font-size:14px; font-weight:700;">${f.name}</div>
                             <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
@@ -2098,8 +2118,10 @@
         const carousel = document.getElementById('carouselWrapper');
         if (carousel) {
             carousel.addEventListener('wheel', (evt) => {
-                evt.preventDefault();
-                carousel.scrollLeft += evt.deltaY;
+                if (window.innerWidth <= 768) {
+                    evt.preventDefault();
+                    carousel.scrollLeft += evt.deltaY;
+                }
             });
 
             let isDown = false;
@@ -2107,6 +2129,7 @@
             let scrollLeft;
 
             carousel.addEventListener('mousedown', (e) => {
+                if (window.innerWidth > 768) return;
                 isDown = true;
                 carousel.classList.add('active');
                 startX = e.pageX - carousel.offsetLeft;
@@ -2115,7 +2138,7 @@
             carousel.addEventListener('mouseleave', () => { isDown = false; });
             carousel.addEventListener('mouseup', () => { isDown = false; });
             carousel.addEventListener('mousemove', (e) => {
-                if (!isDown) return;
+                if (!isDown || window.innerWidth > 768) return;
                 e.preventDefault();
                 const x = e.pageX - carousel.offsetLeft;
                 const walk = (x - startX) * 2;
@@ -2123,9 +2146,10 @@
             });
         }
 
+        // LOGO UMBRELLA SOME AO EMPURRAR / ROLAR PARA CIMA
         window.addEventListener('scroll', () => {
             const logoSec = document.getElementById('logoSection');
-            if (window.scrollY > 30) {
+            if (window.scrollY > 25) {
                 logoSec.classList.add('scrolled');
             } else {
                 logoSec.classList.remove('scrolled');
@@ -2136,4 +2160,4 @@
         renderAll();
     </script>
 </body>
-                </html>
+</html>
