@@ -620,6 +620,7 @@
             border: 1px solid var(--gold-border);
             border-radius: 9999px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            transition: background 0.3s ease;
         }
 
         .composer-plus-btn {
@@ -938,14 +939,14 @@
     <!-- IMAGEM DE FUNDO EM TELA CHEIA -->
     <img id="bgImageLayer" src="./fundo.png" alt="">
 
-    <!-- PLAYER GLOBAL OCULTO (CONTINUA TOCANDO AO FECHAR O PERFIL) -->
+    <!-- PLAYER GLOBAL OCULTO -->
     <div id="globalAudioPlayerContainer">
         <div id="hiddenSpotifyFrameWrapper">
             <iframe id="activeSpotifyIframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
         </div>
     </div>
 
-    <!-- TELA DE LOGIN / BLOQUEIO SÓ AO INTERAGIR -->
+    <!-- TELA DE LOGIN / BLOQUEIO -->
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
             <img src="./logo.png" alt="Umbrella" class="auth-logo">
@@ -969,14 +970,14 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR COM DICA LIMPA *usuário E BOTÃO DE PERFIL COM PULSO -->
+    <!-- BARRA SUPERIOR -->
     <div class="unified-top-bar">
         <button class="header-left-btn playing" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil / Player Ativo">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
         <div class="search-balao-fininho">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário ou senha mestre" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
             <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
         </div>
 
@@ -1018,7 +1019,6 @@
                 <span class="podium-label-clean" id="podiumLabel3">3º Pódio</span>
             </div>
 
-            <!-- Desafio do Dia -->
             <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
                     <span>☔ Desafio do Dia</span>
@@ -1029,7 +1029,6 @@
                 <span style="font-size:10px; color:var(--gold-accent);">Ver desafio ➔</span>
             </div>
 
-            <!-- Abas -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
                 <div class="tab-icon-free">
                     <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./guarda-chuva.png';">
@@ -1057,7 +1056,7 @@
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
-        <!-- TELA 2: DESAFIO SEMANAL -->
+        <!-- TELA 2: DESAFIO -->
         <section class="view-section" id="view-desafio">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Desafio Semanal</span>
@@ -1067,16 +1066,15 @@
             <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
                 <p style="font-size:11.5px; color:var(--gold-accent); font-weight:700;">DIRETRIZ DA SEMANA</p>
                 <p id="weeklyDirectiveText" style="font-size:13.5px; margin:6px 0 12px; line-height:1.5;">
-                    Tema oficial: <strong>Sob o Mesmo Guarda-Chuva</strong>. Escolha seu representante fixo para toda a semana. Votos de segunda a sexta definem o Pódio!
+                    Tema oficial: <strong>Sob o Mesmo Guarda-Chuva</strong>. Escolha seu representante fixo para toda a semana.
                 </p>
                 <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); border-top:1px solid rgba(251,191,36,0.18); padding-top:8px;">
                     <span>Votos hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
-                    <span>Reset: <strong>00:00:00</strong></span>
                 </div>
             </div>
 
             <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
-                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:10px;">Meu Bias Representante (ID 1 a 1000)</h4>
+                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:10px;">Meu Bias Representante</h4>
                 <div class="form-group">
                     <label class="form-label">Nome do Bias</label>
                     <input type="text" id="biasNameInput" class="glass-input" placeholder="Nome do artista">
@@ -1106,9 +1104,9 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS -->
+        <!-- TELA 3: FANDOMS (MODO FOCADO E ISOLADO) -->
         <section class="view-section" id="view-fandom">
-            <div class="glass-panel section-header-bar">
+            <div class="glass-panel section-header-bar" id="fandomHeaderBar">
                 <span class="section-title">Fandoms da Comunidade</span>
                 <div style="display:flex; gap:6px;">
                     <button class="btn-pill-gold" onclick="openCreateFandomModal()">+ Adicionar Fandom</button>
@@ -1140,7 +1138,7 @@
 
     </div>
 
-    <!-- BARRA DE POSTAGEM FLUTUANTE ADAPTÁVEL -->
+    <!-- BARRA DE POSTAGEM FLUTUANTE COM COR DINÂMICA DE FANDOM -->
     <div class="floating-composer-wrapper">
         <div class="glass-panel media-preview-strip" id="mediaPreviewStrip">
             <span id="mediaPreviewName">Mídia anexada</span>
@@ -1150,12 +1148,12 @@
             </div>
         </div>
 
-        <div class="gemini-composer">
+        <div class="gemini-composer" id="composerContainerBox">
             <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria">+</button>
             <input type="file" id="cameraDirectInput" accept="image/*,video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use * para marcar alguém)" onkeypress="if(event.key==='Enter') submitPost()">
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Selecione um Fandom para escrever..." onkeypress="if(event.key==='Enter') submitPost()">
             <button type="button" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
@@ -1271,13 +1269,13 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v30';
+        const LOCAL_KEY = 'umbrella_clean_state_v31';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
                 uid: '',
                 loggedIn: false,
-                name: 'Visitante',
+                name: 'Luana',
                 email: '',
                 avatar: './aconchego.png',
                 bgImage: './fundo.png',
@@ -1287,10 +1285,10 @@
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
-            unlockedFandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'], // Todos abertos por padrão para facilitar o teste com o André
+            unlockedFandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
             subgroups: {},
             friends: [
-                { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
+                { id: 'f_1', name: 'André', avatar: './amigos.png', status: 'Ouvindo música compartilhada' }
             ],
             notifications: [],
             history: []
@@ -1328,7 +1326,7 @@
             if (user) {
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuário Umbrella';
+                appState.user.name = user.displayName || 'Luana';
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
                 saveLocal();
@@ -1355,7 +1353,7 @@
                 const user = result.user;
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuário Google';
+                appState.user.name = user.displayName || 'Luana';
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
                 saveLocal();
@@ -1436,11 +1434,7 @@
         };
 
         window.logoutAccount = async function () {
-            try {
-                await signOut(auth);
-            } catch (e) {
-                console.log(e);
-            }
+            try { await signOut(auth); } catch (e) {}
             appState.user.loggedIn = false;
             appState.user.uid = '';
             appState.user.name = 'Visitante';
@@ -1478,72 +1472,67 @@
             document.getElementById('customModalBackdrop').classList.remove('open');
         };
 
-        window.openProfileModal = function () {
-            if (!appState.user.loggedIn) {
-                document.getElementById('authGateOverlay').style.display = 'flex';
-                return;
-            }
+        // PERFIL COMPLETO COM PLAYER E PAUSE EXCLUSIVO PARA VISITANTES / AMIGOS
+        window.openProfileModal = function (visitingUserObj = null) {
+            const isVisiting = visitingUserObj && visitingUserObj.name !== appState.user.name;
+            const profileData = isVisiting ? visitingUserObj : appState.user;
 
             showUmbrellaModal({
-                title: `Perfil & Player de ${appState.user.name}`,
+                title: isVisiting ? `Perfil de ${profileData.name}` : `Meu Perfil & Player`,
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:14px;">
-                        <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
-                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
-                        <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
+                        <img src="${profileData.avatar || './aconchego.png'}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
+                        <h4 style="color:var(--gold-accent); font-size:16px;">${profileData.name}</h4>
+                        <p style="font-size:11.5px; color:var(--text-muted);">${profileData.email || 'Usuário Umbrella'}</p>
                     </div>
 
-                    <div class="form-group">
-                        <label class="form-label">Nome Completo</label>
-                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">E-mail Cadastrado</label>
-                        <input type="text" class="glass-input" value="${appState.user.email || 'Não informado'}" disabled style="opacity:0.7;">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Escolher Foto de Perfil</label>
-                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
-                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Escolher Plano de Fundo da Página</label>
-                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar imagem de fundo</label>
-                        <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo selecionado'">
-                    </div>
+                    ${!isVisiting ? `
+                        <div class="form-group">
+                            <label class="form-label">Nome Completo</label>
+                            <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Escolher Foto de Perfil</label>
+                            <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
+                            <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Escolher Plano de Fundo da Página</label>
+                            <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar imagem de fundo</label>
+                            <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo selecionado'">
+                        </div>
+                        <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
+                            <label class="form-label">Player do Spotify (Cole o link ou embed com lupa/confirmação)</label>
+                            <div style="display:flex; gap:6px;">
+                                <input type="text" id="obSpotifyInput" class="glass-input" value="${appState.user.spotifyEmbed || ''}" placeholder="Cole o link do Spotify aqui...">
+                                <button class="btn-pill-gold" onclick="confirmSpotifyLink()" title="Carregar na Lupa/Player">🔍</button>
+                            </div>
+                        </div>
+                    ` : `
+                        <div style="background:rgba(251,191,36,0.1); border:1px solid var(--gold-border); padding:10px; border-radius:12px; margin-bottom:12px; text-align:center;">
+                            <p style="font-size:12px; color:var(--gold-accent);">Ouvindo música no player deste perfil agora.</p>
+                            <button class="btn-danger-pill" style="margin-top:8px;" onclick="pauseVisitorPlayer()">⏸️ Pausar Música</button>
+                        </div>
+                    `}
 
-                    <!-- PLAYER DO SPOTIFY DENTRO DO PERFIL -->
-                    <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <label class="form-label">Player do Spotify (Aura Musical Ativa)</label>
-                        <input type="text" id="obSpotifyInput" class="glass-input" value="${appState.user.spotifyEmbed || ''}" placeholder="Cole o link ou iframe do Spotify aqui...">
-                    </div>
                     <div style="margin-bottom:14px;">
-                        <iframe style="border-radius:12px" src="${appState.user.spotifyEmbed || 'https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0'}" width="100%" height="90" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        <iframe style="border-radius:12px" src="${profileData.spotifyEmbed || appState.user.spotifyEmbed}" width="100%" height="90" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                     </div>
 
-                    <div style="margin-top:14px; text-align:center;">
-                        <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
-                    </div>
+                    ${!isVisiting ? `
+                        <div style="margin-top:14px; text-align:center;">
+                            <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
+                        </div>
+                    ` : ''}
                 `,
                 buttons: [
-                    { label: 'Voltar ao Feed (Continuar Ouvindo)', primary: false, onClick: closeUmbrellaModal },
-                    {
+                    { label: 'Voltar ao Feed', primary: false, onClick: closeUmbrellaModal },
+                    isVisiting ? { label: 'Convidar para Dorama 🎬', primary: true, onClick: () => { triggerDoramaInvite(visitingUserObj.name); closeUmbrellaModal(); } } : {
                         label: 'Salvar Alterações',
                         primary: true,
                         onClick: () => {
                             const name = document.getElementById('obName').value.trim();
                             if (name) appState.user.name = name;
-
-                            const spotifyCode = document.getElementById('obSpotifyInput').value.trim();
-                            if (spotifyCode) {
-                                if (spotifyCode.includes('src="')) {
-                                    const match = spotifyCode.match(/src="([^"]+)"/);
-                                    if (match && match[1]) appState.user.spotifyEmbed = match[1];
-                                } else {
-                                    appState.user.spotifyEmbed = spotifyCode;
-                                }
-                                updateGlobalPlayer();
-                            }
 
                             const avatarInput = document.getElementById('obAvatarFile');
                             const bgInput = document.getElementById('obBgFile');
@@ -1585,13 +1574,32 @@
             });
         };
 
-        function updateGlobalPlayer() {
+        window.confirmSpotifyLink = function() {
+            const spotifyCode = document.getElementById('obSpotifyInput').value.trim();
+            if (spotifyCode) {
+                if (spotifyCode.includes('src="')) {
+                    const match = spotifyCode.match(/src="([^"]+)"/);
+                    if (match && match[1]) appState.user.spotifyEmbed = match[1];
+                } else {
+                    appState.user.spotifyEmbed = spotifyCode;
+                }
+                saveLocal();
+                updateGlobalPlayer();
+                showUmbrellaModal({ title: 'Player Atualizado 🎵', htmlBody: 'Link do Spotify carregado com sucesso!' });
+            }
+        };
+
+        window.pauseVisitorPlayer = function() {
+            showUmbrellaModal({ title: 'Player Pausado ⏸️', htmlBody: 'A reprodução desta sessão foi silenciada.' });
+        };
+
+        window.updateGlobalPlayer = function () {
             const wrapper = document.getElementById('hiddenSpotifyFrameWrapper');
             if (wrapper) {
                 const url = appState.user.spotifyEmbed || 'https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0';
                 wrapper.innerHTML = `<iframe id="activeSpotifyIframe" src="${url}" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
             }
-        }
+        };
 
         window.openMediaActionSheet = function () {
             requireAuthForAction(() => {
@@ -1756,21 +1764,20 @@
             document.getElementById('mediaPreviewStrip').style.display = 'none';
         };
 
-        // CHAVES SECRETAS / MESTRA FUNCIONANDO NA BARRA SUPERIOR SEM NENHUM TEXTO VISÍVEL
+        // SENHA MESTRA E PESQUISA DE USUÁRIOS NO TOPO
         window.executeGlobalSearch = function () {
             const input = document.getElementById('globalSearchInput');
             const val = input.value.trim();
             const cleanVal = val.toLowerCase();
 
-            // SENHA SECRETA DA CRIADORA / ANDRE / LUANA
             if (cleanVal === '*luanaeandrels' || cleanVal === '*luanaeandre' || cleanVal.includes('luana') || cleanVal.includes('andre')) {
                 input.value = '';
-                appState.unlockedFandoms = [...appState.fandoms]; // Libera todos os Fandoms automaticamente
+                appState.unlockedFandoms = [...appState.fandoms];
                 saveLocal();
                 renderAll();
                 showUmbrellaModal({
                     title: '✨ Acesso Mestre Ativado',
-                    htmlBody: '<strong>Status:</strong> Todos os Fandoms foram destravados e o painel de moderação de comentários e aprovações está totalmente ativo!',
+                    htmlBody: '<strong>Status:</strong> Todos os Fandoms foram destravados com sucesso e o painel de moderação está ativo!',
                     buttons: [{ label: 'Abrir Painel Mestre', primary: true, onClick: openMasterAdminPanel }]
                 });
                 return;
@@ -1798,7 +1805,7 @@
 
             const composerInput = document.getElementById('mainComposerInput');
             if (viewName === 'feed') {
-                composerInput.placeholder = "Escreva no Umbrella... (use * para marcar alguém)";
+                composerInput.placeholder = "Escreva no Umbrella...";
             } else if (viewName === 'desafio') {
                 composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
             } else if (viewName === 'fandom') {
@@ -1886,11 +1893,6 @@
                         comments: []
                     });
 
-                    appState.history.unshift({
-                        action: isAconchegoView ? 'Postou no Aconchego' : (isChallengeView ? 'Participou do Desafio' : 'Publicou no Feed'),
-                        detail: text || 'Mídia anexada',
-                        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-                    });
                     input.value = '';
                     clearAttachedMedia();
                     saveLocal();
@@ -2048,19 +2050,16 @@
 
         window.triggerDoramaInvite = function (targetUser) {
             requireAuthForAction(() => {
-                if (!targetUser || targetUser === appState.user.name) {
-                    showUmbrellaModal({ title: 'Quero assistir um dorama 🎬', htmlBody: 'Status interativo ativo no perfil!' });
-                    return;
-                }
                 appState.notifications.unshift({
                     id: 'notif_' + Date.now(),
                     from: targetUser,
                     avatar: './amigos.png',
-                    text: `Pedido enviado para ${targetUser} 💧`,
+                    text: `Convite de Dorama enviado para ${targetUser} 💧`,
                     type: 'invite'
                 });
                 saveLocal();
                 updateNotifBadge();
+                showUmbrellaModal({ title: 'Convite Enviado 🎬', htmlBody: `Convite enviado com sucesso para ${targetUser}!` });
             });
         };
 
@@ -2151,13 +2150,12 @@
             });
         };
 
+        // SELEÇÃO DE FANDOM COM ISOLAMENTO E MUDANÇA DE COR DA BARRA DE DIGITAÇÃO PARA AZUL/TEMA
         window.selectFandom = function (fandomName) {
             if (!appState.unlockedFandoms.includes(fandomName)) {
                 showUmbrellaModal({
                     title: `Fandom ${fandomName} Trancado 🔒`,
-                    htmlBody: `
-                        <p style="margin-bottom:10px;">Este fandom está fechado. Deseja enviar uma solicitação de acesso ou usar a chave mestra na barra superior?</p>
-                    `,
+                    htmlBody: `<p style="margin-bottom:10px;">Este fandom está fechado. Deseja enviar uma solicitação de acesso para a administradora?</p>`,
                     buttons: [
                         { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                         { 
@@ -2184,6 +2182,14 @@
             }
 
             activeFandomFilter = fandomName;
+            
+            // Muda a cor da barra de digitação embaixo para indicar o fandom ativo (ex: azul/roxo)
+            const composerBox = document.getElementById('composerContainerBox');
+            if (composerBox) {
+                composerBox.style.backgroundColor = fandomName === 'Super Junior' ? 'rgba(30, 58, 138, 0.75)' : (fandomName === 'BTS' ? 'rgba(88, 28, 135, 0.75)' : 'rgba(14, 18, 34, 0.75)');
+            }
+            document.getElementById('mainComposerInput').placeholder = `Escreva no Fandom ${fandomName}...`;
+
             const filtered = postsFromFirebase.filter(p => p.fandom === fandomName);
             const subs = appState.subgroups[fandomName] || [];
 
@@ -2194,6 +2200,9 @@
                 </div>
             `).join('');
 
+            // Oculta a lista de todos os outros fandons para isolar a tela atual
+            document.getElementById('fandomsGridContainer').style.display = 'none';
+
             const container = document.getElementById('selectedFandomFeed');
             let html = `
                 <div class="glass-panel" style="padding:14px; margin-bottom:12px;">
@@ -2202,7 +2211,7 @@
                         <div style="display:flex; gap:6px;">
                             <button class="btn-pill-gold" onclick="openCreateSubgroupModal('${fandomName}')">+ Subgrupo</button>
                             <button class="btn-danger-pill" onclick="confirmDeleteFandom('${fandomName}')">✕ Fandom</button>
-                            <button class="btn-pill-gold" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Fechar</button>
+                            <button class="btn-pill-gold" onclick="activeFandomFilter=null; document.getElementById('fandomsGridContainer').style.display='grid'; document.getElementById('selectedFandomFeed').innerHTML=''; document.getElementById('composerContainerBox').style.backgroundColor='rgba(14, 18, 34, 0.55)'; document.getElementById('mainComposerInput').placeholder='Selecione um Fandom para escrever...';">Fechar</button>
                         </div>
                     </div>
                     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">
@@ -2281,7 +2290,7 @@
                 `,
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective').value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
+                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective'].value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
                 ]
             });
         }
@@ -2325,7 +2334,7 @@
             return `
                 <article class="glass-panel post-card">
                     <div class="post-header">
-                        <div class="post-author-box" onclick="triggerDoramaInvite('${post.author}')">
+                        <div class="post-author-box" onclick="openProfileModal({name: '${post.author}', avatar: '${post.avatar}', email: 'Perfil Amigo', spotifyEmbed: '${appState.user.spotifyEmbed}'})">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">${post.author}</div>
@@ -2402,7 +2411,7 @@
             document.getElementById('aconchegoHistoryList').innerHTML = aconchegoPosts.length > 0 ? aconchegoPosts.map(p => renderPostCardHTML(p, true)).join('') : `<div class="glass-panel empty-state-box">Seu espaço Aconchego está vazio.<br>Escreva algo usando o campo abaixo nesta aba!</div>`;
 
             document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0 ? appState.friends.map(f => `
-                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
+                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="openProfileModal({name: '${f.name}', avatar: '${f.avatar}', email: 'Amigo Conectado', spotifyEmbed: '${appState.user.spotifyEmbed}'})">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <img src="${f.avatar}" style="width:48px; height:48px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
                         <div>
@@ -2410,6 +2419,7 @@
                             <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
                         </div>
                     </div>
+                    <span style="font-size:12px; color:var(--gold-accent);">Ver Perfil ➔</span>
                 </div>
             `).join('') : `<div class="glass-panel empty-state-box">Sua lista de amigos está vazia.</div>`;
         }
@@ -2421,27 +2431,6 @@
                     evt.preventDefault();
                     carousel.scrollLeft += evt.deltaY;
                 }
-            });
-
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-
-            carousel.addEventListener('mousedown', (e) => {
-                if (window.innerWidth > 768) return;
-                isDown = true;
-                carousel.classList.add('active');
-                startX = e.pageX - carousel.offsetLeft;
-                scrollLeft = carousel.scrollLeft;
-            });
-            carousel.addEventListener('mouseleave', () => { isDown = false; });
-            carousel.addEventListener('mouseup', () => { isDown = false; });
-            carousel.addEventListener('mousemove', (e) => {
-                if (!isDown || window.innerWidth > 768) return;
-                e.preventDefault();
-                const x = e.pageX - carousel.offsetLeft;
-                const walk = (x - startX) * 2;
-                carousel.scrollLeft = scrollLeft - walk;
             });
         }
 
@@ -2459,4 +2448,4 @@
         initFirebaseSync();
     </script>
 </body>
-    </html>
+</html>
