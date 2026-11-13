@@ -135,38 +135,27 @@ body::before {
   max-width: 1400px;
   margin: 0 auto;
 }
+
+/* LOGO IMAGEM COM EFEITO DE ENCOLHER AO ROLAR */
 .logo-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  transition: all 0.3s ease;
-}
-.logo{
-  font-family:Georgia, serif; font-size:58px; font-weight:700;
-  color:#f3d98b; letter-spacing:1px;
-  text-shadow:0 0 20px #f3d98b, 0 0 40px #b8860b;
-  line-height: 1.1;
   cursor: pointer;
-  transition: all 0.3s ease;
 }
-.boneco-logo {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #f3d98b;
-  box-shadow: 0 0 10px rgba(243,217,139,0.5);
+.logo-img {
+  max-width: 380px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 0 15px rgba(243,217,139,0.4));
 }
 .subtitle{font-size:18px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease; text-align: center;}
 
-body.logo-recolhida .logo {
-  font-size: 28px !important;
-  text-shadow: 0 0 10px #f3d98b;
-}
-body.logo-recolhida .boneco-logo {
-  width: 32px;
-  height: 32px;
+/* EFEITO DE RECOLHER AO ROLAR A PÁGINA */
+body.logo-recolhida .logo-img {
+  max-width: 180px !important;
 }
 body.logo-recolhida .subtitle {
   font-size: 11px !important;
@@ -609,12 +598,10 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- CABECALHO DA LOGO PRINCIPAL -->
+  <!-- CABECALHO DA LOGO COM A IMAGEM "logo.jpg" -->
   <header style="text-align: center; padding: 8px 0 4px;">
-    <div class="logo-container">
-      <img src="homem.jpg" alt="Homem" class="boneco-logo" onerror="this.style.display='none'">
-      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">Umbrella</div>
-      <img src="mulher.jpg" alt="Mulher" class="boneco-logo" onerror="this.style.display='none'">
+    <div class="logo-container" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">
+      <img src="logo.jpg" alt="Umbrella" class="logo-img" onerror="this.style.display='none'">
     </div>
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
@@ -640,13 +627,13 @@ border-radius:999px; display:inline-block;}
       </div>
       <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
         <div class="story-avatar-mob" style="background: #9c27b0; overflow: hidden; padding: 0;">
-          <img src="umbrella.png" alt="Bate-Papo" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>💬</div>'">
+          <img src="aconchego.png" alt="Meu Aconchego" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>🏡</div>'">
         </div>
-        <span class="story-nome-mob">Bate-Papo</span><span class="story-arroba-mob">Privado</span>
+        <span class="story-nome-mob">Meu Aconchego</span><span class="story-arroba-mob">Privado</span>
       </div>
       <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
         <div class="story-avatar-mob" style="background: #2196f3; overflow: hidden; padding: 0;">
-          <img src="comunidade.jpg" alt="Comunidade" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>🌐</div>'">
+          <img src="fandom.png" alt="Fandom" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>🌐</div>'">
         </div>
         <span class="story-nome-mob">Comunidade</span><span class="story-arroba-mob">Fandoms</span>
       </div>
@@ -735,7 +722,7 @@ border-radius:999px; display:inline-block;}
     <!-- COLUNA CENTRAL: FEED GERAL E CAMPO DE POSTAGEM DIRETO -->
     <div id="coluna-central" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       
-      <!-- CAIXA DE POSTAGEM DIRETA E INTUITIVA COM CÂMERA/GALERIA NATIVA DO CELULAR -->
+      <!-- CAIXA DE POSTAGEM DIRETA COM A IMAGEM camera.png -->
       <div class="card" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(243,217,139,0.3); border-radius: 20px; padding: 16px;">
         <div id="bias-tag-topo" style="display: none; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: #f3d98b; margin-bottom: 8px;"></div>
 
@@ -746,11 +733,10 @@ border-radius:999px; display:inline-block;}
 
         <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: 8px;">
-            <!-- BOLINHA INTUITIVA CHAMANDO DIRETAMENTE A CÂMERA / GALERIA NATIVA DO CELULAR -->
-            <label for="inputFotoDesafioUnificado" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid #f3d98b; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.4); transition: all 0.2s;" title="Câmera ou Galeria Nativa" id="label-circulo-foto-desafio">
-              <span style="font-size: 1.2rem; color: #f3d98b;">📷</span>
+            <!-- BOLINHA COM A IMAGEM camera.png -->
+            <label for="inputFotoDesafioUnificado" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid #f3d98b; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.4);" title="Câmera ou Galeria" id="label-circulo-foto-desafio">
+              <img src="camera.png" alt="Câmera" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<span style=\'font-size: 1.2rem; color: #f3d98b;\'>📷</span>'">
             </label>
-            <!-- Atributo accept="image/*" com capture opcional permite escolher entre tirar foto na hora ou pegar da galeria -->
             <input type="file" id="inputFotoDesafioUnificado" accept="image/*,video/*" style="display: none;" onchange="processarFotoDesafioUnificado(this)">
             
             <div id="preview-mini-container" style="display: none; width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid #f3d98b; cursor: pointer;" onclick="abrirFotoPinterest(window.fotoBiasBase64Temp)">
@@ -824,15 +810,15 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
 
-      <!-- MINHA GAVETA COM O SÍMBOLO OFICIAL (UMBRELLA.PNG) -->
+      <!-- MEU ACONCHEGO COM A IMAGEM aconchego.png -->
       <div class="card" id="card-minha-gaveta" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Minha Gaveta</h3>
+          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Meu Aconchego</h3>
           <button onclick="alternarGavetaNoCentro(event)" style="background: rgba(243,217,139,0.2); border: 1px solid #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;" id="btn-ver-gaveta-centro">Abrir</button>
         </div>
         
         <div style="margin: 10px 0; width: 100%; height: 160px; border-radius: 12px; overflow: hidden; background: #000; border: 2px solid #f3d98b; display: flex; align-items: center; justify-content: center;">
-          <img src="umbrella.png" alt="Símbolo Umbrella" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+          <img src="aconchego.png" alt="Meu Aconchego" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
         </div>
 
         <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.04); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 140px; overflow-y: auto;">
@@ -848,13 +834,25 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
 
-      <!-- FANDOMS -->
+      <!-- FANDOMS COM A IMAGEM fandom.png -->
       <div class="card" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
           <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandoms</h3>
           <button onclick="abrirModalNovoTema()" style="background: rgba(243,217,139,0.15); border: 1px dashed #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
         </div>
+        <div style="margin-bottom: 8px; width: 100%; height: 100px; border-radius: 8px; overflow: hidden; background: #000; border: 1px solid rgba(243,217,139,0.3); display: flex; align-items: center; justify-content: center;">
+          <img src="fandom.png" alt="Fandom" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+        </div>
         <div id="lista-comunidades-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;"></div>
+      </div>
+
+      <!-- AMIGOS COM A IMAGEM amigos.png -->
+      <div class="card" style="padding: 16px; margin-bottom: 0;">
+        <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0 0 8px 0; color: #f3d98b;">Amigos</h3>
+        <div style="margin-bottom: 8px; width: 100%; height: 100px; border-radius: 8px; overflow: hidden; background: #000; border: 1px solid rgba(243,217,139,0.3); display: flex; align-items: center; justify-content: center;">
+          <img src="amigos.png" alt="Amigos" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'">
+        </div>
+        <div id="lista-amigos-container" style="font-size: 0.8rem; color: #ccc;">Nenhum amigo adicionado.</div>
       </div>
     </div>
   </div>
@@ -1313,14 +1311,14 @@ function alternarGavetaNoCentro(event) {
     modoAtualNoCentro = "GAVETA";
     if(layoutGrid) layoutGrid.style.gridTemplateColumns = "300px 1fr 240px";
     if(btnVerGaveta) btnVerGaveta.innerText = "✕";
-    document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta";
+    document.getElementById('titulo-feed-atual').innerText = "Meu Aconchego";
     document.getElementById('sub-feed-atual').innerText = "Histórico";
     document.getElementById('btn-voltar-geral').style.display = 'block';
     
     let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
     let htmlGavetaCentro = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 20px; border: 1px solid rgba(243,217,139,0.2);">
-        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">Minha Gaveta</h3>
+        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">Meu Aconchego</h3>
       </div>
     `;
     if (historicoSalvo.length === 0) {
@@ -1396,9 +1394,6 @@ function entrarComunidadeEfetivo(nomeComunidade, corTema) {
   document.getElementById('btn-adm-comunidade').style.display = 'block';
   document.getElementById('btn-voltar-geral').style.display = 'block';
   document.getElementById('container-subgrupos').style.display = 'block';
-  
-  let logoEl = document.getElementById('texto-logo-principal');
-  if(logoEl) logoEl.innerText = nomeComunidade;
   
   aplicarEstiloTema(corTema);
   localStorage.setItem('usuario_cor_tema', corTema);
