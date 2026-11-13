@@ -40,7 +40,7 @@
             color-scheme: dark;
         }
 
-        /* FUNDO DIRETO POR IMAGEM REAL - COBRE 100% DA TELA SEM BARREIRA */
+        /* FUNDO DIRETO EM TELA CHEIA */
         #bgImageLayer {
             position: fixed;
             top: 0;
@@ -63,7 +63,6 @@
             border-radius: 22px;
         }
 
-        /* TELA LIVRE SEM CORTES LATERAIS */
         .app-shell {
             width: 100%;
             min-height: 100vh;
@@ -169,7 +168,7 @@
             padding: 0 3px;
         }
 
-        /* LOGO CENTRAL QUE SOME SUAVEMENTE AO ROLAR */
+        /* LOGO QUE SOME AO ROLAR */
         .logo-section {
             width: 100%;
             padding: 6px 24px 12px;
@@ -209,7 +208,6 @@
             filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
         }
 
-        /* CARROSSEL / BARRA DE NAVEGAÇÃO PRINCIPAL */
         .main-carousel-wrapper {
             width: 100%;
             padding: 6px 24px 22px;
@@ -226,8 +224,6 @@
         .main-carousel-wrapper:active { cursor: grabbing; }
         .main-carousel-wrapper::-webkit-scrollbar { display: none; }
 
-        /* DESKTOP: TELA LIVRE, DESAFIO EXATAMENTE NO CENTRO (EMBAIXO DO LOGO),
-           1º 2º 3º À ESQUERDA E FANDOM, AMIGOS, ACONCHEGO À DIREITA */
         @media (min-width: 769px) {
             .main-carousel-wrapper {
                 overflow-x: visible;
@@ -314,7 +310,6 @@
             overflow: hidden;
         }
 
-        /* ABAS SEM BOLINHA / SEM DELIMITAÇÃO / SEM FUNDO - SÓ A IMAGEM LIVRE */
         .tab-item-box {
             width: 92px;
             background: transparent;
@@ -351,7 +346,6 @@
             text-shadow: 0 1px 5px rgba(0,0,0,0.85);
         }
 
-        /* CONTEÚDO DO FEED CENTRALIZADO NA TELA LIVRE */
         .view-section {
             display: none;
             width: 100%;
@@ -488,6 +482,7 @@
             position: relative;
         }
 
+        /* CURTIDA COM ÍCONE DE GUARDA-CHUVA EM CSS (SEM IMAGEM EXTERNA) */
         .like-umbrella-btn {
             display: flex;
             align-items: center;
@@ -498,21 +493,17 @@
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
-            padding: 4px 6px;
+            padding: 4px 8px;
         }
 
-        .like-umbrella-btn img {
-            width: 24px;
-            height: 24px;
-            object-fit: contain;
-            opacity: 0.85;
+        .umbrella-icon-css {
+            font-size: 18px;
             transition: transform 0.2s ease, filter 0.2s ease;
         }
 
-        .like-umbrella-btn.liked img {
-            opacity: 1;
-            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.9));
-            transform: scale(1.12);
+        .like-umbrella-btn.liked .umbrella-icon-css {
+            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.9));
+            transform: scale(1.2);
         }
 
         .like-umbrella-btn.liked span { color: var(--gold-accent); }
@@ -719,7 +710,7 @@
 
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
-        /* ESTÚDIO DE EDIÇÃO ESTILO PINTEREST */
+        /* ESTÚDIO DE EDIÇÃO DE FOTO */
         .studio-modal-overlay {
             position: fixed;
             inset: 0;
@@ -881,7 +872,7 @@
 </head>
 <body>
 
-    <!-- IMAGEM DE FUNDO DIRETA EM TELA CHEIA -->
+    <!-- IMAGEM DE FUNDO EM TELA CHEIA -->
     <img id="bgImageLayer" src="./fundo.png" alt="">
 
     <!-- BARRA SUPERIOR UNIFICADA -->
@@ -902,17 +893,16 @@
 
     <div class="app-shell">
 
-        <!-- LOGO CENTRAL (SOME SUAVEMENTE AO EMPURRAR/ROLAR PARA CIMA) -->
+        <!-- LOGO CENTRAL -->
         <div class="logo-section" id="logoSection">
             <div class="logo-container" onclick="switchView('feed')">
                 <img src="./logo.png" alt="Umbrella" class="brand-logo" id="brandLogo">
             </div>
         </div>
 
-        <!-- NAVEGAÇÃO PRINCIPAL:
-             DESKTOP = 1º, 2º, 3º À ESQUERDA | DESAFIO NO CENTRO (EMBAIXO DO LOGO) | FANDOM, AMIGOS, ACONCHEGO À DIREITA
-             MOBILE = CARROSSEL HORIZONTAL NORMAL -->
+        <!-- CARROSSEL / NAVEGAÇÃO CORRIGIDA -->
         <nav class="main-carousel-wrapper" id="carouselWrapper">
+            <!-- 1º, 2º, 3º Pódio corretos -->
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
                     <img id="podiumImg1" src="./guarda-chuva.png" alt="">
@@ -922,19 +912,19 @@
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(2)">
                 <div class="podium-circle-clean podium-circle-2">
-                    <img id="podiumImg2" src="./amigos.png" alt="">
+                    <img id="podiumImg2" src="./fandom.png" alt="" onerror="this.src='./guarda-chuva.png'">
                 </div>
                 <span class="podium-label-clean">2º Pódio</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(3)">
                 <div class="podium-circle-clean podium-circle-3">
-                    <img id="podiumImg3" src="./aconchego.png" alt="">
+                    <img id="podiumImg3" src="./amigos.png" alt="">
                 </div>
                 <span class="podium-label-clean">3º Pódio</span>
             </div>
 
-            <!-- CENTRO EXATO NO DESKTOP (EMBAIXO DO LOGO) -->
+            <!-- Desafio do Dia no centro do Desktop -->
             <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
                     <span>☔ Desafio do Dia</span>
@@ -945,7 +935,7 @@
                 <span style="font-size:10px; color:var(--gold-accent);">Ver desafio ➔</span>
             </div>
 
-            <!-- DIREITA NO DESKTOP: FANDOM, AMIGOS, ACONCHEGO -->
+            <!-- Abas sem bolinha nas pontas direitas -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
                 <div class="tab-icon-free">
                     <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./guarda-chuva.png';">
@@ -1022,7 +1012,7 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS (TRANCADOS POR PADRÃO) -->
+        <!-- TELA 3: FANDOMS -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms da Comunidade (Trancados)</span>
@@ -1089,7 +1079,7 @@
         </div>
     </div>
 
-    <!-- ESTÚDIO DE EDIÇÃO DE FOTO ESTILO PINTEREST -->
+    <!-- ESTÚDIO DE EDIÇÃO -->
     <div class="studio-modal-overlay" id="pinterestStudioModal">
         <div class="studio-top-bar">
             <button class="btn-pill-gold" style="border-color:rgba(244,63,94,0.5); color:#fda4af;" onclick="closePhotoStudio()">Cancelar</button>
@@ -1142,6 +1132,7 @@
         <p class="lightbox-caption" id="lightboxCaption"></p>
     </div>
 
+    <!-- SCRIPT COM FIREBASE FIRESTORE CONECTADO EM TEMPO REAL -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import {
@@ -1150,7 +1141,19 @@
             GoogleAuthProvider,
             onAuthStateChanged
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import {
+            getFirestore,
+            collection,
+            addDoc,
+            deleteDoc,
+            doc,
+            onSnapshot,
+            query,
+            orderBy,
+            updateDoc,
+            increment,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
@@ -1167,9 +1170,9 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v19';
+        const LOCAL_KEY = 'umbrella_clean_state_v20';
 
-        const cleanInitialState = {
+        let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
                 uid: '',
                 loggedIn: false,
@@ -1183,13 +1186,12 @@
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             podium: {
                 1: { img: './guarda-chuva.png', title: '1º Lugar • Pódio Oficial da Semana' },
-                2: { img: './amigos.png', title: '2º Lugar • Pódio Oficial da Semana' },
-                3: { img: './aconchego.png', title: '3º Lugar • Pódio Oficial da Semana' }
+                2: { img: './fandom.png', title: '2º Lugar • Pódio Oficial da Semana' },
+                3: { img: './amigos.png', title: '3º Lugar • Pódio Oficial da Semana' }
             },
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
             unlockedFandoms: [],
             subgroups: {},
-            posts: [],
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
             ],
@@ -1197,7 +1199,7 @@
             history: []
         };
 
-        let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || cleanInitialState;
+        let postsFromFirebase = [];
         let currentAttachedMedia = null;
         let currentAttachedType = null;
         let currentFileName = '';
@@ -1211,6 +1213,20 @@
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
         }
 
+        // CONEXÃO EM TEMPO REAL COM FIRESTORE
+        function initFirebaseSync() {
+            const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
+            onSnapshot(q, (snapshot) => {
+                postsFromFirebase = [];
+                snapshot.forEach((docSnap) => {
+                    postsFromFirebase.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                renderAll();
+            }, (error) => {
+                console.error("Erro ao sincronizar Firestore: ", error);
+            });
+        }
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 appState.user.uid = user.uid;
@@ -1220,7 +1236,6 @@
                 if (user.photoURL) appState.user.avatar = user.photoURL;
                 saveLocal();
                 applyUserTheme();
-                renderAll();
             }
         });
 
@@ -1531,7 +1546,7 @@
 
                 if (val.startsWith('*') && val.length > 1) {
                     const queryUser = val.substring(1).toLowerCase();
-                    const matchedPosts = appState.posts.filter(p => p.author.toLowerCase().includes(queryUser));
+                    const matchedPosts = postsFromFirebase.filter(p => p.author.toLowerCase().includes(queryUser));
                     const container = document.getElementById('mainFeedList');
                     if (matchedPosts.length > 0) {
                         container.innerHTML = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; color:var(--gold-accent); font-size:12.5px;">Resultados para: ${val}</div>` + matchedPosts.map(renderPostCardHTML).join('');
@@ -1572,6 +1587,7 @@
             showUmbrellaModal({ title: 'Representante Salvo!', htmlBody: `Bias <strong>${name}</strong> (#${idNum}) cadastrado.` });
         };
 
+        // POSTAR DIRETAMENTE NO FIREBASE FIRESTORE
         window.submitPost = async function () {
             const input = document.getElementById('mainComposerInput');
             const text = input.value.trim();
@@ -1595,32 +1611,36 @@
                 showUmbrellaModal({ title: 'Bias Obrigatório', htmlBody: 'Cadastre seu Bias representante antes de postar no Desafio.' });
                 return;
             }
-            const newPostObj = {
-                id: 'post_' + Date.now(),
-                author: appState.user.name,
-                avatar: appState.user.avatar,
-                text,
-                media: currentAttachedMedia || '',
-                mediaType: currentAttachedType || '',
-                likes: 0,
-                likedByMe: false,
-                fandom: activeFandomFilter || 'Geral',
-                isChallenge: isChallengeView,
-                createdAt: Date.now(),
-                comments: []
-            };
-            appState.posts.unshift(newPostObj);
-            appState.history.unshift({
-                action: isChallengeView ? 'Participou do Desafio' : 'Publicou no Feed',
-                detail: text || 'Mídia anexada',
-                time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-            });
-            input.value = '';
-            clearAttachedMedia();
-            saveLocal();
-            renderAll();
+
+            try {
+                await addDoc(collection(db, "posts"), {
+                    author: appState.user.name,
+                    avatar: appState.user.avatar,
+                    text: text,
+                    media: currentAttachedMedia || '',
+                    mediaType: currentAttachedType || '',
+                    likes: 0,
+                    likedByMe: false,
+                    fandom: activeFandomFilter || 'Geral',
+                    isChallenge: isChallengeView,
+                    createdAt: serverTimestamp(),
+                    comments: []
+                });
+
+                appState.history.unshift({
+                    action: isChallengeView ? 'Participou do Desafio' : 'Publicou no Feed',
+                    detail: text || 'Mídia anexada',
+                    time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                });
+                input.value = '';
+                clearAttachedMedia();
+                saveLocal();
+            } catch (e) {
+                showUmbrellaModal({ title: 'Erro ao Publicar', htmlBody: `Não foi possível enviar ao Firebase: ${e.message}` });
+            }
         };
 
+        // APAGAR POSTAGEM NO FIREBASE
         window.confirmDeletePost = function (postId) {
             toggleDotsMenu(postId);
             showUmbrellaModal({
@@ -1631,11 +1651,13 @@
                     {
                         label: 'Sim, Apagar',
                         primary: true,
-                        onClick: () => {
-                            appState.posts = appState.posts.filter(p => p.id !== postId);
-                            saveLocal();
-                            renderAll();
-                            closeUmbrellaModal();
+                        onClick: async () => {
+                            try {
+                                await deleteDoc(doc(db, "posts", postId));
+                                closeUmbrellaModal();
+                            } catch (e) {
+                                alert("Erro ao apagar: " + e.message);
+                            }
                         }
                     }
                 ]
@@ -1643,7 +1665,7 @@
         };
 
         window.toggleLikeUmbrella = async function (postId) {
-            const post = appState.posts.find(p => p.id === postId);
+            const post = postsFromFirebase.find(p => p.id === postId);
             if (!post) return;
             if (post.isChallenge && !post.likedByMe) {
                 if (appState.dailyVotes.used >= 3) {
@@ -1654,10 +1676,20 @@
             } else if (post.isChallenge && post.likedByMe) {
                 appState.dailyVotes.used = Math.max(0, appState.dailyVotes.used - 1);
             }
-            post.likedByMe = !post.likedByMe;
-            post.likes += post.likedByMe ? 1 : -1;
-            saveLocal();
-            renderAll();
+
+            const newLiked = !post.likedByMe;
+            const newLikes = post.likes + (newLiked ? 1 : -1);
+
+            try {
+                const postRef = doc(db, "posts", postId);
+                await updateDoc(postRef, {
+                    likes: newLikes,
+                    likedByMe: newLiked
+                });
+                saveLocal();
+            } catch (e) {
+                console.error("Erro ao curtir:", e);
+            }
         };
 
         window.toggleDotsMenu = function (postId) {
@@ -1670,10 +1702,11 @@
 
         window.openCommentModal = function (postId) {
             toggleDotsMenu(postId);
-            const post = appState.posts.find(p => p.id === postId);
+            const post = postsFromFirebase.find(p => p.id === postId);
             if (!post) return;
+            const comments = post.comments || [];
 
-            const existing = post.comments.map((c, idx) => `
+            const existing = comments.map((c, idx) => `
                 <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:rgba(255,255,255,0.04); border-radius:10px; margin-bottom:6px; font-size:12.5px;">
                     <span>${c}</span>
                     <button class="btn-danger-pill" onclick="confirmDeleteComment('${postId}', ${idx})">✕</button>
@@ -1691,12 +1724,16 @@
                     {
                         label: 'Comentar',
                         primary: true,
-                        onClick: () => {
+                        onClick: async () => {
                             const val = document.getElementById('newCommentInput').value.trim();
                             if (val) {
-                                post.comments.push(`${appState.user.name}: ${val}`);
-                                saveLocal();
-                                renderAll();
+                                comments.push(`${appState.user.name}: ${val}`);
+                                try {
+                                    await updateDoc(doc(db, "posts", postId), { comments });
+                                    renderAll();
+                                } catch (e) {
+                                    alert("Erro ao comentar: " + e.message);
+                                }
                             }
                             closeUmbrellaModal();
                         }
@@ -1705,50 +1742,41 @@
             });
         };
 
-        window.confirmDeleteComment = function (postId, commentIndex) {
-            showUmbrellaModal({
-                title: '🗑️ Excluir Comentário',
-                htmlBody: 'Você realmente deseja apagar esse comentário?',
-                buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
-                    {
-                        label: 'Sim, Apagar',
-                        primary: true,
-                        onClick: () => {
-                            const post = appState.posts.find(p => p.id === postId);
-                            if (post) {
-                                post.comments.splice(commentIndex, 1);
-                                saveLocal();
-                                renderAll();
-                            }
-                            closeUmbrellaModal();
-                            openCommentModal(postId);
-                        }
-                    }
-                ]
-            });
-        };
-
-        window.shareUmbrellaPost = function (postId) {
-            toggleDotsMenu(postId);
-            const post = appState.posts.find(p => p.id === postId);
+        window.confirmDeleteComment = async function (postId, commentIndex) {
+            const post = postsFromFirebase.find(p => p.id === postId);
             if (!post) return;
-            appState.posts.unshift({
-                id: 'post_' + Date.now(),
-                author: appState.user.name,
-                avatar: appState.user.avatar,
-                text: `☔ Compartilhado de ${post.author}: "${post.text}"`,
-                media: post.media,
-                mediaType: post.mediaType,
-                likes: 0,
-                likedByMe: false,
-                fandom: post.fandom,
-                isChallenge: false,
-                createdAt: Date.now(),
-                comments: []
-            });
-            saveLocal();
-            renderAll();
+            const comments = post.comments || [];
+            comments.splice(commentIndex, 1);
+            try {
+                await updateDoc(doc(db, "posts", postId), { comments });
+                closeUmbrellaModal();
+                openCommentModal(postId);
+            } catch (e) {
+                alert("Erro ao apagar comentário: " + e.message);
+            }
+        };
+
+        window.shareUmbrellaPost = async function (postId) {
+            toggleDotsMenu(postId);
+            const post = postsFromFirebase.find(p => p.id === postId);
+            if (!post) return;
+            try {
+                await addDoc(collection(db, "posts"), {
+                    author: appState.user.name,
+                    avatar: appState.user.avatar,
+                    text: `☔ Compartilhado de ${post.author}: "${post.text}"`,
+                    media: post.media || '',
+                    mediaType: post.mediaType || '',
+                    likes: 0,
+                    likedByMe: false,
+                    fandom: post.fandom || 'Geral',
+                    isChallenge: false,
+                    createdAt: serverTimestamp(),
+                    comments: []
+                });
+            } catch (e) {
+                alert("Erro ao compartilhar: " + e.message);
+            }
         };
 
         window.triggerDoramaInvite = function (targetUser) {
@@ -1897,7 +1925,7 @@
             }
 
             activeFandomFilter = fandomName;
-            const filtered = appState.posts.filter(p => p.fandom === fandomName);
+            const filtered = postsFromFirebase.filter(p => p.fandom === fandomName);
             const subs = appState.subgroups[fandomName] || [];
 
             const subsHtml = subs.map((s, idx) => `
@@ -2024,16 +2052,19 @@
             }
         }
 
+        // RENDERIZAÇÃO DOS POSTS COM GUARDA-CHUVA EM CSS
         function renderPostCardHTML(post) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
 
+            const commentsCount = (post.comments || []).length;
+
             return `
                 <article class="glass-panel post-card">
                     <div class="post-header">
                         <div class="post-author-box" onclick="triggerDoramaInvite('${post.author}')">
-                            <img src="${post.avatar}" alt="" class="post-avatar">
+                            <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">${post.author}</div>
                                 <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : post.fandom}</div>
@@ -2050,12 +2081,12 @@
 
                     <div class="post-actions">
                         <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
-                            <img src="./guarda-chuva.png" alt="">
-                            <span>${post.likes}</span>
+                            <span class="umbrella-icon-css">☔</span>
+                            <span>${post.likes || 0}</span>
                         </button>
                         <button class="dots-menu-btn" onclick="toggleDotsMenu('${post.id}')">•••</button>
                         <div class="glass-panel dots-dropdown" id="dots-${post.id}">
-                            <button onclick="openCommentModal('${post.id}')">💬 Comentar (${post.comments.length})</button>
+                            <button onclick="openCommentModal('${post.id}')">💬 Comentar (${commentsCount})</button>
                             <button onclick="shareUmbrellaPost('${post.id}')">☔ Compartilhar umbrella</button>
                         </div>
                     </div>
@@ -2064,10 +2095,6 @@
         }
 
         function renderAll() {
-            document.getElementById('podiumImg1').src = appState.podium[1].img;
-            document.getElementById('podiumImg2').src = appState.podium[2].img;
-            document.getElementById('podiumImg3').src = appState.podium[3].img;
-
             document.getElementById('weeklyDirectiveText').textContent = appState.directive;
             document.getElementById('carouselChallengeText').textContent = appState.directive;
             document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
@@ -2089,10 +2116,10 @@
                 `;
             }).join('');
 
-            const generalPosts = appState.posts.filter(p => !p.isChallenge);
+            const generalPosts = postsFromFirebase.filter(p => !p.isChallenge);
             document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(renderPostCardHTML).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar!</div>`;
 
-            const challengePosts = appState.posts.filter(p => p.isChallenge);
+            const challengePosts = postsFromFirebase.filter(p => p.isChallenge);
             document.getElementById('challengeFeedList').innerHTML = challengePosts.length > 0 ? challengePosts.map(renderPostCardHTML).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
 
             document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0 ? appState.friends.map(f => `
@@ -2146,7 +2173,6 @@
             });
         }
 
-        // LOGO UMBRELLA SOME AO EMPURRAR / ROLAR PARA CIMA
         window.addEventListener('scroll', () => {
             const logoSec = document.getElementById('logoSection');
             if (window.scrollY > 25) {
@@ -2157,7 +2183,7 @@
         });
 
         applyUserTheme();
-        renderAll();
+        initFirebaseSync();
     </script>
 </body>
 </html>
