@@ -547,7 +547,6 @@
             display: block;
         }
 
-        /* Estilo de comentários Facebook-like refinado */
         .comments-section-fb {
             margin-top: 10px;
             padding-top: 8px;
@@ -995,21 +994,37 @@
 
         .lightbox-caption { margin-top: 12px; font-size: 13px; color: var(--gold-accent); text-align: center; }
 
+        /* PLAYER GLOBAL INTEGRADO NATIVO (Não fecha ao trocar de tela) */
         #globalAudioPlayerContainer {
+            position: fixed;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 400px;
+            z-index: 60;
+            background: rgba(14, 18, 34, 0.85);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--gold-border);
+            border-radius: 16px;
+            padding: 8px 12px;
             display: none;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         }
     </style>
 </head>
 <body>
 
-    <!-- IMAGEM DE FUNDO EM TELA CHEIA (NUNCA APAGADA AUTOMATICAMENTE) -->
+    <!-- CAMADA DE FUNDO COM SEU FUNDO.PNG -->
     <img id="bgImageLayer" src="./fundo.png" alt="">
 
-    <!-- PLAYER GLOBAL OCULTO -->
+    <!-- PLAYER DE ÁUDIO GLOBAL NATIVO (RODA EM TODAS AS TELAS SEM INTERRUPÇÃO) -->
     <div id="globalAudioPlayerContainer">
-        <div id="hiddenSpotifyFrameWrapper">
-            <iframe id="activeSpotifyIframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+            <span id="nowPlayingTitle" style="font-size:11.5px; color:var(--gold-accent); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Tocando Música</span>
+            <button onclick="toggleAudioPlayPause()" id="audioPlayPauseBtn" style="background:none; border:none; color:var(--gold-accent); font-size:14px; cursor:pointer;">⏸️</button>
         </div>
+        <audio id="activeAudioElement" controls style="width:100%; height:32px; accent-color:var(--gold-accent);"></audio>
     </div>
 
     <!-- TELA DE LOGIN / BLOQUEIO SÓ AO INTERAGIR -->
@@ -1038,7 +1053,7 @@
 
     <!-- BARRA SUPERIOR -->
     <div class="unified-top-bar">
-        <button class="header-left-btn playing" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil / Player Ativo">
+        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil / Player Ativo">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
@@ -1173,7 +1188,7 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS COM CONFIGURAÇÃO DE BORDINHA E BOLINHA -->
+        <!-- TELA 3: FANDOMS -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms da Comunidade</span>
@@ -1338,7 +1353,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v32';
+        const LOCAL_KEY = 'umbrella_clean_state_v33';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1349,12 +1364,13 @@
                 avatar: './aconchego.png',
                 bgImage: './fundo.png',
                 themeAccentColor: '#060a1e',
-                spotifyEmbed: 'https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0'
+                audioUrl: '',
+                audioTitle: ''
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
-            fandoms: [], // Cada fandom agora pode guardar { name, borderColor, dotColor }
+            fandoms: [],
             subgroups: {},
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
@@ -1545,7 +1561,6 @@
             document.getElementById('customModalBackdrop').classList.remove('open');
         };
 
-        // Gatilho Secreto no Nome do Bias ("Luana e André" ou "luanaeandre")
         window.checkSecretBiasTrigger = function(val) {
             const clean = val.toLowerCase().replace(/\s+/g, '');
             if (clean === 'luanaeandre' || val.toLowerCase().includes('luana e andré')) {
@@ -1553,7 +1568,7 @@
             }
         };
 
-        // Perfil & Player do Spotify (com botão de confirmação e cor do tema)
+        // Perfil com Busca e Player de Música Nativo Global
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1574,17 +1589,13 @@
                         <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">E-mail Cadastrado</label>
-                        <input type="text" class="glass-input" value="${appState.user.email || 'Não informado'}" disabled style="opacity:0.7;">
-                    </div>
-                    <div class="form-group">
                         <label class="form-label">Escolher Foto de Perfil</label>
                         <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
                         <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Editar / Trocar Plano de Fundo da Página</label>
-                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar nova imagem de fundo</label>
+                        <label class="form-label">Plano de Fundo (fundo.png garantido)</label>
+                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar imagem de fundo</label>
                         <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo atualizado'">
                     </div>
                     
@@ -1592,19 +1603,17 @@
                         <label class="form-label">Cor de Acento do Tema (Fundo Geral)</label>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <input type="color" id="obThemeColor" value="${appState.user.themeAccentColor || '#060a1e'}" style="width:45px; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
-                            <span style="font-size:12px; color:var(--text-muted);">Personalize a cor base do app</span>
+                            <span style="font-size:12px; color:var(--text-muted);">Personalize a cor base</span>
                         </div>
                     </div>
 
                     <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <label class="form-label">Player do Spotify (Aura Musical Ativa)</label>
+                        <label class="form-label">Pesquisar ou Colocar Link de Áudio Direto (MP3/Streaming)</label>
                         <div style="display:flex; gap:8px;">
-                            <input type="text" id="obSpotifyInput" class="glass-input" value="${appState.user.spotifyEmbed || ''}" placeholder="Cole o link ou iframe do Spotify aqui...">
-                            <button class="btn-pill-gold" onclick="applySpotifyPlayerInstant()" title="Confirmar e Carregar" style="padding: 0 14px; font-size:16px;">🔍 / OK</button>
+                            <input type="text" id="obAudioSearchInput" class="glass-input" value="${appState.user.audioUrl || ''}" placeholder="Cole o link direto da música ou digite...">
+                            <button class="btn-pill-gold" onclick="searchAndLoadAudio()" title="Tocar" style="padding: 0 14px; font-size:14px;">🎵 Tocar</button>
                         </div>
-                    </div>
-                    <div style="margin-bottom:14px;" id="profileSpotifyPreviewContainer">
-                        <iframe style="border-radius:12px" src="${appState.user.spotifyEmbed || 'https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0'}" width="100%" height="90" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                        <p style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">Insira um link direto de áudio para a música tocar sem sair do app e continuar ativa ao navegar.</p>
                     </div>
 
                     <div style="margin-top:14px; text-align:center;">
@@ -1612,7 +1621,7 @@
                     </div>
                 `,
                 buttons: [
-                    { label: 'Voltar ao Feed', primary: false, onClick: closeUmbrellaModal },
+                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
                     {
                         label: 'Salvar Alterações',
                         primary: true,
@@ -1623,15 +1632,10 @@
                             const themeColor = document.getElementById('obThemeColor').value;
                             if (themeColor) appState.user.themeAccentColor = themeColor;
 
-                            const spotifyCode = document.getElementById('obSpotifyInput').value.trim();
-                            if (spotifyCode) {
-                                if (spotifyCode.includes('src="')) {
-                                    const match = spotifyCode.match(/src="([^"]+)"/);
-                                    if (match && match[1]) appState.user.spotifyEmbed = match[1];
-                                } else {
-                                    appState.user.spotifyEmbed = spotifyCode;
-                                }
-                                updateGlobalPlayer();
+                            const audioLink = document.getElementById('obAudioSearchInput').value.trim();
+                            if (audioLink) {
+                                appState.user.audioUrl = audioLink;
+                                loadGlobalAudio(audioLink, 'Música Ativa da Mari');
                             }
 
                             const avatarInput = document.getElementById('obAvatarFile');
@@ -1674,31 +1678,45 @@
             });
         };
 
-        window.applySpotifyPlayerInstant = function() {
-            const spotifyCode = document.getElementById('obSpotifyInput').value.trim();
-            let embedUrl = spotifyCode;
-            if (spotifyCode.includes('src="')) {
-                const match = spotifyCode.match(/src="([^"]+)"/);
-                if (match && match[1]) embedUrl = match[1];
-            }
-            if (embedUrl) {
-                appState.user.spotifyEmbed = embedUrl;
+        window.searchAndLoadAudio = function() {
+            const link = document.getElementById('obAudioSearchInput').value.trim();
+            if (link) {
+                appState.user.audioUrl = link;
                 saveLocal();
-                updateGlobalPlayer();
-                const previewContainer = document.getElementById('profileSpotifyPreviewContainer');
-                if (previewContainer) {
-                    previewContainer.innerHTML = `<iframe style="border-radius:12px" src="${embedUrl}" width="100%" height="90" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
-                }
+                loadGlobalAudio(link, 'Música Selecionada');
+                alert('Música carregada com sucesso! Ela continuará tocando enquanto você navega.');
             }
         };
 
-        function updateGlobalPlayer() {
-            const wrapper = document.getElementById('hiddenSpotifyFrameWrapper');
-            if (wrapper) {
-                const url = appState.user.spotifyEmbed || 'https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0';
-                wrapper.innerHTML = `<iframe id="activeSpotifyIframe" src="${url}" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+        function loadGlobalAudio(url, title) {
+            const playerContainer = document.getElementById('globalAudioPlayerContainer');
+            const audioEl = document.getElementById('activeAudioElement');
+            const titleEl = document.getElementById('nowPlayingTitle');
+            const profileBtn = document.getElementById('headerProfileBtn');
+
+            if (url) {
+                titleEl.textContent = title || 'Tocando Música';
+                audioEl.src = url;
+                audioEl.play().catch(e => console.log('Autoplay bloqueado pelo navegador, clique em play.', e));
+                playerContainer.style.display = 'block';
+                profileBtn.classList.add('playing');
+            } else {
+                playerContainer.style.display = 'none';
+                profileBtn.classList.remove('playing');
             }
         }
+
+        window.toggleAudioPlayPause = function() {
+            const audioEl = document.getElementById('activeAudioElement');
+            const btn = document.getElementById('audioPlayPauseBtn');
+            if (audioEl.paused) {
+                audioEl.play();
+                btn.textContent = '⏸️';
+            } else {
+                audioEl.pause();
+                btn.textContent = '▶️';
+            }
+        };
 
         window.openMediaActionSheet = function () {
             requireAuthForAction(() => {
@@ -1720,7 +1738,6 @@
             });
         };
 
-        // Pré-visualização de Vídeo integrada
         window.handleMediaSelected = function (event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1988,11 +2005,6 @@
                         comments: []
                     });
 
-                    appState.history.unshift({
-                        action: isAconchegoView ? 'Postou no Aconchego' : (isChallengeView ? 'Participou do Desafio' : 'Publicou no Feed'),
-                        detail: text || 'Mídia anexada',
-                        time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-                    });
                     input.value = '';
                     clearAttachedMedia();
                     saveLocal();
@@ -2065,7 +2077,6 @@
             if (menu) menu.classList.toggle('open');
         };
 
-        // Resposta Direta com Clicar no Nome (Estilo Facebook com asterisco *)
         window.replyToUserInComment = function (authorName) {
             const input = document.getElementById('mainComposerInput') || document.getElementById('feedCommentInput');
             if (input) {
@@ -2075,15 +2086,6 @@
             }
         };
 
-        window.replyInPostModal = function (authorName) {
-            const input = document.getElementById('modalCommentInput');
-            if (input) {
-                input.value = `*${authorName} `;
-                input.focus();
-            }
-        };
-
-        // Comentários Estilo Facebook (Diretos no Card e no Modal)
         window.openCommentModal = function (postId) {
             requireAuthForAction(() => {
                 toggleDotsMenu(postId);
@@ -2186,24 +2188,6 @@
             });
         };
 
-        window.triggerDoramaInvite = function (targetUser) {
-            requireAuthForAction(() => {
-                if (!targetUser || targetUser === appState.user.name) {
-                    showUmbrellaModal({ title: 'Quero assistir um dorama 🎬', htmlBody: 'Status interativo ativo no perfil!' });
-                    return;
-                }
-                appState.notifications.unshift({
-                    id: 'notif_' + Date.now(),
-                    from: targetUser,
-                    avatar: './amigos.png',
-                    text: `Pedido enviado para ${targetUser} 💧`,
-                    type: 'invite'
-                });
-                saveLocal();
-                updateNotifBadge();
-            });
-        };
-
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
@@ -2232,7 +2216,6 @@
             });
         };
 
-        // Fandoms Dinâmicos e Isolados com Edição (Cor da Borda e Bolinha)
         window.openCreateFandomModal = function () {
             requireAuthForAction(() => {
                 showUmbrellaModal({
@@ -2375,7 +2358,7 @@
             `;
 
             if (filtered.length === 0) {
-                html += `<div class="glass-panel empty-state-box">Nenhuma publicação neste fandom isolado ainda. (Nada vaza para o feed principal).</div>`;
+                html += `<div class="glass-panel empty-state-box">Nenhuma publicação neste fandom isolado ainda.</div>`;
             } else {
                 html += filtered.map(p => renderPostCardHTML(p, false)).join('');
             }
@@ -2472,11 +2455,14 @@
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
             const bgEl = document.getElementById('bgImageLayer');
-            if (bgEl && appState.user.bgImage) {
-                bgEl.src = appState.user.bgImage;
+            if (bgEl) {
+                bgEl.src = appState.user.bgImage || './fundo.png';
             }
             if (appState.user.themeAccentColor) {
                 document.documentElement.style.setProperty('--theme-color-accent', appState.user.themeAccentColor);
+            }
+            if (appState.user.audioUrl) {
+                loadGlobalAudio(appState.user.audioUrl, 'Música Ativa');
             }
         }
 
@@ -2525,7 +2511,6 @@
                         </div>
                     </div>
 
-                    <!-- Comentários Facebook-like integrados -->
                     <div class="comments-section-fb">
                         ${commentsHtml}
                         <div class="comment-input-row">
@@ -2557,7 +2542,6 @@
                 document.getElementById('podiumLabel3').textContent = `3º: ${challengePosts[2].author}`;
             }
 
-            // Renderização dos Fandoms com as opções de Bordinha, Bolinha e Botão de Editar
             const fandomsGrid = document.getElementById('fandomsGridContainer');
             if (appState.fandoms.length === 0) {
                 fandomsGrid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column: 1 / -1;">Nenhum fandom criado ainda. Clique em "+ Adicionar Fandom" para começar!</div>`;
@@ -2644,8 +2628,7 @@
         });
 
         applyUserTheme();
-        updateGlobalPlayer();
         initFirebaseSync();
     </script>
 </body>
-</html>
+    </html>
