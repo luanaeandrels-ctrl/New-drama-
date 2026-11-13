@@ -14,16 +14,15 @@
 
     <style>
         :root {
-            --bg-base: #060a1e;
-            --glass-bg: rgba(14, 18, 34, 0.52);
-            --glass-dark: rgba(8, 12, 24, 0.68);
+            --bg-base: transparent;
+            --glass-bg: rgba(255, 255, 255, 0.08);
+            --glass-dark: rgba(14, 18, 34, 0.22);
             --gold-border: rgba(251, 191, 36, 0.45);
-            --gold-glow: rgba(251, 191, 36, 0.28);
+            --gold-glow: rgba(251, 191, 36, 0.25);
             --gold-accent: #fbbf24;
             --text-main: #f8fafc;
-            --text-muted: #94a3b8;
+            --text-muted: #e2e8f0;
             --danger: #f43f5e;
-            --user-tint: rgba(6, 10, 30, 0.25);
         }
 
         * {
@@ -37,7 +36,7 @@
         html, body {
             width: 100%;
             min-height: 100vh;
-            background-color: var(--bg-base);
+            background-color: #060a1e;
             color: var(--text-main);
             overflow-x: hidden;
             color-scheme: dark;
@@ -48,7 +47,7 @@
             inset: 0;
             z-index: -2;
             background-color: #060a1e;
-            background-image: url('fundo.jpeg');
+            background-image: var(--custom-bg-image, url('fundo.png'));
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
@@ -58,9 +57,7 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: radial-gradient(circle at top, rgba(6, 10, 30, 0.15) 0%, var(--user-tint) 60%, rgba(6, 10, 30, 0.65) 100%);
-            backdrop-filter: blur(3px);
-            -webkit-backdrop-filter: blur(3px);
+            background: transparent;
         }
 
         .glass-panel {
@@ -68,14 +65,13 @@
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--gold-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 0 14px rgba(251, 191, 36, 0.06);
-            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 0 12px rgba(251, 191, 36, 0.05);
+            border-radius: 22px;
         }
 
-        /* DESKTOP LIVRE (OCUPA TELA INTEIRA) */
         .app-shell {
             width: 100%;
-            max-width: 100%;
+            max-width: 850px;
             margin: 0 auto;
             min-height: 100vh;
             display: flex;
@@ -84,86 +80,31 @@
             position: relative;
         }
 
-        /* BALÃOZINHO FININHO COM BORDINHAS ARREDONDADAS NO TOPO */
-        .search-top-bar-wrapper {
+        .unified-top-bar {
             width: 100%;
-            padding: 8px 16px;
-            display: flex;
-            justify-content: center;
-            z-index: 45;
-            background: rgba(6, 10, 30, 0.4);
-        }
-
-        .search-balao-fininho {
-            width: 100%;
-            max-width: 600px;
-            background: rgba(10, 14, 28, 0.75);
-            border: 1px solid var(--gold-border);
-            border-radius: 9999px; /* Bordinhas bem arredondadas e fininhas */
-            padding: 6px 16px;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 14px 24px 8px;
             display: flex;
             align-items: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
-        }
-
-        .search-input-fin {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 12px;
-            outline: none;
-            text-align: center;
-        }
-
-        .search-input-fin::placeholder {
-            color: var(--text-muted);
-        }
-
-        /* TOPO DINÂMICO: LOGO COMEÇA COM 150PX E ENCOLHE PARA 75PX */
-        .top-header {
+            justify-content: space-between;
+            gap: 14px;
+            z-index: 45;
             position: sticky;
             top: 0;
-            z-index: 40;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(180deg, rgba(6, 10, 30, 0.85) 0%, rgba(6, 10, 30, 0) 100%);
-            transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .brand-logo {
-            height: 150px; /* Começa com 150px */
-            width: auto;
-            object-fit: contain;
-            transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.75));
-        }
-
-        /* FOTO DE PERFIL: 75PX FIXO */
         .header-left-btn {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 75px;
-            height: 75px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
-            border: 2px solid var(--gold-accent);
+            border: 1.5px solid var(--gold-accent);
             background: var(--glass-dark);
             overflow: hidden;
             cursor: pointer;
             padding: 0;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.6);
-            z-index: 5;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .header-left-btn img {
@@ -173,56 +114,103 @@
             display: block;
         }
 
-        /* GOTINHA DE NOTIFICAÇÃO: 75PX FIXO */
+        .search-balao-fininho {
+            flex: 1;
+            height: 36px;
+            background: rgba(14, 18, 34, 0.35);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--gold-border);
+            border-radius: 9999px;
+            padding: 0 18px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+        }
+
+        .search-input-fin {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 12.5px;
+            outline: none;
+            text-align: center;
+        }
+
+        .search-input-fin::placeholder {
+            color: var(--text-muted);
+        }
+
         .droplet-btn {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 75px;
-            height: 75px;
-            border-radius: 50%;
-            background: var(--glass-bg);
-            border: 1.5px solid var(--gold-border);
+            position: relative;
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
+            font-size: 20px;
             cursor: pointer;
             color: var(--text-main);
-            z-index: 5;
-            box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+            flex-shrink: 0;
         }
 
         .droplet-badge {
             position: absolute;
-            top: 6px;
-            right: 6px;
+            top: 0;
+            right: 0;
             background: var(--gold-accent);
             color: #060a1e;
-            font-size: 10px;
+            font-size: 9px;
             font-weight: 800;
-            min-width: 18px;
-            height: 18px;
+            min-width: 15px;
+            height: 15px;
             border-radius: 99px;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 0 4px;
+            padding: 0 3px;
         }
 
-        /* QUANDO ROLA A PÁGINA: LOGO ENCOLHE PARA 75PX PARA FICAR PADRÃO COM AS LATERAIS */
-        .top-header.scrolled {
-            padding: 10px 20px;
+        .logo-section {
+            width: 100%;
+            max-width: 850px;
+            margin: 0 auto;
+            padding: 8px 24px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            overflow: hidden;
         }
 
-        .top-header.scrolled .brand-logo {
-            height: 75px;
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
-        /* CARROSSEL COM 130PX FIXO */
+        .brand-logo {
+            height: 150px;
+            width: auto;
+            object-fit: contain;
+            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.6));
+        }
+
+        .logo-section.scrolled {
+            padding: 0;
+            height: 0;
+            opacity: 0;
+            pointer-events: none;
+        }
+
         .main-carousel-wrapper {
-            padding: 10px 20px 20px;
+            padding: 6px 24px 20px;
             display: flex;
             gap: 16px;
             overflow-x: auto;
@@ -231,15 +219,15 @@
             scrollbar-width: none;
             align-items: center;
             width: 100%;
+            cursor: grab;
         }
 
-        .main-carousel-wrapper::-webkit-scrollbar {
-            display: none;
-        }
+        .main-carousel-wrapper:active { cursor: grabbing; }
+        .main-carousel-wrapper::-webkit-scrollbar { display: none; }
 
         .carousel-item-clean {
             flex: 0 0 auto;
-            height: 130px; /* 130px fixo */
+            height: 125px;
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
@@ -249,39 +237,34 @@
             transition: transform 0.2s ease;
         }
 
-        .carousel-item-clean:hover {
-            transform: translateY(-2px);
-        }
+        .carousel-item-clean:hover { transform: translateY(-2px); }
 
-        .podium-item-box {
-            width: 100px;
-        }
+        .podium-item-box { width: 95px; }
 
         .podium-circle-clean {
-            width: 75px;
-            height: 75px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
-            border: 2px solid var(--gold-accent);
             overflow: hidden;
-            background: #060a1e;
+            background: rgba(255, 255, 255, 0.08);
             margin-bottom: 6px;
-            box-shadow: 0 4px 18px rgba(0,0,0,0.6), 0 0 12px var(--gold-glow);
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .podium-circle-clean img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+        .podium-circle-1 { border: 3px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.7); }
+        .podium-circle-2 { border: 3px solid #cbd5e1; box-shadow: 0 0 15px rgba(203, 213, 225, 0.7); }
+        .podium-circle-3 { border: 3px solid #d97706; box-shadow: 0 0 15px rgba(217, 119, 6, 0.7); }
+
+        .podium-circle-clean img { width: 100%; height: 100%; object-fit: cover; }
 
         .podium-label-clean {
             font-size: 11.5px;
             font-weight: 700;
             color: var(--gold-accent);
             white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.7);
         }
 
         .challenge-card-clean {
@@ -292,7 +275,8 @@
             padding: 12px 14px;
             justify-content: space-between;
             align-items: flex-start;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+            backdrop-filter: blur(10px);
         }
 
         .challenge-header {
@@ -315,50 +299,41 @@
             overflow: hidden;
         }
 
-        .tab-item-box {
-            width: 100px;
-        }
+        .tab-item-box { width: 95px; }
 
         .tab-icon-clean {
-            width: 75px;
-            height: 75px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             border: 1.5px solid var(--gold-border);
             background: var(--glass-bg);
             padding: 14px;
             margin-bottom: 6px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.25);
             display: flex;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(10px);
         }
 
-        .tab-icon-clean img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
+        .tab-icon-clean img { width: 100%; height: 100%; object-fit: contain; }
 
         .tab-label-clean {
             font-size: 12px;
             font-weight: 600;
             color: var(--text-main);
             white-space: nowrap;
+            text-shadow: 0 1px 4px rgba(0,0,0,0.7);
         }
 
-        /* TELAS / ABAS */
         .view-section {
             display: none;
-            padding: 0 20px;
+            padding: 0 24px;
             animation: fadeIn 0.25s ease forwards;
-            max-width: 950px;
-            margin: 0 auto;
             width: 100%;
         }
 
-        .view-section.active {
-            display: block;
-        }
+        .view-section.active { display: block; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(5px); }
@@ -373,21 +348,22 @@
             padding: 10px 14px;
         }
 
-        .section-title {
-            font-size: 14.5px;
-            font-weight: 700;
-            color: var(--gold-accent);
-        }
+        .section-title { font-size: 14.5px; font-weight: 700; color: var(--gold-accent); }
 
         .btn-pill-gold {
-            background: rgba(251, 191, 36, 0.12);
+            background: rgba(251, 191, 36, 0.14);
             border: 1px solid var(--gold-border);
             color: var(--gold-accent);
             font-size: 11.5px;
             font-weight: 600;
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 99px;
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-pill-gold:hover {
+            background: rgba(251, 191, 36, 0.28);
         }
 
         .fandoms-grid-container {
@@ -403,29 +379,15 @@
             cursor: pointer;
             border-radius: 16px;
             transition: transform 0.2s ease, border-color 0.2s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
         }
 
-        .fandom-box-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--gold-accent);
-        }
+        .fandom-box-card:hover { transform: translateY(-2px); border-color: var(--gold-accent); }
+        .fandom-box-card h4 { font-size: 14px; margin-bottom: 4px; }
+        .fandom-box-card p { font-size: 11px; color: var(--text-muted); }
 
-        .fandom-box-card h4 {
-            font-size: 14px;
-            color: var(--gold-accent);
-            margin-bottom: 4px;
-        }
-
-        .fandom-box-card p {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
-
-        .feed-list {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-        }
+        .feed-list { display: flex; flex-direction: column; gap: 14px; }
 
         .empty-state-box {
             padding: 28px 18px;
@@ -435,9 +397,7 @@
             line-height: 1.5;
         }
 
-        .post-card {
-            padding: 16px;
-        }
+        .post-card { padding: 16px; }
 
         .post-header {
             display: flex;
@@ -446,12 +406,7 @@
             margin-bottom: 10px;
         }
 
-        .post-author-box {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-        }
+        .post-author-box { display: flex; align-items: center; gap: 10px; cursor: pointer; }
 
         .post-avatar {
             width: 40px;
@@ -461,15 +416,8 @@
             object-fit: cover;
         }
 
-        .post-author-name {
-            font-size: 13.5px;
-            font-weight: 600;
-        }
-
-        .post-meta {
-            font-size: 11px;
-            color: var(--text-muted);
-        }
+        .post-author-name { font-size: 13.5px; font-weight: 600; }
+        .post-meta { font-size: 11px; color: var(--text-muted); }
 
         .post-tag {
             font-size: 10px;
@@ -477,15 +425,10 @@
             border-radius: 99px;
             border: 1px solid var(--gold-border);
             color: var(--gold-accent);
-            background: rgba(251, 191, 36, 0.08);
+            background: rgba(251, 191, 36, 0.1);
         }
 
-        .post-text {
-            font-size: 14px;
-            line-height: 1.5;
-            margin-bottom: 10px;
-            word-break: break-word;
-        }
+        .post-text { font-size: 14px; line-height: 1.5; margin-bottom: 10px; word-break: break-word; }
 
         .post-media {
             width: 100%;
@@ -534,9 +477,7 @@
             transform: scale(1.12);
         }
 
-        .like-umbrella-btn.liked span {
-            color: var(--gold-accent);
-        }
+        .like-umbrella-btn.liked span { color: var(--gold-accent); }
 
         .dots-menu-btn {
             background: transparent;
@@ -560,9 +501,7 @@
             gap: 4px;
         }
 
-        .dots-dropdown.open {
-            display: flex;
-        }
+        .dots-dropdown.open { display: flex; }
 
         .dots-dropdown button {
             background: transparent;
@@ -585,8 +524,9 @@
             bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 32px);
-            max-width: 800px;
+            width: 100%;
+            max-width: 850px;
+            padding: 0 24px;
             z-index: 50;
         }
 
@@ -595,12 +535,12 @@
             align-items: center;
             gap: 8px;
             padding: 6px 12px;
-            background: rgba(14, 18, 34, 0.85);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
+            background: rgba(14, 18, 34, 0.45);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--gold-border);
             border-radius: 9999px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         }
 
         .composer-plus-btn {
@@ -630,16 +570,14 @@
             padding: 6px 4px;
         }
 
-        .composer-input::placeholder {
-            color: var(--text-muted);
-        }
+        .composer-input::placeholder { color: var(--text-muted); }
 
         .composer-send-btn {
             width: 36px;
             height: 36px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
-            background: rgba(251, 191, 36, 0.18);
+            background: rgba(251, 191, 36, 0.15);
             color: var(--gold-accent);
             font-size: 15px;
             display: flex;
@@ -653,29 +591,22 @@
             display: none;
             align-items: center;
             justify-content: space-between;
-            padding: 6px 14px;
-            margin-bottom: 6px;
+            padding: 8px 16px;
+            margin-bottom: 8px;
             font-size: 12px;
             color: var(--gold-accent);
             border-radius: 99px;
+            background: rgba(10, 14, 28, 0.85);
         }
 
-        .form-group {
-            margin-bottom: 12px;
-        }
-
-        .form-label {
-            display: block;
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-bottom: 5px;
-        }
+        .form-group { margin-bottom: 12px; }
+        .form-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
 
         .glass-input, .glass-select {
             width: 100%;
             padding: 10px 13px;
             border-radius: 13px;
-            background: rgba(10, 14, 28, 0.85);
+            background: rgba(10, 14, 28, 0.45);
             border: 1px solid var(--gold-border);
             color: var(--text-main);
             font-size: 13px;
@@ -684,16 +615,13 @@
             -webkit-appearance: none;
         }
 
-        .glass-select option {
-            background-color: #0e1326;
-            color: #f8fafc;
-        }
+        .glass-select option { background-color: #0e1326; color: #f8fafc; }
 
         .custom-file-trigger {
             width: 100%;
             padding: 10px 13px;
             border-radius: 13px;
-            background: rgba(10, 14, 28, 0.85);
+            background: rgba(10, 14, 28, 0.45);
             border: 1px dashed var(--gold-border);
             color: var(--gold-accent);
             font-size: 12.5px;
@@ -712,23 +640,11 @@
             font-size: 13.5px;
             font-weight: 700;
             cursor: pointer;
+            transition: all 0.2s ease;
         }
 
-        .stealth-field-box {
-            margin-top: 28px;
-            padding: 8px 12px;
-            opacity: 0.35;
-        }
-
-        .stealth-input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
-            color: var(--text-main);
-            font-size: 12px;
-            padding: 4px 2px;
-            outline: none;
+        .btn-gold:hover {
+            background: rgba(251, 191, 36, 0.28);
         }
 
         .app-footer {
@@ -738,7 +654,7 @@
             width: 100%;
             text-align: center;
             font-size: 10.5px;
-            color: rgba(248, 250, 252, 0.52);
+            color: rgba(248, 250, 252, 0.65);
             z-index: 45;
             pointer-events: none;
         }
@@ -747,7 +663,7 @@
             position: fixed;
             inset: 0;
             z-index: 100;
-            background: rgba(4, 7, 18, 0.75);
+            background: rgba(4, 7, 18, 0.65);
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             display: none;
@@ -756,43 +672,142 @@
             padding: 18px;
         }
 
-        .modal-backdrop.open {
-            display: flex;
+        .modal-backdrop.open { display: flex; }
+
+        .modal-box { width: 100%; max-width: 440px; padding: 22px; max-height: 90vh; overflow-y: auto; }
+
+        .modal-title { font-size: 16px; font-weight: 700; color: var(--gold-accent); margin-bottom: 10px; }
+
+        .modal-body-text { font-size: 13.5px; line-height: 1.55; color: var(--text-main); margin-bottom: 18px; }
+
+        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+
+        /* ESTÚDIO DE EDIÇÃO ESTILO PINTEREST */
+        .studio-modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 150;
+            background: rgba(3, 5, 14, 0.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px;
+            animation: fadeIn 0.2s ease;
         }
 
-        .modal-box {
+        .studio-modal-overlay.open { display: flex; }
+
+        .studio-top-bar {
             width: 100%;
-            max-width: 420px;
-            padding: 22px;
-            max-height: 88vh;
-            overflow-y: auto;
-        }
-
-        .modal-title {
-            font-size: 16px;
-            font-weight: 700;
-            color: var(--gold-accent);
-            margin-bottom: 10px;
-        }
-
-        .modal-body-text {
-            font-size: 13.5px;
-            line-height: 1.55;
-            color: var(--text-main);
-            margin-bottom: 18px;
-        }
-
-        .modal-actions {
+            max-width: 560px;
             display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-bottom: 10px;
+        }
+
+        .studio-canvas-area {
+            flex: 1;
+            width: 100%;
+            max-width: 560px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+            border-radius: 24px;
+            border: 1px solid var(--gold-border);
+            background: rgba(10, 14, 28, 0.5);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+        }
+
+        #editorCanvas {
+            max-width: 100%;
+            max-height: 52vh;
+            object-fit: contain;
+            border-radius: 16px;
+        }
+
+        .studio-controls-panel {
+            width: 100%;
+            max-width: 560px;
+            background: rgba(16, 22, 42, 0.85);
+            border: 1px solid var(--gold-border);
+            border-radius: 24px;
+            padding: 16px 20px;
+            margin-top: 14px;
+        }
+
+        .studio-filters-row {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            margin-bottom: 12px;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.15);
+            scrollbar-width: none;
+        }
+
+        .studio-filters-row::-webkit-scrollbar { display: none; }
+
+        .filter-chip {
+            padding: 6px 14px;
+            border-radius: 99px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            color: var(--text-main);
+            font-size: 11.5px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+        }
+
+        .filter-chip.active {
+            background: var(--gold-accent);
+            color: #060a1e;
+            border-color: var(--gold-accent);
+        }
+
+        .studio-sliders-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px 16px;
+            margin-bottom: 12px;
+        }
+
+        .slider-control label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .slider-control input[type="range"] {
+            width: 100%;
+            accent-color: var(--gold-accent);
+            height: 4px;
+            background: rgba(255,255,255,0.15);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .studio-tools-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             gap: 10px;
-            justify-content: flex-end;
         }
 
         .lightbox-overlay {
             position: fixed;
             inset: 0;
             z-index: 120;
-            background: rgba(2, 4, 12, 0.95);
+            background: rgba(2, 4, 12, 0.88);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -800,9 +815,7 @@
             padding: 16px;
         }
 
-        .lightbox-overlay.open {
-            display: flex;
-        }
+        .lightbox-overlay.open { display: flex; }
 
         .lightbox-close {
             position: absolute;
@@ -826,62 +839,57 @@
             object-fit: contain;
         }
 
-        .lightbox-caption {
-            margin-top: 12px;
-            font-size: 13px;
-            color: var(--gold-accent);
-            text-align: center;
-        }
+        .lightbox-caption { margin-top: 12px; font-size: 13px; color: var(--gold-accent); text-align: center; }
     </style>
 </head>
 <body>
 
-    <div class="fixed-background"></div>
+    <div class="fixed-background" id="fixedBgContainer"></div>
     <div class="fixed-backdrop-overlay"></div>
 
-    <!-- BALÃOZINHO FININHO COM BORDAS ARREDONDADAS NO TOPO -->
-    <div class="search-top-bar-wrapper">
+    <!-- BARRA SUPERIOR UNIFICADA -->
+    <div class="unified-top-bar">
+        <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
+            <img id="headerUserAvatar" src="aconchego.png" alt="">
+        </button>
+
         <div class="search-balao-fininho">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="Pesquisar na plataforma com * (ex: *Luana)" onkeyup="handleGlobalSearch(event)">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="Pesquisar na plataforma (ex: *exemplo usuário)" onkeyup="handleGlobalSearch(event)">
         </div>
+
+        <button class="droplet-btn" onclick="openNotificationsModal()" title="Notificações">
+            💧
+            <span class="droplet-badge" id="notifBadge">0</span>
+        </button>
     </div>
 
     <div class="app-shell">
 
-        <!-- TOPO: FOTO 75PX, LOGO 150PX QUE ENCOLHE PARA 75PX, GOTINHA 75PX -->
-        <header class="top-header" id="topHeader">
-            <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
-                <img id="headerUserAvatar" src="aconchego.png" alt="">
-            </button>
-
+        <!-- LOGO CENTRAL -->
+        <div class="logo-section" id="logoSection">
             <div class="logo-container" onclick="switchView('feed')">
-                <img src="logo.png" alt="" class="brand-logo" id="brandLogo">
+                <img src="logo.png" alt="Umbrella" class="brand-logo" id="brandLogo">
             </div>
+        </div>
 
-            <button class="droplet-btn" onclick="openNotificationsModal()" title="Notificações">
-                💧
-                <span class="droplet-badge" id="notifBadge">0</span>
-            </button>
-        </header>
-
-        <!-- CARROSSEL HORIZONTAL COM 130PX FIXO -->
-        <nav class="main-carousel-wrapper">
+        <!-- CARROSSEL -->
+        <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
-                <div class="podium-circle-clean">
+                <div class="podium-circle-clean podium-circle-1">
                     <img id="podiumImg1" src="guarda-chuva.png" alt="">
                 </div>
                 <span class="podium-label-clean">1º Pódio</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(2)">
-                <div class="podium-circle-clean">
+                <div class="podium-circle-clean podium-circle-2">
                     <img id="podiumImg2" src="fandom.png" alt="">
                 </div>
                 <span class="podium-label-clean">2º Pódio</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(3)">
-                <div class="podium-circle-clean">
+                <div class="podium-circle-clean podium-circle-3">
                     <img id="podiumImg3" src="amigos.png" alt="">
                 </div>
                 <span class="podium-label-clean">3º Pódio</span>
@@ -898,23 +906,17 @@
             </div>
 
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
-                <div class="tab-icon-clean">
-                    <img src="fandom.png" alt="">
-                </div>
+                <div class="tab-icon-clean"><img src="fandom.png" alt=""></div>
                 <span class="tab-label-clean">Fandom</span>
             </div>
 
             <div class="carousel-item-clean tab-item-box" onclick="switchView('amigos')">
-                <div class="tab-icon-clean">
-                    <img src="amigos.png" alt="">
-                </div>
+                <div class="tab-icon-clean"><img src="amigos.png" alt=""></div>
                 <span class="tab-label-clean">Amigos</span>
             </div>
 
             <div class="carousel-item-clean tab-item-box" onclick="switchView('aconchego')">
-                <div class="tab-icon-clean">
-                    <img src="aconchego.png" alt="">
-                </div>
+                <div class="tab-icon-clean"><img src="aconchego.png" alt=""></div>
                 <span class="tab-label-clean">Aconchego</span>
             </div>
         </nav>
@@ -967,17 +969,16 @@
                     <label for="biasRefFileInput" class="custom-file-trigger" id="biasRefFileLabel">Selecionar imagem de referência</label>
                     <input type="file" id="biasRefFileInput" accept="image/*" style="display:none;" onchange="document.getElementById('biasRefFileLabel').textContent = this.files[0]?.name || 'Selecionar imagem'">
                 </div>
-                <p id="biasLockStatus" style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;"></p>
                 <button class="btn-gold" onclick="saveBiasRegistration()">Salvar Representante</button>
             </div>
 
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS -->
+        <!-- TELA 3: FANDOMS (TRANCADOS POR PADRÃO) -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
-                <span class="section-title">Fandoms da Comunidade</span>
+                <span class="section-title">Fandoms da Comunidade (Trancados)</span>
                 <div style="display:flex; gap:6px;">
                     <button class="btn-pill-gold" onclick="openCreateFandomModal()">+ Adicionar Fandom</button>
                     <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
@@ -997,18 +998,13 @@
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
-        <!-- TELA 5: ACONCHEGO COM CAMPO SECRETO -->
+        <!-- TELA 5: ACONCHEGO -->
         <section class="view-section" id="view-aconchego">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meu Aconchego</span>
                 <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
-
             <div class="feed-list" id="aconchegoHistoryList"></div>
-
-            <div class="stealth-field-box">
-                <input type="password" id="stealthAdminInput" class="stealth-input" autocomplete="off" placeholder="Chave secreta..." onkeyup="checkStealthAccess(this.value)">
-            </div>
         </section>
 
     </div>
@@ -1017,13 +1013,19 @@
     <div class="floating-composer-wrapper">
         <div class="glass-panel media-preview-strip" id="mediaPreviewStrip">
             <span id="mediaPreviewName">Mídia anexada</span>
-            <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700;">✕</button>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <button id="reopenEditorBtn" onclick="openPhotoStudioWithCurrent()" style="background:none; border:1px solid var(--gold-border); color:var(--gold-accent); padding:2px 8px; border-radius:99px; font-size:11px; cursor:pointer; display:none;">✨ Editar</button>
+                <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700;">✕</button>
+            </div>
         </div>
 
         <div class="gemini-composer">
-            <button type="button" class="composer-plus-btn" onclick="triggerNativeCameraGallery()" title="Câmera e Galeria">+</button>
-            <input type="file" id="nativeMediaInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella..." onkeypress="if(event.key==='Enter') submitPost()">
+            <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria">+</button>
+            <!-- Inputs separados para máxima compatibilidade no A54, A11 e Desktop -->
+            <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
+            <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
+
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use *nome para marcar alguém)" onkeypress="if(event.key==='Enter') submitPost()">
             <button type="button" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
@@ -1032,11 +1034,62 @@
         umbrella.suporte@gmail.com
     </footer>
 
+    <!-- MODAL GERAL -->
     <div class="modal-backdrop" id="customModalBackdrop">
         <div class="glass-panel modal-box">
             <h3 class="modal-title" id="customModalTitle">Umbrella</h3>
             <div class="modal-body-text" id="customModalBody"></div>
             <div class="modal-actions" id="customModalActions"></div>
+        </div>
+    </div>
+
+    <!-- ESTÚDIO DE EDIÇÃO DE FOTO ESTILO PINTEREST -->
+    <div class="studio-modal-overlay" id="pinterestStudioModal">
+        <div class="studio-top-bar">
+            <button class="btn-pill-gold" style="border-color:rgba(244,63,94,0.5); color:#fda4af;" onclick="closePhotoStudio()">Cancelar</button>
+            <span style="font-size:14px; font-weight:700; color:var(--gold-accent);">✨ Estúdio Umbrella</span>
+            <button class="btn-pill-gold" style="background:var(--gold-accent); color:#060a1e; font-weight:700;" onclick="applyPhotoStudioChanges()">Concluir</button>
+        </div>
+
+        <div class="studio-canvas-area">
+            <canvas id="editorCanvas"></canvas>
+        </div>
+
+        <div class="studio-controls-panel">
+            <!-- Filtros Estéticos -->
+            <div class="studio-filters-row" id="studioFiltersRow">
+                <button class="filter-chip active" onclick="setStudioFilter('none', this)">Original</button>
+                <button class="filter-chip" onclick="setStudioFilter('golden', this)">Dourado ✨</button>
+                <button class="filter-chip" onclick="setStudioFilter('drama', this)">K-Drama 🎬</button>
+                <button class="filter-chip" onclick="setStudioFilter('soft', this)">Aconchego 🌸</button>
+                <button class="filter-chip" onclick="setStudioFilter('bw', this)">Noir P&B 🖤</button>
+            </div>
+
+            <!-- Sliders de Ajuste Fino -->
+            <div class="studio-sliders-grid">
+                <div class="slider-control">
+                    <label><span>Brilho</span><span id="valBrightness">100%</span></label>
+                    <input type="range" id="sliderBrightness" min="50" max="160" value="100" oninput="updateStudioRender()">
+                </div>
+                <div class="slider-control">
+                    <label><span>Contraste</span><span id="valContrast">100%</span></label>
+                    <input type="range" id="sliderContrast" min="50" max="160" value="100" oninput="updateStudioRender()">
+                </div>
+                <div class="slider-control">
+                    <label><span>Saturação</span><span id="valSaturate">100%</span></label>
+                    <input type="range" id="sliderSaturate" min="0" max="180" value="100" oninput="updateStudioRender()">
+                </div>
+                <div class="slider-control">
+                    <label><span>Zoom / Enquadrar</span><span id="valZoom">1.0x</span></label>
+                    <input type="range" id="sliderZoom" min="100" max="200" value="100" oninput="updateStudioRender()">
+                </div>
+            </div>
+
+            <!-- Botões de Rotação e Reset -->
+            <div class="studio-tools-row">
+                <button class="btn-pill-gold" onclick="rotateStudioImage()">↻ Girar 90°</button>
+                <button class="btn-pill-gold" onclick="resetStudioSettings()">Restaurar Original</button>
+            </div>
         </div>
     </div>
 
@@ -1051,8 +1104,6 @@
         import {
             getAuth,
             signInWithPopup,
-            signInWithRedirect,
-            getRedirectResult,
             GoogleAuthProvider,
             onAuthStateChanged
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -1084,17 +1135,16 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v10';
+        const LOCAL_KEY = 'umbrella_clean_state_v15';
 
         const cleanInitialState = {
             user: {
                 uid: '',
-                loggedIn: true,
+                loggedIn: false,
                 name: 'Luana',
                 email: 'luanaeandrels@gmail.com',
-                phone: '',
                 avatar: 'aconchego.png',
-                spotifyUrl: ''
+                bgImage: ''
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
@@ -1105,6 +1155,7 @@
                 3: { img: 'amigos.png', title: '3º Lugar • Pódio Oficial da Semana' }
             },
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
+            unlockedFandoms: [],
             subgroups: {},
             posts: [],
             friends: [
@@ -1117,13 +1168,17 @@
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || cleanInitialState;
         let currentAttachedMedia = null;
         let currentAttachedType = null;
+        let currentFileName = '';
         let activeFandomFilter = null;
+
+        // VARIÁVEIS DO ESTÚDIO DE EDIÇÃO
+        let rawEditorImageObj = null;
+        let editorRotation = 0;
+        let editorFilterPreset = 'none';
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
         }
-
-        getRedirectResult(auth).catch(() => {});
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
@@ -1138,33 +1193,30 @@
             }
         });
 
-        try {
-            const postsQuery = query(collection(db, "umbrella_posts"), orderBy("createdAt", "desc"));
-            onSnapshot(postsQuery, (snapshot) => {
-                const remotePosts = [];
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    remotePosts.push({
-                        id: docSnap.id,
-                        author: data.author || 'Usuária Umbrella',
-                        avatar: data.avatar || 'aconchego.png',
-                        text: data.text || '',
-                        media: data.media || '',
-                        mediaType: data.mediaType || '',
-                        likes: data.likes || 0,
-                        likedByMe: (data.likedBy || []).includes(appState.user.uid),
-                        fandom: data.fandom || 'Geral',
-                        isChallenge: Boolean(data.isChallenge),
-                        createdAt: data.createdAtMs || Date.now(),
-                        comments: data.comments || []
-                    });
+        window.loginWithGoogle = async function () {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                appState.user.uid = user.uid;
+                appState.user.loggedIn = true;
+                appState.user.name = user.displayName || appState.user.name;
+                appState.user.email = user.email || appState.user.email;
+                if (user.photoURL) appState.user.avatar = user.photoURL;
+                saveLocal();
+                applyUserTheme();
+                renderAll();
+                closeUmbrellaModal();
+                showUmbrellaModal({
+                    title: 'Login com Google 💧',
+                    htmlBody: `Logado com sucesso como <strong>${user.displayName}</strong>!`
                 });
-                if (remotePosts.length > 0) {
-                    appState.posts = remotePosts;
-                    renderAll();
-                }
-            });
-        } catch (e) {}
+            } catch (error) {
+                showUmbrellaModal({
+                    title: 'Erro no Login',
+                    htmlBody: `Não foi possível entrar com o Google: ${error.message}`
+                });
+            }
+        };
 
         window.showUmbrellaModal = function ({ title, htmlBody, buttons = [] }) {
             const backdrop = document.getElementById('customModalBackdrop');
@@ -1194,6 +1246,169 @@
             document.getElementById('customModalBackdrop').classList.remove('open');
         };
 
+        // SELETOR DE MÍDIA COMPATÍVEL COM A54, A11 E DESKTOP
+        window.openMediaActionSheet = function () {
+            showUmbrellaModal({
+                title: 'Adicionar Mídia ☔',
+                htmlBody: `
+                    <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Escolha como deseja adicionar sua foto ou vídeo:</p>
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <button class="btn-gold" onclick="closeUmbrellaModal(); document.getElementById('cameraDirectInput').click();">
+                            📸 Tirar Foto com a Câmera
+                        </button>
+                        <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeUmbrellaModal(); document.getElementById('galleryDirectInput').click();">
+                            🖼️ Escolher da Galeria / Arquivos
+                        </button>
+                    </div>
+                `,
+                buttons: [
+                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal }
+                ]
+            });
+        };
+
+        window.handleMediaSelected = function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            currentFileName = file.name;
+            const isVideo = file.type.startsWith('video/');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (isVideo) {
+                    currentAttachedMedia = e.target.result;
+                    currentAttachedType = 'video';
+                    document.getElementById('mediaPreviewName').textContent = `🎬 Vídeo: ${file.name}`;
+                    document.getElementById('reopenEditorBtn').style.display = 'none';
+                    document.getElementById('mediaPreviewStrip').style.display = 'flex';
+                } else {
+                    // Abre automaticamente o Estúdio de Edição Estilo Pinterest para fotos!
+                    openPhotoStudio(e.target.result);
+                }
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // FUNÇÕES DO ESTÚDIO DE EDIÇÃO ESTILO PINTEREST
+        window.openPhotoStudio = function (dataUrl) {
+            const img = new Image();
+            img.onload = () => {
+                rawEditorImageObj = img;
+                resetStudioSettings(false);
+                document.getElementById('pinterestStudioModal').classList.add('open');
+                updateStudioRender();
+            };
+            img.src = dataUrl;
+        };
+
+        window.openPhotoStudioWithCurrent = function () {
+            if (currentAttachedMedia && currentAttachedType === 'image') {
+                openPhotoStudio(currentAttachedMedia);
+            }
+        };
+
+        window.closePhotoStudio = function () {
+            document.getElementById('pinterestStudioModal').classList.remove('open');
+            document.getElementById('cameraDirectInput').value = '';
+            document.getElementById('galleryDirectInput').value = '';
+        };
+
+        window.setStudioFilter = function (preset, btnEl) {
+            editorFilterPreset = preset;
+            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+            if (btnEl) btnEl.classList.add('active');
+            updateStudioRender();
+        };
+
+        window.rotateStudioImage = function () {
+            editorRotation = (editorRotation + 90) % 360;
+            updateStudioRender();
+        };
+
+        window.resetStudioSettings = function (shouldRender = true) {
+            editorRotation = 0;
+            editorFilterPreset = 'none';
+            document.getElementById('sliderBrightness').value = 100;
+            document.getElementById('sliderContrast').value = 100;
+            document.getElementById('sliderSaturate').value = 100;
+            document.getElementById('sliderZoom').value = 100;
+            document.querySelectorAll('.filter-chip').forEach((c, idx) => {
+                c.classList.toggle('active', idx === 0);
+            });
+            if (shouldRender) updateStudioRender();
+        };
+
+        window.updateStudioRender = function () {
+            if (!rawEditorImageObj) return;
+            const canvas = document.getElementById('editorCanvas');
+            const ctx = canvas.getContext('2d');
+
+            const b = document.getElementById('sliderBrightness').value;
+            const c = document.getElementById('sliderContrast').value;
+            const s = document.getElementById('sliderSaturate').value;
+            const z = document.getElementById('sliderZoom').value / 100;
+
+            document.getElementById('valBrightness').textContent = b + '%';
+            document.getElementById('valContrast').textContent = c + '%';
+            document.getElementById('valSaturate').textContent = s + '%';
+            document.getElementById('valZoom').textContent = z.toFixed(1) + 'x';
+
+            const isRotated = editorRotation === 90 || editorRotation === 270;
+            const origW = rawEditorImageObj.width;
+            const origH = rawEditorImageObj.height;
+
+            // Limita resolução máxima para manter leve e rápido no celular
+            const maxDim = 1080;
+            let scale = 1;
+            if (Math.max(origW, origH) > maxDim) {
+                scale = maxDim / Math.max(origW, origH);
+            }
+
+            const targetW = (isRotated ? origH : origW) * scale;
+            const targetH = (isRotated ? origW : origH) * scale;
+
+            canvas.width = targetW;
+            canvas.height = targetH;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Monta string de filtro CSS
+            let presetCss = '';
+            if (editorFilterPreset === 'golden') presetCss = 'sepia(25%) hue-rotate(-10deg) ';
+            else if (editorFilterPreset === 'drama') presetCss = 'contrast(115%) saturate(85%) brightness(95%) ';
+            else if (editorFilterPreset === 'soft') presetCss = 'brightness(108%) contrast(92%) saturate(110%) ';
+            else if (editorFilterPreset === 'bw') presetCss = 'grayscale(100%) contrast(115%) ';
+
+            ctx.filter = `${presetCss}brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
+
+            ctx.save();
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+            ctx.rotate((editorRotation * Math.PI) / 180);
+            ctx.scale(z, z);
+
+            const drawW = origW * scale;
+            const drawH = origH * scale;
+            ctx.drawImage(rawEditorImageObj, -drawW / 2, -drawH / 2, drawW, drawH);
+            ctx.restore();
+        };
+
+        window.applyPhotoStudioChanges = function () {
+            const canvas = document.getElementById('editorCanvas');
+            currentAttachedMedia = canvas.toDataURL('image/jpeg', 0.9);
+            currentAttachedType = 'image';
+            document.getElementById('mediaPreviewName').textContent = `📷 Foto Editada: ${currentFileName || 'imagem.jpg'}`;
+            document.getElementById('reopenEditorBtn').style.display = 'inline-block';
+            document.getElementById('mediaPreviewStrip').style.display = 'flex';
+            closePhotoStudio();
+        };
+
+        window.clearAttachedMedia = function () {
+            currentAttachedMedia = null;
+            currentAttachedType = null;
+            document.getElementById('cameraDirectInput').value = '';
+            document.getElementById('galleryDirectInput').value = '';
+            document.getElementById('mediaPreviewStrip').style.display = 'none';
+        };
+
         window.openProfileModal = function () {
             showUmbrellaModal({
                 title: `Perfil de ${appState.user.name}`,
@@ -1201,29 +1416,26 @@
                     <div style="text-align:center; margin-bottom:14px;">
                         <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
                         <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
-                        <p style="font-size:12px; color:var(--text-muted);">${appState.user.email}</p>
+                        <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || ''}</p>
                     </div>
 
-                    <button class="btn-gold" style="margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="triggerDoramaInvite('${appState.user.name}')">
-                        🎬 Quero assistir um dorama
+                    <button class="btn-gold" style="margin-bottom:14px; background: rgba(66, 133, 244, 0.2); border-color: #4285f4; color: #8ab4f8;" onclick="loginWithGoogle()">
+                        🔑 Entrar / Conectar com Google
                     </button>
-
-                    <div class="spotify-bar" style="margin-bottom:12px;">
-                        <input type="text" id="spotifyLinkInput" class="spotify-input" placeholder="Cole o link do Spotify..." value="${appState.user.spotifyUrl || ''}">
-                        <button class="btn-pill-gold" onclick="saveSpotifyTrackModal()">Salvar</button>
-                    </div>
-                    <div id="spotifyEmbedContainerModal" style="margin-bottom:12px; display:${appState.user.spotifyUrl ? 'block' : 'none'};">
-                        <iframe style="border-radius:12px" src="${appState.user.spotifyUrl ? appState.user.spotifyUrl.replace('open.spotify.com/', 'open.spotify.com/embed/') : ''}" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
-                    </div>
 
                     <div class="form-group">
                         <label class="form-label">Alterar Nome</label>
                         <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Alterar Foto de Perfil</label>
-                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Escolher nova foto</label>
-                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Escolher nova foto'">
+                        <label class="form-label">Escolher Foto de Perfil</label>
+                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
+                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Escolher Plano de Fundo da Página</label>
+                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar imagem de fundo</label>
+                        <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo selecionado'">
                     </div>
                 `,
                 buttons: [
@@ -1233,20 +1445,37 @@
                         primary: true,
                         onClick: () => {
                             const name = document.getElementById('obName').value.trim();
-                            const fileInput = document.getElementById('obAvatarFile');
                             if (name) appState.user.name = name;
 
-                            if (fileInput.files && fileInput.files[0]) {
-                                const reader = new FileReader();
-                                reader.onload = (e) => {
-                                    appState.user.avatar = e.target.result;
+                            const avatarInput = document.getElementById('obAvatarFile');
+                            const bgInput = document.getElementById('obBgFile');
+
+                            let pendingReads = 0;
+                            const checkDone = () => {
+                                pendingReads--;
+                                if (pendingReads <= 0) {
                                     saveLocal();
                                     applyUserTheme();
                                     renderAll();
                                     closeUmbrellaModal();
-                                };
-                                reader.readAsDataURL(fileInput.files[0]);
-                            } else {
+                                }
+                            };
+
+                            if (avatarInput.files && avatarInput.files[0]) {
+                                pendingReads++;
+                                const reader = new FileReader();
+                                reader.onload = (e) => { appState.user.avatar = e.target.result; checkDone(); };
+                                reader.readAsDataURL(avatarInput.files[0]);
+                            }
+
+                            if (bgInput.files && bgInput.files[0]) {
+                                pendingReads++;
+                                const reader = new FileReader();
+                                reader.onload = (e) => { appState.user.bgImage = e.target.result; checkDone(); };
+                                reader.readAsDataURL(bgInput.files[0]);
+                            }
+
+                            if (pendingReads === 0) {
                                 saveLocal();
                                 applyUserTheme();
                                 renderAll();
@@ -1258,24 +1487,25 @@
             });
         };
 
-        window.saveSpotifyTrackModal = function () {
-            const url = document.getElementById('spotifyLinkInput').value.trim();
-            appState.user.spotifyUrl = url;
-            saveLocal();
-            const container = document.getElementById('spotifyEmbedContainerModal');
-            if (url.includes('spotify.com')) {
-                const embedUrl = url.replace('open.spotify.com/', 'open.spotify.com/embed/');
-                container.innerHTML = `<iframe style="border-radius:12px" src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
-                container.style.display = 'block';
-            }
-        };
-
         window.handleGlobalSearch = function (event) {
             const val = event.target.value.trim();
-            if (val.startsWith('*') && val.length > 1) {
-                const queryUser = val.substring(1).toLowerCase();
-                const matchedPosts = appState.posts.filter(p => p.author.toLowerCase().includes(queryUser));
-                if (event.key === 'Enter') {
+            if (event.key === 'Enter') {
+                const cleanVal = val.toLowerCase();
+                if (cleanVal === '*luanaeandrels' || cleanVal === '*luanaeandre' || cleanVal === 'luanaeandrels') {
+                    event.target.value = '';
+                    showUmbrellaModal({
+                        title: '✨ Modo Criadora Ativado',
+                        htmlBody: '<strong>Status:</strong> Balãozinho de ativado para criador confirmado com sucesso!',
+                        buttons: [
+                            { label: 'Abrir Painel Mestre', primary: true, onClick: openMasterAdminPanel }
+                        ]
+                    });
+                    return;
+                }
+
+                if (val.startsWith('*') && val.length > 1) {
+                    const queryUser = val.substring(1).toLowerCase();
+                    const matchedPosts = appState.posts.filter(p => p.author.toLowerCase().includes(queryUser));
                     const container = document.getElementById('mainFeedList');
                     if (matchedPosts.length > 0) {
                         container.innerHTML = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; color:var(--gold-accent); font-size:12.5px;">Resultados para: ${val}</div>` + matchedPosts.map(renderPostCardHTML).join('');
@@ -1302,45 +1532,7 @@
             openLightbox(item.img, 'image', item.title);
         };
 
-        window.triggerNativeCameraGallery = async function () {
-            try {
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                    stream.getTracks().forEach(t => t.stop());
-                }
-            } catch (e) {}
-            document.getElementById('nativeMediaInput').click();
-        };
-
-        window.handleMediaSelected = function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const isVideo = file.type.startsWith('video/');
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                currentAttachedMedia = e.target.result;
-                currentAttachedType = isVideo ? 'video' : 'image';
-                document.getElementById('mediaPreviewName').textContent = `${isVideo ? '🎬 Vídeo' : '📷 Foto'}: ${file.name}`;
-                document.getElementById('mediaPreviewStrip').style.display = 'flex';
-            };
-            reader.readAsDataURL(file);
-        };
-
-        window.clearAttachedMedia = function () {
-            currentAttachedMedia = null;
-            currentAttachedType = null;
-            document.getElementById('nativeMediaInput').value = '';
-            document.getElementById('mediaPreviewStrip').style.display = 'none';
-        };
-
         window.saveBiasRegistration = function () {
-            const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
-            const now = Date.now();
-            if (appState.bias.id && (now - appState.bias.lastUpdated) < thirtyDaysMs) {
-                const daysLeft = Math.ceil((thirtyDaysMs - (now - appState.bias.lastUpdated)) / (24 * 60 * 60 * 1000));
-                showUmbrellaModal({ title: 'Trava de 30 Dias', htmlBody: `Bias travado. Liberação em <strong>${daysLeft} dia(s)</strong>.` });
-                return;
-            }
             const name = document.getElementById('biasNameInput').value.trim();
             const role = document.getElementById('biasRoleInput').value;
             const idNum = parseInt(document.getElementById('biasIdInput').value, 10);
@@ -1348,7 +1540,7 @@
                 showUmbrellaModal({ title: 'Dados Incompletos', htmlBody: 'Informe nome e ID (1 a 1000).' });
                 return;
             }
-            appState.bias = { name, role, id: idNum, lastUpdated: now };
+            appState.bias = { name, role, id: idNum, lastUpdated: Date.now() };
             saveLocal();
             renderAll();
             showUmbrellaModal({ title: 'Representante Salvo!', htmlBody: `Bias <strong>${name}</strong> (#${idNum}) cadastrado.` });
@@ -1358,6 +1550,19 @@
             const input = document.getElementById('mainComposerInput');
             const text = input.value.trim();
             if (!text && !currentAttachedMedia) return;
+
+            const matchTag = text.match(/\*([a-zA-Zá-úÁ-Ú0-9_]+)/);
+            if (matchTag) {
+                appState.notifications.unshift({
+                    id: 'notif_tag_' + Date.now(),
+                    from: appState.user.name,
+                    avatar: appState.user.avatar,
+                    text: `${appState.user.name} marcou você em uma publicação: "${text}" 💬`,
+                    type: 'tag'
+                });
+                saveLocal();
+                updateNotifBadge();
+            }
 
             const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
             if (isChallengeView && !appState.bias.id) {
@@ -1388,22 +1593,6 @@
             clearAttachedMedia();
             saveLocal();
             renderAll();
-            try {
-                await addDoc(collection(db, "umbrella_posts"), {
-                    author: newPostObj.author,
-                    avatar: newPostObj.avatar,
-                    text: newPostObj.text,
-                    media: newPostObj.media,
-                    mediaType: newPostObj.mediaType,
-                    likes: 0,
-                    likedBy: [],
-                    fandom: newPostObj.fandom,
-                    isChallenge: newPostObj.isChallenge,
-                    createdAt: serverTimestamp(),
-                    createdAtMs: Date.now(),
-                    comments: []
-                });
-            } catch (e) {}
         };
 
         window.toggleLikeUmbrella = async function (postId) {
@@ -1422,11 +1611,6 @@
             post.likes += post.likedByMe ? 1 : -1;
             saveLocal();
             renderAll();
-            try {
-                if (!postId.startsWith('post_')) {
-                    await updateDoc(doc(db, "umbrella_posts", postId), { likes: increment(post.likedByMe ? 1 : -1) });
-                }
-            } catch (e) {}
         };
 
         window.toggleDotsMenu = function (postId) {
@@ -1498,7 +1682,8 @@
                 id: 'notif_' + Date.now(),
                 from: targetUser,
                 avatar: 'amigos.png',
-                text: `Pedido enviado para ${targetUser} 💧`
+                text: `Pedido enviado para ${targetUser} 💧`,
+                type: 'invite'
             });
             saveLocal();
             updateNotifBadge();
@@ -1506,16 +1691,31 @@
 
         window.openNotificationsModal = function () {
             if (appState.notifications.length === 0) {
-                showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação.' });
+                showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova notificação ou solicitação.' });
                 return;
             }
             const notif = appState.notifications[0];
             showUmbrellaModal({
-                title: 'Solicitação 💧',
+                title: 'Notificação / Solicitação 💧',
                 htmlBody: `<p>${notif.text}</p>`,
                 buttons: [
-                    { label: 'Não', primary: false, onClick: () => { appState.notifications.shift(); saveLocal(); updateNotifBadge(); closeUmbrellaModal(); } },
-                    { label: 'Sim', primary: true, onClick: () => { appState.notifications.shift(); appState.friends.unshift({ id: 'f_' + Date.now(), name: notif.from, avatar: notif.avatar, status: 'Amizade aceita' }); saveLocal(); updateNotifBadge(); renderAll(); closeUmbrellaModal(); } }
+                    { label: 'Fechar', primary: false, onClick: () => { appState.notifications.shift(); saveLocal(); updateNotifBadge(); closeUmbrellaModal(); } },
+                    { 
+                        label: 'Aprovar / Aceitar', 
+                        primary: true, 
+                        onClick: () => { 
+                            if (notif.type === 'fandom_request') {
+                                if (!appState.unlockedFandoms.includes(notif.targetFandom)) {
+                                    appState.unlockedFandoms.push(notif.targetFandom);
+                                }
+                            }
+                            appState.notifications.shift(); 
+                            saveLocal(); 
+                            updateNotifBadge(); 
+                            renderAll(); 
+                            closeUmbrellaModal(); 
+                        } 
+                    }
                 ]
             });
         };
@@ -1549,6 +1749,52 @@
         };
 
         window.selectFandom = function (fandomName) {
+            if (!appState.unlockedFandoms.includes(fandomName)) {
+                showUmbrellaModal({
+                    title: `Fandom ${fandomName} Trancado 🔒`,
+                    htmlBody: `
+                        <p style="margin-bottom:10px;">Este fandom está fechado por padrão. Insira a senha de administradora para entrar ou envie uma solicitação para a gotinha da Luana.</p>
+                        <input type="password" id="adminPasswordInput" class="glass-input" placeholder="Senha de administradora...">
+                    `,
+                    buttons: [
+                        { 
+                            label: 'Solicitar Acesso', 
+                            primary: false, 
+                            onClick: () => {
+                                appState.notifications.unshift({
+                                    id: 'notif_fan_' + Date.now(),
+                                    from: appState.user.name,
+                                    avatar: appState.user.avatar,
+                                    text: `Pedido de acesso ao fandom <strong>${fandomName}</strong> enviado por ${appState.user.name} 💧`,
+                                    type: 'fandom_request',
+                                    targetFandom: fandomName
+                                });
+                                saveLocal();
+                                updateNotifBadge();
+                                closeUmbrellaModal();
+                                showUmbrellaModal({ title: 'Solicitação Enviada', htmlBody: 'Sua solicitação foi enviada para a administradora.' });
+                            }
+                        },
+                        {
+                            label: 'Entrar com Senha',
+                            primary: true,
+                            onClick: () => {
+                                const pass = document.getElementById('adminPasswordInput').value.trim().toLowerCase();
+                                if (pass === 'luanaeandrels' || pass === 'luanaeandre') {
+                                    appState.unlockedFandoms.push(fandomName);
+                                    saveLocal();
+                                    closeUmbrellaModal();
+                                    selectFandom(fandomName);
+                                } else {
+                                    alert('Senha incorreta!');
+                                }
+                            }
+                        }
+                    ]
+                });
+                return;
+            }
+
             activeFandomFilter = fandomName;
             const filtered = appState.posts.filter(p => p.fandom === fandomName);
             const subs = appState.subgroups[fandomName] || [];
@@ -1559,7 +1805,7 @@
             let html = `
                 <div class="glass-panel" style="padding:14px; margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-size:14px; color:var(--gold-accent); font-weight:700;">Fandom: ${fandomName}</span>
+                        <span style="font-size:14px; color:var(--gold-accent); font-weight:700;">Fandom: ${fandomName} (Aberto)</span>
                         <div style="display:flex; gap:6px;">
                             <button class="btn-pill-gold" onclick="openCreateSubgroupModal('${fandomName}')">+ Subgrupo</button>
                             <button class="btn-pill-gold" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Fechar</button>
@@ -1608,14 +1854,6 @@
             });
         };
 
-        window.checkStealthAccess = function (val) {
-            const cleanVal = val.trim().toLowerCase();
-            if (cleanVal === 'luanaeandrels' || cleanVal === 'luanaeandre') {
-                document.getElementById('stealthAdminInput').value = '';
-                openMasterAdminPanel();
-            }
-        };
-
         function openMasterAdminPanel() {
             showUmbrellaModal({
                 title: 'Painel Mestre • Administração',
@@ -1651,6 +1889,11 @@
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar;
+            if (appState.user.bgImage) {
+                document.documentElement.style.setProperty('--custom-bg-image', `url(${appState.user.bgImage})`);
+            } else {
+                document.documentElement.style.setProperty('--custom-bg-image', `url('fundo.png')`);
+            }
         }
 
         function renderPostCardHTML(post) {
@@ -1700,12 +1943,20 @@
             updateNotifBadge();
 
             const fandomsGrid = document.getElementById('fandomsGridContainer');
-            fandomsGrid.innerHTML = appState.fandoms.map(f => `
-                <div class="glass-panel fandom-box-card" onclick="selectFandom('${f}')">
-                    <h4>${f}</h4>
-                    <p>Comunidade • ${(appState.subgroups[f] || []).length} subgrupo(s)</p>
-                </div>
-            `).join('');
+            fandomsGrid.innerHTML = appState.fandoms.map(f => {
+                let borderColor = 'var(--gold-border)';
+                let textColor = 'var(--gold-accent)';
+                const isUnlocked = appState.unlockedFandoms.includes(f);
+                if (f === 'BTS') { borderColor = 'rgba(139, 92, 246, 0.7)'; textColor = '#c4b5fd'; }
+                else if (f === 'Super Junior') { borderColor = 'rgba(59, 130, 246, 0.7)'; textColor = '#93c5fd'; }
+                else if (f === 'EXO') { borderColor = 'rgba(212, 163, 115, 0.7)'; textColor = '#e6ccb2'; }
+                return `
+                    <div class="glass-panel fandom-box-card" style="border-color: ${borderColor};" onclick="selectFandom('${f}')">
+                        <h4 style="color: ${textColor};">${f} ${isUnlocked ? '🔓' : '🔒'}</h4>
+                        <p>${isUnlocked ? 'Aberto' : 'Trancado (Exige senha/aprovação)'} • ${(appState.subgroups[f] || []).length} subgrupo(s)</p>
+                    </div>
+                `;
+            }).join('');
 
             const generalPosts = appState.posts.filter(p => !p.isChallenge);
             document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(renderPostCardHTML).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar!</div>`;
@@ -1733,13 +1984,40 @@
             `).join('') : `<div class="glass-panel empty-state-box">Seu histórico pessoal aparecerá aqui.</div>`;
         }
 
-        /* DETECÇÃO DE SCROLL PARA ENCOLHER A LOGO DE 150PX PARA 75PX */
+        const carousel = document.getElementById('carouselWrapper');
+        if (carousel) {
+            carousel.addEventListener('wheel', (evt) => {
+                evt.preventDefault();
+                carousel.scrollLeft += evt.deltaY;
+            });
+
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            carousel.addEventListener('mousedown', (e) => {
+                isDown = true;
+                carousel.classList.add('active');
+                startX = e.pageX - carousel.offsetLeft;
+                scrollLeft = carousel.scrollLeft;
+            });
+            carousel.addEventListener('mouseleave', () => { isDown = false; });
+            carousel.addEventListener('mouseup', () => { isDown = false; });
+            carousel.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - carousel.offsetLeft;
+                const walk = (x - startX) * 2;
+                carousel.scrollLeft = scrollLeft - walk;
+            });
+        }
+
         window.addEventListener('scroll', () => {
-            const header = document.getElementById('topHeader');
+            const logoSec = document.getElementById('logoSection');
             if (window.scrollY > 30) {
-                header.classList.add('scrolled');
+                logoSec.classList.add('scrolled');
             } else {
-                header.classList.remove('scrolled');
+                logoSec.classList.remove('scrolled');
             }
         });
 
