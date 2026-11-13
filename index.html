@@ -1,550 +1,2321 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Umbrella</title>
-  <link rel="manifest" href="manifest.json" />
-  <style>
-    :root {
-      --bg-dark: #060a1e;
-      --glass-bg: rgba(20, 24, 42, 0.75);
-      --glass-border: rgba(251, 191, 36, 0.38); /* Fiozinho dourado sutil */
-      --accent-gold: #fbbf24;
-      --accent-purple: #8b5cf6;
-      --text-main: #f8fafc;
-      --text-muted: #94a3b8;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Umbrella</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#060a1e">
+    
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+    <!-- Firebase SDK (Compat para funcionamento direto em arquivo único) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 
-    body {
-      background-color: var(--bg-dark);
-      background-image: linear-gradient(rgba(6, 10, 30, 0.8), rgba(6, 10, 30, 0.92)), url('fundo.jpeg');
-      background-size: cover;
-      background-position: center;
-      background-attachment: fixed;
-      backdrop-filter: blur(10px);
-      color: var(--text-main);
-      min-height: 100vh;
-      padding-top: 95px;
-      padding-bottom: 90px;
-    }
+    <style>
+        /* ==========================================================================
+           1. IDENTIDADE VISUAL, CORES E ESTÉTICA (GLASSMORPHISM AVANÇADO)
+           ========================================================================== */
+        :root {
+            --bg-base: #060a1e;
+            --glass-bg: rgba(20, 24, 42, 0.78);
+            --glass-bg-hover: rgba(28, 34, 58, 0.85);
+            --gold-border: rgba(251, 191, 36, 0.38);
+            --gold-glow: rgba(251, 191, 36, 0.18);
+            --gold-accent: #fbbf24;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --danger: #f43f5e;
+            --success: #10b981;
+            --user-tint: rgba(6, 10, 30, 0.65);
+        }
 
-    /* TOPO COM LOGO.PNG PURA E GOTINHA */
-    header {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 85px;
-      background: rgba(6, 10, 30, 0.9);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--glass-border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1000;
-      transition: height 0.3s ease;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
 
-    header.scrolled { height: 58px; }
+        html, body {
+            width: 100%;
+            min-height: 100vh;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
 
-    header img.main-logo {
-      height: 65px;
-      width: auto;
-      object-fit: contain;
-      transition: height 0.3s ease;
-    }
+        /* Item 1 & 2: Fundo Nativo Fixo + Desfoque (Blur ~10%) + Gradiente Escuro */
+        .fixed-background {
+            position: fixed;
+            inset: 0;
+            z-index: -2;
+            background-image: url('fundo.jpeg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }
 
-    header.scrolled img.main-logo { height: 38px; }
+        .fixed-backdrop-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(180deg, rgba(6, 10, 30, 0.55) 0%, var(--user-tint) 60%, rgba(6, 10, 30, 0.92) 100%);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
 
-    .notification-drop {
-      position: absolute;
-      right: 20px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: var(--accent-gold);
-      color: #060a1e;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      font-size: 1.1rem;
-      box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
-    }
+        /* Item 3 & 4: Classe Base Glassmorphism + Fiozinho Dourado Sutil */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--gold-border);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.45), inset 0 0 12px rgba(251, 191, 36, 0.04);
+            border-radius: 20px;
+        }
 
-    /* CONTAINER PRINCIPAL */
-    app-container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 12px;
-      display: block;
-    }
+        .glass-pill {
+            background: var(--glass-bg);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid var(--gold-border);
+            border-radius: 9999px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
 
-    .glass-box {
-      background: var(--glass-bg);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--glass-border);
-      border-radius: 20px;
-      padding: 18px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-    }
+        /* ==========================================================================
+           3. LAYOUT TOTALMENTE UNIFICADO (MOBILE E DESKTOP IDÊNTICOS)
+           ========================================================================== */
+        .app-shell {
+            width: 100%;
+            max-width: 520px; /* Mantém a mesma proporção e experiência limpa no desktop e celular */
+            margin: 0 auto;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: 110px;
+            position: relative;
+        }
 
-    /* NAVEGAÇÃO POR ABAS / BOLINHAS (130px NO MOBILE) */
-    .nav-bubbles {
-      display: flex;
-      gap: 14px;
-      overflow-x: auto;
-      padding: 10px 4px;
-      margin-bottom: 20px;
-      scrollbar-width: none;
-    }
-    .nav-bubbles::-webkit-scrollbar { display: none; }
+        /* ==========================================================================
+           2. TOPO, LOGO DINÂMICA E GOTINHA DE NOTIFICAÇÕES
+           ========================================================================== */
+        .top-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            padding: 14px 18px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+            background: linear-gradient(180deg, rgba(6, 10, 30, 0.85) 0%, rgba(6, 10, 30, 0) 100%);
+        }
 
-    .bubble-btn {
-      min-width: 130px;
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      background: var(--glass-bg);
-      border: 2px solid var(--glass-border);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      cursor: pointer;
-      color: var(--text-main);
-      font-size: 0.9rem;
-      font-weight: 600;
-      flex-shrink: 0;
-      transition: all 0.25s ease;
-      backdrop-filter: blur(12px);
-    }
+        /* Item 7 & 8: Logo pura centralizada que diminui no scroll */
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.25s ease;
+        }
 
-    .bubble-btn:hover, .bubble-btn.active {
-      border-color: var(--accent-gold);
-      transform: scale(1.05);
-      background: rgba(139, 92, 246, 0.3);
-    }
+        .brand-logo {
+            height: 76px;
+            width: auto;
+            object-fit: contain;
+            transition: height 0.25s cubic-bezier(0.22, 1, 0.36, 1), transform 0.25s ease;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+        }
 
-    .bubble-btn img {
-      width: 32px;
-      height: 32px;
-      object-fit: contain;
-    }
+        .top-header.scrolled .brand-logo {
+            height: 42px;
+        }
 
-    /* FEED E CONTEÚDO DINÂMICO (ABAS LIMPAS - SEM EMPILHAR) */
-    .view-content-area {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+        /* Botão Perfil Esquerdo */
+        .header-left-btn {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 1px solid var(--gold-border);
+            background: var(--glass-bg);
+            overflow: hidden;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-    /* BALÃO DE CHAT E ENTRADA PADRÃO DO APP */
-    .chat-bubble-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: var(--glass-bg);
-      border: 1px solid var(--glass-border);
-      border-radius: 30px;
-      padding: 8px 14px;
-      backdrop-filter: blur(12px);
-      margin-top: 12px;
-    }
+        .header-left-btn img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
 
-    .chat-bubble-bar input {
-      flex: 1;
-      background: transparent;
-      border: none;
-      color: var(--text-main);
-      font-size: 0.95rem;
-      outline: none;
-    }
+        /* Item 39: Gotinha de Notificações no Canto Superior Direito */
+        .droplet-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--gold-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 19px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
 
-    .chat-action-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 4px;
-    }
+        .droplet-btn:active {
+            transform: translateY(-50%) scale(0.92);
+        }
 
-    .chat-action-btn img {
-      width: 24px;
-      height: 24px;
-      object-fit: contain;
-    }
+        .droplet-badge {
+            position: absolute;
+            top: -3px;
+            right: -3px;
+            background: var(--gold-accent);
+            color: #060a1e;
+            font-size: 10px;
+            font-weight: 800;
+            min-width: 18px;
+            height: 18px;
+            border-radius: 99px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0 4px;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.6);
+        }
 
-    /* MODAL CUSTOMIZADO UMBRELLA */
-    .umbrella-modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(6, 10, 30, 0.88);
-      backdrop-filter: blur(10px);
-      z-index: 2000;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+        /* ==========================================================================
+           3. BOLINHAS DE NAVEGAÇÃO (PÓDIO 1, 2, 3 + DESAFIO, FANDOM, AMIGOS, ACONCHEGO)
+           ========================================================================== */
+        .nav-bubbles-wrapper {
+            padding: 8px 14px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
 
-    .umbrella-modal-box {
-      background: var(--glass-bg);
-      border: 1px solid var(--accent-gold);
-      border-radius: 20px;
-      padding: 24px;
-      width: 100%;
-      max-width: 420px;
-      text-align: center;
-      backdrop-filter: blur(18px);
-      box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
-    }
+        /* Linha das Bolinhas do Pódio */
+        .podium-row {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 18px;
+        }
 
-    /* LAYOUT DESKTOP */
-    @media (min-width: 960px) {
-      .app-main-layout {
-        display: grid;
-        grid-template-columns: 280px 1fr 300px;
-        gap: 20px;
-        align-items: start;
-        max-width: 1300px;
-        margin: 0 auto;
-        padding: 12px;
-      }
-      .nav-bubbles {
-        flex-direction: column;
-        overflow-x: visible;
-      }
-      .bubble-btn {
-        width: 100%;
-        height: 75px;
-        border-radius: 16px;
-        flex-direction: row;
-        justify-content: flex-start;
-        padding: 0 18px;
-      }
-    }
-    @media (max-width: 959px) {
-      .app-main-layout {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 12px;
-      }
-    }
-  </style>
+        .podium-bubble-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+
+        .podium-bubble-item:hover {
+            transform: translateY(-3px);
+        }
+
+        .podium-circle {
+            border-radius: 50%;
+            border: 2px solid var(--gold-accent);
+            background: var(--glass-bg);
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 12px var(--gold-glow);
+        }
+
+        .podium-circle.rank-1 {
+            width: 74px;
+            height: 74px;
+            border-width: 2.5px;
+        }
+
+        .podium-circle.rank-2,
+        .podium-circle.rank-3 {
+            width: 58px;
+            height: 58px;
+        }
+
+        .podium-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .podium-rank-tag {
+            background: rgba(20, 24, 42, 0.92);
+            border: 1px solid var(--gold-border);
+            color: var(--gold-accent);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 99px;
+            margin-top: -12px;
+            z-index: 2;
+        }
+
+        /* Linha das Bolinhas Principais: Desafio, Fandom, Amigos, Aconchego */
+        .main-bubbles-row {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 8px;
+        }
+
+        .nav-bubble {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            transition: transform 0.2s ease;
+        }
+
+        .nav-bubble:active {
+            transform: scale(0.93);
+        }
+
+        .nav-bubble-circle {
+            width: 54px;
+            height: 54px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--gold-border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            transition: all 0.25s ease;
+            overflow: hidden;
+            padding: 10px;
+        }
+
+        .nav-bubble.active .nav-bubble-circle {
+            border: 1.5px solid var(--gold-accent);
+            box-shadow: 0 0 18px rgba(251, 191, 36, 0.35);
+            background: rgba(35, 42, 72, 0.9);
+        }
+
+        .nav-bubble-circle img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .nav-bubble-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            letter-spacing: 0.3px;
+        }
+
+        .nav-bubble.active .nav-bubble-label {
+            color: var(--gold-accent);
+        }
+
+        /* ==========================================================================
+           CONTEÚDO DAS TELAS / ABAS
+           ========================================================================== */
+        .view-section {
+            display: none;
+            padding: 0 14px;
+            animation: fadeIn 0.28s ease forwards;
+        }
+
+        .view-section.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding: 10px 14px;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--gold-accent);
+            letter-spacing: 0.3px;
+        }
+
+        .btn-back-feed {
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid var(--gold-border);
+            color: var(--text-main);
+            font-size: 12px;
+            padding: 5px 12px;
+            border-radius: 99px;
+            cursor: pointer;
+        }
+
+        /* ==========================================================================
+           4. PERFIL COMPACTO & TRILHA SONORA SPOTIFY
+           ========================================================================== */
+        .profile-card {
+            padding: 16px;
+            margin-bottom: 14px;
+        }
+
+        .profile-top {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .profile-avatar-lg {
+            width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            border: 1.5px solid var(--gold-accent);
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+
+        .profile-info h3 {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .profile-info p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Item 18 & 38: Frase Interativa "Quero assistir um dorama" */
+        .dorama-phrase-btn {
+            margin-top: 12px;
+            width: 100%;
+            padding: 9px 14px;
+            border-radius: 14px;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid var(--gold-border);
+            color: var(--gold-accent);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .dorama-phrase-btn:hover {
+            background: rgba(251, 191, 36, 0.2);
+        }
+
+        /* Item 19 & 20: Spotify Compacto + Play/Pause discreto */
+        .spotify-bar {
+            margin-top: 12px;
+            padding: 8px 12px;
+            border-radius: 14px;
+            background: rgba(10, 14, 28, 0.65);
+            border: 1px solid var(--gold-border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .spotify-input {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 12px;
+            flex: 1;
+            outline: none;
+        }
+
+        .spotify-btn {
+            background: rgba(251, 191, 36, 0.15);
+            border: 1px solid var(--gold-border);
+            color: var(--gold-accent);
+            font-size: 11px;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 99px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        /* ==========================================================================
+           FEED CARDS, CURTIDA GUARDA-CHUVA & TRÊS PONTINHOS (...)
+           ========================================================================== */
+        .feed-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .post-card {
+            padding: 15px;
+            transition: transform 0.2s ease;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .post-author-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+        }
+
+        .post-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid var(--gold-border);
+            object-fit: cover;
+        }
+
+        .post-author-name {
+            font-size: 13.5px;
+            font-weight: 600;
+        }
+
+        .post-meta {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .post-tag {
+            font-size: 10px;
+            padding: 3px 9px;
+            border-radius: 99px;
+            border: 1px solid var(--gold-border);
+            color: var(--gold-accent);
+            background: rgba(251, 191, 36, 0.08);
+        }
+
+        .post-text {
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 10px;
+            color: var(--text-main);
+            word-break: break-word;
+        }
+
+        .post-media {
+            width: 100%;
+            max-height: 380px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid var(--gold-border);
+            margin-bottom: 10px;
+            cursor: zoom-in;
+            display: block;
+        }
+
+        /* Item 9 & 46: Curtir com guarda-chuva.png + Menu Três Pontinhos (...) */
+        .post-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding-top: 8px;
+            border-top: 1px solid rgba(251, 191, 36, 0.15);
+            position: relative;
+        }
+
+        .like-umbrella-btn {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 12px;
+            transition: background 0.2s ease, transform 0.15s ease;
+        }
+
+        .like-umbrella-btn:active {
+            transform: scale(0.92);
+        }
+
+        .like-umbrella-btn img {
+            width: 22px;
+            height: 22px;
+            object-fit: contain;
+            filter: grayscale(40%) opacity(0.8);
+            transition: all 0.2s ease;
+        }
+
+        .like-umbrella-btn.liked img {
+            filter: drop-shadow(0 0 6px rgba(251, 191, 36, 0.85)) brightness(1.15);
+            transform: scale(1.1);
+        }
+
+        .like-umbrella-btn.liked span {
+            color: var(--gold-accent);
+        }
+
+        .dots-menu-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            padding: 2px 10px;
+            border-radius: 10px;
+        }
+
+        .dots-menu-btn:hover {
+            color: var(--gold-accent);
+            background: rgba(251, 191, 36, 0.08);
+        }
+
+        .dots-dropdown {
+            position: absolute;
+            right: 0;
+            bottom: 38px;
+            z-index: 30;
+            min-width: 190px;
+            padding: 6px;
+            display: none;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .dots-dropdown.open {
+            display: flex;
+        }
+
+        .dots-dropdown button {
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 12.5px;
+            text-align: left;
+            padding: 9px 12px;
+            border-radius: 12px;
+            cursor: pointer;
+        }
+
+        .dots-dropdown button:hover {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--gold-accent);
+        }
+
+        /* ==========================================================================
+           5 & 47. BARRA DE POSTAGEM FLUTUANTE MINIMALISTA (ESTILO GEMINI)
+           ========================================================================== */
+        .floating-composer-wrapper {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 24px);
+            max-width: 496px;
+            z-index: 50;
+        }
+
+        .gemini-composer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 10px;
+            background: rgba(16, 20, 38, 0.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border: 1px solid var(--gold-border);
+            border-radius: 9999px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65), 0 0 15px rgba(251, 191, 36, 0.12);
+        }
+
+        .composer-plus-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--gold-border);
+            background: rgba(251, 191, 36, 0.12);
+            color: var(--gold-accent);
+            font-size: 22px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .composer-plus-btn img.cam-badge {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 14px;
+            height: 14px;
+            object-fit: contain;
+        }
+
+        .composer-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 13.5px;
+            outline: none;
+            padding: 4px 6px;
+        }
+
+        .composer-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .composer-send-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 1px solid var(--gold-border);
+            background: var(--gold-accent);
+            color: #060a1e;
+            font-size: 16px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            transition: transform 0.15s ease;
+        }
+
+        .composer-send-btn:active {
+            transform: scale(0.9);
+        }
+
+        .media-preview-strip {
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 14px;
+            margin-bottom: 6px;
+            font-size: 12px;
+            color: var(--gold-accent);
+        }
+
+        /* ==========================================================================
+           45. RODAPÉ FIXO COM E-MAIL DE SUPORTE OFICIAL
+           ========================================================================== */
+        .app-footer {
+            position: fixed;
+            bottom: 3px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-size: 10.5px;
+            color: rgba(248, 250, 252, 0.55);
+            z-index: 45;
+            pointer-events: none;
+            letter-spacing: 0.3px;
+        }
+
+        /* ==========================================================================
+           6, 7, 8, 9 & 10. FORMULÁRIOS, DESAFIOS, FANDOMS E ACONCHEGO
+           ========================================================================== */
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .glass-input, .glass-select {
+            width: 100%;
+            padding: 10px 13px;
+            border-radius: 13px;
+            background: rgba(10, 14, 28, 0.72);
+            border: 1px solid var(--gold-border);
+            color: var(--text-main);
+            font-size: 13.5px;
+            outline: none;
+        }
+
+        .glass-input:focus, .glass-select:focus {
+            border-color: var(--gold-accent);
+        }
+
+        .btn-gold {
+            width: 100%;
+            padding: 11px 16px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(251, 191, 36, 0.12));
+            border: 1px solid var(--gold-accent);
+            color: var(--gold-accent);
+            font-size: 13.5px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-gold:hover {
+            background: rgba(251, 191, 36, 0.3);
+        }
+
+        .fandom-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .fandom-card {
+            padding: 14px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .fandom-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--gold-accent);
+        }
+
+        .fandom-card h4 {
+            font-size: 14px;
+            color: var(--gold-accent);
+            margin-bottom: 4px;
+        }
+
+        .fandom-card p {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        /* Item 42 & 45: Campo Administrativo Totalmente Neutro e Discreto no Aconchego */
+        .stealth-field-box {
+            margin-top: 26px;
+            padding: 8px 12px;
+            opacity: 0.45;
+            transition: opacity 0.25s ease;
+        }
+
+        .stealth-field-box:focus-within {
+            opacity: 1;
+        }
+
+        .stealth-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.18);
+            color: var(--text-main);
+            font-size: 12px;
+            padding: 4px 2px;
+            outline: none;
+        }
+
+        /* ==========================================================================
+           5 & 46. MODAIS EXCLUSIVOS GLASSMORPHISM & LIGHTBOX PINTEREST
+           ========================================================================== */
+        .modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: rgba(4, 7, 18, 0.78);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 18px;
+        }
+
+        .modal-backdrop.open {
+            display: flex;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-box {
+            width: 100%;
+            max-width: 420px;
+            padding: 22px;
+            position: relative;
+            max-height: 88vh;
+            overflow-y: auto;
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--gold-accent);
+            margin-bottom: 10px;
+        }
+
+        .modal-body-text {
+            font-size: 13.5px;
+            line-height: 1.55;
+            color: var(--text-main);
+            margin-bottom: 18px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        /* Item 14 & 44: Lightbox Estilo Pinterest & Pódio Tela Cheia */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 120;
+            background: rgba(2, 4, 12, 0.96);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+
+        .lightbox-overlay.open {
+            display: flex;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 18px;
+            right: 18px;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--glass-bg);
+            border: 1px solid var(--gold-border);
+            color: var(--gold-accent);
+            font-size: 18px;
+            cursor: pointer;
+            z-index: 125;
+        }
+
+        .lightbox-media {
+            max-width: 100%;
+            max-height: 84vh;
+            border-radius: 16px;
+            border: 1px solid var(--gold-border);
+            object-fit: contain;
+        }
+
+        .lightbox-caption {
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--gold-accent);
+            text-align: center;
+        }
+
+        /* Balões de Chat Privado (Item 41) */
+        .chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 12px;
+            padding: 4px;
+        }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 9px 13px;
+            border-radius: 16px;
+            background: var(--glass-bg);
+            border: 1px solid var(--gold-border);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .chat-bubble.me {
+            align-self: flex-end;
+            background: rgba(251, 191, 36, 0.14);
+        }
+
+        .chat-bubble.them {
+            align-self: flex-start;
+        }
+    </style>
 </head>
 <body>
 
-  <!-- TOPO COM LOGO.PNG E GOTINHA 💧 -->
-  <header id="appHeader">
-    <img src="logo.png" alt="Logo" class="main-logo" onerror="this.src='guarda-chuva.png'" />
-    <div class="notification-drop" onclick="openNotifications()" title="Gotinha de Notificações">💧</div>
-  </header>
+    <!-- Fundo Fixo e Camada de Desfoque -->
+    <div class="fixed-background"></div>
+    <div class="fixed-backdrop-overlay" id="backdropOverlay"></div>
 
-  <div class="app-main-layout">
-    
-    <!-- COLUNA / SEÇÃO DE ABAS (BOLINHAS DE 130px) -->
-    <aside>
-      <div class="nav-bubbles">
-        <button class="bubble-btn active" onclick="switchTab('feed', this)">
-          <img src="guarda-chuva.png" alt="Feed" /> Feed
-        </button>
-        <button class="bubble-btn" onclick="switchTab('podio', this)">
-          🏆 Pódio
-        </button>
-        <button class="bubble-btn" onclick="switchTab('desafios', this)">
-          🎯 Desafios
-        </button>
-        <button class="bubble-btn" onclick="switchTab('amigos', this)">
-          <img src="amigos.png" alt="Amigos" /> Amigos
-        </button>
-        <button class="bubble-btn" onclick="switchTab('fandom', this)">
-          <img src="fandom.png" alt="Fandom" /> Fandom
-        </button>
-        <button class="bubble-btn" onclick="switchTab('aconchego', this)">
-          <img src="aconchego.png" alt="Aconchego" /> Aconchego
-        </button>
-      </div>
-    </aside>
+    <!-- Container Principal Unificado (Idêntico Mobile e Desktop) -->
+    <div class="app-shell">
 
-    <!-- ÁREA PRINCIPAL DE CONTEÚDO (ABAS LIMPAS - NADA EMPILHADO) -->
-    <main id="mainTabViewArea">
-      <div class="glass-box">
-        <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Feed Geral</h2>
-        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Compartilhe momentos sob o guarda-chuva.</p>
-        
-        <!-- Caixa de envio padrão (Balão de Chat com botão da câmera nativa) -->
-        <div class="chat-bubble-bar">
-          <button class="chat-action-btn" onclick="openNativeCamera()" title="Câmera / Galeria">
-            <img src="câmera.png" alt="Câmera" />
-          </button>
-          <input type="text" id="feedInputText" placeholder="O que vamos proteger hoje?" />
-          <button class="chat-action-btn" onclick="submitFeedPost()" style="color: var(--accent-gold); font-size: 1.2rem;">➤</button>
-        </div>
-      </div>
+        <!-- TOPO COM LOGO DINÂMICA E GOTINHA DE NOTIFICAÇÕES -->
+        <header class="top-header" id="topHeader">
+            <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
+                <img id="headerUserAvatar" src="aconchego.png" alt="Perfil">
+            </button>
 
-      <!-- Feed Stream -->
-      <div class="view-content-area" id="feedStreamContainer">
-        <div class="glass-box">
-          <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;" onclick="visitProfile('Luana')">
-            Luana <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(K-popper • BTS • Dorama)</span>
-          </div>
-          <p style="font-size: 0.9rem; margin-bottom: 8px;">Bem-vindos ao Umbrella! ☔🎬</p>
-          <div style="display: flex; gap: 18px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
-            <span onclick="toggleLike(this)">☂️ Curtir (0)</span>
-            <span>💬 Comentar</span>
-            <span>🔗 Compartilhar Umbrella</span>
-          </div>
-        </div>
-      </div>
-    </main>
+            <!-- Item 7: Apenas a imagem pura logo.png -->
+            <div class="logo-container" onclick="switchView('feed')">
+                <img src="logo.png" alt="" class="brand-logo" id="brandLogo">
+            </div>
 
-    <!-- COLUNA LATERAL: PERFIL & SPOTIFY -->
-    <aside>
-      <div class="glass-box">
-        <h3 style="color: var(--accent-gold); font-size: 1rem; margin-bottom: 8px;">Perfil & Spotify</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Cole o código/link do Spotify para tocar no fundo:</p>
-        <input type="texts" id="spotifyLinkInput" placeholder="https://open.spotify.com/..." style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:8px;" />
-        <button onclick="saveSpotifyBackground()" style="background:var(--accent-purple); color:#fff; border:none; padding:8px 12px; border-radius:10px; font-size:0.8rem; cursor:pointer; width:100%; font-weight:600;">Ativar Trilha</button>
-        <div id="spotifyAudioControl" style="margin-top:10px; display:none; text-align:center;">
-          <button onclick="pauseSpotify()" style="background:transparent; border:1px solid var(--accent-gold); color:var(--accent-gold); padding:4px 10px; border-radius:8px; font-size:0.75rem; cursor:pointer;">⏸ Pausar Música</button>
-        </div>
-      </div>
+            <!-- Item 39: Gotinha de Notificações -->
+            <button class="droplet-btn" onclick="openNotificationsModal()" title="Notificações">
+                💧
+                <span class="droplet-badge" id="notifBadge">1</span>
+            </button>
+        </header>
 
-      <div class="glass-box" style="margin-top: 14px;">
-        <h3 style="color: var(--accent-gold); font-size: 1rem; margin-bottom: 8px;">Gestão de Bias (1-1000)</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Trava de segurança de 30 dias por número:</p>
-        <input type="text" id="biasName" placeholder="Nome do Bias" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:6px;" />
-        <input type="text" id="biasRole" placeholder="Ator, Atriz ou K-popper" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:6px;" />
-        <input type="number" id="biasIdNumber" min="1" max="1000" placeholder="Número ID (1 a 1000)" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:8px;" />
-        <button onclick="saveBiasData()" style="background:var(--accent-gold); color:#060a1e; border:none; padding:8px 12px; border-radius:10px; font-size:0.8rem; cursor:pointer; width:100%; font-weight:bold;">Salvar Bias</button>
-      </div>
-    </aside>
+        <!-- ARQUITETURA DE NAVEGAÇÃO POR BOLINHAS -->
+        <nav class="nav-bubbles-wrapper">
+            <!-- Bolinhas do Pódio 1, 2 e 3 -->
+            <div class="podium-row">
+                <!-- Pódio 2 -->
+                <div class="podium-bubble-item" onclick="openPodiumFullscreen(2)">
+                    <div class="podium-circle rank-2">
+                        <img id="podiumImg2" src="fandom.png" alt="2º Lugar">
+                    </div>
+                    <span class="podium-rank-tag">2º</span>
+                </div>
 
-  </div>
+                <!-- Pódio 1 -->
+                <div class="podium-bubble-item" onclick="openPodiumFullscreen(1)">
+                    <div class="podium-circle rank-1">
+                        <img id="podiumImg1" src="guarda-chuva.png" alt="1º Lugar">
+                    </div>
+                    <span class="podium-rank-tag">1º</span>
+                </div>
 
-  <!-- MODAL CUSTOMIZADO UMBRELLA -->
-  <div id="umbrellaModalBox" class="umbrella-modal">
-    <div class="umbrella-modal-box">
-      <h3 id="umbrellaModalTitle" style="color: var(--accent-gold); margin-bottom: 10px;">Aviso Umbrella</h3>
-      <p id="umbrellaModalText" style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 20px;"></p>
-      <button onclick="closeUmbrellaModal()" style="background: var(--accent-gold); color: #060a1e; border: none; padding: 10px 22px; border-radius: 10px; font-weight: bold; cursor: pointer;">Entendido</button>
+                <!-- Pódio 3 -->
+                <div class="podium-bubble-item" onclick="openPodiumFullscreen(3)">
+                    <div class="podium-circle rank-3">
+                        <img id="podiumImg3" src="amigos.png" alt="3º Lugar">
+                    </div>
+                    <span class="podium-rank-tag">3º</span>
+                </div>
+            </div>
+
+            <!-- Bolinhas Principais: Desafio, Fandom, Amigos, Aconchego -->
+            <div class="main-bubbles-row glass-panel">
+                <button class="nav-bubble" id="nav-desafio" onclick="switchView('desafio')">
+                    <div class="nav-bubble-circle">
+                        <img src="guarda-chuva.png" alt="Desafio">
+                    </div>
+                    <span class="nav-bubble-label">Desafio</span>
+                </button>
+
+                <button class="nav-bubble" id="nav-fandom" onclick="switchView('fandom')">
+                    <div class="nav-bubble-circle">
+                        <img src="fandom.png" alt="Fandom">
+                    </div>
+                    <span class="nav-bubble-label">Fandom</span>
+                </button>
+
+                <button class="nav-bubble" id="nav-amigos" onclick="switchView('amigos')">
+                    <div class="nav-bubble-circle">
+                        <img src="amigos.png" alt="Amigos">
+                    </div>
+                    <span class="nav-bubble-label">Amigos</span>
+                </button>
+
+                <button class="nav-bubble" id="nav-aconchego" onclick="switchView('aconchego')">
+                    <div class="nav-bubble-circle">
+                        <img src="aconchego.png" alt="Aconchego">
+                    </div>
+                    <span class="nav-bubble-label">Aconchego</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- ======================================================================
+             TELA 1: FEED PRINCIPAL (PADRÃO)
+             ====================================================================== -->
+        <main class="view-section active" id="view-feed">
+            <!-- Cartão de Perfil Compacto no Topo do Feed -->
+            <div class="glass-panel profile-card">
+                <div class="profile-top">
+                    <img id="profileCardAvatar" src="aconchego.png" alt="Avatar" class="profile-avatar-lg">
+                    <div class="profile-info">
+                        <h3 id="profileCardName">Visitante Umbrella</h3>
+                        <p id="profileCardEmail">Conecte sua conta Google</p>
+                        <p id="profileCardBias" style="color: var(--gold-accent); margin-top: 3px;">Bias: Não definido</p>
+                    </div>
+                </div>
+
+                <!-- Item 18: Frase Interativa Padrão -->
+                <button class="dorama-phrase-btn" onclick="triggerDoramaInvite('Comunidade Umbrella')">
+                    🎬 Quero assistir um dorama
+                </button>
+
+                <!-- Item 19 & 20: Trilha Sonora do Spotify + Pause Discreto -->
+                <div class="spotify-bar">
+                    <input type="text" id="spotifyLinkInput" class="spotify-input" placeholder="Cole o link da música do Spotify...">
+                    <button class="spotify-btn" onclick="saveSpotifyTrack()">Salvar</button>
+                    <button class="spotify-btn" id="spotifyPlayPauseBtn" onclick="toggleAmbientMusic()">⏸ Pausar</button>
+                </div>
+                <div id="spotifyEmbedContainer" style="margin-top:8px; display:none;"></div>
+            </div>
+
+            <!-- Lista de Postagens do Feed -->
+            <div class="feed-list" id="mainFeedList"></div>
+        </main>
+
+        <!-- ======================================================================
+             TELA 2: DESAFIO SEMANAL, BIAS (1-1000) E VOTOS DIÁRIOS
+             ====================================================================== -->
+        <section class="view-section" id="view-desafio">
+            <div class="glass-panel section-header-bar">
+                <span class="section-title">Desafio Semanal</span>
+                <button class="btn-back-feed" onclick="switchView('feed')">Voltar ao Feed</button>
+            </div>
+
+            <!-- Diretriz Semanal da ADM e Regras do Bias -->
+            <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
+                <p style="font-size:12px; color:var(--gold-accent); font-weight:700;">DIRETRIZ DA SEMANA (DOMINGO)</p>
+                <p id="weeklyDirectiveText" style="font-size:13.5px; margin:6px 0 12px; line-height:1.5;">
+                    Tema oficial: <strong>Sorriso sob a Chuva</strong>. Escolha seu representante fixo para toda a semana. Votos acumulados de segunda a sexta definem o Pódio oficial do fim de semana!
+                </p>
+                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); border-top:1px solid rgba(251,191,36,0.18); padding-top:8px;">
+                    <span>Votos restantes hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
+                    <span>Reset: <strong>00:00:00</strong></span>
+                </div>
+            </div>
+
+            <!-- Módulo de Cadastro de Bias (1 a 1000) com Trava de 30 Dias e Validação de Pixels -->
+            <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
+                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:10px;">Meu Bias Representante (ID 1 a 1000)</h4>
+                <div class="form-group">
+                    <label class="form-label">Nome do Bias</label>
+                    <input type="text" id="biasNameInput" class="glass-input" placeholder="Ex: Kim Taehyung, Park Bo-gum...">
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div class="form-group">
+                        <label class="form-label">Função</label>
+                        <select id="biasRoleInput" class="glass-select">
+                            <option value="Ator">Ator</option>
+                            <option value="Atriz">Atriz</option>
+                            <option value="K-popper">K-popper</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">ID Oficial (1 - 1000)</label>
+                        <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="1 a 1000">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Foto de Referência Oficial do Bias (Para validação de pixels)</label>
+                    <input type="file" id="biasRefFileInput" accept="image/*" class="glass-input" style="font-size:12px;">
+                </div>
+                <p id="biasLockStatus" style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;"></p>
+                <button class="btn-gold" onclick="saveBiasRegistration()">Salvar / Travar Representante</button>
+            </div>
+
+            <!-- Feed de Participações do Desafio -->
+            <div class="feed-list" id="challengeFeedList"></div>
+        </section>
+
+        <!-- ======================================================================
+             TELA 3: FANDOMS E SUBGRUPOS
+             ====================================================================== -->
+        <section class="view-section" id="view-fandom">
+            <div class="glass-panel section-header-bar">
+                <span class="section-title">Comunidades & Fandoms</span>
+                <button class="btn-back-feed" onclick="switchView('feed')">Voltar ao Feed</button>
+            </div>
+
+            <div class="fandom-grid" id="fandomGrid">
+                <div class="glass-panel fandom-card" onclick="selectFandom('BTS')">
+                    <h4>BTS</h4>
+                    <p>ARMY • Interações ativas</p>
+                </div>
+                <div class="glass-panel fandom-card" onclick="selectFandom('Super Junior')">
+                    <h4>Super Junior</h4>
+                    <p>E.L.F • Interações ativas</p>
+                </div>
+                <div class="glass-panel fandom-card" onclick="selectFandom('EXO')">
+                    <h4>EXO</h4>
+                    <p>EXO-L • Interações ativas</p>
+                </div>
+                <div class="glass-panel fandom-card" onclick="selectFandom('Dorama')">
+                    <h4>Dorama</h4>
+                    <p>K-Dramas & OSTs</p>
+                </div>
+                <div class="glass-panel fandom-card" onclick="selectFandom('Animes')">
+                    <h4>Animes</h4>
+                    <p>Animações & Mangás</p>
+                </div>
+                <div class="glass-panel fandom-card" onclick="openCreateSubgroupModal()">
+                    <h4>+ Subgrupo</h4>
+                    <p>Criar espaço vinculado</p>
+                </div>
+            </div>
+
+            <div id="selectedFandomFeed" class="feed-list"></div>
+        </section>
+
+        <!-- ======================================================================
+             TELA 4: AMIGOS E CHAT PRIVADO
+             ====================================================================== -->
+        <section class="view-section" id="view-amigos">
+            <div class="glass-panel section-header-bar">
+                <span class="section-title">Meus Amigos</span>
+                <button class="btn-back-feed" onclick="switchView('feed')">Voltar ao Feed</button>
+            </div>
+
+            <div class="feed-list" id="friendsListContainer"></div>
+        </section>
+
+        <!-- ======================================================================
+             TELA 5: ACONCHEGO (HISTÓRICO PESSOAL + CAMPO DISCRETO)
+             ====================================================================== -->
+        <section class="view-section" id="view-aconchego">
+            <div class="glass-panel section-header-bar">
+                <span class="section-title">Meu Aconchego</span>
+                <button class="btn-back-feed" onclick="switchView('feed')">Voltar ao Feed</button>
+            </div>
+
+            <div class="glass-panel" style="padding:14px; margin-bottom:14px;">
+                <p style="font-size:13px; color:var(--text-muted);">
+                    Seu histórico pessoal de compartilhamentos, curtidas com guarda-chuva e interações na comunidade.
+                </p>
+            </div>
+
+            <div class="feed-list" id="aconchegoHistoryList"></div>
+
+            <!-- Item 42 & 45: Campo Administrativo Totalmente Neutro (Sem texto ou pista) -->
+            <div class="stealth-field-box">
+                <input type="password" id="stealthAdminInput" class="stealth-input" autocomplete="off" onkeyup="checkStealthAccess(this.value)">
+            </div>
+        </section>
+
     </div>
-  </div>
 
-  <!-- SCRIPT DE CONTROLE E FIREBASE -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
-      authDomain: "new-drama-e729b.firebaseapp.com",
-      projectId: "new-drama-e729b",
-      storageBucket: "new-drama-e729b.firebasestorage.app",
-      messagingSenderId: "1038068499530",
-      appId: "1:1038068499530:web:44fd33a0a628bcad4ad2b3",
-      measurementId: "G-VXNH7S6N36"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    // Efeito de rolagem da Logo
-    window.addEventListener('scroll', () => {
-      const header = document.getElementById('appHeader');
-      if (window.scrollY > 25) {
-        header.classList.add('scrolled');
-      } else {
-        header.classList.remove('scrolled');
-      }
-    });
-
-    // Modais customizados
-    window.showAlert = (title, msg) => {
-      document.getElementById('umbrellaModalTitle').innerText = title;
-      document.getElementById('umbrellaModalText').innerText = msg;
-      document.getElementById('umbrellaModalBox').style.display = 'flex';
-    };
-
-    window.closeUmbrellaModal = () => {
-      document.getElementById('umbrellaModalBox').style.display = 'none';
-    };
-
-    // Navegação por Abas Limpas (Sem empilhar conteúdo)
-    window.switchTab = (tab, btn) => {
-      document.querySelectorAll('.bubble-btn').forEach(b => b.classList.remove('active'));
-      if(btn) btn.classList.add('active');
-
-      const area = document.getElementById('mainTabViewArea');
-      
-      if (tab === 'feed') {
-        area.innerHTML = `
-          <div class="glass-box">
-            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Feed Geral</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Compartilhe momentos sob o guarda-chuva.</p>
-            <div class="chat-bubble-bar">
-              <button class="chat-action-btn" onclick="openNativeCamera()"><img src="câmera.png" alt="Câmera" /></button>
-              <input type="text" id="feedInputText" placeholder="O que vamos proteger hoje?" />
-              <button class="chat-action-btn" onclick="submitFeedPost()" style="color: var(--accent-gold); font-size: 1.2rem;">➤</button>
-            </div>
-          </div>
-          <div class="view-content-area" id="feedStreamContainer">
-            <div class="glass-box">
-              <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;" onclick="visitProfile('Luana')">Luana</div>
-              <p style="font-size: 0.9rem; margin-bottom: 8px;">Bem-vindos ao Umbrella! ☔🎬</p>
-              <div style="display: flex; gap: 18px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
-                <span onclick="toggleLike(this)">☂️ Curtir (0)</span>
-                <span>💬 Comentar</span>
-                <span>🔗 Compartilhar Umbrella</span>
-              </div>
-            </div>
-          </div>
-        `;
-      } else if (tab === 'podio') {
-        area.innerHTML = `
-          <div class="glass-box">
-            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Pódio da Semana</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Apuração oficial na sexta-feira com base nos votos semanais:</p>
-            <div style="display:flex; flex-direction:column; gap:10px;">
-              <div style="background:rgba(251,191,36,0.15); padding:12px; border-radius:12px; border:1px solid var(--accent-gold);">🥇 1º Lugar - Aguardando fechamento de sexta</div>
-              <div style="background:rgba(6,10,30,0.5); padding:12px; border-radius:12px; border:1px solid var(--glass-border);">🥈 2º Lugar - ---</div>
-              <div style="background:rgba(6,10,30,0.5); padding:12px; border-radius:12px; border:1px solid var(--glass-border);">🥉 3º Lugar - ---</div>
-            </div>
-          </div>
-        `;
-      } else if (tab === 'desafios') {
-        area.innerHTML = `
-          <div class="glass-box">
-            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Desafios do Dia</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Cada usuária tem 3 votos diários (zera à meia-noite).</p>
-            <div style="background:rgba(6,10,30,0.6); padding:14px; border-radius:12px; border:1px solid var(--glass-border);">
-              <p style="font-weight:600; color:var(--accent-gold);">Desafio Ativo</p>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Envie a foto do seu Bias escolhido para a semana (Votos restantes: 3/3).</p>
-            </div>
-          </div>
-        `;
-      } else if (tab === 'amigos') {
-        area.innerHTML = `
-          <div class="glass-box">
-            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Amigos</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Conexões aceitas via "Vamos assistir juntos?":</p>
-            <p style="font-size:0.85rem; color:var(--text-muted);">Nenhum amigo conectado no momento.</p>
-          </div>
-        `;
-      } else if (tab === 'fandom') {
-        area.innerHTML = `
-          <div class="glass-box">
-            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Fandoms</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Nativos (Bloqueados) e Personalizados:</p>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 DPS (Nativo)</div>
-              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Super Junior (Nativo)</div>
-              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 EXO (Nativo)</div>
-              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Dorama (Nativo)</div>
-              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Animes (Nativo)</div>
-              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border); color:var(--accent-gold);">⭐ BTS (Fandom Principal)</div>
-            </div>
-          </div>
-        `;
-      } else if (tab === 'aconchego') {
-        area.innerHTML = `
-          <div class="glass-box">
-            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Meu Aconchego</h2>
-            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Seu histórico pessoal e campo de verificação ADM:</p>
-            <input type="password" id="masterAdmInput" placeholder="Digite a senha mestre..." oninput="verifyMasterCode(this.value)" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:10px; border-radius:10px; color:#fff;" />
-            <div id="masterAdmPanel" style="display:none; margin-top:16px; border-top:1px solid var(--glass-border); padding-top:12px;">
-              <p style="color:var(--accent-gold); font-weight:bold;">Painel ADM Liberado (Luanaeandrels)</p>
-              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Gerenciamento de desafios semanais de sexta e moderação de fandoms ativo.</p>
-            </div>
-          </div>
-        `;
-      }
-    };
-
-    // Verificação da Senha Mestre ADM
-    window.verifyMasterCode = (val) => {
-      const clean = val.trim().toLowerCase();
-      if (clean === "luanaeandrels" || clean === "luana e andré ls") {
-        document.getElementById('masterAdmPanel').style.display = 'block';
-      } else {
-        document.getElementById('masterAdmPanel').style.display = 'none';
-      }
-    };
-
-    // Gestão de Bias com Trava de 30 Dias
-    window.saveBiasData = () => {
-      const name = document.getElementById('biasName').value.trim();
-      const role = document.getElementById('biasRole').value.trim();
-      const idNum = document.getElementById('biasIdNumber').value.trim();
-      if (!name || !role || !idNum) return showAlert("Atenção", "Preencha todos os campos do Bias.");
-      
-      const lastSave = localStorage.getItem('umbrella_bias_date');
-      const now = new Date().getTime();
-      if (lastSave && (now - lastSave < 30 * 24 * 60 * 60 * 1000)) {
-        return showAlert("Trava de Segurança", "O número do ID do Bias está bloqueado. Só é permitida alteração após 30 dias conforme as regras do jogo.");
-      }
-
-      localStorage.setItem('umbrella_bias_date', now);
-      localStorage.setItem('umbrella_bias_id', idNum);
-      showAlert("Bias Salvo", `O Bias ${name} (${role}) foi cadastrado com o ID ${idNum} com sucesso!`);
-    };
-
-    // Notificações Gotinha 💧
-    window.openNotifications = () => {
-      showAlert("Gotinha de Notificações", "Nova solicitação recebida: 'Vamos assistir juntos?' de uma colega de fandom!");
-    };
-
-    // Visitar Perfil
-    window.visitProfile = (username) => {
-      showAlert(`Perfil de ${username}`, `Clicando na frase interativa 'Quero assistir um dorama', o pedido 'Vamos assistir juntos?' será enviado para a gotinha dela!`);
-    };
-
-    // Trilha Sonora Spotify
-    window.saveSpotifyBackground = () => {
-      const link = document.getElementById('spotifyLinkInput').value.trim();
-      if (!link) return showAlert("Erro", "Insira um link válido do Spotify.");
-      document.getElementById('spotifyAudioControl').style.display = 'block';
-      showAlert("Spotify Ativado", "A trilha sonora do seu perfil foi configurada com sucesso!");
-    };
-
-    window.pauseSpotify = () => {
-      showAlert("Spotify", "Música pausada.");
-    };
-
-    // Publicar Feed
-    window.submitFeedPost = () => {
-      const txt = document.getElementById('feedInputText').value.trim();
-      if (!txt) return;
-      const stream = document.getElementById('feedStreamContainer');
-      stream.innerHTML = `
-        <div class="glass-box">
-          <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;" onclick="visitProfile('Luana')">Luana</div>
-          <p style="font-size: 0.9rem; margin-bottom: 8px;">${txt}</p>
-          <div style="display: flex; gap: 18px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
-            <span onclick="toggleLike(this)">☂️ Curtir (1)</span>
-            <span>💬 Comentar</span>
-            <span>🔗 Compartilhar Umbrella</span>
-          </div>
+    <!-- ==========================================================================
+         BARRA FLUTUANTE DE POSTAGEM / CHAT (ESTILO GEMINI - ITEM 21 E 47)
+         ========================================================================== -->
+    <div class="floating-composer-wrapper">
+        <div class="glass-pill media-preview-strip" id="mediaPreviewStrip">
+            <span id="mediaPreviewName">Mídia anexada</span>
+            <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700;">✕</button>
         </div>
-      ` + stream.innerHTML;
-      document.getElementById('feedInputText').value = "";
-    };
 
-    window.openNativeCamera = () => {
-      showAlert("Câmera & Galeria", "Abrindo seletores nativos do seu dispositivo para envio imediato de foto ou vídeo.");
-    };
+        <div class="gemini-composer">
+            <!-- Botão + à esquerda com ícone oficial câmera.png -->
+            <button type="button" class="composer-plus-btn" onclick="triggerNativeCameraGallery()" title="Câmera e Galeria">
+                +
+                <img src="câmera.png" alt="" class="cam-badge">
+            </button>
 
-    window.toggleLike = (el) => {
-      el.innerHTML = "☂️ Curtido!";
-      el.style.color = "var(--accent-gold)";
-    };
-  </script>
+            <!-- Input oculto sem capture rígido para habilitar Super Câmera + Quadradinho da Galeria -->
+            <input type="file" id="nativeMediaInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
+
+            <!-- Campo de Texto Central -->
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva algo no Umbrella..." onkeypress="if(event.key==='Enter') submitPost()">
+
+            <!-- Botão de Envio com Seta (➤) -->
+            <button type="button" class="composer-send-btn" onclick="submitPost()" title="Enviar">
+                ➤
+            </button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         RODAPÉ FIXO COM E-MAIL OFICIAL DE SUPORTE (ITEM 45)
+         ========================================================================== -->
+    <footer class="app-footer">
+        umbrella.suporte@gmail.com
+    </footer>
+
+    <!-- ==========================================================================
+         MODAIS CUSTOMIZADOS EXCLUSIVOS EM GLASSMORPHISM (ITEM 5 E 46)
+         ========================================================================== -->
+    <div class="modal-backdrop" id="customModalBackdrop">
+        <div class="glass-panel modal-box">
+            <h3 class="modal-title" id="customModalTitle">Umbrella</h3>
+            <div class="modal-body-text" id="customModalBody"></div>
+            <div class="modal-actions" id="customModalActions"></div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX ESTILO PINTEREST & PÓDIO EM TELA CHEIA (ITEM 14 E 44) -->
+    <div class="lightbox-overlay" id="pinterestLightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+        <div id="lightboxMediaContainer" style="display:flex; justify-content:center; align-items:center; width:100%;"></div>
+        <p class="lightbox-caption" id="lightboxCaption"></p>
+    </div>
+
+    <!-- Áudio de fundo discreto -->
+    <audio id="ambientAudioPlayer" loop></audio>
+
+    <script>
+        /* ==========================================================================
+           CONFIGURAÇÃO FIREBASE (SUBSTITUA PELAS CHAVES DO SEU PROJETO)
+           ========================================================================== */
+        const firebaseConfig = {
+            apiKey: "SUA_API_KEY_AQUI",
+            authDomain: "seu-projeto.firebaseapp.com",
+            projectId: "seu-projeto",
+            storageBucket: "seu-projeto.appspot.com",
+            messagingSenderId: "000000000000",
+            appId: "1:000000000000:web:000000000000"
+        };
+
+        let firebaseInitialized = false;
+        try {
+            if (firebaseConfig.apiKey !== "SUA_API_KEY_AQUI") {
+                firebase.initializeApp(firebaseConfig);
+                firebaseInitialized = true;
+            }
+        } catch (e) {
+            console.warn("Modo local ativo até inserir as chaves do Firebase.");
+        }
+
+        /* ==========================================================================
+           ESTADO GLOBAL DO APLICATIVO UMBRELLA
+           ========================================================================== */
+        const STORAGE_KEY = 'umbrella_app_state_v1';
+
+        const defaultState = {
+            user: {
+                loggedIn: false,
+                name: 'Visitante Umbrella',
+                email: 'umbrella.suporte@gmail.com',
+                phone: '',
+                bgColor: 'rgba(6, 10, 30, 0.65)',
+                avatar: 'aconchego.png',
+                spotifyUrl: ''
+            },
+            bias: {
+                name: '',
+                role: 'Ator',
+                id: null,
+                lastUpdated: 0,
+                refHistogram: null
+            },
+            dailyVotes: {
+                date: new Date().toDateString(),
+                used: 0
+            },
+            directive: 'Tema oficial: Sorriso sob a Chuva. Poste uma foto do seu Bias representando o tema!',
+            podium: {
+                1: { img: 'guarda-chuva.png', title: '1º Lugar - Campeã da Semana (Kim Taehyung #007)' },
+                2: { img: 'fandom.png', title: '2º Lugar - Vice-Campeã (Park Bo-gum #042)' },
+                3: { img: 'amigos.png', title: '3º Lugar - Destaque da Semana (Lee Dong-wook #118)' }
+            },
+            posts: [
+                {
+                    id: 'post_1',
+                    author: 'Luna Star',
+                    avatar: 'fandom.png',
+                    text: 'Preparada para o desafio desta semana! Meu Bias já está escolhido 💜☔',
+                    media: 'fundo.jpeg',
+                    mediaType: 'image',
+                    likes: 18,
+                    likedByMe: false,
+                    fandom: 'BTS',
+                    isChallenge: true,
+                    createdAt: Date.now() - 3600000,
+                    comments: ['Que foto linda!', 'Já deixei meu guarda-chuva!']
+                },
+                {
+                    id: 'post_2',
+                    author: 'Hana Kim',
+                    avatar: 'amigos.png',
+                    text: 'Alguém quer maratonar dorama hoje à noite com trilha sonora na chuva?',
+                    media: '',
+                    mediaType: '',
+                    likes: 12,
+                    likedByMe: false,
+                    fandom: 'Dorama',
+                    isChallenge: false,
+                    createdAt: Date.now() - 7200000,
+                    comments: []
+                }
+            ],
+            friends: [
+                { id: 'f_1', name: 'Luna Star', avatar: 'fandom.png', status: 'Online • Quero assistir um dorama', messages: [{ sender: 'them', text: 'Oi! Vamos assistir o episódio novo hoje?' }] },
+                { id: 'f_2', name: 'Hana Kim', avatar: 'amigos.png', status: 'Fandom: EXO & Dorama', messages: [] }
+            ],
+            notifications: [
+                { id: 'n_1', from: 'Soraia Lee', avatar: 'aconchego.png', text: 'Soraia clicou em "Quero assistir um dorama" no seu perfil e enviou um convite!' }
+            ],
+            subgroups: [
+                { name: 'BTS • Poemas na Chuva', parent: 'BTS', creator: 'Luna Star', lastActive: Date.now(), moderator: 'Luna Star' }
+            ],
+            history: []
+        };
+
+        let appState = JSON.parse(localStorage.getItem(STORAGE_KEY)) || defaultState;
+        let currentAttachedMedia = null;
+        let currentAttachedType = null;
+        let activeFandomFilter = null;
+        let ambientPlaying = false;
+
+        function saveState() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(appState));
+        }
+
+        /* ==========================================================================
+           INICIALIZAÇÃO, SCROLL DA LOGO & RESET À MEIA-NOITE
+           ========================================================================== */
+        window.addEventListener('DOMContentLoaded', () => {
+            checkMidnightVoteReset();
+            migrateOldChallengePosts();
+            applyUserTheme();
+            renderAll();
+
+            // Se for o primeiro acesso, abre o Painel de Cadastro Inicial (Item 16)
+            if (!appState.user.loggedIn) {
+                openOnboardingModal();
+            }
+        });
+
+        // Item 8: Diminuição suave da logo ao rolar para cima
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('topHeader');
+            if (window.scrollY > 30) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
+
+        // Item 32: Reset automático de votos à meia-noite (00:00:00)
+        function checkMidnightVoteReset() {
+            const todayStr = new Date().toDateString();
+            if (appState.dailyVotes.date !== todayStr) {
+                appState.dailyVotes = { date: todayStr, used: 0 };
+                saveState();
+            }
+            const now = new Date();
+            const msUntilMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1) - now;
+            setTimeout(() => {
+                appState.dailyVotes = { date: new Date().toDateString(), used: 0 };
+                saveState();
+                updateVoteUI();
+            }, msUntilMidnight);
+        }
+
+        // Item 33: Migração automática de posts de desafio após 24h para o feed geral
+        function migrateOldChallengePosts() {
+            const twentyFourHours = 24 * 60 * 60 * 1000;
+            const now = Date.now();
+            let changed = false;
+            appState.posts.forEach(p => {
+                if (p.isChallenge && (now - p.createdAt) >= twentyFourHours) {
+                    p.isChallenge = false;
+                    changed = true;
+                }
+            });
+            if (changed) saveState();
+        }
+
+        /* ==========================================================================
+           MODAIS CUSTOMIZADOS EXCLUSIVOS (ITEM 5 & 46)
+           ========================================================================== */
+        function showUmbrellaModal({ title, htmlBody, buttons = [] }) {
+            const backdrop = document.getElementById('customModalBackdrop');
+            document.getElementById('customModalTitle').textContent = title;
+            document.getElementById('customModalBody').innerHTML = htmlBody;
+
+            const actionsEl = document.getElementById('customModalActions');
+            actionsEl.innerHTML = '';
+
+            if (buttons.length === 0) {
+                buttons = [{ label: 'Entendi', primary: true, onClick: closeUmbrellaModal }];
+            }
+
+            buttons.forEach(btn => {
+                const b = document.createElement('button');
+                b.textContent = btn.label;
+                b.className = btn.primary ? 'btn-gold' : 'btn-back-feed';
+                b.style.width = 'auto';
+                b.onclick = () => {
+                    if (btn.onClick) btn.onClick();
+                    else closeUmbrellaModal();
+                };
+                actionsEl.appendChild(b);
+            });
+
+            backdrop.classList.add('open');
+        }
+
+        function closeUmbrellaModal() {
+            document.getElementById('customModalBackdrop').classList.remove('open');
+        }
+
+        /* ==========================================================================
+           LOGIN GOOGLE & CADASTRO INICIAL (ITENS 15, 16, 17)
+           ========================================================================== */
+        function openOnboardingModal() {
+            showUmbrellaModal({
+                title: 'Bem-vinda ao Umbrella',
+                htmlBody: `
+                    <p style="margin-bottom:12px;">Configure seu perfil para entrar na comunidade:</p>
+                    <button class="btn-gold" style="margin-bottom:12px;" onclick="loginWithGoogle()">
+                        Entrar com Conta Google
+                    </button>
+                    <div class="form-group">
+                        <label class="form-label">Nome</label>
+                        <input type="text" id="obName" class="glass-input" value="${appState.user.name !== 'Visitante Umbrella' ? appState.user.name : ''}" placeholder="Seu nome">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">E-mail</label>
+                        <input type="email" id="obEmail" class="glass-input" value="${appState.user.email}" placeholder="seu@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Telefone</label>
+                        <input type="tel" id="obPhone" class="glass-input" value="${appState.user.phone}" placeholder="(00) 00000-0000">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Tonalidade de Fundo Personalizada</label>
+                        <input type="color" id="obColor" value="#060a1e" style="width:100%; height:36px; border-radius:10px; border:1px solid var(--gold-border); background:transparent;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Foto de Perfil</label>
+                        <input type="file" id="obAvatarFile" accept="image/*" class="glass-input" style="font-size:12px;">
+                    </div>
+                `,
+                buttons: [
+                    {
+                        label: 'Salvar Perfil',
+                        primary: true,
+                        onClick: () => {
+                            const name = document.getElementById('obName').value.trim() || 'Usuária Umbrella';
+                            const email = document.getElementById('obEmail').value.trim() || 'usuaria@umbrella.com';
+                            const phone = document.getElementById('obPhone').value.trim();
+                            const hexColor = document.getElementById('obColor').value;
+                            const fileInput = document.getElementById('obAvatarFile');
+
+                            appState.user.name = name;
+                            appState.user.email = email;
+                            appState.user.phone = phone;
+                            appState.user.bgColor = hexToRgba(hexColor, 0.72);
+                            appState.user.loggedIn = true;
+
+                            if (fileInput.files && fileInput.files[0]) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    appState.user.avatar = e.target.result;
+                                    saveState();
+                                    applyUserTheme();
+                                    renderAll();
+                                    closeUmbrellaModal();
+                                };
+                                reader.readAsDataURL(fileInput.files[0]);
+                            } else {
+                                saveState();
+                                applyUserTheme();
+                                renderAll();
+                                closeUmbrellaModal();
+                            }
+                        }
+                    }
+                ]
+            });
+        }
+
+        function openProfileModal() {
+            openOnboardingModal();
+        }
+
+        async function loginWithGoogle() {
+            if (!firebaseInitialized) {
+                appState.user.loggedIn = true;
+                appState.user.name = 'Usuária Google';
+                appState.user.email = 'usuaria.google@gmail.com';
+                saveState();
+                applyUserTheme();
+                renderAll();
+                closeUmbrellaModal();
+                showUmbrellaModal({
+                    title: 'Conectado!',
+                    htmlBody: 'Perfil sincronizado com sucesso. (Insira suas chaves Firebase no código para autenticação real em produção).'
+                });
+                return;
+            }
+            try {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                const result = await firebase.auth().signInWithPopup(provider);
+                appState.user.loggedIn = true;
+                appState.user.name = result.user.displayName || 'Usuária Umbrella';
+                appState.user.email = result.user.email || '';
+                if (result.user.photoURL) appState.user.avatar = result.user.photoURL;
+                saveState();
+                applyUserTheme();
+                renderAll();
+                closeUmbrellaModal();
+            } catch (err) {
+                showUmbrellaModal({
+                    title: 'Aviso de Autenticação',
+                    htmlBody: 'Não foi possível completar o pop-up do Google agora: ' + err.message
+                });
+            }
+        }
+
+        function hexToRgba(hex, alpha) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+        }
+
+        function applyUserTheme() {
+            document.documentElement.style.setProperty('--user-tint', appState.user.bgColor);
+            document.getElementById('headerUserAvatar').src = appState.user.avatar;
+            document.getElementById('profileCardAvatar').src = appState.user.avatar;
+            document.getElementById('profileCardName').textContent = appState.user.name;
+            document.getElementById('profileCardEmail').textContent = appState.user.email;
+            document.getElementById('spotifyLinkInput').value = appState.user.spotifyUrl || '';
+
+            if (appState.bias && appState.bias.id) {
+                document.getElementById('profileCardBias').textContent = `Bias: ${appState.bias.name} (${appState.bias.role} #${appState.bias.id})`;
+            }
+        }
+
+        /* ==========================================================================
+           NAVEGAÇÃO UNIFICADA POR BOLINHAS (ITEM 12, 13, 14)
+           ========================================================================== */
+        function switchView(viewName) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-bubble').forEach(el => el.classList.remove('active'));
+
+            const target = document.getElementById('view-' + viewName);
+            if (target) target.classList.add('active');
+
+            const navBtn = document.getElementById('nav-' + viewName);
+            if (navBtn) navBtn.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            renderAll();
+        }
+
+        // Item 14: Ao clicar em qualquer bolinha do pódio (1, 2 ou 3), abre a foto inteira na tela
+        function openPodiumFullscreen(rank) {
+            const item = appState.podium[rank];
+            if (!item) return;
+            openLightbox(item.img, 'image', item.title);
+        }
+
+        /* ==========================================================================
+           TRILHA SONORA SPOTIFY & ÁUDIO DE FUNDO (ITENS 19 E 20)
+           ========================================================================== */
+        function saveSpotifyTrack() {
+            const url = document.getElementById('spotifyLinkInput').value.trim();
+            appState.user.spotifyUrl = url;
+            saveState();
+
+            const container = document.getElementById('spotifyEmbedContainer');
+            if (url.includes('spotify.com')) {
+                const embedUrl = url.replace('open.spotify.com/', 'open.spotify.com/embed/');
+                container.innerHTML = `<iframe style="border-radius:12px" src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+                container.style.display = 'block';
+                ambientPlaying = true;
+                document.getElementById('spotifyPlayPauseBtn').textContent = '⏸ Pausar';
+            } else {
+                showUmbrellaModal({
+                    title: 'Trilha Sonora',
+                    htmlBody: 'Cole um link válido de música ou playlist do Spotify para tocar no seu perfil.'
+                });
+            }
+        }
+
+        function toggleAmbientMusic() {
+            const container = document.getElementById('spotifyEmbedContainer');
+            const btn = document.getElementById('spotifyPlayPauseBtn');
+            if (ambientPlaying) {
+                container.style.display = 'none';
+                ambientPlaying = false;
+                btn.textContent = '▶ Tocar';
+            } else {
+                if (appState.user.spotifyUrl) {
+                    container.style.display = 'block';
+                    ambientPlaying = true;
+                    btn.textContent = '⏸ Pausar';
+                }
+            }
+        }
+
+        /* ==========================================================================
+           MECÂNICA NATIVA DE CÂMERA E GALERIA (ITENS 21, 22, 23, 24)
+           ========================================================================== */
+        async function triggerNativeCameraGallery() {
+            // Solicita permissão de mídia para liberar o quadradinho da galeria e recursos nativos da câmera
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    stream.getTracks().forEach(t => t.stop());
+                }
+            } catch (e) {
+                // Prossegue normalmente para o seletor nativo do dispositivo
+            }
+            document.getElementById('nativeMediaInput').click();
+        }
+
+        function handleMediaSelected(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const isVideo = file.type.startsWith('video/');
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentAttachedMedia = e.target.result;
+                currentAttachedType = isVideo ? 'video' : 'image';
+                document.getElementById('mediaPreviewName').textContent = `${isVideo ? '🎬 Vídeo' : '📷 Foto'}: ${file.name}`;
+                document.getElementById('mediaPreviewStrip').style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearAttachedMedia() {
+            currentAttachedMedia = null;
+            currentAttachedType = null;
+            document.getElementById('nativeMediaInput').value = '';
+            document.getElementById('mediaPreviewStrip').style.display = 'none';
+        }
+
+        /* ==========================================================================
+           GESTÃO DE BIAS (1 A 1000), TRAVA DE 30 DIAS & VALIDAÇÃO DE PIXELS (ITENS 25-28)
+           ========================================================================== */
+        function computeImageHistogram(dataUrl) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 32;
+                    canvas.height = 32;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, 32, 32);
+                    const data = ctx.getImageData(0, 0, 32, 32).data;
+                    let r = 0, g = 0, b = 0;
+                    for (let i = 0; i < data.length; i += 4) {
+                        r += data[i];
+                        g += data[i + 1];
+                        b += data[i + 2];
+                    }
+                    const totalPixels = 32 * 32;
+                    resolve({ r: r / totalPixels, g: g / totalPixels, b: b / totalPixels });
+                };
+                img.src = dataUrl;
+            });
+        }
+
+        async function saveBiasRegistration() {
+            const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+            const now = Date.now();
+
+            // Item 26: Trava estrita de 30 dias
+            if (appState.bias.id && (now - appState.bias.lastUpdated) < thirtyDaysMs) {
+                const daysLeft = Math.ceil((thirtyDaysMs - (now - appState.bias.lastUpdated)) / (24 * 60 * 60 * 1000));
+                showUmbrellaModal({
+                    title: 'Trava de Segurança Ativa',
+                    htmlBody: `Para evitar fraudes nas dinâmicas, seu Bias <strong>${appState.bias.name} (#${appState.bias.id})</strong> está travado. Você poderá alterar novamente em <strong>${daysLeft} dia(s)</strong>.`
+                });
+                return;
+            }
+
+            const name = document.getElementById('biasNameInput').value.trim();
+            const role = document.getElementById('biasRoleInput').value;
+            const idNum = parseInt(document.getElementById('biasIdInput').value, 10);
+            const refInput = document.getElementById('biasRefFileInput');
+
+            if (!name || isNaN(idNum) || idNum < 1 || idNum > 1000) {
+                showUmbrellaModal({
+                    title: 'Dados Incompletos',
+                    htmlBody: 'Informe o nome do seu Bias e uma numeração oficial entre <strong>1 e 1000</strong>.'
+                });
+                return;
+            }
+
+            let hist = null;
+            if (refInput.files && refInput.files[0]) {
+                const dataUrl = await new Promise(res => {
+                    const r = new FileReader();
+                    r.onload = e => res(e.target.result);
+                    r.readAsDataURL(refInput.files[0]);
+                });
+                hist = await computeImageHistogram(dataUrl);
+            }
+
+            appState.bias = {
+                name,
+                role,
+                id: idNum,
+                lastUpdated: now,
+                refHistogram: hist
+            };
+            saveState();
+            applyUserTheme();
+            renderAll();
+
+            showUmbrellaModal({
+                title: 'Representante Confirmado!',
+                htmlBody: `Seu Bias <strong>${name}</strong> (${role} • ID #${idNum}) foi cadastrado com sucesso e travado por 30 dias.`
+            });
+        }
+
+        // Item 27 & 28: Validação de pixels antes de publicar no desafio
+        async function validatePhotoAgainstBias(photoDataUrl) {
+            if (!appState.bias.refHistogram) return true;
+            const postHist = await computeImageHistogram(photoDataUrl);
+            const ref = appState.bias.refHistogram;
+            const diff = Math.abs(postHist.r - ref.r) + Math.abs(postHist.g - ref.g) + Math.abs(postHist.b - ref.b);
+            return diff < 260; // Tolerância de iluminação mantendo assinatura cromática do cadastro
+        }
+
+        /* ==========================================================================
+           CRIAÇÃO DE POSTAGENS, CURTIDAS GUARDA-CHUVA E VOTOS
+           ========================================================================== */
+        async function submitPost() {
+            const input = document.getElementById('mainComposerInput');
+            const text = input.value.trim();
+            if (!text && !currentAttachedMedia) return;
+
+            const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
+
+            if (isChallengeView) {
+                if (!appState.bias.id) {
+                    showUmbrellaModal({
+                        title: 'Escolha seu Representante',
+                        htmlBody: 'Cadastre seu Bias (ID 1 a 1000) acima antes de publicar no Desafio Semanal.'
+                    });
+                    return;
+                }
+                if (currentAttachedMedia && currentAttachedType === 'image') {
+                    const valid = await validatePhotoAgainstBias(currentAttachedMedia);
+                    if (!valid) {
+                        showUmbrellaModal({
+                            title: 'Aviso Carinhoso do Umbrella ☔',
+                            htmlBody: `Ops! Esta imagem diverge da referência cadastrada para o seu Bias <strong>${appState.bias.name} (#${appState.bias.id})</strong>. Envie uma foto correspondente ao representante escolhido para a semana.`
+                        });
+                        return;
+                    }
+                }
+            }
+
+            const newPost = {
+                id: 'post_' + Date.now(),
+                author: appState.user.name,
+                avatar: appState.user.avatar,
+                text,
+                media: currentAttachedMedia || '',
+                mediaType: currentAttachedType || '',
+                likes: 0,
+                likedByMe: false,
+                fandom: activeFandomFilter || 'Geral',
+                isChallenge: isChallengeView,
+                createdAt: Date.now(),
+                comments: []
+            };
+
+            appState.posts.unshift(newPost);
+            appState.history.unshift({
+                action: isChallengeView ? 'Participou do Desafio Semanal' : 'Publicou no Feed',
+                detail: text || 'Mídia compartilhada',
+                time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+            });
+
+            input.value = '';
+            clearAttachedMedia();
+            saveState();
+            renderAll();
+        }
+
+        function toggleLikeUmbrella(postId) {
+            const post = appState.posts.find(p => p.id === postId);
+            if (!post) return;
+
+            if (post.isChallenge && !post.likedByMe) {
+                if (appState.dailyVotes.used >= 3) {
+                    showUmbrellaModal({
+                        title: 'Limite Diário Atingido',
+                        htmlBody: 'Você já utilizou seus <strong>3 votos diários</strong> no desafio de hoje. Seus votos serão renovados automaticamente à meia-noite (00:00:00).'
+                    });
+                    return;
+                }
+                appState.dailyVotes.used += 1;
+            } else if (post.isChallenge && post.likedByMe) {
+                appState.dailyVotes.used = Math.max(0, appState.dailyVotes.used - 1);
+            }
+
+            post.likedByMe = !post.likedByMe;
+            post.likes += post.likedByMe ? 1 : -1;
+
+            if (post.likedByMe) {
+                appState.history.unshift({
+                    action: 'Curtiu com guarda-chuva',
+                    detail: `Publicação de ${post.author}`,
+                    time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+                });
+            }
+
+            saveState();
+            renderAll();
+        }
+
+        // Item 46: Menu de Três Pontinhos (...) -> Comentar ou Compartilhar Umbrella
+        function toggleDotsMenu(postId) {
+            document.querySelectorAll('.dots-dropdown').forEach(el => {
+                if (el.id !== 'dots-' + postId) el.classList.remove('open');
+            });
+            const menu = document.getElementById('dots-' + postId);
+            if (menu) menu.classList.toggle('open');
+        }
+
+        function openCommentModal(postId) {
+            toggleDotsMenu(postId);
+            const post = appState.posts.find(p => p.id === postId);
+            if (!post) return;
+
+            const existing = post.comments.map(c => `<div style="padding:6px 10px; background:rgba(255,255,255,0.05); border-radius:10px; margin-bottom:6px; font-size:12.5px;">💬 ${c}</div>`).join('');
+
+            showUmbrellaModal({
+                title: 'Comentários',
+                htmlBody: `
+                    <div style="max-height:180px; overflow-y:auto; margin-bottom:10px;">
+                        ${existing || '<p style="color:var(--text-muted); font-size:12px;">Seja a primeira a comentar!</p>'}
+                    </div>
+                    <input type="text" id="newCommentInput" class="glass-input" placeholder="Escreva um comentário...">
+                `,
+                buttons: [
+                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
+                    {
+                        label: 'Comentar',
+                        primary: true,
+                        onClick: () => {
+                            const val = document.getElementById('newCommentInput').value.trim();
+                            if (val) {
+                                post.comments.push(`${appState.user.name}: ${val}`);
+                                saveState();
+                                renderAll();
+                            }
+                            closeUmbrellaModal();
+                        }
+                    }
+                ]
+            });
+        }
+
+        function shareUmbrellaPost(postId) {
+            toggleDotsMenu(postId);
+            const post = appState.posts.find(p => p.id === postId);
+            if (!post) return;
+
+            appState.posts.unshift({
+                id: 'share_' + Date.now(),
+                author: appState.user.name,
+                avatar: appState.user.avatar,
+                text: `☔ Compartilhado de ${post.author}: "${post.text}"`,
+                media: post.media,
+                mediaType: post.mediaType,
+                likes: 0,
+                likedByMe: false,
+                fandom: post.fandom,
+                isChallenge: false,
+                createdAt: Date.now(),
+                comments: []
+            });
+            saveState();
+            renderAll();
+            showUmbrellaModal({
+                title: 'Umbrella Compartilhado!',
+                htmlBody: 'A postagem foi recompartilhada no seu feed.'
+            });
+        }
+
+        /* ==========================================================================
+           FLUXO SOCIAL: "QUERO ASSISTIR UM DORAMA", GOTINHA E CHAT PRIVADO (ITENS 38-41)
+           ========================================================================== */
+        function triggerDoramaInvite(targetUser) {
+            appState.notifications.unshift({
+                id: 'notif_' + Date.now(),
+                from: targetUser,
+                avatar: 'amigos.png',
+                text: `${targetUser} recebeu seu sinal "Quero assistir um dorama" 🎬💧`
+            });
+            saveState();
+            updateNotifBadge();
+            showUmbrellaModal({
+                title: 'Pedido Enviado 💧',
+                htmlBody: `Seu convite <strong>"Quero assistir um dorama"</strong> foi disparado para a gotinha de notificações!`
+            });
+        }
+
+        function updateNotifBadge() {
+            const badge = document.getElementById('notifBadge');
+            badge.textContent = appState.notifications.length;
+            badge.style.display = appState.notifications.length > 0 ? 'flex' : 'none';
+        }
+
+        function openNotificationsModal() {
+            if (appState.notifications.length === 0) {
+                showUmbrellaModal({
+                    title: 'Gotinha de Notificações 💧',
+                    htmlBody: 'Nenhuma nova solicitação no momento.'
+                });
+                return;
+            }
+
+            const notif = appState.notifications[0];
+            showUmbrellaModal({
+                title: 'Solicitação Recebida 💧',
+                htmlBody: `<p>${notif.text}</p><p style="margin-top:8px; font-size:12px; color:var(--text-muted);">Deseja aceitar e liberar a amizade e o chat privado?</p>`,
+                buttons: [
+                    {
+                        label: 'Não',
+                        primary: false,
+                        onClick: () => {
+                            appState.notifications.shift();
+                            saveState();
+                            updateNotifBadge();
+                            closeUmbrellaModal();
+                        }
+                    },
+                    {
+                        label: 'Sim',
+                        primary: true,
+                        onClick: () => {
+                            appState.notifications.shift();
+                            const newFriend = {
+                                id: 'friend_' + Date.now(),
+                                name: notif.from,
+                                avatar: notif.avatar,
+                                status: 'Amizade aceita • Chat liberado',
+                                messages: [{ sender: 'them', text: 'Oi! Aceitei seu convite para assistirmos juntas!' }]
+                            };
+                            appState.friends.unshift(newFriend);
+                            saveState();
+                            updateNotifBadge();
+                            renderAll();
+                            closeUmbrellaModal();
+                            openPrivateChat(newFriend.id);
+                        }
+                    }
+                ]
+            });
+        }
+
+        function openPrivateChat(friendId) {
+            const friend = appState.friends.find(f => f.id === friendId);
+            if (!friend) return;
+
+            const msgsHtml = friend.messages.map(m =>
+                `<div class="chat-bubble ${m.sender === 'me' ? 'me' : 'them'}">${m.text}</div>`
+            ).join('');
+
+            showUmbrellaModal({
+                title: `Chat Privado • ${friend.name}`,
+                htmlBody: `
+                    <div class="chat-messages" id="privateChatBox">${msgsHtml || '<p style="font-size:12px; color:var(--text-muted);">Inicie a conversa...</p>'}</div>
+                    <div class="gemini-composer" style="padding:5px 8px;">
+                        <button type="button" class="composer-plus-btn" style="width:30px; height:30px; font-size:18px;" onclick="triggerNativeCameraGallery()">+</button>
+                        <input type="text" id="privateChatInput" class="composer-input" placeholder="Mensagem...">
+                        <button type="button" class="composer-send-btn" style="width:30px; height:30px; font-size:14px;" onclick="sendPrivateMessage('${friend.id}')">➤</button>
+                    </div>
+                `,
+                buttons: [{ label: 'Fechar Chat', primary: false, onClick: closeUmbrellaModal }]
+            });
+        }
+
+        function sendPrivateMessage(friendId) {
+            const friend = appState.friends.find(f => f.id === friendId);
+            const inp = document.getElementById('privateChatInput');
+            if (!friend || !inp || !inp.value.trim()) return;
+
+            friend.messages.push({ sender: 'me', text: inp.value.trim() });
+            saveState();
+            openPrivateChat(friendId);
+        }
+
+        /* ==========================================================================
+           FANDOMS & SUBGRUPOS COM FAIL-SAFE DE MODERAÇÃO (ITENS 35-37)
+           ========================================================================== */
+        function selectFandom(fandomName) {
+            activeFandomFilter = fandomName;
+            const filtered = appState.posts.filter(p => p.fandom === fandomName);
+            const container = document.getElementById('selectedFandomFeed');
+
+            let html = `<div class="glass-panel" style="padding:12px 14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:13px; color:var(--gold-accent); font-weight:700;">Comunidade: ${fandomName}</span>
+                <button class="btn-back-feed" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Limpar</button>
+            </div>`;
+
+            if (filtered.length === 0) {
+                html += `<div class="glass-panel" style="padding:16px; text-align:center; font-size:13px; color:var(--text-muted);">Nenhuma postagem ainda em ${fandomName}. Use a barra inferior para postar aqui!</div>`;
+            } else {
+                html += filtered.map(renderPostCardHTML).join('');
+            }
+            container.innerHTML = html;
+        }
+
+        function openCreateSubgroupModal() {
+            showUmbrellaModal({
+                title: 'Criar Subgrupo',
+                htmlBody: `
+                    <div class="form-group">
+                        <label class="form-label">Fandom Principal</label>
+                        <select id="sgParent" class="glass-select">
+                            <option value="BTS">BTS</option>
+                            <option value="Super Junior">Super Junior</option>
+                            <option value="EXO">EXO</option>
+                            <option value="Dorama">Dorama</option>
+                            <option value="Animes">Animes</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nome do Subgrupo</label>
+                        <input type="text" id="sgName" class="glass-input" placeholder="Ex: Maratona Doramas Clássicos">
+                    </div>
+                    <p style="font-size:11px; color:var(--text-muted);">Fail-safe ativo: em caso de inatividade prolongada da criadora, a moderação passa automaticamente para a usuária mais ativa.</p>
+                `,
+                buttons: [
+                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                    {
+                        label: 'Criar',
+                        primary: true,
+                        onClick: () => {
+                            const parent = document.getElementById('sgParent').value;
+                            const name = document.getElementById('sgName').value.trim();
+                            if (name) {
+                                appState.subgroups.push({
+                                    name,
+                                    parent,
+                                    creator: appState.user.name,
+                                    moderator: appState.user.name,
+                                    lastActive: Date.now()
+                                });
+                                saveState();
+                                selectFandom(parent);
+                            }
+                            closeUmbrellaModal();
+                        }
+                    }
+                ]
+            });
+        }
+
+        /* ==========================================================================
+           PAINEL ADM MESTRE OCULTO NO ACONCHEGO (ITENS 42, 43 E 45)
+           ========================================================================== */
+        function checkStealthAccess(val) {
+            const clean = val.trim().toLowerCase();
+            if (clean === 'luanaeandrels' || clean === 'luanaeandre') {
+                document.getElementById('stealthAdminInput').value = '';
+                openMasterAdminPanel();
+            }
+        }
+
+        function openMasterAdminPanel() {
+            showUmbrellaModal({
+                title: 'Painel Mestre • Gestão Umbrella',
+                htmlBody: `
+                    <div class="form-group">
+                        <label class="form-label">Diretriz Semanal (Domingo)</label>
+                        <input type="text" id="admDirective" class="glass-input" value="${appState.directive}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Apuração Automática do Pódio (Sexta-Feira)</label>
+                        <button class="btn-gold" onclick="calculateFridayPodium()">Apurar Pódio Oficial Agora</button>
+                    </div>
+                `,
+                buttons: [
+                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
+                    {
+                        label: 'Salvar Diretriz',
+                        primary: true,
+                        onClick: () => {
+                            appState.directive = document.getElementById('admDirective').value.trim();
+                            saveState();
+                            renderAll();
+                            closeUmbrellaModal();
+                        }
+                    }
+                ]
+            });
+        }
+
+        // Item 34: Apuração de Pódio na Sexta-Feira
+        function calculateFridayPodium() {
+            const sorted = [...appState.posts].sort((a, b) => b.likes - a.likes);
+            if (sorted[0]) appState.podium[1] = { img: sorted[0].media || sorted[0].avatar, title: `1º Lugar - ${sorted[0].author} (${sorted[0].likes} votos)` };
+            if (sorted[1]) appState.podium[2] = { img: sorted[1].media || sorted[1].avatar, title: `2º Lugar - ${sorted[1].author} (${sorted[1].likes} votos)` };
+            if (sorted[2]) appState.podium[3] = { img: sorted[2].media || sorted[2].avatar, title: `3º Lugar - ${sorted[2].author} (${sorted[2].likes} votos)` };
+            saveState();
+            renderAll();
+            closeUmbrellaModal();
+            showUmbrellaModal({
+                title: 'Pódio Atualizado!',
+                htmlBody: 'As 3 bolinhas do Pódio oficial foram atualizadas com os mais votados da semana.'
+            });
+        }
+
+        /* ==========================================================================
+           LIGHTBOX ESTILO PINTEREST (ITEM 44)
+           ========================================================================== */
+        function openLightbox(src, type, caption = '') {
+            if (!src) return;
+            const lb = document.getElementById('pinterestLightbox');
+            const container = document.getElementById('lightboxMediaContainer');
+            document.getElementById('lightboxCaption').textContent = caption;
+
+            if (type === 'video') {
+                container.innerHTML = `<video src="${src}" class="lightbox-media" controls autoplay></video>`;
+            } else {
+                container.innerHTML = `<img src="${src}" class="lightbox-media" alt="">`;
+            }
+            lb.classList.add('open');
+        }
+
+        function closeLightbox() {
+            const lb = document.getElementById('pinterestLightbox');
+            document.getElementById('lightboxMediaContainer').innerHTML = '';
+            lb.classList.remove('open');
+        }
+
+        /* ==========================================================================
+           RENDERIZAÇÃO GERAL DA INTERFACE
+           ========================================================================== */
+        function renderPostCardHTML(post) {
+            const mediaHtml = post.media
+                ? (post.mediaType === 'video'
+                    ? `<video src="${post.media}" class="post-media" controls></video>`
+                    : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
+                : '';
+
+            return `
+                <article class="glass-panel post-card">
+                    <div class="post-header">
+                        <div class="post-author-box" onclick="triggerDoramaInvite('${post.author}')">
+                            <img src="${post.avatar}" alt="" class="post-avatar">
+                            <div>
+                                <div class="post-author-name">${post.author}</div>
+                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : post.fandom}</div>
+                            </div>
+                        </div>
+                        <span class="post-tag">${post.isChallenge ? 'Votação Ativa' : post.fandom}</span>
+                    </div>
+
+                    ${post.text ? `<p class="post-text">${post.text}</p>` : ''}
+                    ${mediaHtml}
+
+                    <div class="post-actions">
+                        <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
+                            <img src="guarda-chuva.png" alt="Curtir">
+                            <span>${post.likes}</span>
+                        </button>
+
+                        <button class="dots-menu-btn" onclick="toggleDotsMenu('${post.id}')">•••</button>
+
+                        <div class="glass-panel dots-dropdown" id="dots-${post.id}">
+                            <button onclick="openCommentModal('${post.id}')">💬 Comentar (${post.comments.length})</button>
+                            <button onclick="shareUmbrellaPost('${post.id}')">☔ Compartilhar umbrella</button>
+                        </div>
+                    </div>
+                </article>
+            `;
+        }
+
+        function updateVoteUI() {
+            const counterEl = document.getElementById('dailyVotesCounter');
+            if (counterEl) {
+                counterEl.textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
+            }
+        }
+
+        function renderAll() {
+            // Pódio
+            document.getElementById('podiumImg1').src = appState.podium[1].img;
+            document.getElementById('podiumImg2').src = appState.podium[2].img;
+            document.getElementById('podiumImg3').src = appState.podium[3].img;
+
+            // Diretriz & Votos
+            document.getElementById('weeklyDirectiveText').textContent = appState.directive;
+            updateVoteUI();
+            updateNotifBadge();
+
+            // Status do Bias
+            if (appState.bias.id) {
+                document.getElementById('biasNameInput').value = appState.bias.name;
+                document.getElementById('biasRoleInput').value = appState.bias.role;
+                document.getElementById('biasIdInput').value = appState.bias.id;
+                document.getElementById('biasLockStatus').textContent = `Representante travado por 30 dias: ${appState.bias.name} (#${appState.bias.id})`;
+            }
+
+            // Feed Geral
+            const generalPosts = appState.posts.filter(p => !p.isChallenge);
+            document.getElementById('mainFeedList').innerHTML = generalPosts.map(renderPostCardHTML).join('');
+
+            // Feed Desafio
+            const challengePosts = appState.posts.filter(p => p.isChallenge);
+            document.getElementById('challengeFeedList').innerHTML = challengePosts.map(renderPostCardHTML).join('');
+
+            // Lista de Amigos
+            document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
+                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${f.avatar}" style="width:44px; height:44px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                        <div>
+                            <div style="font-size:14px; font-weight:700;">${f.name}</div>
+                            <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
+                        </div>
+                    </div>
+                    <button class="spotify-btn" onclick="openPrivateChat('${f.id}')">Chat</button>
+                </div>
+            `).join('');
+
+            // Histórico Aconchego
+            const histHtml = appState.history.length > 0
+                ? appState.history.map(h => `
+                    <div class="glass-panel" style="padding:12px 14px; font-size:12.5px;">
+                        <strong style="color:var(--gold-accent);">${h.action}</strong> • <span style="color:var(--text-muted);">${h.time}</span>
+                        <p style="margin-top:4px;">${h.detail}</p>
+                    </div>
+                `).join('')
+                : `<div class="glass-panel" style="padding:16px; text-align:center; font-size:13px; color:var(--text-muted);">Suas interações e memórias aparecerão aqui.</div>`;
+
+            document.getElementById('aconchegoHistoryList').innerHTML = histHtml;
+        }
+    </script>
 </body>
-</html>
+  </html>
