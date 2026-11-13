@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Umbrella - Doramas, K-Pop & Animes</title>
+  <title>Umbrella</title>
   <link rel="manifest" href="manifest.json" />
   <style>
     :root {
       --bg-dark: #060a1e;
-      --glass-bg: rgba(20, 24, 42, 0.72);
+      --glass-bg: rgba(20, 24, 42, 0.75);
       --glass-border: rgba(251, 191, 36, 0.38); /* Fiozinho dourado sutil */
       --accent-gold: #fbbf24;
       --accent-purple: #8b5cf6;
@@ -20,7 +20,7 @@
 
     body {
       background-color: var(--bg-dark);
-      background-image: linear-gradient(rgba(6, 10, 30, 0.78), rgba(6, 10, 30, 0.9)), url('fundo.jpeg');
+      background-image: linear-gradient(rgba(6, 10, 30, 0.8), rgba(6, 10, 30, 0.92)), url('fundo.jpeg');
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -31,12 +31,12 @@
       padding-bottom: 90px;
     }
 
-    /* TOPO COM LOGO DINÂMICA E GOTINHA DE NOTIFICAÇÕES */
+    /* TOPO COM LOGO.PNG PURA E GOTINHA */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
       height: 85px;
-      background: rgba(6, 10, 30, 0.88);
+      background: rgba(6, 10, 30, 0.9);
       backdrop-filter: blur(14px);
       border-bottom: 1px solid var(--glass-border);
       display: flex;
@@ -75,14 +75,14 @@
       box-shadow: 0 0 12px rgba(251, 191, 36, 0.6);
     }
 
-    /* CONTAINER PRINCIPAL E LAYOUT */
-    .app-container {
+    /* CONTAINER PRINCIPAL */
+    app-container {
       max-width: 1200px;
       margin: 0 auto;
       padding: 12px;
+      display: block;
     }
 
-    /* ESTILO GLASS (TRANSLÚCIDO COM BORDAS DOURADAS) */
     .glass-box {
       background: var(--glass-bg);
       backdrop-filter: blur(16px);
@@ -93,7 +93,7 @@
       box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
     }
 
-    /* NAVEGAÇÃO POR BOLINHAS (130px NO MOBILE) */
+    /* NAVEGAÇÃO POR ABAS / BOLINHAS (130px NO MOBILE) */
     .nav-bubbles {
       display: flex;
       gap: 14px;
@@ -131,19 +131,17 @@
       background: rgba(139, 92, 246, 0.3);
     }
 
-    /* FEED CONTÍNUO (SEM CAIXAS RÍGIDAS) */
-    .feed-stream {
+    .bubble-btn img {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+    }
+
+    /* FEED E CONTEÚDO DINÂMICO (ABAS LIMPAS - SEM EMPILHAR) */
+    .view-content-area {
       display: flex;
       flex-direction: column;
       gap: 16px;
-    }
-
-    .feed-post {
-      background: var(--glass-bg);
-      backdrop-filter: blur(14px);
-      border: 1px solid var(--glass-border);
-      border-radius: 16px;
-      padding: 16px;
     }
 
     /* BALÃO DE CHAT E ENTRADA PADRÃO DO APP */
@@ -171,10 +169,14 @@
     .chat-action-btn {
       background: none;
       border: none;
-      color: var(--accent-gold);
-      font-size: 1.25rem;
       cursor: pointer;
-      padding: 4px 8px;
+      padding: 4px;
+    }
+
+    .chat-action-btn img {
+      width: 24px;
+      height: 24px;
+      object-fit: contain;
     }
 
     /* MODAL CUSTOMIZADO UMBRELLA */
@@ -202,31 +204,16 @@
       box-shadow: 0 0 30px rgba(251, 191, 36, 0.3);
     }
 
-    /* VISUALIZADOR PINTEREST (LIGHTBOX) */
-    .pinterest-lightbox {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 3000;
-      justify-content: center;
-      align-items: center;
-      padding: 15px;
-    }
-    .pinterest-lightbox img, .pinterest-lightbox video {
-      max-width: 100%;
-      max-height: 92vh;
-      object-fit: contain;
-      border-radius: 12px;
-    }
-
-    /* LAYOUT DESKTOP: 3 COLUNAS */
+    /* LAYOUT DESKTOP */
     @media (min-width: 960px) {
-      .app-container {
+      .app-main-layout {
         display: grid;
-        grid-template-columns: 1fr 2fr 1fr;
+        grid-template-columns: 280px 1fr 300px;
         gap: 20px;
         align-items: start;
+        max-width: 1300px;
+        margin: 0 auto;
+        padding: 12px;
       }
       .nav-bubbles {
         flex-direction: column;
@@ -241,50 +228,74 @@
         padding: 0 18px;
       }
     }
+    @media (max-width: 959px) {
+      .app-main-layout {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 12px;
+      }
+    }
   </style>
 </head>
 <body>
 
-  <!-- TOPO -->
+  <!-- TOPO COM LOGO.PNG E GOTINHA 💧 -->
   <header id="appHeader">
-    <img src="logo.png" alt="Umbrella" class="main-logo" onerror="this.src='guarda-chuva.png'" />
+    <img src="logo.png" alt="Logo" class="main-logo" onerror="this.src='guarda-chuva.png'" />
     <div class="notification-drop" onclick="openNotifications()" title="Gotinha de Notificações">💧</div>
   </header>
 
-  <div class="app-container">
+  <div class="app-main-layout">
     
-    <!-- COLUNA ESQUERDA: BOLINHAS DE NAVEGAÇÃO (130px) -->
+    <!-- COLUNA / SEÇÃO DE ABAS (BOLINHAS DE 130px) -->
     <aside>
       <div class="nav-bubbles">
-        <button class="bubble-btn active" onclick="switchTab('podio')">🏆 Pódio</button>
-        <button class="bubble-btn" onclick="switchTab('desafios')">🎯 Desafios</button>
-        <button class="bubble-btn" onclick="switchTab('amigos')">👥 Amigos</button>
-        <button class="bubble-btn" onclick="switchTab('fandom')">🌟 Fandom</button>
-        <button class="bubble-btn" onclick="switchTab('aconchego')">🛡️ Aconchego</button>
+        <button class="bubble-btn active" onclick="switchTab('feed', this)">
+          <img src="guarda-chuva.png" alt="Feed" /> Feed
+        </button>
+        <button class="bubble-btn" onclick="switchTab('podio', this)">
+          🏆 Pódio
+        </button>
+        <button class="bubble-btn" onclick="switchTab('desafios', this)">
+          🎯 Desafios
+        </button>
+        <button class="bubble-btn" onclick="switchTab('amigos', this)">
+          <img src="amigos.png" alt="Amigos" /> Amigos
+        </button>
+        <button class="bubble-btn" onclick="switchTab('fandom', this)">
+          <img src="fandom.png" alt="Fandom" /> Fandom
+        </button>
+        <button class="bubble-btn" onclick="switchTab('aconchego', this)">
+          <img src="aconchego.png" alt="Aconchego" /> Aconchego
+        </button>
       </div>
     </aside>
 
-    <!-- COLUNA CENTRAL: CONTEÚDO E FEED CONTÍNUO -->
-    <main>
-      <div id="centralDynamicArea" class="glass-box">
-        <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Feed Contínuo Umbrella</h2>
+    <!-- ÁREA PRINCIPAL DE CONTEÚDO (ABAS LIMPAS - NADA EMPILHADO) -->
+    <main id="mainTabViewArea">
+      <div class="glass-box">
+        <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Feed Geral</h2>
         <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Compartilhe momentos sob o guarda-chuva.</p>
         
-        <!-- Caixa de envio padrão (Estilo Balão Chat) -->
+        <!-- Caixa de envio padrão (Balão de Chat com botão da câmera nativa) -->
         <div class="chat-bubble-bar">
-          <button class="chat-action-btn" onclick="openNativeMediaSelector()">+</button>
+          <button class="chat-action-btn" onclick="openNativeCamera()" title="Câmera / Galeria">
+            <img src="câmera.png" alt="Câmera" />
+          </button>
           <input type="text" id="feedInputText" placeholder="O que vamos proteger hoje?" />
-          <button class="chat-action-btn" onclick="submitFeedPost()">➤</button>
+          <button class="chat-action-btn" onclick="submitFeedPost()" style="color: var(--accent-gold); font-size: 1.2rem;">➤</button>
         </div>
       </div>
 
-      <!-- Feed Geral -->
-      <div class="feed-stream" id="feedStreamContainer">
-        <div class="feed-post">
-          <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;" onclick="visitProfile('Luana')">Luana <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(K-popper • Dorama)</span></div>
-          <p style="font-size: 0.9rem; margin-bottom: 8px;">Maratonando doramas e curtindo o novo Umbrella! ☔🎬</p>
+      <!-- Feed Stream -->
+      <div class="view-content-area" id="feedStreamContainer">
+        <div class="glass-box">
+          <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;" onclick="visitProfile('Luana')">
+            Luana <span style="font-size:0.75rem; color:var(--text-muted); font-weight:normal;">(K-popper • BTS • Dorama)</span>
+          </div>
+          <p style="font-size: 0.9rem; margin-bottom: 8px;">Bem-vindos ao Umbrella! ☔🎬</p>
           <div style="display: flex; gap: 18px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
-            <span onclick="toggleUmbrellaLike(this)">☂️ Curtir (0)</span>
+            <span onclick="toggleLike(this)">☂️ Curtir (0)</span>
             <span>💬 Comentar</span>
             <span>🔗 Compartilhar Umbrella</span>
           </div>
@@ -292,25 +303,25 @@
       </div>
     </main>
 
-    <!-- COLUNA DIREITA: PERFIL & MÚSICA SPOTIFY -->
+    <!-- COLUNA LATERAL: PERFIL & SPOTIFY -->
     <aside>
       <div class="glass-box">
-        <h3 style="color: var(--accent-gold); font-size: 1rem; margin-bottom: 8px;">Meu Perfil & Trilha Spotify</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Cole o link/código do Spotify para tocar no fundo:</p>
-        <input type="text" id="spotifyLinkInput" placeholder="https://open.spotify.com/..." style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:8px;" />
-        <button onclick="saveSpotifyBackground()" style="background:var(--accent-purple); color:#fff; border:none; padding:8px 12px; border-radius:10px; font-size:0.8rem; cursor:pointer; width:100%; font-weight:600;">Ativar Trilha Sonora</button>
-        <div id="spotifyAudioPlayer" style="margin-top:10px; display:none; text-align:center;">
+        <h3 style="color: var(--accent-gold); font-size: 1rem; margin-bottom: 8px;">Perfil & Spotify</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Cole o código/link do Spotify para tocar no fundo:</p>
+        <input type="texts" id="spotifyLinkInput" placeholder="https://open.spotify.com/..." style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:8px;" />
+        <button onclick="saveSpotifyBackground()" style="background:var(--accent-purple); color:#fff; border:none; padding:8px 12px; border-radius:10px; font-size:0.8rem; cursor:pointer; width:100%; font-weight:600;">Ativar Trilha</button>
+        <div id="spotifyAudioControl" style="margin-top:10px; display:none; text-align:center;">
           <button onclick="pauseSpotify()" style="background:transparent; border:1px solid var(--accent-gold); color:var(--accent-gold); padding:4px 10px; border-radius:8px; font-size:0.75rem; cursor:pointer;">⏸ Pausar Música</button>
         </div>
       </div>
 
       <div class="glass-box" style="margin-top: 14px;">
-        <h3 style="color: var(--accent-gold); font-size: 1rem; margin-bottom: 8px;">Gerenciamento de Bias (1-1000)</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Cadastre seu ídolo (Trava de 30 dias por número):</p>
+        <h3 style="color: var(--accent-gold); font-size: 1rem; margin-bottom: 8px;">Gestão de Bias (1-1000)</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Trava de segurança de 30 dias por número:</p>
         <input type="text" id="biasName" placeholder="Nome do Bias" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:6px;" />
         <input type="text" id="biasRole" placeholder="Ator, Atriz ou K-popper" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:6px;" />
         <input type="number" id="biasIdNumber" min="1" max="1000" placeholder="Número ID (1 a 1000)" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:8px;" />
-        <button onclick="saveBiasProfile()" style="background:var(--accent-gold); color:#060a1e; border:none; padding:8px 12px; border-radius:10px; font-size:0.8rem; cursor:pointer; width:100%; font-weight:bold;">Salvar Bias</button>
+        <button onclick="saveBiasData()" style="background:var(--accent-gold); color:#060a1e; border:none; padding:8px 12px; border-radius:10px; font-size:0.8rem; cursor:pointer; width:100%; font-weight:bold;">Salvar Bias</button>
       </div>
     </aside>
 
@@ -325,13 +336,7 @@
     </div>
   </div>
 
-  <!-- LIGHTBOX PINTEREST PARA MÍDIA -->
-  <div id="pinterestLightbox" class="pinterest-lightbox" onclick="closePinterestLightbox()">
-    <img id="lightboxImgContent" src="" alt="Ampliado" style="display:none;" />
-    <video id="lightboxVideoContent" controls style="display:none;"></video>
-  </div>
-
-  <!-- FIREBASE & SCRIPT COMPLETO -->
+  <!-- SCRIPT DE CONTROLE E FIREBASE -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
@@ -372,58 +377,92 @@
       document.getElementById('umbrellaModalBox').style.display = 'none';
     };
 
-    // Navegação entre abas principais
-    window.switchTab = (tab) => {
+    // Navegação por Abas Limpas (Sem empilhar conteúdo)
+    window.switchTab = (tab, btn) => {
       document.querySelectorAll('.bubble-btn').forEach(b => b.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      if(btn) btn.classList.add('active');
 
-      const area = document.getElementById('centralDynamicArea');
-      if (tab === 'aconchego') {
+      const area = document.getElementById('mainTabViewArea');
+      
+      if (tab === 'feed') {
         area.innerHTML = `
-          <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Meu Aconchego (Histórico Pessoal)</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Aqui ficam suas interações e o acesso administrativo.</p>
-          <input type="password" id="masterAdmInput" placeholder="Digite a senha mestre..." oninput="verifyMasterCode(this.value)" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:10px; border-radius:10px; color:#fff;" />
-          <div id="masterAdmPanel" style="display:none; margin-top:16px; border-top:1px solid var(--glass-border); padding-top:12px;">
-            <p style="color:var(--accent-gold); font-weight:bold;">Painel ADM Liberado (Luanaeandrels)</p>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Gerenciamento de desafios semanais de sexta e moderação de fandoms ativo.</p>
+          <div class="glass-box">
+            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Feed Geral</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Compartilhe momentos sob o guarda-chuva.</p>
+            <div class="chat-bubble-bar">
+              <button class="chat-action-btn" onclick="openNativeCamera()"><img src="câmera.png" alt="Câmera" /></button>
+              <input type="text" id="feedInputText" placeholder="O que vamos proteger hoje?" />
+              <button class="chat-action-btn" onclick="submitFeedPost()" style="color: var(--accent-gold); font-size: 1.2rem;">➤</button>
+            </div>
+          </div>
+          <div class="view-content-area" id="feedStreamContainer">
+            <div class="glass-box">
+              <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;" onclick="visitProfile('Luana')">Luana</div>
+              <p style="font-size: 0.9rem; margin-bottom: 8px;">Bem-vindos ao Umbrella! ☔🎬</p>
+              <div style="display: flex; gap: 18px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
+                <span onclick="toggleLike(this)">☂️ Curtir (0)</span>
+                <span>💬 Comentar</span>
+                <span>🔗 Compartilhar Umbrella</span>
+              </div>
+            </div>
           </div>
         `;
-      } else if (tab === 'fandom') {
+      } else if (tab === 'podio') {
         area.innerHTML = `
-          <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Fandoms da Comunidade</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Fandoms Nativos (Bloqueados) e Fandoms Personalizados:</p>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 DPS (Nativo)</div>
-            <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Super Junior (Nativo)</div>
-            <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 EXO (Nativo)</div>
-            <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Dorama (Nativo)</div>
-            <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Animes (Nativo)</div>
-            <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border); color:var(--accent-gold);">⭐ BTS (Fandom Principal)</div>
+          <div class="glass-box">
+            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Pódio da Semana</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Apuração oficial na sexta-feira com base nos votos semanais:</p>
+            <div style="display:flex; flex-direction:column; gap:10px;">
+              <div style="background:rgba(251,191,36,0.15); padding:12px; border-radius:12px; border:1px solid var(--accent-gold);">🥇 1º Lugar - Aguardando fechamento de sexta</div>
+              <div style="background:rgba(6,10,30,0.5); padding:12px; border-radius:12px; border:1px solid var(--glass-border);">🥈 2º Lugar - ---</div>
+              <div style="background:rgba(6,10,30,0.5); padding:12px; border-radius:12px; border:1px solid var(--glass-border);">🥉 3º Lugar - ---</div>
+            </div>
           </div>
         `;
       } else if (tab === 'desafios') {
         area.innerHTML = `
-          <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Desafios Semanais</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">Cada usuária tem direito a 3 votos diários. Votos zeram à meia-noite.</p>
-          <div style="background:rgba(6,10,30,0.5); padding:12px; border-radius:12px; border:1px solid var(--glass-border);">
-            <p style="font-weight:600; color:var(--accent-gold);">Desafio Ativo de Hoje</p>
-            <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Envie a foto do seu Bias escolhido para a semana (Votos restantes: 3/3).</p>
+          <div class="glass-box">
+            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Desafios do Dia</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Cada usuária tem 3 votos diários (zera à meia-noite).</p>
+            <div style="background:rgba(6,10,30,0.6); padding:14px; border-radius:12px; border:1px solid var(--glass-border);">
+              <p style="font-weight:600; color:var(--accent-gold);">Desafio Ativo</p>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Envie a foto do seu Bias escolhido para a semana (Votos restantes: 3/3).</p>
+            </div>
           </div>
         `;
       } else if (tab === 'amigos') {
         area.innerHTML = `
-          <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Lista de Amigos</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Amizades confirmadas via "Vamos assistir juntos?":</p>
-          <p style="font-size:0.85rem; color:var(--text-muted);">Nenhum amigo conectado no momento. Visite perfis e envie solicitações!</p>
+          <div class="glass-box">
+            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Amigos</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Conexões aceitas via "Vamos assistir juntos?":</p>
+            <p style="font-size:0.85rem; color:var(--text-muted);">Nenhum amigo conectado no momento.</p>
+          </div>
         `;
-      } else {
+      } else if (tab === 'fandom') {
         area.innerHTML = `
-          <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Pódio da Semana</h2>
-          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Os vencedores acumulados de segunda a sexta:</p>
-          <div style="display:flex; flex-direction:column; gap:8px;">
-            <div style="background:rgba(251,191,36,0.15); padding:10px; border-radius:10px; border:1px solid var(--accent-gold);">🥇 1º Lugar - Aguardando apuração de sexta-feira</div>
-            <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🥈 2º Lugar - ---</div>
-            <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🥉 3º Lugar - ---</div>
+          <div class="glass-box">
+            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Fandoms</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Nativos (Bloqueados) e Personalizados:</p>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 DPS (Nativo)</div>
+              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Super Junior (Nativo)</div>
+              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 EXO (Nativo)</div>
+              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Dorama (Nativo)</div>
+              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border);">🔒 Animes (Nativo)</div>
+              <div style="background:rgba(6,10,30,0.5); padding:10px; border-radius:10px; border:1px solid var(--glass-border); color:var(--accent-gold);">⭐ BTS (Fandom Principal)</div>
+            </div>
+          </div>
+        `;
+      } else if (tab === 'aconchego') {
+        area.innerHTML = `
+          <div class="glass-box">
+            <h2 style="color: var(--accent-gold); margin-bottom: 10px;">Meu Aconchego</h2>
+            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 14px;">Seu histórico pessoal e campo de verificação ADM:</p>
+            <input type="password" id="masterAdmInput" placeholder="Digite a senha mestre..." oninput="verifyMasterCode(this.value)" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:10px; border-radius:10px; color:#fff;" />
+            <div id="masterAdmPanel" style="display:none; margin-top:16px; border-top:1px solid var(--glass-border); padding-top:12px;">
+              <p style="color:var(--accent-gold); font-weight:bold;">Painel ADM Liberado (Luanaeandrels)</p>
+              <p style="font-size:0.85rem; color:var(--text-muted); margin-top:4px;">Gerenciamento de desafios semanais de sexta e moderação de fandoms ativo.</p>
+            </div>
           </div>
         `;
       }
@@ -439,8 +478,8 @@
       }
     };
 
-    // Gestão de Bias com Trava de 30 dias
-    window.saveBiasProfile = () => {
+    // Gestão de Bias com Trava de 30 Dias
+    window.saveBiasData = () => {
       const name = document.getElementById('biasName').value.trim();
       const role = document.getElementById('biasRole').value.trim();
       const idNum = document.getElementById('biasIdNumber').value.trim();
@@ -449,7 +488,7 @@
       const lastSave = localStorage.getItem('umbrella_bias_date');
       const now = new Date().getTime();
       if (lastSave && (now - lastSave < 30 * 24 * 60 * 60 * 1000)) {
-        return showAlert("Trava de Segurança", "O número do ID do Bias está bloqueado. Só é permitida alteração após 30 dias para proteger as regras do jogo.");
+        return showAlert("Trava de Segurança", "O número do ID do Bias está bloqueado. Só é permitida alteração após 30 dias conforme as regras do jogo.");
       }
 
       localStorage.setItem('umbrella_bias_date', now);
@@ -457,7 +496,7 @@
       showAlert("Bias Salvo", `O Bias ${name} (${role}) foi cadastrado com o ID ${idNum} com sucesso!`);
     };
 
-    // Notificações Gotinha
+    // Notificações Gotinha 💧
     window.openNotifications = () => {
       showAlert("Gotinha de Notificações", "Nova solicitação recebida: 'Vamos assistir juntos?' de uma colega de fandom!");
     };
@@ -471,7 +510,7 @@
     window.saveSpotifyBackground = () => {
       const link = document.getElementById('spotifyLinkInput').value.trim();
       if (!link) return showAlert("Erro", "Insira um link válido do Spotify.");
-      document.getElementById('spotifyAudioPlayer').style.display = 'block';
+      document.getElementById('spotifyAudioControl').style.display = 'block';
       showAlert("Spotify Ativado", "A trilha sonora do seu perfil foi configurada com sucesso!");
     };
 
@@ -480,16 +519,16 @@
     };
 
     // Publicar Feed
-    window.publishFeedPost = () => {
+    window.submitFeedPost = () => {
       const txt = document.getElementById('feedInputText').value.trim();
       if (!txt) return;
       const stream = document.getElementById('feedStreamContainer');
       stream.innerHTML = `
-        <div class="feed-post">
+        <div class="glass-box">
           <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;" onclick="visitProfile('Luana')">Luana</div>
           <p style="font-size: 0.9rem; margin-bottom: 8px;">${txt}</p>
           <div style="display: flex; gap: 18px; font-size: 0.85rem; color: var(--text-muted); cursor: pointer;">
-            <span onclick="toggleUmbrellaLike(this)">☂️ Curtir (1)</span>
+            <span onclick="toggleLike(this)">☂️ Curtir (1)</span>
             <span>💬 Comentar</span>
             <span>🔗 Compartilhar Umbrella</span>
           </div>
@@ -498,17 +537,13 @@
       document.getElementById('feedInputText').value = "";
     };
 
-    window.openNativeMediaSelector = () => {
+    window.openNativeCamera = () => {
       showAlert("Câmera & Galeria", "Abrindo seletores nativos do seu dispositivo para envio imediato de foto ou vídeo.");
     };
 
-    window.toggleUmbrellaLike = (el) => {
+    window.toggleLike = (el) => {
       el.innerHTML = "☂️ Curtido!";
       el.style.color = "var(--accent-gold)";
-    };
-
-    window.closePinterestLightbox = () => {
-      document.getElementById('pinterestLightbox').style.display = 'none';
     };
   </script>
 </body>
