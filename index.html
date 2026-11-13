@@ -43,6 +43,7 @@
             color-scheme: dark;
         }
 
+        /* Fundo fixo usando fundo.jpeg */
         .fixed-background {
             position: fixed;
             inset: 0;
@@ -83,15 +84,17 @@
             position: relative;
         }
 
+        /* TOPO: PERFIL E LOGO DINÂMICA QUE ENCOLHE NO SCROLL */
         .top-header {
             position: sticky;
             top: 0;
             z-index: 40;
-            padding: 14px 16px 10px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(180deg, rgba(6, 10, 30, 0.85) 0%, rgba(6, 10, 30, 0) 100%);
+            background: linear-gradient(180deg, rgba(6, 10, 30, 0.9) 0%, rgba(6, 10, 30, 0.1) 100%);
+            transition: padding 0.25s ease;
         }
 
         .logo-container {
@@ -102,7 +105,7 @@
         }
 
         .brand-logo {
-            height: 78px;
+            height: 64px;
             width: auto;
             object-fit: contain;
             transition: height 0.25s cubic-bezier(0.22, 1, 0.36, 1);
@@ -110,22 +113,30 @@
         }
 
         .top-header.scrolled .brand-logo {
-            height: 44px;
+            height: 36px;
         }
 
+        /* Botão do Perfil à Esquerda (Foto que diminui no scroll) */
         .header-left-btn {
             position: absolute;
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            border: 1px solid var(--gold-border);
-            background: var(--glass-bg);
+            border: 1.5px solid var(--gold-accent);
+            background: var(--glass-dark);
             overflow: hidden;
             cursor: pointer;
             padding: 0;
+            transition: width 0.25s ease, height 0.25s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .top-header.scrolled .header-left-btn {
+            width: 34px;
+            height: 34px;
         }
 
         .header-left-btn img {
@@ -170,80 +181,77 @@
             padding: 0 4px;
         }
 
-        /* CARROSSEL HORIZONTAL SEGUINDO A ORDEM EXATA DE 130PX DE ALTURA */
+        /* CARROSSEL HORIZONTAL (SEM CAIXAS/QUADRADOS EM VOLTA DAS BOLINHAS, ALTURA EXATA 130PX) */
         .main-carousel-wrapper {
-            padding: 6px 14px 16px;
+            padding: 8px 14px 16px;
             display: flex;
             gap: 12px;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            align-items: center;
         }
 
         .main-carousel-wrapper::-webkit-scrollbar {
             display: none;
         }
 
-        /* Estilo Base dos Cards do Carrossel (Altura Exata 130px) */
-        .carousel-card {
+        /* Cada item solto com 130px de altura, sem fundo quadrado delimitador */
+        .carousel-item-clean {
             flex: 0 0 auto;
             height: 130px;
             scroll-snap-align: start;
-            border-radius: 18px;
-            background: var(--glass-dark);
-            border: 1px solid var(--gold-border);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 12px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            transition: transform 0.2s ease;
         }
 
-        .carousel-card:hover {
-            border-color: var(--gold-accent);
+        .carousel-item-clean:hover {
             transform: translateY(-2px);
         }
 
-        /* 1. Cards do Pódio (1, 2 e 3) - 130px de altura */
-        .podium-card {
-            width: 110px;
-            position: relative;
+        /* 1, 2 e 3. Pódios (130px altura) */
+        .podium-item-box {
+            width: 85px;
         }
 
-        .podium-circle {
-            width: 60px;
-            height: 60px;
+        .podium-circle-clean {
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
             border: 2px solid var(--gold-accent);
             overflow: hidden;
             background: #060a1e;
-            margin-bottom: 8px;
-            box-shadow: 0 0 10px var(--gold-glow);
+            margin-bottom: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 10px var(--gold-glow);
         }
 
-        .podium-circle img {
+        .podium-circle-clean img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
 
-        .podium-label {
-            font-size: 11.5px;
+        .podium-label-clean {
+            font-size: 11px;
             font-weight: 700;
             color: var(--gold-accent);
         }
 
-        /* 2. Card do Desafio do Dia (130px de altura por 240px de largura) */
-        .challenge-card {
+        /* 4. Card do Desafio do Dia (130px de altura por 240px de largura) */
+        .challenge-card-clean {
             width: 240px;
-            align-items: flex-start;
+            background: var(--glass-bg);
+            border: 1px solid var(--gold-border);
+            border-radius: 18px;
+            padding: 12px 14px;
             justify-content: space-between;
-            background: linear-gradient(135deg, rgba(20, 24, 42, 0.9), rgba(35, 42, 72, 0.85));
-            border: 1.5px solid var(--gold-accent);
+            align-items: flex-start;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
         }
 
         .challenge-header {
@@ -261,34 +269,38 @@
             line-height: 1.35;
             color: var(--text-main);
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
         }
 
-        /* 3, 4 e 5. Cards de Fandom, Amigos e Aconchego (130px de altura / largura padrão ~120px) */
-        .standard-tab-card {
-            width: 120px;
+        /* 5, 6 e 7. Fandom, Amigos e Aconchego (130px altura) */
+        .tab-item-box {
+            width: 90px;
         }
 
-        .standard-tab-icon {
-            width: 48px;
-            height: 48px;
+        .tab-icon-clean {
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
-            padding: 10px;
-            margin-bottom: 8px;
-            background: rgba(251, 191, 36, 0.08);
+            background: var(--glass-bg);
+            padding: 11px;
+            margin-bottom: 6px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        .standard-tab-icon img {
+        .tab-icon-clean img {
             width: 100%;
             height: 100%;
             object-fit: contain;
         }
 
-        .standard-tab-label {
-            font-size: 12px;
+        .tab-label-clean {
+            font-size: 11.5px;
             font-weight: 600;
             color: var(--text-main);
         }
@@ -334,7 +346,6 @@
             cursor: pointer;
         }
 
-        /* Fandoms Grid & Criar Fandom por fora */
         .fandoms-grid-container {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -366,59 +377,34 @@
             color: var(--text-muted);
         }
 
-        /* Perfil e Feed */
-        .profile-card {
-            padding: 16px;
+        /* Barra do Spotify e Frase Dorama no topo do feed */
+        .feed-top-bar {
+            padding: 12px 14px;
             margin-bottom: 14px;
-        }
-
-        .profile-top {
             display: flex;
-            align-items: center;
-            gap: 13px;
-        }
-
-        .profile-avatar-lg {
-            width: 58px;
-            height: 58px;
-            border-radius: 50%;
-            border: 1.5px solid var(--gold-accent);
-            object-fit: cover;
-            flex-shrink: 0;
-        }
-
-        .profile-info h3 {
-            font-size: 15.5px;
-            font-weight: 700;
-        }
-
-        .profile-info p {
-            font-size: 12px;
-            color: var(--text-muted);
-            margin-top: 2px;
+            flex-direction: column;
+            gap: 8px;
         }
 
         .dorama-phrase-btn {
-            margin-top: 12px;
             width: 100%;
-            padding: 9px 14px;
-            border-radius: 14px;
+            padding: 8px 12px;
+            border-radius: 12px;
             background: rgba(251, 191, 36, 0.1);
             border: 1px solid var(--gold-border);
             color: var(--gold-accent);
-            font-size: 13px;
+            font-size: 12.5px;
             font-weight: 600;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .spotify-bar {
-            margin-top: 10px;
-            padding: 7px 11px;
-            border-radius: 14px;
+            padding: 6px 10px;
+            border-radius: 12px;
             background: var(--glass-dark);
             border: 1px solid var(--gold-border);
             display: flex;
@@ -883,6 +869,7 @@
 
     <div class="app-shell">
 
+        <!-- TOPO COM PERFIL À ESQUERDA, LOGO DINÂMICA E GOTINHA -->
         <header class="top-header" id="topHeader">
             <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
                 <img id="headerUserAvatar" src="aconchego.png" alt="">
@@ -898,34 +885,34 @@
             </button>
         </header>
 
-        <!-- CARROSSEL HORIZONTAL SEGUINDO A ORDEM EXATA E 130PX DE ALTURA -->
+        <!-- CARROSSEL HORIZONTAL DE ITENS SOLTOS (130PX DE ALTURA, SEM CAIXAS QUADRADAS) -->
         <nav class="main-carousel-wrapper">
             <!-- 1. Pódio 1 -->
-            <div class="carousel-card podium-card" onclick="openPodiumFullscreen(1)">
-                <div class="podium-circle">
+            <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
+                <div class="podium-circle-clean">
                     <img id="podiumImg1" src="guarda-chuva.png" alt="">
                 </div>
-                <span class="podium-label">1º Pódio</span>
+                <span class="podium-label-clean">1º Pódio</span>
             </div>
 
             <!-- 2. Pódio 2 -->
-            <div class="carousel-card podium-card" onclick="openPodiumFullscreen(2)">
-                <div class="podium-circle">
+            <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(2)">
+                <div class="podium-circle-clean">
                     <img id="podiumImg2" src="fandom.png" alt="">
                 </div>
-                <span class="podium-label">2º Pódio</span>
+                <span class="podium-label-clean">2º Pódio</span>
             </div>
 
             <!-- 3. Pódio 3 -->
-            <div class="carousel-card podium-card" onclick="openPodiumFullscreen(3)">
-                <div class="podium-circle">
+            <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(3)">
+                <div class="podium-circle-clean">
                     <img id="podiumImg3" src="amigos.png" alt="">
                 </div>
-                <span class="podium-label">3º Pódio</span>
+                <span class="podium-label-clean">3º Pódio</span>
             </div>
 
-            <!-- 4. Desafio do Dia (130px de altura por 240px de largura) -->
-            <div class="carousel-card challenge-card" onclick="switchView('desafio')">
+            <!-- 4. Desafio do Dia (130px altura x 240px largura) -->
+            <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
                     <span>☔ Desafio do Dia</span>
                 </div>
@@ -936,52 +923,43 @@
             </div>
 
             <!-- 5. Fandom -->
-            <div class="carousel-card standard-tab-card" onclick="switchView('fandom')">
-                <div class="standard-tab-icon">
+            <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
+                <div class="tab-icon-clean">
                     <img src="fandom.png" alt="">
                 </div>
-                <span class="standard-tab-label">Fandom</span>
+                <span class="tab-label-clean">Fandom</span>
             </div>
 
             <!-- 6. Amigos -->
-            <div class="carousel-card standard-tab-card" onclick="switchView('amigos')">
-                <div class="standard-tab-icon">
+            <div class="carousel-item-clean tab-item-box" onclick="switchView('amigos')">
+                <div class="tab-icon-clean">
                     <img src="amigos.png" alt="">
                 </div>
-                <span class="standard-tab-label">Amigos</span>
+                <span class="tab-label-clean">Amigos</span>
             </div>
 
             <!-- 7. Aconchego -->
-            <div class="carousel-card standard-tab-card" onclick="switchView('aconchego')">
-                <div class="standard-tab-icon">
+            <div class="carousel-item-clean tab-item-box" onclick="switchView('aconchego')">
+                <div class="tab-icon-clean">
                     <img src="aconchego.png" alt="">
                 </div>
-                <span class="standard-tab-label">Aconchego</span>
+                <span class="tab-label-clean">Aconchego</span>
             </div>
         </nav>
 
         <!-- TELA 1: FEED PRINCIPAL -->
         <main class="view-section active" id="view-feed">
-            <div class="glass-panel profile-card">
-                <div class="profile-top">
-                    <img id="profileCardAvatar" src="aconchego.png" alt="" class="profile-avatar-lg">
-                    <div class="profile-info">
-                        <h3 id="profileCardName">Conectar Conta</h3>
-                        <p id="profileCardEmail">Toque no ícone superior esquerdo para entrar</p>
-                        <p id="profileCardBias" style="color: var(--gold-accent); margin-top: 3px;">Bias: Não definido</p>
-                    </div>
-                </div>
-
+            <!-- Barra superior do feed com Spotify e Frase de Dorama (Sem duplicar foto de perfil) -->
+            <div class="glass-panel feed-top-bar">
                 <button class="dorama-phrase-btn" onclick="triggerDoramaInvite()">
                     🎬 Quero assistir um dorama
                 </button>
-
                 <div class="spotify-bar">
                     <input type="text" id="spotifyLinkInput" class="spotify-input" placeholder="Cole o link da música do Spotify...">
                     <button class="btn-pill-gold" onclick="saveSpotifyTrack()">Salvar</button>
                     <button class="btn-pill-gold" id="spotifyPlayPauseBtn" onclick="toggleAmbientMusic()">⏸</button>
                 </div>
-                <div id="spotifyEmbedContainer" style="margin-top:8px; display:none;"></div>
+                <div id="spotifyEmbedContainer" style="margin-top:4px; display:none;"></div>
             </div>
 
             <div class="feed-list" id="mainFeedList"></div>
@@ -1150,14 +1128,14 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v4';
+        const LOCAL_KEY = 'umbrella_clean_state_v5';
 
         const cleanInitialState = {
             user: {
                 uid: '',
-                loggedIn: false,
-                name: 'Conectar Conta',
-                email: 'Toque no ícone superior esquerdo para entrar',
+                loggedIn: true,
+                name: 'Luana Souza',
+                email: 'luanaeandrels@gmail.com',
                 phone: '',
                 bgColor: 'rgba(6, 10, 30, 0.62)',
                 avatar: 'aconchego.png',
@@ -1172,7 +1150,7 @@
                 3: { img: 'amigos.png', title: '3º Lugar • Pódio Oficial da Semana' }
             },
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
-            subgroups: {}, // { 'BTS': ['Poemas na Chuva'] }
+            subgroups: {},
             posts: [],
             friends: [],
             notifications: [],
@@ -1242,7 +1220,7 @@
                     if (result.user) {
                         appState.user.uid = result.user.uid;
                         appState.user.loggedIn = true;
-                        appState.user.name = result.user.displayName || 'Usuária Umbrella';
+                        appState.user.name = result.user.displayName || 'Luana Souza';
                         appState.user.email = result.user.email || '';
                         if (result.user.photoURL) appState.user.avatar = result.user.photoURL;
                         saveLocal();
@@ -1288,16 +1266,13 @@
             showUmbrellaModal({
                 title: 'Perfil Umbrella',
                 htmlBody: `
-                    <button class="btn-gold" style="margin-bottom:14px;" onclick="loginWithGoogle()">
-                        Entrar com Conta Google
-                    </button>
                     <div class="form-group">
                         <label class="form-label">Nome</label>
-                        <input type="text" id="obName" class="glass-input" value="${appState.user.loggedIn ? appState.user.name : ''}" placeholder="Seu nome">
+                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}" placeholder="Seu nome">
                     </div>
                     <div class="form-group">
                         <label class="form-label">E-mail</label>
-                        <input type="email" id="obEmail" class="glass-input" value="${appState.user.loggedIn ? appState.user.email : ''}" placeholder="seu@email.com">
+                        <input type="email" id="obEmail" class="glass-input" value="${appState.user.email}" placeholder="seu@email.com">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Telefone</label>
@@ -1323,8 +1298,6 @@
                             if (name) appState.user.name = name;
                             if (email) appState.user.email = email;
                             appState.user.phone = phone;
-                            appState.user.loggedIn = true;
-                            if (!appState.user.uid) appState.user.uid = 'local_' + Date.now();
 
                             if (fileInput.files && fileInput.files[0]) {
                                 const reader = new FileReader();
@@ -1449,10 +1422,7 @@
             const input = document.getElementById('mainComposerInput');
             const text = input.value.trim();
             if (!text && !currentAttachedMedia) return;
-            if (!appState.user.loggedIn) {
-                openProfileModal();
-                return;
-            }
+
             const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
             if (isChallengeView && !appState.bias.id) {
                 showUmbrellaModal({ title: 'Bias Obrigatório', htmlBody: 'Cadastre seu Bias representante antes de postar no Desafio.' });
@@ -1614,7 +1584,6 @@
             });
         };
 
-        // Adicionar Novo Fandom por fora
         window.openCreateFandomModal = function () {
             showUmbrellaModal({
                 title: 'Adicionar Novo Fandom',
@@ -1643,7 +1612,6 @@
             });
         };
 
-        // Subgrupo aparece SÓ DENTRO do fandom selecionado
         window.selectFandom = function (fandomName) {
             activeFandomFilter = fandomName;
             const filtered = appState.posts.filter(p => p.fandom === fandomName);
@@ -1747,14 +1715,7 @@
         function applyUserTheme() {
             document.documentElement.style.setProperty('--user-tint', appState.user.bgColor);
             document.getElementById('headerUserAvatar').src = appState.user.avatar;
-            document.getElementById('profileCardAvatar').src = appState.user.avatar;
-            document.getElementById('profileCardName').textContent = appState.user.name;
-            document.getElementById('profileCardEmail').textContent = appState.user.email;
             document.getElementById('spotifyLinkInput').value = appState.user.spotifyUrl || '';
-
-            if (appState.bias && appState.bias.id) {
-                document.getElementById('profileCardBias').textContent = `Bias: ${appState.bias.name} (${appState.bias.role} #${appState.bias.id})`;
-            }
         }
 
         function renderPostCardHTML(post) {
@@ -1803,14 +1764,6 @@
             document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
             updateNotifBadge();
 
-            if (appState.bias.id) {
-                document.getElementById('biasNameInput').value = appState.bias.name;
-                document.getElementById('biasRoleInput').value = appState.bias.role;
-                document.getElementById('biasIdInput').value = appState.bias.id;
-                document.getElementById('biasLockStatus').textContent = `Representante travado: ${appState.bias.name} (#${appState.bias.id})`;
-            }
-
-            // Renderiza Fandoms na Aba Fandom
             const fandomsGrid = document.getElementById('fandomsGridContainer');
             fandomsGrid.innerHTML = appState.fandoms.map(f => `
                 <div class="glass-panel fandom-box-card" onclick="selectFandom('${f}')">
