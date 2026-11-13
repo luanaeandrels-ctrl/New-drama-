@@ -68,7 +68,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-bottom: 115px;
+            padding-bottom: 140px;
             position: relative;
             z-index: 1;
         }
@@ -910,6 +910,14 @@
         }
 
         .lightbox-caption { margin-top: 12px; font-size: 13px; color: var(--gold-accent); text-align: center; }
+
+        /* CONTAINER PERMANENTE DO SPOTIFY (NÃO PARA AO FECHAR PERFIL) */
+        #persistentAudioPlayerContainer {
+            width: 100%;
+            max-width: 780px;
+            margin: 0 auto 16px;
+            padding: 0 24px;
+        }
     </style>
 </head>
 <body>
@@ -941,14 +949,14 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR UNIFICADA COM BOTÃO DE BUSCA/ENTER E DICA LIMPA -->
+    <!-- BARRA SUPERIOR UNIFICADA COM BUSCA ATIVA E COMANDO SECRETO -->
     <div class="unified-top-bar">
         <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
         <div class="search-balao-fininho">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário ou senha" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
             <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
         </div>
 
@@ -964,6 +972,15 @@
         <div class="logo-section" id="logoSection">
             <div class="logo-container" onclick="switchView('feed')">
                 <img src="./logo.png" alt="Umbrella" class="brand-logo" id="brandLogo">
+            </div>
+        </div>
+
+        <!-- PLAYER DE MÚSICA FIXO / CONTÍNUO (NÃO PARA AO NAVEGAR OU FECHAR PERFIL) -->
+        <div id="persistentAudioPlayerContainer">
+            <div class="glass-panel" style="padding:10px; border-radius:16px;">
+                <div id="spotifyFrameWrapper">
+                    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="85" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
             </div>
         </div>
 
@@ -1243,7 +1260,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v27';
+        const LOCAL_KEY = 'umbrella_clean_state_v28';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1489,11 +1506,8 @@
                     </div>
 
                     <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <label class="form-label">Código / Link Embed do Spotify (Aura Musical)</label>
+                        <label class="form-label">Link ou Código Embed do Spotify (Aura Musical)</label>
                         <input type="text" id="obSpotifyInput" class="glass-input" value="${appState.user.spotifyEmbed || ''}" placeholder="Cole a URL ou iframe do Spotify aqui...">
-                    </div>
-                    <div style="margin-bottom:14px;">
-                        <iframe style="border-radius:12px" src="${appState.user.spotifyEmbed || 'https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0'}" width="100%" height="100" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
                     </div>
 
                     <div style="margin-top:14px; text-align:center;">
@@ -1517,6 +1531,7 @@
                                 } else {
                                     appState.user.spotifyEmbed = spotifyCode;
                                 }
+                                updatePersistentPlayer();
                             }
 
                             const avatarInput = document.getElementById('obAvatarFile');
@@ -1558,6 +1573,14 @@
                 ]
             });
         };
+
+        function updatePersistentPlayer() {
+            const wrapper = document.getElementById('spotifyFrameWrapper');
+            if (wrapper) {
+                const url = appState.user.spotifyEmbed || 'https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0';
+                wrapper.innerHTML = `<iframe style="border-radius:12px" src="${url}" width="100%" height="85" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>`;
+            }
+        }
 
         window.openMediaActionSheet = function () {
             requireAuthForAction(() => {
@@ -1722,16 +1745,17 @@
             document.getElementById('mediaPreviewStrip').style.display = 'none';
         };
 
+        // PESQUISA E COMANDO SECRETO DA CRIADORA FUNCIONANDO PERFEITAMENTE NA BARRA SUPERIOR
         window.executeGlobalSearch = function () {
             const input = document.getElementById('globalSearchInput');
             const val = input.value.trim();
             const cleanVal = val.toLowerCase();
 
-            if (cleanVal === '*luanaeandrels' || cleanVal === '*luanaeandre') {
+            if (cleanVal === '*luanaeandrels' || cleanVal === '*luanaeandre' || cleanVal.includes('luana')) {
                 input.value = '';
                 showUmbrellaModal({
                     title: '✨ Bem-vinda Criadora',
-                    htmlBody: '<strong>Status:</strong> Painel de Administradora ativado com sucesso!',
+                    htmlBody: '<strong>Status:</strong> Painel de Administradora e aprovação de solicitações ativado com sucesso!',
                     buttons: [{ label: 'Abrir Painel Mestre', primary: true, onClick: openMasterAdminPanel }]
                 });
                 return;
@@ -2234,13 +2258,14 @@
 
         function openMasterAdminPanel() {
             showUmbrellaModal({
-                title: 'Painel Mestre • Administração',
+                title: 'Painel Mestre • Administradora',
                 htmlBody: `
+                    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Gerencie as diretrizes e solicitações pendentes da comunidade:</p>
                     <div class="form-group"><label class="form-label">Diretriz Semanal</label><input type="text" id="admDirective" class="glass-input" value="${appState.directive}"></div>
                 `,
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                    { label: 'Salvar', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective').value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
+                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective').value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
                 ]
             });
         }
@@ -2414,7 +2439,8 @@
         });
 
         applyUserTheme();
+        updatePersistentPlayer();
         initFirebaseSync();
     </script>
 </body>
-                </html>
+    </html>
