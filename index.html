@@ -15,15 +15,15 @@
     <style>
         :root {
             --bg-base: #060a1e;
-            --glass-bg: rgba(20, 24, 42, 0.78);
-            --glass-dark: rgba(10, 14, 28, 0.88);
-            --gold-border: rgba(251, 191, 36, 0.38);
-            --gold-glow: rgba(251, 191, 36, 0.22);
+            --glass-bg: rgba(14, 18, 34, 0.52);
+            --glass-dark: rgba(8, 12, 24, 0.68);
+            --gold-border: rgba(251, 191, 36, 0.45);
+            --gold-glow: rgba(251, 191, 36, 0.28);
             --gold-accent: #fbbf24;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --danger: #f43f5e;
-            --user-tint: rgba(6, 10, 30, 0.62);
+            --user-tint: rgba(6, 10, 30, 0.25);
         }
 
         * {
@@ -43,6 +43,7 @@
             color-scheme: dark;
         }
 
+        /* FUNDO FIXO COM O SEU fundo.jpeg */
         .fixed-background {
             position: fixed;
             inset: 0;
@@ -58,24 +59,24 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: radial-gradient(circle at top, rgba(6, 10, 30, 0.45) 0%, var(--user-tint) 65%, rgba(6, 10, 30, 0.94) 100%);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
+            background: radial-gradient(circle at top, rgba(6, 10, 30, 0.15) 0%, var(--user-tint) 60%, rgba(6, 10, 30, 0.65) 100%);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
         }
 
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--gold-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.48), inset 0 0 12px rgba(251, 191, 36, 0.04);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 0 14px rgba(251, 191, 36, 0.06);
             border-radius: 20px;
         }
 
-        /* EXPANSIVO NO DESKTOP (SEM TRAVAR) */
+        /* DESKTOP LIVRE (OCUPA A TELA INTEIRA SEM TRAVAR) */
         .app-shell {
             width: 100%;
-            max-width: 800px;
+            max-width: 100%;
             margin: 0 auto;
             min-height: 100vh;
             display: flex;
@@ -84,10 +85,9 @@
             position: relative;
         }
 
-        /* BARRA DE PESQUISA FININHA NO TOPO DE TUDO (USANDO ASTERISCO) */
         .search-top-bar {
             width: 100%;
-            background: rgba(10, 14, 28, 0.92);
+            background: rgba(10, 14, 28, 0.75);
             border-bottom: 1px solid var(--gold-border);
             padding: 6px 16px;
             display: flex;
@@ -100,7 +100,7 @@
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 11.5px;
+            font-size: 12px;
             outline: none;
             text-align: center;
         }
@@ -109,16 +109,17 @@
             color: var(--text-muted);
         }
 
+        /* TOPO DINÂMICO: COMEÇA GRANDE (150PX) E ENCOLHE PARA 90PX NO SCROLL */
         .top-header {
             position: sticky;
             top: 0;
             z-index: 40;
-            padding: 12px 16px;
+            padding: 18px 24px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(180deg, rgba(6, 10, 30, 0.9) 0%, rgba(6, 10, 30, 0.1) 100%);
-            transition: padding 0.25s ease;
+            background: linear-gradient(180deg, rgba(6, 10, 30, 0.85) 0%, rgba(6, 10, 30, 0) 100%);
+            transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
         }
 
         .logo-container {
@@ -129,38 +130,30 @@
         }
 
         .brand-logo {
-            height: 64px;
+            height: 110px;
             width: auto;
             object-fit: contain;
-            transition: height 0.25s cubic-bezier(0.22, 1, 0.36, 1);
-            filter: drop-shadow(0 4px 14px rgba(0, 0, 0, 0.65));
+            transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.75));
         }
 
-        .top-header.scrolled .brand-logo {
-            height: 36px;
-        }
-
+        /* FOTO DE PERFIL: COMEÇA GRANDE E ENCOLHE PARA 90PX (90px exatos no scroll) */
         .header-left-btn {
             position: absolute;
-            left: 16px;
+            left: 20px;
             top: 50%;
             transform: translateY(-50%);
-            width: 42px;
-            height: 42px;
+            width: 120px;
+            height: 120px;
             border-radius: 50%;
-            border: 1.5px solid var(--gold-accent);
+            border: 2.5px solid var(--gold-accent);
             background: var(--glass-dark);
             overflow: hidden;
             cursor: pointer;
             padding: 0;
-            transition: width 0.25s ease, height 0.25s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: width 0.3s cubic-bezier(0.22, 1, 0.36, 1), height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.65);
             z-index: 5;
-        }
-
-        .top-header.scrolled .header-left-btn {
-            width: 32px;
-            height: 32px;
         }
 
         .header-left-btn img {
@@ -170,23 +163,44 @@
             display: block;
         }
 
+        /* ESTADO QUANDO ROLA A PÁGINA (SCROLLED) */
+        .top-header.scrolled {
+            padding: 10px 16px;
+        }
+
+        .top-header.scrolled .brand-logo {
+            height: 60px;
+        }
+
+        .top-header.scrolled .header-left-btn {
+            width: 90px;
+            height: 90px;
+        }
+
+        .top-header.scrolled .droplet-btn {
+            width: 44px;
+            height: 44px;
+        }
+
         .droplet-btn {
             position: absolute;
-            right: 16px;
+            right: 20px;
             top: 50%;
             transform: translateY(-50%);
-            width: 40px;
-            height: 40px;
+            width: 52px;
+            height: 52px;
             border-radius: 50%;
             background: var(--glass-bg);
-            border: 1px solid var(--gold-border);
+            border: 1.5px solid var(--gold-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 21px;
             cursor: pointer;
             color: var(--text-main);
             z-index: 5;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+            transition: width 0.3s ease, height 0.3s ease;
         }
 
         .droplet-badge {
@@ -208,16 +222,15 @@
 
         /* CARROSSEL HORIZONTAL */
         .main-carousel-wrapper {
-            padding: 8px 14px 16px;
+            padding: 10px 20px 20px;
             display: flex;
-            gap: 12px;
+            gap: 16px;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             align-items: center;
             width: 100%;
-            max-width: 100%;
         }
 
         .main-carousel-wrapper::-webkit-scrollbar {
@@ -241,18 +254,18 @@
         }
 
         .podium-item-box {
-            width: 85px;
+            width: 95px;
         }
 
         .podium-circle-clean {
-            width: 64px;
-            height: 64px;
+            width: 72px;
+            height: 72px;
             border-radius: 50%;
             border: 2px solid var(--gold-accent);
             overflow: hidden;
             background: #060a1e;
             margin-bottom: 6px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 10px var(--gold-glow);
+            box-shadow: 0 4px 18px rgba(0,0,0,0.6), 0 0 12px var(--gold-glow);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -265,7 +278,7 @@
         }
 
         .podium-label-clean {
-            font-size: 11px;
+            font-size: 11.5px;
             font-weight: 700;
             color: var(--gold-accent);
             white-space: nowrap;
@@ -274,7 +287,7 @@
         .challenge-card-clean {
             width: 240px;
             background: var(--glass-bg);
-            border: 1px solid var(--gold-border);
+            border: 1.5px solid var(--gold-accent);
             border-radius: 18px;
             padding: 12px 14px;
             justify-content: space-between;
@@ -303,16 +316,16 @@
         }
 
         .tab-item-box {
-            width: 90px;
+            width: 100px;
         }
 
         .tab-icon-clean {
-            width: 54px;
-            height: 54px;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            border: 1px solid var(--gold-border);
+            border: 1.5px solid var(--gold-border);
             background: var(--glass-bg);
-            padding: 11px;
+            padding: 12px;
             margin-bottom: 6px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.4);
             display: flex;
@@ -327,7 +340,7 @@
         }
 
         .tab-label-clean {
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: 600;
             color: var(--text-main);
             white-space: nowrap;
@@ -336,8 +349,11 @@
         /* TELAS / ABAS */
         .view-section {
             display: none;
-            padding: 0 14px;
+            padding: 0 20px;
             animation: fadeIn 0.25s ease forwards;
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
         }
 
         .view-section.active {
@@ -376,8 +392,8 @@
 
         .fandoms-grid-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
             margin-bottom: 14px;
         }
 
@@ -420,7 +436,7 @@
         }
 
         .post-card {
-            padding: 15px;
+            padding: 16px;
         }
 
         .post-header {
@@ -438,8 +454,8 @@
         }
 
         .post-avatar {
-            width: 38px;
-            height: 38px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
             object-fit: cover;
@@ -473,7 +489,7 @@
 
         .post-media {
             width: 100%;
-            max-height: 380px;
+            max-height: 420px;
             object-fit: cover;
             border-radius: 14px;
             border: 1px solid var(--gold-border);
@@ -505,8 +521,8 @@
         }
 
         .like-umbrella-btn img {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             object-fit: contain;
             opacity: 0.85;
             transition: transform 0.2s ease, filter 0.2s ease;
@@ -569,8 +585,8 @@
             bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
-            width: calc(100% - 24px);
-            max-width: 760px;
+            width: calc(100% - 32px);
+            max-width: 800px;
             z-index: 50;
         }
 
@@ -578,8 +594,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 10px;
-            background: rgba(14, 18, 34, 0.92);
+            padding: 6px 12px;
+            background: rgba(14, 18, 34, 0.85);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             border: 1px solid var(--gold-border);
@@ -588,8 +604,8 @@
         }
 
         .composer-plus-btn {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
             background: transparent;
@@ -619,8 +635,8 @@
         }
 
         .composer-send-btn {
-            width: 34px;
-            height: 34px;
+            width: 36px;
+            height: 36px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
             background: rgba(251, 191, 36, 0.18);
@@ -731,9 +747,9 @@
             position: fixed;
             inset: 0;
             z-index: 100;
-            background: rgba(4, 7, 18, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: rgba(4, 7, 18, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             display: none;
             align-items: center;
             justify-content: center;
@@ -776,7 +792,7 @@
             position: fixed;
             inset: 0;
             z-index: 120;
-            background: rgba(2, 4, 12, 0.96);
+            background: rgba(2, 4, 12, 0.95);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -823,14 +839,14 @@
     <div class="fixed-background"></div>
     <div class="fixed-backdrop-overlay"></div>
 
-    <!-- BARRA DE PESQUISA SUPER FININHA NO TOPO DE TUDO (*LUANA) -->
+    <!-- BARRA DE PESQUISA COM ASTERISCO (*Luana) -->
     <div class="search-top-bar">
         <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="Pesquisar na plataforma com * (ex: *Luana)" onkeyup="handleGlobalSearch(event)">
     </div>
 
     <div class="app-shell">
 
-        <!-- TOPO COM PERFIL À ESQUERDA, LOGO E GOTINHA -->
+        <!-- TOPO DINÂMICO: COMEÇA GRANDE E ENCOLHE NO SCROLL PARA 90PX -->
         <header class="top-header" id="topHeader">
             <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
                 <img id="headerUserAvatar" src="aconchego.png" alt="">
@@ -901,7 +917,7 @@
             </div>
         </nav>
 
-        <!-- TELA 1: FEED PRINCIPAL (LIMPO, APENAS POSTAGENS) -->
+        <!-- TELA 1: FEED PRINCIPAL -->
         <main class="view-section active" id="view-feed">
             <div class="feed-list" id="mainFeedList"></div>
         </main>
@@ -979,7 +995,7 @@
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
-        <!-- TELA 5: ACONCHEGO -->
+        <!-- TELA 5: ACONCHEGO COM CAMPO SECRETO -->
         <section class="view-section" id="view-aconchego">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meu Aconchego</span>
@@ -989,7 +1005,7 @@
             <div class="feed-list" id="aconchegoHistoryList"></div>
 
             <div class="stealth-field-box">
-                <input type="password" id="stealthAdminInput" class="stealth-input" autocomplete="off" onkeyup="checkStealthAccess(this.value)">
+                <input type="password" id="stealthAdminInput" class="stealth-input" autocomplete="off" placeholder="Chave secreta..." onkeyup="checkStealthAccess(this.value)">
             </div>
         </section>
 
@@ -1036,15 +1052,12 @@
             signInWithRedirect,
             getRedirectResult,
             GoogleAuthProvider,
-            onAuthStateChanged,
-            signOut
+            onAuthStateChanged
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import {
             getFirestore,
             collection,
             addDoc,
-            getDocs,
-            deleteDoc,
             doc,
             onSnapshot,
             query,
@@ -1069,7 +1082,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v7';
+        const LOCAL_KEY = 'umbrella_clean_state_v9';
 
         const cleanInitialState = {
             user: {
@@ -1078,11 +1091,10 @@
                 name: 'Luana',
                 email: 'luanaeandrels@gmail.com',
                 phone: '',
-                bgColor: 'rgba(6, 10, 30, 0.62)',
                 avatar: 'aconchego.png',
                 spotifyUrl: ''
             },
-            bias: { name: '', role: 'Ator', id: null, lastUpdated: 0, refHistogram: null },
+            bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             podium: {
@@ -1093,7 +1105,9 @@
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
             subgroups: {},
             posts: [],
-            friends: [],
+            friends: [
+                { id: 'f_1', name: 'Amiga Dorama', avatar: 'amigos.png', status: 'Amizade ativa' }
+            ],
             notifications: [],
             history: []
         };
@@ -1102,7 +1116,6 @@
         let currentAttachedMedia = null;
         let currentAttachedType = null;
         let activeFandomFilter = null;
-        let ambientPlaying = false;
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -1179,13 +1192,12 @@
             document.getElementById('customModalBackdrop').classList.remove('open');
         };
 
-        // PERFIL DENTRO DA FOTO COM DADOS, MÚSICA E DORAMA
         window.openProfileModal = function () {
             showUmbrellaModal({
                 title: `Perfil de ${appState.user.name}`,
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:14px;">
-                        <img src="${appState.user.avatar}" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px;">
+                        <img src="${appState.user.avatar}" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
                         <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
                         <p style="font-size:12px; color:var(--text-muted);">${appState.user.email}</p>
                     </div>
@@ -1207,7 +1219,7 @@
                         <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Alterar Foto</label>
+                        <label class="form-label">Alterar Foto de Perfil</label>
                         <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Escolher nova foto</label>
                         <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Escolher nova foto'">
                     </div>
@@ -1256,7 +1268,6 @@
             }
         };
 
-        // PESQUISA GLOBAL COM ASTERISCO (*Luana)
         window.handleGlobalSearch = function (event) {
             const val = event.target.value.trim();
             if (val.startsWith('*') && val.length > 1) {
@@ -1335,9 +1346,8 @@
                 showUmbrellaModal({ title: 'Dados Incompletos', htmlBody: 'Informe nome e ID (1 a 1000).' });
                 return;
             }
-            appState.bias = { name, role, id: idNum, lastUpdated: now, refHistogram: null };
+            appState.bias = { name, role, id: idNum, lastUpdated: now };
             saveLocal();
-            applyUserTheme();
             renderAll();
             showUmbrellaModal({ title: 'Representante Salvo!', htmlBody: `Bias <strong>${name}</strong> (#${idNum}) cadastrado.` });
         };
@@ -1503,7 +1513,7 @@
                 htmlBody: `<p>${notif.text}</p>`,
                 buttons: [
                     { label: 'Não', primary: false, onClick: () => { appState.notifications.shift(); saveLocal(); updateNotifBadge(); closeUmbrellaModal(); } },
-                    { label: 'Sim', primary: true, onClick: () => { appState.notifications.shift(); appState.friends.unshift({ id: 'f_' + Date.now(), name: notif.from, avatar: notif.avatar, status: 'Amizade aceita', messages: [] }); saveLocal(); updateNotifBadge(); renderAll(); closeUmbrellaModal(); } }
+                    { label: 'Sim', primary: true, onClick: () => { appState.notifications.shift(); appState.friends.unshift({ id: 'f_' + Date.now(), name: notif.from, avatar: notif.avatar, status: 'Amizade aceita' }); saveLocal(); updateNotifBadge(); renderAll(); closeUmbrellaModal(); } }
                 ]
             });
         };
@@ -1597,7 +1607,8 @@
         };
 
         window.checkStealthAccess = function (val) {
-            if (val.trim().toLowerCase() === 'luanaeandrels' || val.trim().toLowerCase() === 'luanaeandre') {
+            const cleanVal = val.trim().toLowerCase();
+            if (cleanVal === 'luanaeandrels' || cleanVal === 'luanaeandre') {
                 document.getElementById('stealthAdminInput').value = '';
                 openMasterAdminPanel();
             }
@@ -1637,7 +1648,6 @@
         }
 
         function applyUserTheme() {
-            document.documentElement.style.setProperty('--user-tint', appState.user.bgColor);
             document.getElementById('headerUserAvatar').src = appState.user.avatar;
         }
 
@@ -1704,7 +1714,7 @@
             document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0 ? appState.friends.map(f => `
                 <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
                     <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${f.avatar}" style="width:44px; height:44px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                        <img src="${f.avatar}" style="width:48px; height:48px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
                         <div>
                             <div style="font-size:14px; font-weight:700;">${f.name}</div>
                             <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
@@ -1721,10 +1731,14 @@
             `).join('') : `<div class="glass-panel empty-state-box">Seu histórico pessoal aparecerá aqui.</div>`;
         }
 
+        /* DETECÇÃO DE SCROLL PARA ENCOLHER A FOTO E A LOGO SUAVEMENTE */
         window.addEventListener('scroll', () => {
             const header = document.getElementById('topHeader');
-            if (window.scrollY > 30) header.classList.add('scrolled');
-            else header.classList.remove('scrolled');
+            if (window.scrollY > 30) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
         });
 
         applyUserTheme();
