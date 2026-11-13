@@ -733,23 +733,23 @@ border-radius:999px; display:inline-block;}
         <div id="bias-tag-topo" style="display: none; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: #f3d98b; margin-bottom: 8px;"></div>
 
         <div style="position: relative; margin-bottom: 12px;">
-          <textarea id="textoDesafioUnificado" placeholder="Encontrei meu número um tomando chocolate quente..." oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="border-radius: 14px; resize: none; height: 80px; padding: 12px; font-size: 0.9rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25); outline: none;"></textarea>
+          <textarea id="textoDesafioUnificado" placeholder="O que vamos proteger hoje" oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="border-radius: 14px; resize: none; height: 80px; padding: 12px; font-size: 0.9rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25); outline: none;"></textarea>
           <div id="sugestoes-bias-unificado" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 140px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
 
         <div style="display: flex; gap: 10px; align-items: center; justify-content: space-between;">
           <div style="display: flex; align-items: center; gap: 8px;">
-            <!-- BOLINHA COM A IMAGEM camera.png -->
+            <!-- BOLINHA COM A IMAGEM camera.png ACIONANDO A CÂMERA NATIVA DO APARELHO -->
             <label for="inputFotoDesafioUnificado" style="width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,0.1); border: 2px solid #f3d98b; display: flex; align-items: center; justify-content: center; cursor: pointer; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.4);" title="Câmera ou Galeria" id="label-circulo-foto-desafio">
               <img src="camera.png" alt="Câmera" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<span style=\'font-size: 1.2rem; color: #f3d98b;\'>📷</span>'">
             </label>
-            <input type="file" id="inputFotoDesafioUnificado" accept="image/*,video/*" style="display: none;" onchange="processarFotoDesafioUnificado(this)">
+            <input type="file" id="inputFotoDesafioUnificado" accept="image/*,video/*" capture="environment" style="display: none;" onchange="processarFotoDesafioUnificado(this)">
             
             <div id="preview-mini-container" style="display: none; width: 44px; height: 44px; border-radius: 50%; overflow: hidden; border: 2px solid #f3d98b; cursor: pointer;" onclick="abrirFotoPinterest(window.fotoBiasBase64Temp)">
               <img id="preview-mini-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
 
-            <span id="label-texto-status-foto" style="font-size: 0.8rem; color: #aaa;">Encontrei meu número um tomando chocolate quente</span>
+            <span id="label-texto-status-foto" style="font-size: 0.8rem; color: #aaa;">O que vamos proteger hoje</span>
           </div>
 
           <button onclick="validarECruzarPixelsDesafioUnificado()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Publicar</button>
@@ -1936,7 +1936,7 @@ document.getElementById('image-input').addEventListener('change', function(event
         let statusTxt = document.getElementById('label-texto-status-foto');
         if(labelCirculo) labelCirculo.style.display = 'flex';
         if(previewMini) previewMini.style.display = 'none';
-        if(statusTxt) { statusTxt.innerText = "Encontrei meu número um tomando chocolate quente"; statusTxt.style.color = "#aaa"; }
+        if(statusTxt) { statusTxt.innerText = "O que vamos proteger hoje"; statusTxt.style.color = "#aaa"; }
 
         registrarNoHistoricoGaveta('POSTAGEM', `Publicou no Umbrella: "${legenda ? legenda.slice(0, 20) + '...' : 'Mídia'}"`, base64Enviada);
         alert("Publicado com sucesso no Umbrella!");
