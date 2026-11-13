@@ -19,7 +19,7 @@
             --gold-border: rgba(251, 191, 36, 0.45);
             --gold-accent: #fbbf24;
             --text-main: #f8fafc;
-            --text-muted: #e2e8f0;
+            --text-muted: rgba(226, 232, 240, 0.65); /* Textos mais suaves */
             --danger: #f43f5e;
         }
 
@@ -195,7 +195,7 @@
             padding: 0 3px;
         }
 
-        /* LOGO QUE SOME AO ROLAR */
+        /* LOGO QUE SOME AO ROLAR (SEM ROTAÇÃO INDEVIDADA) */
         .logo-section {
             width: 100%;
             padding: 6px 24px 12px;
@@ -1106,7 +1106,7 @@
             <input type="file" id="cameraDirectInput" accept="image/*,video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use *nome para marcar alguém)" onkeypress="if(event.key==='Enter') submitPost()">
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use * para marcar alguém)" onkeypress="if(event.key==='Enter') submitPost()">
             <button type="button" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
@@ -1184,7 +1184,8 @@
             getAuth,
             signInWithPopup,
             GoogleAuthProvider,
-            onAuthStateChanged
+            onAuthStateChanged,
+            signOut
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import {
             getFirestore,
@@ -1221,7 +1222,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v22';
+        const LOCAL_KEY = 'umbrella_clean_state_v23';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1255,7 +1256,6 @@
         let rawEditorImageObj = null;
         let editorRotation = 0;
         let editorFilterPreset = 'none';
-        let backgroundAudioPlayer = null;
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -1294,37 +1294,10 @@
             const gate = document.getElementById('authGateOverlay');
             if (appState.user.loggedIn) {
                 gate.style.display = 'none';
-                initBackgroundAura();
             } else {
                 gate.style.display = 'flex';
             }
         }
-
-        function initBackgroundAura() {
-            if (!backgroundAudioPlayer) {
-                // Toca a trilha sonora de fundo automaticamente ao entrar (Aura Musical)
-                backgroundAudioPlayer = new Audio('https://p.scdn.co/mp3-preview/325297312384a3c1e34e9e03d9282362b083b0f2?cid=774b29d4f13844c295f203fcbd99f4d7'); 
-                backgroundAudioPlayer.loop = true;
-                backgroundAudioPlayer.volume = 0.4;
-                backgroundAudioPlayer.play().catch(() => {
-                    console.log("Reprodução automática aguardando interação do usuário.");
-                });
-            }
-        }
-
-        window.toggleBackgroundAura = function () {
-            if (!backgroundAudioPlayer) {
-                initBackgroundAura();
-                return;
-            }
-            if (backgroundAudioPlayer.paused) {
-                backgroundAudioPlayer.play();
-                alert("Aura Musical retomada! 🎵");
-            } else {
-                backgroundAudioPlayer.pause();
-                alert("Aura Musical pausada (Silêncio). 🔇");
-            }
-        };
 
         window.loginWithGoogle = async function () {
             try {
@@ -1412,6 +1385,20 @@
             renderAll();
         };
 
+        window.logoutAccount = async function () {
+            try {
+                await signOut(auth);
+            } catch (e) {
+                console.log(e);
+            }
+            appState.user.loggedIn = false;
+            appState.user.uid = '';
+            saveLocal();
+            closeUmbrellaModal();
+            checkAuthGate();
+            location.reload();
+        };
+
         window.showUmbrellaModal = function ({ title, htmlBody, buttons = [] }) {
             const backdrop = document.getElementById('customModalBackdrop');
             document.getElementById('customModalTitle').textContent = title;
@@ -1440,7 +1427,7 @@
             document.getElementById('customModalBackdrop').classList.remove('open');
         };
 
-        // PERFIL COMPLETO COM PLAYER SPOTIFY INTEGRADO E BOTÃO DE PAUSE LIMPO
+        // PERFIL COMPLETO COM PLAYER SPOTIFY EMBEDDED E BOTÃO DE SAIR
         window.openProfileModal = function () {
             showUmbrellaModal({
                 title: `Perfil de ${appState.user.name}`,
@@ -1466,13 +1453,14 @@
                         <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo selecionado'">
                     </div>
 
-                    <!-- PLAYER SPOTIFY SEM LOGIN + BOTÃO DE PAUSE LIMPO -->
+                    <!-- PLAYER SPOTIFY DIRETO DA WEB (AURA MUSICAL) -->
                     <div style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-                            <label class="form-label" style="margin:0;">Trilha Sonora (Spotify)</label>
-                            <button class="btn-pill-gold" style="font-size:10.5px; padding:3px 10px;" onclick="toggleBackgroundAura()">🔇 Pausar / Tocar Música</button>
-                        </div>
+                        <label class="form-label" style="margin-bottom:6px;">Aura Musical (Playlist do Spotify)</label>
                         <iframe style="border-radius:12px" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    </div>
+
+                    <div style="margin-top:14px; text-align:center;">
+                        <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
                     </div>
                 `,
                 buttons: [
@@ -1687,6 +1675,7 @@
             document.getElementById('mediaPreviewStrip').style.display = 'none';
         };
 
+        // BARRA DE PESQUISA SUPERIOR: ATIVA O PAINEL SECRETO DA CRIADORA (*luanaeandrels)
         window.handleGlobalSearch = function (event) {
             const val = event.target.value.trim();
             if (event.key === 'Enter') {
@@ -1694,8 +1683,8 @@
                 if (cleanVal === '*luanaeandrels' || cleanVal === '*luanaeandre') {
                     event.target.value = '';
                     showUmbrellaModal({
-                        title: '✨ Modo Criadora Ativado',
-                        htmlBody: '<strong>Status:</strong> Balãozinho de ativado para criador confirmado!',
+                        title: '✨ Bem-vinda Criadora',
+                        htmlBody: '<strong>Status:</strong> Painel de Administradora ativado com sucesso!',
                         buttons: [{ label: 'Abrir Painel Mestre', primary: true, onClick: openMasterAdminPanel }]
                     });
                     return;
@@ -1763,7 +1752,6 @@
                 let downloadUrl = '';
                 let mediaType = '';
 
-                // Hospedagem correta no Firebase Storage (Evita estouro de 1 MB do Firestore)
                 if (currentAttachedFileObj) {
                     const storageRef = ref(storage, `posts_media/${Date.now()}_${currentAttachedFileObj.name}`);
                     const snapshot = await uploadBytes(storageRef, currentAttachedFileObj);
@@ -2034,18 +2022,19 @@
             });
         };
 
+        // FANDOMS: APENAS SOLICITAÇÃO (SEM PEDIR SENHA AQUI EMBAIXO)
         window.selectFandom = function (fandomName) {
             if (!appState.unlockedFandoms.includes(fandomName)) {
                 showUmbrellaModal({
                     title: `Fandom ${fandomName} Trancado 🔒`,
                     htmlBody: `
-                        <p style="margin-bottom:10px;">Este fandom está fechado por padrão. Insira a senha de administradora para entrar ou envie uma solicitação.</p>
-                        <input type="password" id="adminPasswordInput" class="glass-input" placeholder="Senha de administradora...">
+                        <p style="margin-bottom:10px;">Este fandom está fechado por padrão. Deseja enviar uma solicitação de acesso para a administradora?</p>
                     `,
                     buttons: [
+                        { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                         { 
-                            label: 'Solicitar Acesso', 
-                            primary: false, 
+                            label: 'Solicitar Acesso 💧', 
+                            primary: true, 
                             onClick: () => {
                                 appState.notifications.unshift({
                                     id: 'notif_fan_' + Date.now(),
@@ -2059,21 +2048,6 @@
                                 updateNotifBadge();
                                 closeUmbrellaModal();
                                 showUmbrellaModal({ title: 'Solicitação Enviada', htmlBody: 'Sua solicitação foi enviada para a administradora.' });
-                            }
-                        },
-                        {
-                            label: 'Entrar com Senha',
-                            primary: true,
-                            onClick: () => {
-                                const pass = document.getElementById('adminPasswordInput').value.trim().toLowerCase();
-                                if (pass === 'luanaeandrels' || pass === 'luanaeandre') {
-                                    appState.unlockedFandoms.push(fandomName);
-                                    saveLocal();
-                                    closeUmbrellaModal();
-                                    selectFandom(fandomName);
-                                } else {
-                                    alert('Senha incorreta!');
-                                }
                             }
                         }
                     ]
@@ -2357,4 +2331,4 @@
         checkAuthGate();
     </script>
 </body>
-    </html>
+</html>
