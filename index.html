@@ -15,15 +15,15 @@
     <style>
         :root {
             --bg-base: #060a1e;
-            --glass-bg: rgba(10, 14, 28, 0.35);
-            --glass-dark: rgba(6, 10, 20, 0.5);
-            --gold-border: rgba(251, 191, 36, 0.4);
-            --gold-glow: rgba(251, 191, 36, 0.2);
+            --glass-bg: rgba(14, 18, 34, 0.52);
+            --glass-dark: rgba(8, 12, 24, 0.68);
+            --gold-border: rgba(251, 191, 36, 0.45);
+            --gold-glow: rgba(251, 191, 36, 0.28);
             --gold-accent: #fbbf24;
             --text-main: #f8fafc;
-            --text-muted: #cbd5e1;
+            --text-muted: #94a3b8;
             --danger: #f43f5e;
-            --user-tint: rgba(6, 10, 30, 0.2);
+            --user-tint: rgba(6, 10, 30, 0.25);
         }
 
         * {
@@ -48,7 +48,7 @@
             inset: 0;
             z-index: -2;
             background-color: #060a1e;
-            background-image: var(--user-bg-image, url('fundo.jpeg'));
+            background-image: url('fundo.jpeg');
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
@@ -58,20 +58,21 @@
             position: fixed;
             inset: 0;
             z-index: -1;
-            background: var(--user-tint);
-            backdrop-filter: blur(1px);
-            -webkit-backdrop-filter: blur(1px);
+            background: radial-gradient(circle at top, rgba(6, 10, 30, 0.15) 0%, var(--user-tint) 60%, rgba(6, 10, 30, 0.65) 100%);
+            backdrop-filter: blur(3px);
+            -webkit-backdrop-filter: blur(3px);
         }
 
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--gold-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 0 14px rgba(251, 191, 36, 0.06);
             border-radius: 20px;
         }
 
+        /* DESKTOP LIVRE (OCUPA TELA INTEIRA) */
         .app-shell {
             width: 100%;
             max-width: 100%;
@@ -83,33 +84,86 @@
             position: relative;
         }
 
-        .top-integration-bar {
-            position: sticky;
-            top: 0;
-            z-index: 50;
+        /* BALÃOZINHO FININHO COM BORDINHAS ARREDONDADAS NO TOPO */
+        .search-top-bar-wrapper {
             width: 100%;
-            padding: 10px 16px;
+            padding: 8px 16px;
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: rgba(6, 10, 30, 0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid var(--gold-border);
-            gap: 10px;
+            justify-content: center;
+            z-index: 45;
+            background: rgba(6, 10, 30, 0.4);
         }
 
+        .search-balao-fininho {
+            width: 100%;
+            max-width: 600px;
+            background: rgba(10, 14, 28, 0.75);
+            border: 1px solid var(--gold-border);
+            border-radius: 9999px; /* Bordinhas bem arredondadas e fininhas */
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+        }
+
+        .search-input-fin {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 12px;
+            outline: none;
+            text-align: center;
+        }
+
+        .search-input-fin::placeholder {
+            color: var(--text-muted);
+        }
+
+        /* TOPO DINÂMICO: LOGO COMEÇA COM 150PX E ENCOLHE PARA 75PX */
+        .top-header {
+            position: sticky;
+            top: 0;
+            z-index: 40;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(6, 10, 30, 0.85) 0%, rgba(6, 10, 30, 0) 100%);
+            transition: padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .brand-logo {
+            height: 150px; /* Começa com 150px */
+            width: auto;
+            object-fit: contain;
+            transition: height 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.75));
+        }
+
+        /* FOTO DE PERFIL: 75PX FIXO */
         .header-left-btn {
-            width: 44px;
-            height: 44px;
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             border: 2px solid var(--gold-accent);
             background: var(--glass-dark);
             overflow: hidden;
             cursor: pointer;
             padding: 0;
-            flex-shrink: 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.6);
+            z-index: 5;
         }
 
         .header-left-btn img {
@@ -119,98 +173,56 @@
             display: block;
         }
 
-        .search-balao-fininho {
-            flex: 1;
-            max-width: 450px;
-            background: rgba(10, 14, 28, 0.85);
-            border: 1px solid var(--gold-border);
-            border-radius: 9999px;
-            padding: 6px 14px;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input-fin {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 11.5px;
-            outline: none;
-            text-align: center;
-        }
-
-        .search-input-fin::placeholder {
-            color: var(--text-muted);
-        }
-
+        /* GOTINHA DE NOTIFICAÇÃO: 75PX FIXO */
         .droplet-btn {
-            width: 44px;
-            height: 44px;
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             background: var(--glass-bg);
             border: 1.5px solid var(--gold-border);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 24px;
             cursor: pointer;
             color: var(--text-main);
-            flex-shrink: 0;
-            position: relative;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
+            z-index: 5;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.4);
         }
 
         .droplet-badge {
             position: absolute;
-            top: 2px;
-            right: 2px;
+            top: 6px;
+            right: 6px;
             background: var(--gold-accent);
             color: #060a1e;
-            font-size: 9px;
+            font-size: 10px;
             font-weight: 800;
-            min-width: 15px;
-            height: 15px;
+            min-width: 18px;
+            height: 18px;
             border-radius: 99px;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 0 3px;
+            padding: 0 4px;
         }
 
-        .logo-header-wrapper {
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 16px 0 10px;
-            max-height: 200px;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        /* QUANDO ROLA A PÁGINA: LOGO ENCOLHE PARA 75PX PARA FICAR PADRÃO COM AS LATERAIS */
+        .top-header.scrolled {
+            padding: 10px 20px;
         }
 
-        .brand-logo {
-            height: 150px;
-            width: auto;
-            object-fit: contain;
-            transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
-            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.75));
-            cursor: pointer;
+        .top-header.scrolled .brand-logo {
+            height: 75px;
         }
 
-        .logo-header-wrapper.hidden {
-            max-height: 0;
-            padding: 0;
-            opacity: 0;
-        }
-
-        .logo-header-wrapper.hidden .brand-logo {
-            height: 0;
-            transform: scale(0.5);
-        }
-
+        /* CARROSSEL COM 130PX FIXO */
         .main-carousel-wrapper {
-            padding: 8px 16px 16px;
+            padding: 10px 20px 20px;
             display: flex;
             gap: 16px;
             overflow-x: auto;
@@ -227,7 +239,7 @@
 
         .carousel-item-clean {
             flex: 0 0 auto;
-            height: 130px;
+            height: 130px; /* 130px fixo */
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
@@ -242,7 +254,7 @@
         }
 
         .podium-item-box {
-            width: 95px;
+            width: 100px;
         }
 
         .podium-circle-clean {
@@ -304,7 +316,7 @@
         }
 
         .tab-item-box {
-            width: 95px;
+            width: 100px;
         }
 
         .tab-icon-clean {
@@ -334,6 +346,7 @@
             white-space: nowrap;
         }
 
+        /* TELAS / ABAS */
         .view-section {
             display: none;
             padding: 0 20px;
@@ -390,7 +403,6 @@
             cursor: pointer;
             border-radius: 16px;
             transition: transform 0.2s ease, border-color 0.2s ease;
-            position: relative;
         }
 
         .fandom-box-card:hover {
@@ -400,9 +412,8 @@
 
         .fandom-box-card h4 {
             font-size: 14px;
-            color: var(--text-main);
+            color: var(--gold-accent);
             margin-bottom: 4px;
-            font-weight: 700;
         }
 
         .fandom-box-card p {
@@ -584,7 +595,7 @@
             align-items: center;
             gap: 8px;
             padding: 6px 12px;
-            background: rgba(14, 18, 34, 0.75);
+            background: rgba(14, 18, 34, 0.85);
             backdrop-filter: blur(18px);
             -webkit-backdrop-filter: blur(18px);
             border: 1px solid var(--gold-border);
@@ -703,6 +714,23 @@
             cursor: pointer;
         }
 
+        .stealth-field-box {
+            margin-top: 28px;
+            padding: 8px 12px;
+            opacity: 0.35;
+        }
+
+        .stealth-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+            color: var(--text-main);
+            font-size: 12px;
+            padding: 4px 2px;
+            outline: none;
+        }
+
         .app-footer {
             position: fixed;
             bottom: 4px;
@@ -808,19 +836,26 @@
 </head>
 <body>
 
-    <div class="fixed-background" id="fixedBackgroundContainer"></div>
-    <div class="fixed-backdrop-overlay" id="fixedBackdropOverlay"></div>
+    <div class="fixed-background"></div>
+    <div class="fixed-backdrop-overlay"></div>
 
-    <div class="app-shell" id="appShellContainer">
+    <!-- BALÃOZINHO FININHO COM BORDAS ARREDONDADAS NO TOPO -->
+    <div class="search-top-bar-wrapper">
+        <div class="search-balao-fininho">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="Pesquisar na plataforma com * (ex: *Luana)" onkeyup="handleGlobalSearch(event)">
+        </div>
+    </div>
 
-        <!-- TOPO INTEGRADO: PERFIL ESQUERDA, PESQUISA CENTRO, GOTINHA DIREITA -->
-        <header class="top-integration-bar">
+    <div class="app-shell">
+
+        <!-- TOPO: FOTO 75PX, LOGO 150PX QUE ENCOLHE PARA 75PX, GOTINHA 75PX -->
+        <header class="top-header" id="topHeader">
             <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
                 <img id="headerUserAvatar" src="aconchego.png" alt="">
             </button>
 
-            <div class="search-balao-fininho">
-                <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="Pesquisar na plataforma com * (ex: *Luana)" onkeyup="handleGlobalSearch(event)">
+            <div class="logo-container" onclick="switchView('feed')">
+                <img src="logo.png" alt="" class="brand-logo" id="brandLogo">
             </div>
 
             <button class="droplet-btn" onclick="openNotificationsModal()" title="Notificações">
@@ -829,12 +864,7 @@
             </button>
         </header>
 
-        <!-- LOGO QUE SOME POR COMPLETO AO ROLAR O FEED -->
-        <div class="logo-header-wrapper" id="logoHeaderWrapper">
-            <img src="logo.png" alt="Umbrella" class="brand-logo" onclick="switchView('feed')">
-        </div>
-
-        <!-- CARROSSEL FIXO DE 130PX -->
+        <!-- CARROSSEL HORIZONTAL COM 130PX FIXO -->
         <nav class="main-carousel-wrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean">
@@ -937,6 +967,7 @@
                     <label for="biasRefFileInput" class="custom-file-trigger" id="biasRefFileLabel">Selecionar imagem de referência</label>
                     <input type="file" id="biasRefFileInput" accept="image/*" style="display:none;" onchange="document.getElementById('biasRefFileLabel').textContent = this.files[0]?.name || 'Selecionar imagem'">
                 </div>
+                <p id="biasLockStatus" style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;"></p>
                 <button class="btn-gold" onclick="saveBiasRegistration()">Salvar Representante</button>
             </div>
 
@@ -966,13 +997,18 @@
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
-        <!-- TELA 5: ACONCHEGO -->
+        <!-- TELA 5: ACONCHEGO COM CAMPO SECRETO -->
         <section class="view-section" id="view-aconchego">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meu Aconchego</span>
                 <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
+
             <div class="feed-list" id="aconchegoHistoryList"></div>
+
+            <div class="stealth-field-box">
+                <input type="password" id="stealthAdminInput" class="stealth-input" autocomplete="off" placeholder="Chave secreta..." onkeyup="checkStealthAccess(this.value)">
+            </div>
         </section>
 
     </div>
@@ -1014,6 +1050,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import {
             getAuth,
+            signInWithPopup,
+            signInWithRedirect,
             getRedirectResult,
             GoogleAuthProvider,
             onAuthStateChanged
@@ -1044,8 +1082,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v15';
+        const LOCAL_KEY = 'umbrella_clean_state_v10';
 
         const cleanInitialState = {
             user: {
@@ -1055,32 +1094,17 @@
                 email: 'luanaeandrels@gmail.com',
                 phone: '',
                 avatar: 'aconchego.png',
-                spotifyUrl: '',
-                bgImage: 'fundo.jpeg',
-                tintColor: 'rgba(6, 10, 30, 0.2)'
+                spotifyUrl: ''
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
-            directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando cái tema!',
+            directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             podium: {
                 1: { img: 'guarda-chuva.png', title: '1º Lugar • Pódio Oficial da Semana' },
                 2: { img: 'fandom.png', title: '2º Lugar • Pódio Oficial da Semana' },
                 3: { img: 'amigos.png', title: '3º Lugar • Pódio Oficial da Semana' }
             },
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
-            fandomSettings: {
-                'BTS': { bg: 'fundo.jpeg', tint: 'rgba(88, 28, 135, 0.45)' },       // Roxo oficial BTS
-                'EXO': { bg: 'fundo.jpeg', tint: 'rgba(120, 53, 15, 0.45)' },      // Marrom oficial EXO
-                'Super Junior': { bg: 'fundo.jpeg', tint: 'rgba(30, 58, 138, 0.45)' } // Azul oficial Super Junior
-            },
-            fandomAdmins: {
-                'BTS': 'Luana',
-                'Super Junior': 'Luana',
-                'EXO': 'Luana',
-                'Dorama': 'Luana',
-                'Animes': 'Luana'
-            },
-            pendingRequests: [], // Solicitações de entrada pendentes para as ADMs
             subgroups: {},
             posts: [],
             friends: [
@@ -1176,7 +1200,7 @@
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:14px;">
                         <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
-                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name} 👑 (ADM Principal)</h4>
+                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
                         <p style="font-size:12px; color:var(--text-muted);">${appState.user.email}</p>
                     </div>
 
@@ -1185,8 +1209,8 @@
                     </button>
 
                     <div class="spotify-bar" style="margin-bottom:12px;">
-                        <input type="text" id="spotifyLinkInput" class="glass-input" placeholder="Cole o link do Spotify..." value="${appState.user.spotifyUrl || ''}">
-                        <button class="btn-pill-gold" onclick="saveSpotifyTrackModal()" style="margin-top:6px; width:100%;">Salvar Música</button>
+                        <input type="text" id="spotifyLinkInput" class="spotify-input" placeholder="Cole o link do Spotify..." value="${appState.user.spotifyUrl || ''}">
+                        <button class="btn-pill-gold" onclick="saveSpotifyTrackModal()">Salvar</button>
                     </div>
                     <div id="spotifyEmbedContainerModal" style="margin-bottom:12px; display:${appState.user.spotifyUrl ? 'block' : 'none'};">
                         <iframe style="border-radius:12px" src="${appState.user.spotifyUrl ? appState.user.spotifyUrl.replace('open.spotify.com/', 'open.spotify.com/embed/') : ''}" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
@@ -1197,21 +1221,9 @@
                         <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Nome do arquivo da foto na pasta (ex: foto.png)</label>
-                        <input type="text" id="obAvatarPath" class="glass-input" value="${appState.user.avatar}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Nome do arquivo de fundo (ex: fundo.jpeg)</label>
-                        <input type="text" id="obBgPath" class="glass-input" value="${appState.user.bgImage}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Regulador de Tom / Cor de Fundo</label>
-                        <select id="obTintColor" class="glass-select">
-                            <option value="rgba(6, 10, 30, 0.15)">Suave (Padrão)</option>
-                            <option value="rgba(20, 10, 30, 0.35)">Tom Amarelado/Dourado</option>
-                            <option value="rgba(10, 25, 30, 0.35)">Tom Azulado Escuro</option>
-                            <option value="rgba(0, 0, 0, 0.5)">Mais Escuro</option>
-                        </select>
+                        <label class="form-label">Alterar Foto de Perfil</label>
+                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Escolher nova foto</label>
+                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Escolher nova foto'">
                     </div>
                 `,
                 buttons: [
@@ -1221,19 +1233,25 @@
                         primary: true,
                         onClick: () => {
                             const name = document.getElementById('obName').value.trim();
-                            const path = document.getElementById('obAvatarPath').value.trim();
-                            const bg = document.getElementById('obBgPath').value.trim();
-                            const tint = document.getElementById('obTintColor').value;
-
+                            const fileInput = document.getElementById('obAvatarFile');
                             if (name) appState.user.name = name;
-                            if (path) appState.user.avatar = path;
-                            if (bg) appState.user.bgImage = bg;
-                            if (tint) appState.user.tintColor = tint;
 
-                            saveLocal();
-                            applyUserTheme();
-                            renderAll();
-                            closeUmbrellaModal();
+                            if (fileInput.files && fileInput.files[0]) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    appState.user.avatar = e.target.result;
+                                    saveLocal();
+                                    applyUserTheme();
+                                    renderAll();
+                                    closeUmbrellaModal();
+                                };
+                                reader.readAsDataURL(fileInput.files[0]);
+                            } else {
+                                saveLocal();
+                                applyUserTheme();
+                                renderAll();
+                                closeUmbrellaModal();
+                            }
                         }
                     }
                 ]
@@ -1254,13 +1272,6 @@
 
         window.handleGlobalSearch = function (event) {
             const val = event.target.value.trim();
-            
-            if (val === 'luanaChris19052015') {
-                event.target.value = '';
-                openMasterAdminPanel();
-                return;
-            }
-
             if (val.startsWith('*') && val.length > 1) {
                 const queryUser = val.substring(1).toLowerCase();
                 const matchedPosts = appState.posts.filter(p => p.author.toLowerCase().includes(queryUser));
@@ -1443,19 +1454,10 @@
                         label: 'Comentar',
                         primary: true,
                         onClick: () => {
-                            const val = document.getElementById('newCommentInput'].value.trim();
+                            const val = document.getElementById('newCommentInput').value.trim();
                             if (val) {
                                 post.comments.push(`${appState.user.name}: ${val}`);
-
-                                appState.notifications.unshift({
-                                    id: 'notif_' + Date.now(),
-                                    from: appState.user.name,
-                                    avatar: appState.user.avatar,
-                                    text: `${appState.user.name} comentou na publicação: "${val}" 💧`
-                                });
-
                                 saveLocal();
-                                updateNotifBadge();
                                 renderAll();
                             }
                             closeUmbrellaModal();
@@ -1502,58 +1504,20 @@
             updateNotifBadge();
         };
 
-        // ENTRADA EM FANDOM ENVIA SOLICITAÇÃO DIRETO PARA A GOTINHA 💧 DA ADM
-        window.requestJoinFandom = function (fandomName) {
-            appState.notifications.unshift({
-                id: 'notif_join_' + Date.now(),
-                from: appState.user.name,
-                avatar: appState.user.avatar,
-                text: `${appState.user.name} pediu para entrar no fandom <strong>${fandomName}</strong> 💧`,
-                isJoinRequest: true,
-                fandom: fandomName
-            });
-            saveLocal();
-            updateNotifBadge();
-            showUmbrellaModal({
-                title: 'Solicitação Enviada',
-                htmlBody: `Sua solicitação de entrada no fandom <strong>${fandomName}</strong> foi enviada para a ADM.`
-            });
-        };
-
         window.openNotificationsModal = function () {
             if (appState.notifications.length === 0) {
-                showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova notificação.' });
+                showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação.' });
                 return;
             }
-            const notifItems = appState.notifications.map((n, idx) => `
-                <div style="padding:10px; background:rgba(255,255,255,0.05); border-radius:12px; margin-bottom:8px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                    <div style="display:flex; align-items:center; gap:8px;">
-                        <img src="${n.avatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-border);">
-                        <div style="font-size:12.5px; line-height:1.4;">${n.text}</div>
-                    </div>
-                    ${n.isJoinRequest ? `<button class="btn-pill-gold" onclick="acceptJoinRequest(${idx})">Aceitar</button>` : ''}
-                </div>
-            `).join('');
-
+            const notif = appState.notifications[0];
             showUmbrellaModal({
-                title: 'Notificações & Solicitações 💧',
-                htmlBody: `<div style="max-height:260px; overflow-y:auto;">${notifItems}</div>`,
+                title: 'Solicitação 💧',
+                htmlBody: `<p>${notif.text}</p>`,
                 buttons: [
-                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                    { label: 'Limpar Tudo', primary: true, onClick: () => { appState.notifications = []; saveLocal(); updateNotifBadge(); closeUmbrellaModal(); } }
+                    { label: 'Não', primary: false, onClick: () => { appState.notifications.shift(); saveLocal(); updateNotifBadge(); closeUmbrellaModal(); } },
+                    { label: 'Sim', primary: true, onClick: () => { appState.notifications.shift(); appState.friends.unshift({ id: 'f_' + Date.now(), name: notif.from, avatar: notif.avatar, status: 'Amizade aceita' }); saveLocal(); updateNotifBadge(); renderAll(); closeUmbrellaModal(); } }
                 ]
             });
-        };
-
-        window.acceptJoinRequest = function (index) {
-            const notif = appState.notifications[index];
-            if (notif) {
-                appState.notifications.splice(index, 1);
-                saveLocal();
-                updateNotifBadge();
-                closeUmbrellaModal();
-                showUmbrellaModal({ title: 'Aprovado!', htmlBody: `Solicitação para o fandom <strong>${notif.fandom}</strong> aceita com sucesso.` });
-            }
         };
 
         window.openCreateFandomModal = function () {
@@ -1574,8 +1538,6 @@
                             const val = document.getElementById('newFandomNameInput').value.trim();
                             if (val && !appState.fandoms.includes(val)) {
                                 appState.fandoms.push(val);
-                                appState.fandomAdmins[val] = appState.user.name;
-                                appState.fandomSettings[val] = { bg: 'fundo.jpeg', tint: 'rgba(10, 14, 28, 0.35)' };
                                 saveLocal();
                                 renderAll();
                             }
@@ -1590,21 +1552,15 @@
             activeFandomFilter = fandomName;
             const filtered = appState.posts.filter(p => p.fandom === fandomName);
             const subs = appState.subgroups[fandomName] || [];
-            
-            const settings = appState.fandomSettings[fandomName] || { bg: 'fundo.jpeg', tint: 'rgba(10, 14, 28, 0.35)' };
 
             const subsHtml = subs.map(s => `<span style="background:rgba(251,191,36,0.15); border:1px solid var(--gold-border); padding:3px 10px; border-radius:99px; font-size:11px; color:var(--gold-accent);"># ${s}</span>`).join('');
 
             const container = document.getElementById('selectedFandomFeed');
             let html = `
-                <div class="glass-panel" style="padding:14px; margin-bottom:12px; background: ${settings.tint}; position:relative;">
-                    <!-- CORAÇÃOZINHO DISCRETO NO CANTINHO PARA CONFIGURAR COR E FUNDO -->
-                    <button onclick="openFandomConfigModal('${fandomName}')" title="Configurar Fandom" style="position:absolute; top:12px; right:12px; background:transparent; border:none; font-size:18px; cursor:pointer;" class="fandom-config-heart">❤️</button>
-
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-right:30px;">
+                <div class="glass-panel" style="padding:14px; margin-bottom:12px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                         <span style="font-size:14px; color:var(--gold-accent); font-weight:700;">Fandom: ${fandomName}</span>
                         <div style="display:flex; gap:6px;">
-                            <button class="btn-pill-gold" onclick="requestJoinFandom('${fandomName}')">Entrar</button>
                             <button class="btn-pill-gold" onclick="openCreateSubgroupModal('${fandomName}')">+ Subgrupo</button>
                             <button class="btn-pill-gold" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Fechar</button>
                         </div>
@@ -1621,44 +1577,6 @@
                 html += filtered.map(renderPostCardHTML).join('');
             }
             container.innerHTML = html;
-        };
-
-        window.openFandomConfigModal = function (fandomName) {
-            const current = appState.fandomSettings[fandomName] || { bg: 'fundo.jpeg', tint: 'rgba(10, 14, 28, 0.35)' };
-            showUmbrellaModal({
-                title: `Configurar Fandom: ${fandomName} ❤️`,
-                htmlBody: `
-                    <div class="form-group">
-                        <label class="form-label">Nome do arquivo de fundo (ex: fundo.jpeg)</label>
-                        <input type="text" id="fandomBgInput" class="glass-input" value="${current.bg}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Regulador de Tom / Cor</label>
-                        <select id="fandomTintInput" class="glass-select">
-                            <option value="rgba(88, 28, 135, 0.45)">Roxo (BTS)</option>
-                            <option value="rgba(120, 53, 15, 0.45)">Marrom (EXO)</option>
-                            <option value="rgba(30, 58, 138, 0.45)">Azul (Super Junior)</option>
-                            <option value="rgba(10, 14, 28, 0.35)">Padrão Umbrella</option>
-                            <option value="rgba(40, 20, 10, 0.5)">Bronze / Marrom</option>
-                        </select>
-                    </div>
-                `,
-                buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
-                    {
-                        label: 'Salvar Configuração',
-                        primary: true,
-                        onClick: () => {
-                            const bg = document.getElementById('fandomBgInput').value.trim();
-                            const tint = document.getElementById('fandomTintInput').value;
-                            appState.fandomSettings[fandomName] = { bg, tint };
-                            saveLocal();
-                            selectFandom(fandomName);
-                            closeUmbrellaModal();
-                        }
-                    }
-                ]
-            });
         };
 
         window.openCreateSubgroupModal = function (fandomName) {
@@ -1688,6 +1606,14 @@
                     }
                 ]
             });
+        };
+
+        window.checkStealthAccess = function (val) {
+            const cleanVal = val.trim().toLowerCase();
+            if (cleanVal === 'luanaeandrels' || cleanVal === 'luanaeandre') {
+                document.getElementById('stealthAdminInput').value = '';
+                openMasterAdminPanel();
+            }
         };
 
         function openMasterAdminPanel() {
@@ -1725,8 +1651,6 @@
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar;
-            document.documentElement.style.setProperty('--user-tint', appState.user.tintColor);
-            document.documentElement.style.setProperty('--user-bg-image', `url('${appState.user.bgImage}')`);
         }
 
         function renderPostCardHTML(post) {
@@ -1775,23 +1699,13 @@
             document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
             updateNotifBadge();
 
-            // APLICA AS CORES OFICIAIS DOS FANDOMS NAS BARRINHAS DE SELEÇÃO
-            const fandomColorsMap = {
-                'BTS': 'rgba(88, 28, 135, 0.4)',       // Roxo
-                'EXO': 'rgba(120, 53, 15, 0.4)',      // Marrom
-                'Super Junior': 'rgba(30, 58, 138, 0.4)' // Azul
-            };
-
             const fandomsGrid = document.getElementById('fandomsGridContainer');
-            fandomsGrid.innerHTML = appState.fandoms.map(f => {
-                const customTint = fandomColorsMap[f] || 'rgba(10, 14, 28, 0.35)';
-                return `
-                    <div class="glass-panel fandom-box-card" style="background: ${customTint};" onclick="selectFandom('${f}')">
-                        <h4>${f}</h4>
-                        <p>Comunidade • ${(appState.subgroups[f] || []).length} subgrupo(s)</p>
-                    </div>
-                `;
-            }).join('');
+            fandomsGrid.innerHTML = appState.fandoms.map(f => `
+                <div class="glass-panel fandom-box-card" onclick="selectFandom('${f}')">
+                    <h4>${f}</h4>
+                    <p>Comunidade • ${(appState.subgroups[f] || []).length} subgrupo(s)</p>
+                </div>
+            `).join('');
 
             const generalPosts = appState.posts.filter(p => !p.isChallenge);
             document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(renderPostCardHTML).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar!</div>`;
@@ -1819,12 +1733,13 @@
             `).join('') : `<div class="glass-panel empty-state-box">Seu histórico pessoal aparecerá aqui.</div>`;
         }
 
+        /* DETECÇÃO DE SCROLL PARA ENCOLHER A LOGO DE 150PX PARA 75PX */
         window.addEventListener('scroll', () => {
-            const wrapper = document.getElementById('logoHeaderWrapper');
-            if (window.scrollY > 20) {
-                wrapper.classList.add('hidden');
+            const header = document.getElementById('topHeader');
+            if (window.scrollY > 30) {
+                header.classList.add('scrolled');
             } else {
-                wrapper.classList.remove('hidden');
+                header.classList.remove('scrolled');
             }
         });
 
