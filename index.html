@@ -452,24 +452,45 @@
 
         .fandoms-grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 10px;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 12px;
             margin-bottom: 14px;
         }
 
         .fandom-box-card {
-            padding: 12px;
+            padding: 14px;
             text-align: center;
             cursor: pointer;
-            border-radius: 14px;
+            border-radius: 16px;
             transition: transform 0.2s ease, border-color 0.2s ease;
             backdrop-filter: blur(10px);
             position: relative;
         }
 
         .fandom-box-card:hover { transform: translateY(-2px); border-color: var(--gold-accent); }
-        .fandom-box-card h4 { font-size: 13px; margin-bottom: 2px; }
-        .fandom-box-card p { font-size: 10px; color: var(--text-muted); }
+        .fandom-box-card h4 { font-size: 13.5px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .fandom-box-card p { font-size: 10.5px; color: var(--text-muted); }
+
+        .fandom-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            box-shadow: 0 0 8px currentColor;
+        }
+
+        .fandom-card-settings-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
+            padding: 2px 6px;
+        }
+        .fandom-card-settings-btn:hover { color: var(--gold-accent); }
 
         .feed-list { display: flex; flex-direction: column; gap: 14px; }
 
@@ -500,7 +521,8 @@
             object-fit: cover;
         }
 
-        .post-author-name { font-size: 13.5px; font-weight: 600; }
+        .post-author-name { font-size: 13.5px; font-weight: 600; color: var(--gold-accent); }
+        .post-author-name:hover { text-decoration: underline; }
         .post-meta { font-size: 11px; color: var(--text-muted); }
 
         .post-tag {
@@ -523,6 +545,50 @@
             margin-bottom: 10px;
             cursor: zoom-in;
             display: block;
+        }
+
+        /* Estilo de comentários Facebook-like refinado */
+        .comments-section-fb {
+            margin-top: 10px;
+            padding-top: 8px;
+            border-top: 1px solid rgba(251, 191, 36, 0.15);
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .comment-item-fb {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 12.5px;
+            background: rgba(255, 255, 255, 0.04);
+            padding: 8px 10px;
+            border-radius: 12px;
+        }
+
+        .comment-author-link {
+            font-weight: 700;
+            color: var(--gold-accent);
+            cursor: pointer;
+        }
+        .comment-author-link:hover { text-decoration: underline; }
+
+        .comment-input-row {
+            display: flex;
+            gap: 6px;
+            margin-top: 6px;
+        }
+
+        .comment-input-fb {
+            flex: 1;
+            background: rgba(10, 14, 28, 0.5);
+            border: 1px solid var(--gold-border);
+            border-radius: 99px;
+            padding: 6px 14px;
+            color: var(--text-main);
+            font-size: 12px;
+            outline: none;
         }
 
         .post-actions {
@@ -936,10 +1002,10 @@
 </head>
 <body>
 
-    <!-- IMAGEM DE FUNDO EM TELA CHEIA -->
+    <!-- IMAGEM DE FUNDO EM TELA CHEIA (NUNCA APAGADA AUTOMATICAMENTE) -->
     <img id="bgImageLayer" src="./fundo.png" alt="">
 
-    <!-- PLAYER GLOBAL OCULTO (CONTINUA TOCANDO AO FECHAR O PERFIL) -->
+    <!-- PLAYER GLOBAL OCULTO -->
     <div id="globalAudioPlayerContainer">
         <div id="hiddenSpotifyFrameWrapper">
             <iframe id="activeSpotifyIframe" src="https://open.spotify.com/embed/playlist/37i9dQZF1DXcBWIGoYBM5M?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
@@ -970,7 +1036,7 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR COM DICA LIMPA *usuário E BOTÃO DE PERFIL COM PULSO -->
+    <!-- BARRA SUPERIOR -->
     <div class="unified-top-bar">
         <button class="header-left-btn playing" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil / Player Ativo">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
@@ -1107,7 +1173,7 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS DINÂMICOS E ISOLADOS -->
+        <!-- TELA 3: FANDOMS COM CONFIGURAÇÃO DE BORDINHA E BOLINHA -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms da Comunidade</span>
@@ -1117,7 +1183,6 @@
                 </div>
             </div>
 
-            <!-- Layout limpo, recolhido e isolado -->
             <div class="fandoms-grid-container" id="fandomsGridContainer"></div>
             <div id="selectedFandomFeed" class="feed-list"></div>
         </section>
@@ -1142,7 +1207,7 @@
 
     </div>
 
-    <!-- BARRA DE POSTAGEM FLUTUANTE ADAPTÁVEL -->
+    <!-- BARRA DE POSTAGEM FLUTUANTE -->
     <div class="floating-composer-wrapper">
         <div class="glass-panel media-preview-strip" id="mediaPreviewStrip">
             <span id="mediaPreviewName">Mídia anexada</span>
@@ -1273,7 +1338,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v31';
+        const LOCAL_KEY = 'umbrella_clean_state_v32';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1289,8 +1354,7 @@
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
-            fandoms: [], // Fandoms dinâmicos criados do zero
-            unlockedFandoms: [],
+            fandoms: [], // Cada fandom agora pode guardar { name, borderColor, dotColor }
             subgroups: {},
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
@@ -1481,7 +1545,7 @@
             document.getElementById('customModalBackdrop').classList.remove('open');
         };
 
-        // PONTO 1: Gatilho Secreto no Nome do Bias ("Luana e André" ou "luanaeandre")
+        // Gatilho Secreto no Nome do Bias ("Luana e André" ou "luanaeandre")
         window.checkSecretBiasTrigger = function(val) {
             const clean = val.toLowerCase().replace(/\s+/g, '');
             if (clean === 'luanaeandre' || val.toLowerCase().includes('luana e andré')) {
@@ -1489,7 +1553,7 @@
             }
         };
 
-        // PONTO 3: Seletor de Cor do Tema no Perfil + PONTO 5: Botão de Confirmação no Spotify
+        // Perfil & Player do Spotify (com botão de confirmação e cor do tema)
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1519,21 +1583,19 @@
                         <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Escolher Plano de Fundo da Página</label>
-                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar imagem de fundo</label>
-                        <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo selecionado'">
+                        <label class="form-label">Editar / Trocar Plano de Fundo da Página</label>
+                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar nova imagem de fundo</label>
+                        <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo atualizado'">
                     </div>
                     
-                    <!-- PONTO 3: Seletor de Cor do Tema no Perfil -->
                     <div class="form-group">
                         <label class="form-label">Cor de Acento do Tema (Fundo Geral)</label>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <input type="color" id="obThemeColor" value="${appState.user.themeAccentColor || '#060a1e'}" style="width:45px; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
-                            <span style="font-size:12px; color:var(--text-muted);">Personalize a cor base do app junto com o fundo</span>
+                            <span style="font-size:12px; color:var(--text-muted);">Personalize a cor base do app</span>
                         </div>
                     </div>
 
-                    <!-- PONTO 5: Botão de Confirmação (Lupa/OK) no Spotify -->
                     <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
                         <label class="form-label">Player do Spotify (Aura Musical Ativa)</label>
                         <div style="display:flex; gap:8px;">
@@ -1612,7 +1674,6 @@
             });
         };
 
-        // Função de confirmação instantânea para o Botão do Spotify (Ponto 5)
         window.applySpotifyPlayerInstant = function() {
             const spotifyCode = document.getElementById('obSpotifyInput').value.trim();
             let embedUrl = spotifyCode;
@@ -1659,7 +1720,7 @@
             });
         };
 
-        // PONTO 4: Pré-visualização de Vídeo integrada no composer (igual ao estúdio de fotos)
+        // Pré-visualização de Vídeo integrada
         window.handleMediaSelected = function (event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1675,7 +1736,6 @@
                     document.getElementById('reopenEditorBtn').style.display = 'none';
                     document.getElementById('mediaPreviewStrip').style.display = 'flex';
 
-                    // Pré-visualização integrada de vídeo via modal rápida para conferir antes de enviar
                     showUmbrellaModal({
                         title: 'Pré-visualização do Vídeo 🎬',
                         htmlBody: `
@@ -2005,6 +2065,25 @@
             if (menu) menu.classList.toggle('open');
         };
 
+        // Resposta Direta com Clicar no Nome (Estilo Facebook com asterisco *)
+        window.replyToUserInComment = function (authorName) {
+            const input = document.getElementById('mainComposerInput') || document.getElementById('feedCommentInput');
+            if (input) {
+                input.value = `*${authorName} `;
+                input.focus();
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+        };
+
+        window.replyInPostModal = function (authorName) {
+            const input = document.getElementById('modalCommentInput');
+            if (input) {
+                input.value = `*${authorName} `;
+                input.focus();
+            }
+        };
+
+        // Comentários Estilo Facebook (Diretos no Card e no Modal)
         window.openCommentModal = function (postId) {
             requireAuthForAction(() => {
                 toggleDotsMenu(postId);
@@ -2013,39 +2092,58 @@
                 const comments = post.comments || [];
 
                 const existing = comments.map((c, idx) => `
-                    <div style="display:flex; justify-content:space-between; align-items:center; padding:6px 10px; background:rgba(255,255,255,0.04); border-radius:10px; margin-bottom:6px; font-size:12.5px;">
-                        <span>${c}</span>
-                        <button class="btn-danger-pill" onclick="confirmDeleteComment('${postId}', ${idx})">Apagar</button>
+                    <div class="comment-item-fb">
+                        <div style="flex:1;">${c}</div>
+                        <button class="btn-danger-pill" style="font-size:10px; padding:2px 6px;" onclick="confirmDeleteComment('${postId}', ${idx})">✕</button>
                     </div>
                 `).join('');
 
                 showUmbrellaModal({
-                    title: 'Comentários (Moderação Ativa)',
+                    title: 'Comentários (Estilo Facebook)',
                     htmlBody: `
-                        <div style="max-height:180px; overflow-y:auto; margin-bottom:10px;">${existing || '<p style="color:var(--text-muted); font-size:12px;">Nenhum comentário ainda.</p>'}</div>
-                        <input type="text" id="newCommentInput" class="glass-input" placeholder="Escreva seu comentário...">
+                        <div style="max-height:220px; overflow-y:auto; margin-bottom:12px; display:flex; flex-direction:column; gap:6px;">${existing || '<p style="color:var(--text-muted); font-size:12px;">Nenhum comentário ainda. Seja o primeiro a comentar!</p>'}</div>
+                        <div style="display:flex; gap:6px;">
+                            <input type="text" id="modalCommentInput" class="glass-input" placeholder="Escreva um comentário (use * para marcar)...">
+                            <button class="btn-pill-gold" onclick="submitModalComment('${postId}')">Enviar</button>
+                        </div>
                     `,
-                    buttons: [
-                        { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                        {
-                            label: 'Comentar',
-                            primary: true,
-                            onClick: async () => {
-                                const val = document.getElementById('newCommentInput').value.trim();
-                                if (val) {
-                                    comments.push(`${appState.user.name}: ${val}`);
-                                    try {
-                                        await updateDoc(doc(db, "posts", postId), { comments });
-                                        renderAll();
-                                    } catch (e) {
-                                        alert("Erro ao comentar: " + e.message);
-                                    }
-                                }
-                                closeUmbrellaModal();
-                            }
-                        }
-                    ]
+                    buttons: [{ label: 'Fechar', primary: true, onClick: closeUmbrellaModal }]
                 });
+            });
+        };
+
+        window.submitModalComment = async function (postId) {
+            const input = document.getElementById('modalCommentInput');
+            const val = input.value.trim();
+            if (!val) return;
+            const post = postsFromFirebase.find(p => p.id === postId);
+            if (!post) return;
+            const comments = post.comments || [];
+            comments.push(`<strong>${appState.user.name}</strong>: ${val}`);
+            try {
+                await updateDoc(doc(db, "posts", postId), { comments });
+                closeUmbrellaModal();
+                openCommentModal(postId);
+            } catch (e) {
+                alert("Erro ao comentar: " + e.message);
+            }
+        };
+
+        window.submitInlineComment = async function (postId) {
+            requireAuthForAction(async () => {
+                const input = document.getElementById(`inlineCommentInput_${postId}`);
+                const val = input.value.trim();
+                if (!val) return;
+                const post = postsFromFirebase.find(p => p.id === postId);
+                if (!post) return;
+                const comments = post.comments || [];
+                comments.push(`<strong>${appState.user.name}</strong>: ${val}`);
+                try {
+                    await updateDoc(doc(db, "posts", postId), { comments });
+                    input.value = '';
+                } catch (e) {
+                    alert("Erro ao comentar: " + e.message);
+                }
             });
         };
 
@@ -2122,11 +2220,6 @@
                             label: 'Aprovar / Aceitar', 
                             primary: true, 
                             onClick: () => { 
-                                if (notif.type === 'fandom_request') {
-                                    if (!appState.unlockedFandoms.includes(notif.targetFandom)) {
-                                        appState.unlockedFandoms.push(notif.targetFandom);
-                                    }
-                                }
                                 appState.notifications.shift(); 
                                 saveLocal(); 
                                 updateNotifBadge(); 
@@ -2139,15 +2232,25 @@
             });
         };
 
-        // PONTO 2: Fandoms Dinâmicos e Isolados (Criados do zero, sem vazar pro feed principal, layout limpo e recolhido)
+        // Fandoms Dinâmicos e Isolados com Edição (Cor da Borda e Bolinha)
         window.openCreateFandomModal = function () {
             requireAuthForAction(() => {
                 showUmbrellaModal({
                     title: 'Criar Novo Fandom do Zero',
                     htmlBody: `
                         <div class="form-group">
-                            <label class="form-label">Nome do Fandom Personalizado</label>
+                            <label class="form-label">Nome do Fandom</label>
                             <input type="text" id="newFandomNameInput" class="glass-input" placeholder="Ex: MeuDoramaFavorito...">
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                            <div class="form-group">
+                                <label class="form-label">Cor da Bordinha</label>
+                                <input type="color" id="newFandomBorderColor" value="#fbbf24" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Cor da Bolinha / Emblema</label>
+                                <input type="color" id="newFandomDotColor" value="#fbbf24" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
+                            </div>
                         </div>
                     `,
                     buttons: [
@@ -2156,12 +2259,17 @@
                             label: 'Criar Fandom',
                             primary: true,
                             onClick: () => {
-                                const val = document.getElementById('newFandomNameInput').value.trim();
-                                if (val && !appState.fandoms.includes(val)) {
-                                    appState.fandoms.push(val);
-                                    appState.unlockedFandoms.push(val);
-                                    saveLocal();
-                                    renderAll();
+                                const name = document.getElementById('newFandomNameInput').value.trim();
+                                const borderColor = document.getElementById('newFandomBorderColor').value;
+                                const dotColor = document.getElementById('newFandomDotColor').value;
+
+                                if (name) {
+                                    const exists = appState.fandoms.find(f => (typeof f === 'string' ? f : f.name) === name);
+                                    if (!exists) {
+                                        appState.fandoms.push({ name, borderColor, dotColor });
+                                        saveLocal();
+                                        renderAll();
+                                    }
                                 }
                                 closeUmbrellaModal();
                             }
@@ -2171,18 +2279,61 @@
             });
         };
 
+        window.openEditFandomModal = function (fandomName) {
+            const fandomObj = appState.fandoms.find(f => (typeof f === 'string' ? f : f.name) === fandomName);
+            const currentBorder = typeof fandomObj === 'object' ? fandomObj.borderColor : '#fbbf24';
+            const currentDot = typeof fandomObj === 'object' ? fandomObj.dotColor : '#fbbf24';
+
+            showUmbrellaModal({
+                title: `Editar Fandom: ${fandomName}`,
+                htmlBody: `
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                        <div class="form-group">
+                            <label class="form-label">Cor da Bordinha</label>
+                            <input type="color" id="editFandomBorderColor" value="${currentBorder}" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Cor da Bolinha / Emblema</label>
+                            <input type="color" id="editFandomDotColor" value="${currentDot}" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
+                        </div>
+                    </div>
+                `,
+                buttons: [
+                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                    {
+                        label: 'Salvar Fandom',
+                        primary: true,
+                        onClick: () => {
+                            const borderColor = document.getElementById('editFandomBorderColor').value;
+                            const dotColor = document.getElementById('editFandomDotColor').value;
+
+                            appState.fandoms = appState.fandoms.map(f => {
+                                const fname = typeof f === 'string' ? f : f.name;
+                                if (fname === fandomName) {
+                                    return { name: fname, borderColor, dotColor };
+                                }
+                                return f;
+                            });
+                            saveLocal();
+                            renderAll();
+                            closeUmbrellaModal();
+                        }
+                    }
+                ]
+            });
+        };
+
         window.confirmDeleteFandom = function (fandomName) {
             showUmbrellaModal({
                 title: '🗑️ Excluir Fandom',
-                htmlBody: `Você realmente deseja apagar o fandom <strong>${fandomName}</strong>?`,
+                htmlBody: `Você realmente deseja apagar o fandom <strong>${fandomName}</strong> para todos?`,
                 buttons: [
                     { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                     {
                         label: 'Sim, Apagar',
                         primary: true,
                         onClick: () => {
-                            appState.fandoms = appState.fandoms.filter(f => f !== fandomName);
-                            appState.unlockedFandoms = appState.unlockedFandoms.filter(f => f !== fandomName);
+                            appState.fandoms = appState.fandoms.filter(f => (typeof f === 'string' ? f : f.name) !== fandomName);
                             delete appState.subgroups[fandomName];
                             activeFandomFilter = null;
                             saveLocal();
@@ -2321,8 +2472,8 @@
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
             const bgEl = document.getElementById('bgImageLayer');
-            if (bgEl) {
-                bgEl.src = appState.user.bgImage || './fundo.png';
+            if (bgEl && appState.user.bgImage) {
+                bgEl.src = appState.user.bgImage;
             }
             if (appState.user.themeAccentColor) {
                 document.documentElement.style.setProperty('--theme-color-accent', appState.user.themeAccentColor);
@@ -2334,13 +2485,19 @@
                 ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
 
-            const commentsCount = (post.comments || []).length;
+            const comments = post.comments || [];
+            const commentsHtml = comments.map(c => `
+                <div class="comment-item-fb">
+                    <span style="flex:1;">${c}</span>
+                </div>
+            `).join('');
+
             const showDelete = isAconchegoTab && appState.user.loggedIn && post.author === appState.user.name;
 
             return `
                 <article class="glass-panel post-card">
                     <div class="post-header">
-                        <div class="post-author-box" onclick="triggerDoramaInvite('${post.author}')">
+                        <div class="post-author-box" onclick="replyToUserInComment('${post.author}')">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">${post.author}</div>
@@ -2363,8 +2520,17 @@
                         </button>
                         <button class="dots-menu-btn" onclick="toggleDotsMenu('${post.id}')">•••</button>
                         <div class="glass-panel dots-dropdown" id="dots-${post.id}">
-                            <button onclick="openCommentModal('${post.id}')">💬 Comentar (${commentsCount})</button>
+                            <button onclick="openCommentModal('${post.id}')">💬 Ver / Adicionar Comentários</button>
                             <button onclick="shareUmbrellaPost('${post.id}')">☔ Compartilhar umbrella</button>
+                        </div>
+                    </div>
+
+                    <!-- Comentários Facebook-like integrados -->
+                    <div class="comments-section-fb">
+                        ${commentsHtml}
+                        <div class="comment-input-row">
+                            <input type="text" id="inlineCommentInput_${post.id}" class="comment-input-fb" placeholder="Escreva um comentário (use * para marcar)..." onkeypress="if(event.key==='Enter') submitInlineComment('${post.id}')">
+                            <button class="btn-pill-gold" style="padding:4px 10px; font-size:11px;" onclick="submitInlineComment('${post.id}')">Enviar</button>
                         </div>
                     </div>
                 </article>
@@ -2391,20 +2557,30 @@
                 document.getElementById('podiumLabel3').textContent = `3º: ${challengePosts[2].author}`;
             }
 
-            // Renderização dos Fandoms Dinâmicos e Isolados (com layout limpo e recolhido)
+            // Renderização dos Fandoms com as opções de Bordinha, Bolinha e Botão de Editar
             const fandomsGrid = document.getElementById('fandomsGridContainer');
             if (appState.fandoms.length === 0) {
                 fandomsGrid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column: 1 / -1;">Nenhum fandom criado ainda. Clique em "+ Adicionar Fandom" para começar!</div>`;
             } else {
-                fandomsGrid.innerHTML = appState.fandoms.map(f => `
-                    <div class="glass-panel fandom-box-card" onclick="selectFandom('${f}')">
-                        <h4 style="color: var(--gold-accent);">${f}</h4>
-                        <p>${(appState.subgroups[f] || []).length} subgrupo(s)</p>
-                    </div>
-                `).join('');
+                fandomsGrid.innerHTML = appState.fandoms.map(f => {
+                    const fname = typeof f === 'string' ? f : f.name;
+                    const borderCol = typeof f === 'object' ? f.borderColor : '#fbbf24';
+                    const dotCol = typeof f === 'object' ? f.dotColor : '#fbbf24';
+                    const subCount = (appState.subgroups[fname] || []).length;
+
+                    return `
+                        <div class="glass-panel fandom-box-card" style="border-color: ${borderCol};" onclick="selectFandom('${fname}')">
+                            <button class="fandom-card-settings-btn" onclick="event.stopPropagation(); openEditFandomModal('${fname}')" title="Configurar Fandom">•••</button>
+                            <h4 style="color: var(--gold-accent);">
+                                <span class="fandom-dot" style="background-color: ${dotCol}; color: ${dotCol};"></span>
+                                ${fname}
+                            </h4>
+                            <p>${subCount} subgrupo(s)</p>
+                        </div>
+                    `;
+                }).join('');
             }
 
-            // Feed principal exibe apenas postagens gerais (nada de fandoms vazando aqui)
             const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && !p.isAconchego && (!p.fandom || p.fandom === 'Geral'));
             document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar!</div>`;
 
