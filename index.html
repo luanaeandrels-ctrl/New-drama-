@@ -32,26 +32,15 @@
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
+        /* FUNDO PNG FIXO EM TELA CHEIA */
         html, body {
             width: 100%;
             min-height: 100vh;
-            background: var(--theme-color-accent) !important;
+            background: var(--theme-color-accent) url('./fundo.png') no-repeat center center fixed !important;
+            background-size: cover !important;
             color: var(--text-main);
             overflow-x: hidden;
             color-scheme: dark;
-        }
-
-        #bgImageLayer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            object-position: center center;
-            z-index: -10;
-            pointer-events: none;
-            display: block;
         }
 
         .glass-panel {
@@ -114,6 +103,7 @@
             top: 0;
         }
 
+        /* BOLINHA DO PERFIL COM ANIMAÇÃO SPOTIFY QUANDO TOCA MÚSICA */
         .header-left-btn {
             position: relative;
             width: 38px;
@@ -131,16 +121,16 @@
         .header-left-btn.playing::after {
             content: '';
             position: absolute;
-            inset: -4px;
+            inset: -5px;
             border-radius: 50%;
             border: 2px solid var(--gold-accent);
-            animation: musicPulse 1.5s infinite ease-out;
+            animation: spotifyPulse 1.6s infinite ease-out;
             pointer-events: none;
         }
 
-        @keyframes musicPulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            100% { transform: scale(1.35); opacity: 0; }
+        @keyframes spotifyPulse {
+            0% { transform: scale(1); opacity: 0.95; }
+            100% { transform: scale(1.4); opacity: 0; }
         }
 
         .header-left-btn img {
@@ -175,9 +165,7 @@
             text-align: center;
         }
 
-        .search-input-fin::placeholder {
-            color: var(--text-muted);
-        }
+        .search-input-fin::placeholder { color: var(--text-muted); }
 
         .search-action-btn {
             background: transparent;
@@ -521,9 +509,19 @@
             object-fit: cover;
         }
 
-        .post-author-name { font-size: 13.5px; font-weight: 600; color: var(--gold-accent); }
+        .post-author-name { font-size: 13.5px; font-weight: 600; color: var(--gold-accent); display: flex; align-items: center; gap: 6px; }
         .post-author-name:hover { text-decoration: underline; }
         .post-meta { font-size: 11px; color: var(--text-muted); }
+
+        .admin-badge {
+            font-size: 9.5px;
+            background: rgba(251, 191, 36, 0.2);
+            border: 1px solid var(--gold-border);
+            color: var(--gold-accent);
+            padding: 1px 6px;
+            border-radius: 99px;
+            font-weight: 700;
+        }
 
         .post-tag {
             font-size: 10px;
@@ -547,9 +545,10 @@
             display: block;
         }
 
+        /* ESTILO FACEBOOK DE COMENTÁRIOS NATIVOS EM FLUXO CONTÍNUO */
         .comments-section-fb {
             margin-top: 10px;
-            padding-top: 8px;
+            padding-top: 10px;
             border-top: 1px solid rgba(251, 191, 36, 0.15);
             display: flex;
             flex-direction: column;
@@ -559,19 +558,13 @@
         .comment-item-fb {
             display: flex;
             align-items: flex-start;
+            justify-content: space-between;
             gap: 8px;
             font-size: 12.5px;
             background: rgba(255, 255, 255, 0.04);
-            padding: 8px 10px;
+            padding: 8px 12px;
             border-radius: 12px;
         }
-
-        .comment-author-link {
-            font-weight: 700;
-            color: var(--gold-accent);
-            cursor: pointer;
-        }
-        .comment-author-link:hover { text-decoration: underline; }
 
         .comment-input-row {
             display: flex;
@@ -831,9 +824,7 @@
         .modal-box::-webkit-scrollbar-thumb { background: var(--gold-border); border-radius: 99px; }
 
         .modal-title { font-size: 16px; font-weight: 700; color: var(--gold-accent); margin-bottom: 10px; }
-
         .modal-body-text { font-size: 13.5px; line-height: 1.55; color: var(--text-main); margin-bottom: 18px; }
-
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
         .studio-modal-overlay {
@@ -993,41 +984,14 @@
         }
 
         .lightbox-caption { margin-top: 12px; font-size: 13px; color: var(--gold-accent); text-align: center; }
-
-        /* PLAYER GLOBAL INTEGRADO NATIVO (Não fecha ao trocar de tela) */
-        #globalAudioPlayerContainer {
-            position: fixed;
-            bottom: 60px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 400px;
-            z-index: 60;
-            background: rgba(14, 18, 34, 0.85);
-            backdrop-filter: blur(14px);
-            border: 1px solid var(--gold-border);
-            border-radius: 16px;
-            padding: 8px 12px;
-            display: none;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-        }
     </style>
 </head>
 <body>
 
-    <!-- CAMADA DE FUNDO COM SEU FUNDO.PNG -->
-    <img id="bgImageLayer" src="./fundo.png" alt="">
+    <!-- ELEMENTO DE ÁUDIO OCULTO PARA TOCAR MÚSICA EM SEGUNDO PLANO -->
+    <audio id="globalActiveAudio" preload="auto"></audio>
 
-    <!-- PLAYER DE ÁUDIO GLOBAL NATIVO (RODA EM TODAS AS TELAS SEM INTERRUPÇÃO) -->
-    <div id="globalAudioPlayerContainer">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-            <span id="nowPlayingTitle" style="font-size:11.5px; color:var(--gold-accent); font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Tocando Música</span>
-            <button onclick="toggleAudioPlayPause()" id="audioPlayPauseBtn" style="background:none; border:none; color:var(--gold-accent); font-size:14px; cursor:pointer;">⏸️</button>
-        </div>
-        <audio id="activeAudioElement" controls style="width:100%; height:32px; accent-color:var(--gold-accent);"></audio>
-    </div>
-
-    <!-- TELA DE LOGIN / BLOQUEIO SÓ AO INTERAGIR -->
+    <!-- TELA DE LOGIN / BLOQUEIO AO INTERAGIR -->
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
             <img src="./logo.png" alt="Umbrella" class="auth-logo">
@@ -1051,9 +1015,9 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR -->
+    <!-- BARRA SUPERIOR (COM BOLINHA DO PERFIL PULSANTE ESTILO SPOTIFY) -->
     <div class="unified-top-bar">
-        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil / Player Ativo">
+        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Música">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
@@ -1188,12 +1152,12 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS -->
+        <!-- TELA 3: FANDOMS (PRIVADOS E COM GESTÃO DE ADMS) -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
-                <span class="section-title">Fandoms da Comunidade</span>
+                <span class="section-title">Fandoms Particulares</span>
                 <div style="display:flex; gap:6px;">
-                    <button class="btn-pill-gold" onclick="openCreateFandomModal()">+ Adicionar Fandom</button>
+                    <button class="btn-pill-gold" onclick="openCreateFandomModal()">+ Criar Fandom</button>
                     <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
                 </div>
             </div>
@@ -1353,7 +1317,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v33';
+        const LOCAL_KEY = 'umbrella_clean_state_v35';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1370,7 +1334,7 @@
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
-            fandoms: [],
+            fandoms: [], // { name, borderColor, dotColor, creatorUid, admins: [uid] }
             subgroups: {},
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
@@ -1389,6 +1353,13 @@
         let rawEditorImageObj = null;
         let editorRotation = 0;
         let editorFilterPreset = 'none';
+
+        const presetMusicList = [
+            { title: '🌸 Lo-Fi Chill (Aconchego)', url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf7f6.mp3?filename=lofi-study-112191.mp3' },
+            { title: '✨ K-Pop Instrumental Soft', url: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c3c3a4f6.mp3?filename=chill-abstract-intention-12099.mp3' },
+            { title: '☕ Café Acústico', url: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=acoustic-guitars-10515.mp3' },
+            { title: '🌙 Piano Melancólico Dorama', url: 'https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f792cb.mp3?filename=relaxing-light-piano-118844.mp3' }
+        ];
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -1470,14 +1441,8 @@
             const pass = document.getElementById('regPass').value;
             const confirm = document.getElementById('regPassConfirm').value;
 
-            if (!name || !email || !pass) {
-                alert('Preencha todos os campos!');
-                return;
-            }
-            if (pass !== confirm) {
-                alert('As senhas não coincidem!');
-                return;
-            }
+            if (!name || !email || !pass) { alert('Preencha todos os campos!'); return; }
+            if (pass !== confirm) { alert('As senhas não coincidem!'); return; }
 
             appState.user.uid = 'manual_' + Date.now();
             appState.user.loggedIn = true;
@@ -1504,10 +1469,7 @@
         window.submitManualLogin = function () {
             const email = document.getElementById('logEmail').value.trim();
             const pass = document.getElementById('logPass').value;
-            if (!email || !pass) {
-                alert('Informe e-mail e senha.');
-                return;
-            }
+            if (!email || !pass) { alert('Informe e-mail e senha.'); return; }
             appState.user.uid = 'manual_user';
             appState.user.loggedIn = true;
             appState.user.name = email.split('@')[0];
@@ -1519,11 +1481,7 @@
         };
 
         window.logoutAccount = async function () {
-            try {
-                await signOut(auth);
-            } catch (e) {
-                console.log(e);
-            }
+            try { await signOut(auth); } catch (e) {}
             appState.user.loggedIn = false;
             appState.user.uid = '';
             appState.user.name = 'Visitante';
@@ -1568,18 +1526,26 @@
             }
         };
 
-        // Perfil com Busca e Player de Música Nativo Global
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
                 return;
             }
 
+            const musicOptionsHtml = presetMusicList.map(m => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; margin-bottom:6px;">
+                    <span style="font-size:12.5px; color:var(--text-main);">${m.title}</span>
+                    <button class="btn-pill-gold" style="padding:4px 10px; font-size:11px;" onclick="selectAndPlayPresetMusic('${m.url}', '${m.title}')">▶ Tocar</button>
+                </div>
+            `).join('');
+
+            const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
+
             showUmbrellaModal({
                 title: `Perfil & Player de ${appState.user.name}`,
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:14px;">
-                        <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
+                        <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
                         <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
                         <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
                     </div>
@@ -1594,13 +1560,7 @@
                         <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Plano de Fundo (fundo.png garantido)</label>
-                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar imagem de fundo</label>
-                        <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo atualizado'">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Cor de Acento do Tema (Fundo Geral)</label>
+                        <label class="form-label">Cor de Acento do Tema</label>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <input type="color" id="obThemeColor" value="${appState.user.themeAccentColor || '#060a1e'}" style="width:45px; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
                             <span style="font-size:12px; color:var(--text-muted);">Personalize a cor base</span>
@@ -1608,12 +1568,14 @@
                     </div>
 
                     <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <label class="form-label">Pesquisar ou Colocar Link de Áudio Direto (MP3/Streaming)</label>
-                        <div style="display:flex; gap:8px;">
-                            <input type="text" id="obAudioSearchInput" class="glass-input" value="${appState.user.audioUrl || ''}" placeholder="Cole o link direto da música ou digite...">
-                            <button class="btn-pill-gold" onclick="searchAndLoadAudio()" title="Tocar" style="padding: 0 14px; font-size:14px;">🎵 Tocar</button>
+                        <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Trilha Sonora (Estilo Spotify)</label>
+                        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Escolha uma trilha sonora abaixo:</p>
+                        ${musicOptionsHtml}
+
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <button class="btn-gold" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pausar Música' : '▶️ Retomar Música'}</button>
+                            <button class="btn-danger-pill" onclick="stopGlobalAudio()">⏹️ Desligar Som</button>
                         </div>
-                        <p style="font-size:10.5px; color:var(--text-muted); margin-top:4px;">Insira um link direto de áudio para a música tocar sem sair do app e continuar ativa ao navegar.</p>
                     </div>
 
                     <div style="margin-top:14px; text-align:center;">
@@ -1628,45 +1590,21 @@
                         onClick: () => {
                             const name = document.getElementById('obName').value.trim();
                             if (name) appState.user.name = name;
-
                             const themeColor = document.getElementById('obThemeColor').value;
                             if (themeColor) appState.user.themeAccentColor = themeColor;
 
-                            const audioLink = document.getElementById('obAudioSearchInput').value.trim();
-                            if (audioLink) {
-                                appState.user.audioUrl = audioLink;
-                                loadGlobalAudio(audioLink, 'Música Ativa da Mari');
-                            }
-
                             const avatarInput = document.getElementById('obAvatarFile');
-                            const bgInput = document.getElementById('obBgFile');
-
-                            let pendingReads = 0;
-                            const checkDone = () => {
-                                pendingReads--;
-                                if (pendingReads <= 0) {
+                            if (avatarInput.files && avatarInput.files[0]) {
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    appState.user.avatar = e.target.result;
                                     saveLocal();
                                     applyUserTheme();
                                     renderAll();
                                     closeUmbrellaModal();
-                                }
-                            };
-
-                            if (avatarInput.files && avatarInput.files[0]) {
-                                pendingReads++;
-                                const reader = new FileReader();
-                                reader.onload = (e) => { appState.user.avatar = e.target.result; checkDone(); };
+                                };
                                 reader.readAsDataURL(avatarInput.files[0]);
-                            }
-
-                            if (bgInput.files && bgInput.files[0]) {
-                                pendingReads++;
-                                const reader = new FileReader();
-                                reader.onload = (e) => { appState.user.bgImage = e.target.result; checkDone(); };
-                                reader.readAsDataURL(bgInput.files[0]);
-                            }
-
-                            if (pendingReads === 0) {
+                            } else {
                                 saveLocal();
                                 applyUserTheme();
                                 renderAll();
@@ -1678,44 +1616,53 @@
             });
         };
 
-        window.searchAndLoadAudio = function() {
-            const link = document.getElementById('obAudioSearchInput').value.trim();
-            if (link) {
-                appState.user.audioUrl = link;
-                saveLocal();
-                loadGlobalAudio(link, 'Música Selecionada');
-                alert('Música carregada com sucesso! Ela continuará tocando enquanto você navega.');
-            }
+        window.selectAndPlayPresetMusic = function(url, title) {
+            appState.user.audioUrl = url;
+            appState.user.audioTitle = title;
+            saveLocal();
+            playAudioUrl(url);
+            closeUmbrellaModal();
+            alert(`Tocando agora: ${title}`);
         };
 
-        function loadGlobalAudio(url, title) {
-            const playerContainer = document.getElementById('globalAudioPlayerContainer');
-            const audioEl = document.getElementById('activeAudioElement');
-            const titleEl = document.getElementById('nowPlayingTitle');
+        function playAudioUrl(url) {
+            const audioEl = document.getElementById('globalActiveAudio');
             const profileBtn = document.getElementById('headerProfileBtn');
-
-            if (url) {
-                titleEl.textContent = title || 'Tocando Música';
-                audioEl.src = url;
-                audioEl.play().catch(e => console.log('Autoplay bloqueado pelo navegador, clique em play.', e));
-                playerContainer.style.display = 'block';
+            audioEl.src = url;
+            audioEl.loop = true;
+            audioEl.play().then(() => {
                 profileBtn.classList.add('playing');
-            } else {
-                playerContainer.style.display = 'none';
-                profileBtn.classList.remove('playing');
-            }
+            }).catch(e => {
+                console.log("Autoplay impedido pelo navegador", e);
+            });
         }
 
-        window.toggleAudioPlayPause = function() {
-            const audioEl = document.getElementById('activeAudioElement');
-            const btn = document.getElementById('audioPlayPauseBtn');
+        window.toggleGlobalAudioPlay = function() {
+            const audioEl = document.getElementById('globalActiveAudio');
+            const profileBtn = document.getElementById('headerProfileBtn');
             if (audioEl.paused) {
-                audioEl.play();
-                btn.textContent = '⏸️';
+                if (audioEl.src) {
+                    audioEl.play();
+                    profileBtn.classList.add('playing');
+                } else if (presetMusicList.length > 0) {
+                    selectAndPlayPresetMusic(presetMusicList[0].url, presetMusicList[0].title);
+                }
             } else {
                 audioEl.pause();
-                btn.textContent = '▶️';
+                profileBtn.classList.remove('playing');
             }
+            closeUmbrellaModal();
+        };
+
+        window.stopGlobalAudio = function() {
+            const audioEl = document.getElementById('globalActiveAudio');
+            const profileBtn = document.getElementById('headerProfileBtn');
+            audioEl.pause();
+            audioEl.currentTime = 0;
+            profileBtn.classList.remove('playing');
+            appState.user.audioUrl = '';
+            saveLocal();
+            closeUmbrellaModal();
         };
 
         window.openMediaActionSheet = function () {
@@ -1921,7 +1868,7 @@
             } else if (viewName === 'desafio') {
                 composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
             } else if (viewName === 'fandom') {
-                composerInput.placeholder = activeFandomFilter ? `Escreva no Fandom ${activeFandomFilter}...` : "Selecione um Fandom para escrever...";
+                composerInput.placeholder = activeFandomFilter ? `Escreva no Fandom ${activeFandomFilter} (Privado)...` : "Selecione um Fandom para escrever...";
             } else if (viewName === 'aconchego') {
                 composerInput.placeholder = "Escreva no seu Aconchego pessoal...";
             } else if (viewName === 'amigos') {
@@ -1992,6 +1939,7 @@
 
                     await addDoc(collection(db, "posts"), {
                         author: appState.user.name,
+                        authorUid: appState.user.uid,
                         avatar: appState.user.avatar,
                         text: text,
                         media: downloadUrl,
@@ -2029,9 +1977,7 @@
                                 try {
                                     await deleteDoc(doc(db, "posts", postId));
                                     closeUmbrellaModal();
-                                } catch (e) {
-                                    alert("Erro ao apagar: " + e.message);
-                                }
+                                } catch (e) { alert("Erro ao apagar: " + e.message); }
                             }
                         }
                     ]
@@ -2058,14 +2004,9 @@
 
                 try {
                     const postRef = doc(db, "posts", postId);
-                    await updateDoc(postRef, {
-                        likes: newLikes,
-                        likedByMe: newLiked
-                    });
+                    await updateDoc(postRef, { likes: newLikes, likedByMe: newLiked });
                     saveLocal();
-                } catch (e) {
-                    console.error("Erro ao curtir:", e);
-                }
+                } catch (e) { console.error("Erro ao curtir:", e); }
             });
         };
 
@@ -2078,7 +2019,7 @@
         };
 
         window.replyToUserInComment = function (authorName) {
-            const input = document.getElementById('mainComposerInput') || document.getElementById('feedCommentInput');
+            const input = document.getElementById('mainComposerInput');
             if (input) {
                 input.value = `*${authorName} `;
                 input.focus();
@@ -2086,51 +2027,7 @@
             }
         };
 
-        window.openCommentModal = function (postId) {
-            requireAuthForAction(() => {
-                toggleDotsMenu(postId);
-                const post = postsFromFirebase.find(p => p.id === postId);
-                if (!post) return;
-                const comments = post.comments || [];
-
-                const existing = comments.map((c, idx) => `
-                    <div class="comment-item-fb">
-                        <div style="flex:1;">${c}</div>
-                        <button class="btn-danger-pill" style="font-size:10px; padding:2px 6px;" onclick="confirmDeleteComment('${postId}', ${idx})">✕</button>
-                    </div>
-                `).join('');
-
-                showUmbrellaModal({
-                    title: 'Comentários (Estilo Facebook)',
-                    htmlBody: `
-                        <div style="max-height:220px; overflow-y:auto; margin-bottom:12px; display:flex; flex-direction:column; gap:6px;">${existing || '<p style="color:var(--text-muted); font-size:12px;">Nenhum comentário ainda. Seja o primeiro a comentar!</p>'}</div>
-                        <div style="display:flex; gap:6px;">
-                            <input type="text" id="modalCommentInput" class="glass-input" placeholder="Escreva um comentário (use * para marcar)...">
-                            <button class="btn-pill-gold" onclick="submitModalComment('${postId}')">Enviar</button>
-                        </div>
-                    `,
-                    buttons: [{ label: 'Fechar', primary: true, onClick: closeUmbrellaModal }]
-                });
-            });
-        };
-
-        window.submitModalComment = async function (postId) {
-            const input = document.getElementById('modalCommentInput');
-            const val = input.value.trim();
-            if (!val) return;
-            const post = postsFromFirebase.find(p => p.id === postId);
-            if (!post) return;
-            const comments = post.comments || [];
-            comments.push(`<strong>${appState.user.name}</strong>: ${val}`);
-            try {
-                await updateDoc(doc(db, "posts", postId), { comments });
-                closeUmbrellaModal();
-                openCommentModal(postId);
-            } catch (e) {
-                alert("Erro ao comentar: " + e.message);
-            }
-        };
-
+        // Comentários em fluxo contínuo direto no feed estilo Facebook
         window.submitInlineComment = async function (postId) {
             requireAuthForAction(async () => {
                 const input = document.getElementById(`inlineCommentInput_${postId}`);
@@ -2143,9 +2040,7 @@
                 try {
                     await updateDoc(doc(db, "posts", postId), { comments });
                     input.value = '';
-                } catch (e) {
-                    alert("Erro ao comentar: " + e.message);
-                }
+                } catch (e) { alert("Erro ao comentar: " + e.message); }
             });
         };
 
@@ -2156,35 +2051,20 @@
             comments.splice(commentIndex, 1);
             try {
                 await updateDoc(doc(db, "posts", postId), { comments });
-                closeUmbrellaModal();
-                openCommentModal(postId);
-            } catch (e) {
-                alert("Erro ao apagar comentário: " + e.message);
-            }
+            } catch (e) { alert("Erro ao apagar comentário: " + e.message); }
         };
 
+        // FANDOM PRIVADO: Sem compartilhamento externo, apenas para o grupo
         window.shareUmbrellaPost = async function (postId) {
-            requireAuthForAction(async () => {
+            requireAuthForAction(() => {
                 toggleDotsMenu(postId);
                 const post = postsFromFirebase.find(p => p.id === postId);
                 if (!post) return;
-                try {
-                    await addDoc(collection(db, "posts"), {
-                        author: appState.user.name,
-                        avatar: appState.user.avatar,
-                        text: `☔ Compartilhado de ${post.author}: "${post.text}"`,
-                        media: post.media || '',
-                        mediaType: post.mediaType || '',
-                        likes: 0,
-                        likedByMe: false,
-                        fandom: post.fandom || 'Geral',
-                        isChallenge: false,
-                        createdAt: serverTimestamp(),
-                        comments: []
-                    });
-                } catch (e) {
-                    alert("Erro ao compartilhar: " + e.message);
+                if (post.fandom && post.fandom !== 'Geral') {
+                    showUmbrellaModal({ title: 'Fandom Privado', htmlBody: 'Conteúdos dentro dos Fandoms particulares não podem ser compartilhados para fora.' });
+                    return;
                 }
+                // Se for do feed geral, permite compartilhar
             });
         };
 
@@ -2219,11 +2099,11 @@
         window.openCreateFandomModal = function () {
             requireAuthForAction(() => {
                 showUmbrellaModal({
-                    title: 'Criar Novo Fandom do Zero',
+                    title: 'Criar Novo Fandom Particular',
                     htmlBody: `
                         <div class="form-group">
                             <label class="form-label">Nome do Fandom</label>
-                            <input type="text" id="newFandomNameInput" class="glass-input" placeholder="Ex: MeuDoramaFavorito...">
+                            <input type="text" id="newFandomNameInput" class="glass-input" placeholder="Ex: MeuFandomPrivado...">
                         </div>
                         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
                             <div class="form-group">
@@ -2247,9 +2127,15 @@
                                 const dotColor = document.getElementById('newFandomDotColor').value;
 
                                 if (name) {
-                                    const exists = appState.fandoms.find(f => (typeof f === 'string' ? f : f.name) === name);
+                                    const exists = appState.fandoms.find(f => f.name === name);
                                     if (!exists) {
-                                        appState.fandoms.push({ name, borderColor, dotColor });
+                                        appState.fandoms.push({
+                                            name,
+                                            borderColor,
+                                            dotColor,
+                                            creatorUid: appState.user.uid,
+                                            admins: [appState.user.uid] // Criador começa como admin
+                                        });
                                         saveLocal();
                                         renderAll();
                                     }
@@ -2262,61 +2148,87 @@
             });
         };
 
-        window.openEditFandomModal = function (fandomName) {
-            const fandomObj = appState.fandoms.find(f => (typeof f === 'string' ? f : f.name) === fandomName);
-            const currentBorder = typeof fandomObj === 'object' ? fandomObj.borderColor : '#fbbf24';
-            const currentDot = typeof fandomObj === 'object' ? fandomObj.dotColor : '#fbbf24';
+        window.openManageAdminsModal = function (fandomName) {
+            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
+            if (!fandomObj) return;
 
-            showUmbrellaModal({
-                title: `Editar Fandom: ${fandomName}`,
-                htmlBody: `
-                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                        <div class="form-group">
-                            <label class="form-label">Cor da Bordinha</label>
-                            <input type="color" id="editFandomBorderColor" value="${currentBorder}" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
+            // Pega todos os autores que já postaram ou participam
+            const membersMap = {};
+            postsFromFirebase.filter(p => p.fandom === fandomName).forEach(p => {
+                if (p.authorUid && p.author) {
+                    membersMap[p.authorUid] = p.author;
+                }
+            });
+            // Garante o usuário atual
+            if (appState.user.uid) membersMap[appState.user.uid] = appState.user.name;
+
+            let membersHtml = '';
+            for (const [uid, uname] of Object.entries(membersMap)) {
+                const isAdmin = fandomObj.admins && fandomObj.admins.includes(uid);
+                membersHtml += `
+                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; margin-bottom:6px;">
+                        <div>
+                            <span style="font-size:13px; color:var(--text-main); font-weight:600;">${uname}</span>
+                            ${isAdmin ? '<span class="admin-badge" style="margin-left:6px;">Admin</span>' : ''}
                         </div>
-                        <div class="form-group">
-                            <label class="form-label">Cor da Bolinha / Emblema</label>
-                            <input type="color" id="editFandomDotColor" value="${currentDot}" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
+                        <div>
+                            ${isAdmin ? 
+                                `<button class="btn-danger-pill" style="font-size:10px;" onclick="demoteAdmin('${fandomName}', '${uid}')">Remover Admin</button>` : 
+                                `<button class="btn-pill-gold" style="font-size:10px;" onclick="promoteAdmin('${fandomName}', '${uid}')">Promover a Admin</button>`
+                            }
                         </div>
                     </div>
-                `,
-                buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
-                    {
-                        label: 'Salvar Fandom',
-                        primary: true,
-                        onClick: () => {
-                            const borderColor = document.getElementById('editFandomBorderColor').value;
-                            const dotColor = document.getElementById('editFandomDotColor').value;
+                `;
+            }
 
-                            appState.fandoms = appState.fandoms.map(f => {
-                                const fname = typeof f === 'string' ? f : f.name;
-                                if (fname === fandomName) {
-                                    return { name: fname, borderColor, dotColor };
-                                }
-                                return f;
-                            });
-                            saveLocal();
-                            renderAll();
-                            closeUmbrellaModal();
-                        }
-                    }
-                ]
+            showUmbrellaModal({
+                title: `Gerenciar Administradores • ${fandomName}`,
+                htmlBody: `
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Promova membros a administradores após conversar com eles:</p>
+                    <div style="max-height:220px; overflow-y:auto;">${membersHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhum outro membro no fandom ainda.</p>'}</div>
+                `,
+                buttons: [{ label: 'Concluir', primary: true, onClick: closeUmbrellaModal }]
             });
+        };
+
+        window.promoteAdmin = function(fandomName, uid) {
+            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
+            if (fandomObj) {
+                if (!fandomObj.admins) fandomObj.admins = [];
+                if (!fandomObj.admins.includes(uid)) {
+                    fandomObj.admins.push(uid);
+                    saveLocal();
+                    renderAll();
+                    openManageAdminsModal(fandomName);
+                }
+            }
+        };
+
+        window.demoteAdmin = function(fandomName, uid) {
+            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
+            if (fandomObj && fandomObj.admins) {
+                if (fandomObj.creatorUid === uid) {
+                    alert("O criador principal não pode ser removido como admin.");
+                    return;
+                }
+                fandomObj.admins = fandomObj.admins.filter(id => id !== uid);
+                saveLocal();
+                renderAll();
+                openManageAdminsModal(fandomName);
+            }
         };
 
         window.confirmDeleteFandom = function (fandomName) {
             showUmbrellaModal({
                 title: '🗑️ Excluir Fandom',
-                htmlBody: `Você realmente deseja apagar o fandom <strong>${fandomName}</strong> para todos?`,
+                htmlBody: `Você realmente deseja apagar o fandom <strong>${fandomName}</strong>?`,
                 buttons: [
                     { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                     {
                         label: 'Sim, Apagar',
                         primary: true,
                         onClick: () => {
-                            appState.fandoms = appState.fandoms.filter(f => (typeof f === 'string' ? f : f.name) !== fandomName);
+                            appState.fandoms = appState.fandoms.filter(f => f.name !== fandomName);
                             delete appState.subgroups[fandomName];
                             activeFandomFilter = null;
                             saveLocal();
@@ -2331,91 +2243,32 @@
         window.selectFandom = function (fandomName) {
             activeFandomFilter = fandomName;
             const filtered = postsFromFirebase.filter(p => p.fandom === fandomName);
-            const subs = appState.subgroups[fandomName] || [];
-
-            const subsHtml = subs.map((s, idx) => `
-                <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(251,191,36,0.15); border:1px solid var(--gold-border); padding:3px 10px; border-radius:99px; font-size:11px; color:var(--gold-accent);">
-                    <span># ${s}</span>
-                    <button style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700;" onclick="confirmDeleteSubgroup('${fandomName}', ${idx})">✕</button>
-                </div>
-            `).join('');
+            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
+            const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
 
             const container = document.getElementById('selectedFandomFeed');
             let html = `
                 <div class="glass-panel" style="padding:14px; margin-bottom:12px;">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                        <span style="font-size:14px; color:var(--gold-accent); font-weight:700;">Fandom Isolado: ${fandomName}</span>
+                        <div>
+                            <span style="font-size:14px; color:var(--gold-accent); font-weight:700;">🔒 Fandom Privado: ${fandomName}</span>
+                            <p style="font-size:11px; color:var(--text-muted);">Espaço exclusivo e particular do grupo.</p>
+                        </div>
                         <div style="display:flex; gap:6px;">
-                            <button class="btn-pill-gold" onclick="openCreateSubgroupModal('${fandomName}')">+ Subgrupo</button>
-                            <button class="btn-danger-pill" onclick="confirmDeleteFandom('${fandomName}')">✕ Excluir</button>
+                            ${isCreatorOrAdmin ? `<button class="btn-pill-gold" onclick="openManageAdminsModal('${fandomName}')">🛡️ Adms</button>` : ''}
+                            <button class="btn-danger-pill" onclick="confirmDeleteFandom('${fandomName}')">Excluir</button>
                             <button class="btn-pill-gold" onclick="activeFandomFilter=null; document.getElementById('selectedFandomFeed').innerHTML='';">Fechar</button>
                         </div>
-                    </div>
-                    <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">
-                        ${subsHtml || '<span style="font-size:11px; color:var(--text-muted);">Nenhum subgrupo criado.</span>'}
                     </div>
                 </div>
             `;
 
             if (filtered.length === 0) {
-                html += `<div class="glass-panel empty-state-box">Nenhuma publicação neste fandom isolado ainda.</div>`;
+                html += `<div class="glass-panel empty-state-box">Este fandom está privadamente silencioso. Compartilhe a primeira foto linda que você achou!</div>`;
             } else {
-                html += filtered.map(p => renderPostCardHTML(p, false)).join('');
+                html += filtered.map(p => renderPostCardHTML(p, false, fandomName)).join('');
             }
             container.innerHTML = html;
-        };
-
-        window.openCreateSubgroupModal = function (fandomName) {
-            requireAuthForAction(() => {
-                showUmbrellaModal({
-                    title: `Criar Subgrupo em ${fandomName}`,
-                    htmlBody: `
-                        <div class="form-group">
-                            <label class="form-label">Nome do Subgrupo</label>
-                            <input type="text" id="subGroupNameInput" class="glass-input" placeholder="Ex: Memes e Fotos">
-                        </div>
-                    `,
-                    buttons: [
-                        { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
-                        {
-                            label: 'Criar Subgrupo',
-                            primary: true,
-                            onClick: () => {
-                                const subName = document.getElementById('subGroupNameInput').value.trim();
-                                if (subName) {
-                                    if (!appState.subgroups[fandomName]) appState.subgroups[fandomName] = [];
-                                    appState.subgroups[fandomName].push(subName);
-                                    saveLocal();
-                                    selectFandom(fandomName);
-                                }
-                                closeUmbrellaModal();
-                            }
-                        }
-                    ]
-                });
-            });
-        };
-
-        window.confirmDeleteSubgroup = function (fandomName, subIndex) {
-            showUmbrellaModal({
-                title: '🗑️ Excluir Subgrupo',
-                htmlBody: 'Você realmente deseja apagar esse subgrupo?',
-                buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
-                    {
-                        label: 'Sim, Apagar',
-                        primary: true,
-                        onClick: () => {
-                            if (appState.subgroups[fandomName]) {
-                                appState.subgroups[fandomName].splice(subIndex, 1);
-                                saveLocal();
-                                selectFandom(fandomName);
-                            }
-                            closeUmbrellaModal();
-                        }
-                    }
-                ]
-            });
         };
 
         function openMasterAdminPanel() {
@@ -2454,31 +2307,39 @@
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
-            const bgEl = document.getElementById('bgImageLayer');
-            if (bgEl) {
-                bgEl.src = appState.user.bgImage || './fundo.png';
-            }
             if (appState.user.themeAccentColor) {
                 document.documentElement.style.setProperty('--theme-color-accent', appState.user.themeAccentColor);
             }
             if (appState.user.audioUrl) {
-                loadGlobalAudio(appState.user.audioUrl, 'Música Ativa');
+                playAudioUrl(appState.user.audioUrl);
             }
         }
 
-        function renderPostCardHTML(post, isAconchegoTab = false) {
+        // Renderiza post com comentários visíveis diretamente no fluxo (Estilo Facebook sem pop-up)
+        function renderPostCardHTML(post, isAconchegoTab = false, currentFandomContext = null) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
 
+            // Verifica se o autor é admin neste fandom
+            let isAdmin = false;
+            if (post.fandom && post.fandom !== 'Geral') {
+                const fandomObj = appState.fandoms.find(f => f.name === post.fandom);
+                if (fandomObj && ((fandomObj.creatorUid === post.authorUid) || (fandomObj.admins && fandomObj.admins.includes(post.authorUid)))) {
+                    isAdmin = true;
+                }
+            }
+
             const comments = post.comments || [];
-            const commentsHtml = comments.map(c => `
+            // Mostra os comentários em fluxo contínuo
+            const commentsHtml = comments.map((c, idx) => `
                 <div class="comment-item-fb">
                     <span style="flex:1;">${c}</span>
+                    <button class="btn-danger-pill" style="font-size:9px; padding:1px 5px;" onclick="confirmDeleteComment('${post.id}', ${idx})">✕</button>
                 </div>
             `).join('');
 
-            const showDelete = isAconchegoTab && appState.user.loggedIn && post.author === appState.user.name;
+            const showDelete = (isAconchegoTab || post.fandom !== 'Geral') && appState.user.loggedIn && post.author === appState.user.name;
 
             return `
                 <article class="glass-panel post-card">
@@ -2486,7 +2347,10 @@
                         <div class="post-author-box" onclick="replyToUserInComment('${post.author}')">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
-                                <div class="post-author-name">${post.author}</div>
+                                <div class="post-author-name">
+                                    ${post.author}
+                                    ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
+                                </div>
                                 <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)}</div>
                             </div>
                         </div>
@@ -2506,11 +2370,11 @@
                         </button>
                         <button class="dots-menu-btn" onclick="toggleDotsMenu('${post.id}')">•••</button>
                         <div class="glass-panel dots-dropdown" id="dots-${post.id}">
-                            <button onclick="openCommentModal('${post.id}')">💬 Ver / Adicionar Comentários</button>
-                            <button onclick="shareUmbrellaPost('${post.id}')">☔ Compartilhar umbrella</button>
+                            ${post.fandom === 'Geral' ? `<button onclick="shareUmbrellaPost('${post.id}')">☔ Compartilhar umbrella</button>` : `<button disabled style="opacity:0.5; cursor:not-allowed;">🔒 Fandom Privado</button>`}
                         </div>
                     </div>
 
+                    <!-- COMENTÁRIOS NATIVOS EM FLUXO CONTÍNUO (SEM POP-UP) -->
                     <div class="comments-section-fb">
                         ${commentsHtml}
                         <div class="comment-input-row">
@@ -2544,22 +2408,20 @@
 
             const fandomsGrid = document.getElementById('fandomsGridContainer');
             if (appState.fandoms.length === 0) {
-                fandomsGrid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column: 1 / -1;">Nenhum fandom criado ainda. Clique em "+ Adicionar Fandom" para começar!</div>`;
+                fandomsGrid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column: 1 / -1;">Nenhum Fandom particular criado ainda. Clique em "+ Criar Fandom" para começar!</div>`;
             } else {
                 fandomsGrid.innerHTML = appState.fandoms.map(f => {
-                    const fname = typeof f === 'string' ? f : f.name;
-                    const borderCol = typeof f === 'object' ? f.borderColor : '#fbbf24';
-                    const dotCol = typeof f === 'object' ? f.dotColor : '#fbbf24';
-                    const subCount = (appState.subgroups[fname] || []).length;
+                    const fname = f.name;
+                    const borderCol = f.borderColor || '#fbbf24';
+                    const dotCol = f.dotColor || '#fbbf24';
 
                     return `
                         <div class="glass-panel fandom-box-card" style="border-color: ${borderCol};" onclick="selectFandom('${fname}')">
-                            <button class="fandom-card-settings-btn" onclick="event.stopPropagation(); openEditFandomModal('${fname}')" title="Configurar Fandom">•••</button>
                             <h4 style="color: var(--gold-accent);">
                                 <span class="fandom-dot" style="background-color: ${dotCol}; color: ${dotCol};"></span>
                                 ${fname}
                             </h4>
-                            <p>${subCount} subgrupo(s)</p>
+                            <p>🔒 Particular</p>
                         </div>
                     `;
                 }).join('');
@@ -2631,4 +2493,4 @@
         initFirebaseSync();
     </script>
 </body>
-    </html>
+</html>
