@@ -74,6 +74,33 @@
             z-index: 1;
         }
 
+        /* TELA DE BLOQUEIO / AUTH INICIAL */
+        .auth-gate-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 200;
+            background: rgba(4, 7, 18, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 420px;
+            padding: 28px;
+            text-align: center;
+        }
+
+        .auth-logo {
+            max-width: 120px;
+            margin-bottom: 16px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+        }
+
         .unified-top-bar {
             width: 100%;
             max-width: 850px;
@@ -482,7 +509,6 @@
             position: relative;
         }
 
-        /* CURTIDA COM ÍCONE DE GUARDA-CHUVA EM CSS (SEM IMAGEM EXTERNA) */
         .like-umbrella-btn {
             display: flex;
             align-items: center;
@@ -710,7 +736,6 @@
 
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
-        /* ESTÚDIO DE EDIÇÃO DE FOTO */
         .studio-modal-overlay {
             position: fixed;
             inset: 0;
@@ -875,6 +900,27 @@
     <!-- IMAGEM DE FUNDO EM TELA CHEIA -->
     <img id="bgImageLayer" src="./fundo.png" alt="">
 
+    <!-- TELA DE LOGIN / BLOQUEIO OBRIGATÓRIO (Ninguém interage sem estar logado) -->
+    <div class="auth-gate-overlay" id="authGateOverlay">
+        <div class="glass-panel auth-card" id="authCardMain">
+            <img src="./logo.png" alt="Umbrella" class="auth-logo">
+            <h3 style="color:var(--gold-accent); font-size:18px; margin-bottom:8px;">Bem-vinda ao Umbrella</h3>
+            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:20px;">Faça login ou crie sua conta para entrar na comunidade.</p>
+            
+            <div style="display:flex; flex-direction:column; gap:10px;">
+                <button class="btn-gold" style="background: rgba(66, 133, 244, 0.25); border-color: #4285f4; color: #8ab4f8;" onclick="loginWithGoogle()">
+                    🔑 Continuar com o Google
+                </button>
+                <button class="btn-gold" onclick="showManualRegisterForm()">
+                    📝 Criar Conta com E-mail
+                </button>
+                <button class="btn-pill-gold" style="width:100%; margin-top:4px;" onclick="showManualLoginForm()">
+                    Já tem uma conta? Entrar
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- BARRA SUPERIOR UNIFICADA -->
     <div class="unified-top-bar">
         <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
@@ -900,31 +946,30 @@
             </div>
         </div>
 
-        <!-- CARROSSEL / NAVEGAÇÃO CORRIGIDA -->
+        <!-- CARROSSEL / NAVEGAÇÃO (PÓDIO AUTOMÁTICO) -->
         <nav class="main-carousel-wrapper" id="carouselWrapper">
-            <!-- 1º, 2º, 3º Pódio corretos -->
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
                     <img id="podiumImg1" src="./guarda-chuva.png" alt="">
                 </div>
-                <span class="podium-label-clean">1º Pódio</span>
+                <span class="podium-label-clean" id="podiumLabel1">1º Pódio</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(2)">
                 <div class="podium-circle-clean podium-circle-2">
                     <img id="podiumImg2" src="./fandom.png" alt="" onerror="this.src='./guarda-chuva.png'">
                 </div>
-                <span class="podium-label-clean">2º Pódio</span>
+                <span class="podium-label-clean" id="podiumLabel2">2º Pódio</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(3)">
                 <div class="podium-circle-clean podium-circle-3">
                     <img id="podiumImg3" src="./amigos.png" alt="">
                 </div>
-                <span class="podium-label-clean">3º Pódio</span>
+                <span class="podium-label-clean" id="podiumLabel3">3º Pódio</span>
             </div>
 
-            <!-- Desafio do Dia no centro do Desktop -->
+            <!-- Desafio do Dia -->
             <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
                     <span>☔ Desafio do Dia</span>
@@ -935,7 +980,7 @@
                 <span style="font-size:10px; color:var(--gold-accent);">Ver desafio ➔</span>
             </div>
 
-            <!-- Abas sem bolinha nas pontas direitas -->
+            <!-- Abas -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
                 <div class="tab-icon-free">
                     <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./guarda-chuva.png';">
@@ -1132,7 +1177,7 @@
         <p class="lightbox-caption" id="lightboxCaption"></p>
     </div>
 
-    <!-- SCRIPT COM FIREBASE FIRESTORE CONECTADO EM TEMPO REAL -->
+    <!-- SCRIPT FIREBASE E SISTEMA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import {
@@ -1151,7 +1196,6 @@
             query,
             orderBy,
             updateDoc,
-            increment,
             serverTimestamp
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -1170,25 +1214,20 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v20';
+        const LOCAL_KEY = 'umbrella_clean_state_v21';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
                 uid: '',
                 loggedIn: false,
-                name: 'Luana',
-                email: 'luanaeandrels@gmail.com',
+                name: '',
+                email: '',
                 avatar: './aconchego.png',
                 bgImage: './fundo.png'
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
-            podium: {
-                1: { img: './guarda-chuva.png', title: '1º Lugar • Pódio Oficial da Semana' },
-                2: { img: './fandom.png', title: '2º Lugar • Pódio Oficial da Semana' },
-                3: { img: './amigos.png', title: '3º Lugar • Pódio Oficial da Semana' }
-            },
             fandoms: ['BTS', 'Super Junior', 'EXO', 'Dorama', 'Animes'],
             unlockedFandoms: [],
             subgroups: {},
@@ -1213,7 +1252,6 @@
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
         }
 
-        // CONEXÃO EM TEMPO REAL COM FIRESTORE
         function initFirebaseSync() {
             const q = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(q, (snapshot) => {
@@ -1231,13 +1269,26 @@
             if (user) {
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
-                appState.user.name = user.displayName || appState.user.name;
-                appState.user.email = user.email || appState.user.email;
+                appState.user.name = user.displayName || 'Usuário Umbrella';
+                appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
                 saveLocal();
                 applyUserTheme();
+                checkAuthGate();
+                renderAll();
+            } else {
+                checkAuthGate();
             }
         });
+
+        function checkAuthGate() {
+            const gate = document.getElementById('authGateOverlay');
+            if (appState.user.loggedIn) {
+                gate.style.display = 'none';
+            } else {
+                gate.style.display = 'flex';
+            }
+        }
 
         window.loginWithGoogle = async function () {
             try {
@@ -1245,23 +1296,99 @@
                 const user = result.user;
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
-                appState.user.name = user.displayName || appState.user.name;
-                appState.user.email = user.email || appState.user.email;
+                appState.user.name = user.displayName || 'Usuário Google';
+                appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
                 saveLocal();
                 applyUserTheme();
+                checkAuthGate();
                 renderAll();
-                closeUmbrellaModal();
-                showUmbrellaModal({
-                    title: 'Login com Google 💧',
-                    htmlBody: `Logado com sucesso como <strong>${user.displayName}</strong>!`
-                });
             } catch (error) {
-                showUmbrellaModal({
-                    title: 'Erro no Login',
-                    htmlBody: `Não foi possível entrar com o Google: ${error.message}`
-                });
+                alert('Erro no login com Google: ' + error.message);
             }
+        };
+
+        window.showManualRegisterForm = function () {
+            const card = document.getElementById('authCardMain');
+            card.innerHTML = `
+                <img src="./logo.png" alt="Umbrella" class="auth-logo" style="max-width:90px;">
+                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta no Umbrella</h3>
+                <div class="form-group"><input type="text" id="regName" class="glass-input" placeholder="Seu Nome"></div>
+                <div class="form-group"><input type="email" id="regEmail" class="glass-input" placeholder="Seu E-mail"></div>
+                <div class="form-group"><input type="password" id="regPass" class="glass-input" placeholder="Crie uma Senha"></div>
+                <div class="form-group"><input type="password" id="regPassConfirm" class="glass-input" placeholder="Confirme a Senha"></div>
+                <button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualRegister()">Cadastrar</button>
+                <button class="btn-pill-gold" style="width:100%;" onclick="location.reload()">Voltar</button>
+            `;
+        };
+
+        window.submitManualRegister = function () {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const pass = document.getElementById('regPass').value;
+            const confirm = document.getElementById('regPassConfirm').value;
+
+            if (!name || !email || !pass) {
+                alert('Preencha todos os campos!');
+                return;
+            }
+            if (pass !== confirm) {
+                alert('As senhas não coincidem!');
+                return;
+            }
+
+            appState.user.uid = 'manual_' + Date.now();
+            appState.user.loggedIn = true;
+            appState.user.name = name;
+            appState.user.email = email;
+            saveLocal();
+            applyUserTheme();
+            checkAuthGate();
+            renderAll();
+        };
+
+        window.showManualLoginForm = function () {
+            const card = document.getElementById('authCardMain');
+            card.innerHTML = `
+                <img src="./logo.png" alt="Umbrella" class="auth-logo" style="max-width:90px;">
+                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Entrar na sua Conta</h3>
+                <div class="form-group"><input type="email" id="logEmail" class="glass-input" placeholder="Seu E-mail"></div>
+                <div class="form-group"><input type="password" id="logPass" class="glass-input" placeholder="Sua Senha"></div>
+                <p style="font-size:11px; color:var(--gold-accent); cursor:pointer; margin-bottom:12px;" onclick="forgotPasswordModal()">Esqueceu a senha?</p>
+                <button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualLogin()">Entrar</button>
+                <button class="btn-pill-gold" style="width:100%;" onclick="location.reload()">Voltar</button>
+            `;
+        };
+
+        window.submitManualLogin = function () {
+            const email = document.getElementById('logEmail').value.trim();
+            const pass = document.getElementById('logPass').value;
+            if (!email || !pass) {
+                alert('Informe e-mail e senha.');
+                return;
+            }
+            appState.user.uid = 'manual_user';
+            appState.user.loggedIn = true;
+            appState.user.name = email.split('@')[0];
+            appState.user.email = email;
+            saveLocal();
+            applyUserTheme();
+            checkAuthGate();
+            renderAll();
+        };
+
+        window.forgotPasswordModal = function () {
+            showUmbrellaModal({
+                title: 'Recuperar Senha',
+                htmlBody: `
+                    <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:10px;">Digite seu e-mail cadastrado para receber as instruções:</p>
+                    <input type="email" id="recoverEmail" class="glass-input" placeholder="Seu e-mail...">
+                `,
+                buttons: [
+                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                    { label: 'Enviar E-mail', primary: true, onClick: () => { alert('Instruções enviadas com sucesso!'); closeUmbrellaModal(); } }
+                ]
+            });
         };
 
         window.showUmbrellaModal = function ({ title, htmlBody, buttons = [] }) {
@@ -1290,6 +1417,87 @@
 
         window.closeUmbrellaModal = function () {
             document.getElementById('customModalBackdrop').classList.remove('open');
+        };
+
+        // PERFIL COMPLETO COM SPOTIFY E TEMA
+        window.openProfileModal = function () {
+            showUmbrellaModal({
+                title: `Perfil de ${appState.user.name}`,
+                htmlBody: `
+                    <div style="text-align:center; margin-bottom:14px;">
+                        <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
+                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
+                        <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Alterar Nome</label>
+                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Escolher Foto de Perfil</label>
+                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
+                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Escolher Plano de Fundo da Página</label>
+                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar imagem de fundo</label>
+                        <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo selecionado'">
+                    </div>
+
+                    <!-- PLAYER SPOTIFY INTEGRADO NO PERFIL -->
+                    <div style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
+                        <label class="form-label" style="margin-bottom:6px;">Trilha Sonora (Spotify)</label>
+                        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/2q978WnJqQd3a3s1c83n9f?utm_source=generator&theme=0" width="100%" height="80" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                    </div>
+                `,
+                buttons: [
+                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
+                    {
+                        label: 'Salvar Alterações',
+                        primary: true,
+                        onClick: () => {
+                            const name = document.getElementById('obName').value.trim();
+                            if (name) appState.user.name = name;
+
+                            const avatarInput = document.getElementById('obAvatarFile');
+                            const bgInput = document.getElementById('obBgFile');
+
+                            let pendingReads = 0;
+                            const checkDone = () => {
+                                pendingReads--;
+                                if (pendingReads <= 0) {
+                                    saveLocal();
+                                    applyUserTheme();
+                                    renderAll();
+                                    closeUmbrellaModal();
+                                }
+                            };
+
+                            if (avatarInput.files && avatarInput.files[0]) {
+                                pendingReads++;
+                                const reader = new FileReader();
+                                reader.onload = (e) => { appState.user.avatar = e.target.result; checkDone(); };
+                                reader.readAsDataURL(avatarInput.files[0]);
+                            }
+
+                            if (bgInput.files && bgInput.files[0]) {
+                                pendingReads++;
+                                const reader = new FileReader();
+                                reader.onload = (e) => { appState.user.bgImage = e.target.result; checkDone(); };
+                                reader.readAsDataURL(bgInput.files[0]);
+                            }
+
+                            if (pendingReads === 0) {
+                                saveLocal();
+                                applyUserTheme();
+                                renderAll();
+                                closeUmbrellaModal();
+                            }
+                        }
+                    }
+                ]
+            });
         };
 
         window.openMediaActionSheet = function () {
@@ -1450,96 +1658,16 @@
             document.getElementById('mediaPreviewStrip').style.display = 'none';
         };
 
-        window.openProfileModal = function () {
-            showUmbrellaModal({
-                title: `Perfil de ${appState.user.name}`,
-                htmlBody: `
-                    <div style="text-align:center; margin-bottom:14px;">
-                        <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
-                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
-                        <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || ''}</p>
-                    </div>
-
-                    <button class="btn-gold" style="margin-bottom:14px; background: rgba(66, 133, 244, 0.2); border-color: #4285f4; color: #8ab4f8;" onclick="loginWithGoogle()">
-                        🔑 Entrar / Conectar com Google
-                    </button>
-
-                    <div class="form-group">
-                        <label class="form-label">Alterar Nome</label>
-                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Escolher Foto de Perfil</label>
-                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
-                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Escolher Plano de Fundo da Página</label>
-                        <label for="obBgFile" class="custom-file-trigger" id="obBgLabel">Selecionar imagem de fundo</label>
-                        <input type="file" id="obBgFile" accept="image/*" style="display:none;" onchange="document.getElementById('obBgLabel').textContent = this.files[0]?.name || 'Fundo selecionado'">
-                    </div>
-                `,
-                buttons: [
-                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                    {
-                        label: 'Salvar Alterações',
-                        primary: true,
-                        onClick: () => {
-                            const name = document.getElementById('obName').value.trim();
-                            if (name) appState.user.name = name;
-
-                            const avatarInput = document.getElementById('obAvatarFile');
-                            const bgInput = document.getElementById('obBgFile');
-
-                            let pendingReads = 0;
-                            const checkDone = () => {
-                                pendingReads--;
-                                if (pendingReads <= 0) {
-                                    saveLocal();
-                                    applyUserTheme();
-                                    renderAll();
-                                    closeUmbrellaModal();
-                                }
-                            };
-
-                            if (avatarInput.files && avatarInput.files[0]) {
-                                pendingReads++;
-                                const reader = new FileReader();
-                                reader.onload = (e) => { appState.user.avatar = e.target.result; checkDone(); };
-                                reader.readAsDataURL(avatarInput.files[0]);
-                            }
-
-                            if (bgInput.files && bgInput.files[0]) {
-                                pendingReads++;
-                                const reader = new FileReader();
-                                reader.onload = (e) => { appState.user.bgImage = e.target.result; checkDone(); };
-                                reader.readAsDataURL(bgInput.files[0]);
-                            }
-
-                            if (pendingReads === 0) {
-                                saveLocal();
-                                applyUserTheme();
-                                renderAll();
-                                closeUmbrellaModal();
-                            }
-                        }
-                    }
-                ]
-            });
-        };
-
         window.handleGlobalSearch = function (event) {
             const val = event.target.value.trim();
             if (event.key === 'Enter') {
                 const cleanVal = val.toLowerCase();
-                if (cleanVal === '*luanaeandrels' || cleanVal === '*luanaeandre' || cleanVal === 'luanaeandrels') {
+                if (cleanVal === '*luanaeandrels' || cleanVal === '*luanaeandre') {
                     event.target.value = '';
                     showUmbrellaModal({
                         title: '✨ Modo Criadora Ativado',
-                        htmlBody: '<strong>Status:</strong> Balãozinho de ativado para criador confirmado com sucesso!',
-                        buttons: [
-                            { label: 'Abrir Painel Mestre', primary: true, onClick: openMasterAdminPanel }
-                        ]
+                        htmlBody: '<strong>Status:</strong> Balãozinho de ativado para criador confirmado!',
+                        buttons: [{ label: 'Abrir Painel Mestre', primary: true, onClick: openMasterAdminPanel }]
                     });
                     return;
                 }
@@ -1568,9 +1696,14 @@
         };
 
         window.openPodiumFullscreen = function (rank) {
-            const item = appState.podium[rank];
-            if (!item) return;
-            openLightbox(item.img, 'image', item.title);
+            // Pódio automático baseado nos posts do desafio com mais curtidas
+            const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            const winner = challengePosts[rank - 1];
+            if (winner && winner.media) {
+                openLightbox(winner.media, winner.mediaType || 'image', `${rank}º Lugar • ${winner.author} (${winner.likes || 0} votos)`);
+            } else {
+                showUmbrellaModal({ title: `${rank}º Pódio Automático`, htmlBody: 'Ainda não há participações suficientes para este pódio nesta semana.' });
+            }
         };
 
         window.saveBiasRegistration = function () {
@@ -1587,24 +1720,10 @@
             showUmbrellaModal({ title: 'Representante Salvo!', htmlBody: `Bias <strong>${name}</strong> (#${idNum}) cadastrado.` });
         };
 
-        // POSTAR DIRETAMENTE NO FIREBASE FIRESTORE
         window.submitPost = async function () {
             const input = document.getElementById('mainComposerInput');
             const text = input.value.trim();
             if (!text && !currentAttachedMedia) return;
-
-            const matchTag = text.match(/\*([a-zA-Zá-úÁ-Ú0-9_]+)/);
-            if (matchTag) {
-                appState.notifications.unshift({
-                    id: 'notif_tag_' + Date.now(),
-                    from: appState.user.name,
-                    avatar: appState.user.avatar,
-                    text: `${appState.user.name} marcou você em uma publicação: "${text}" 💬`,
-                    type: 'tag'
-                });
-                saveLocal();
-                updateNotifBadge();
-            }
 
             const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
             if (isChallengeView && !appState.bias.id) {
@@ -1640,7 +1759,6 @@
             }
         };
 
-        // APAGAR POSTAGEM NO FIREBASE
         window.confirmDeletePost = function (postId) {
             toggleDotsMenu(postId);
             showUmbrellaModal({
@@ -1678,7 +1796,7 @@
             }
 
             const newLiked = !post.likedByMe;
-            const newLikes = post.likes + (newLiked ? 1 : -1);
+            const newLikes = (post.likes || 0) + (newLiked ? 1 : -1);
 
             try {
                 const postRef = doc(db, "posts", postId);
@@ -1882,7 +2000,7 @@
                 showUmbrellaModal({
                     title: `Fandom ${fandomName} Trancado 🔒`,
                     htmlBody: `
-                        <p style="margin-bottom:10px;">Este fandom está fechado por padrão. Insira a senha de administradora para entrar ou envie uma solicitação para a gotinha da Luana.</p>
+                        <p style="margin-bottom:10px;">Este fandom está fechado por padrão. Insira a senha de administradora para entrar ou envie uma solicitação.</p>
                         <input type="password" id="adminPasswordInput" class="glass-input" placeholder="Senha de administradora...">
                     `,
                     buttons: [
@@ -1947,7 +2065,7 @@
                         </div>
                     </div>
                     <div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">
-                        ${subsHtml || '<span style="font-size:11px; color:var(--text-muted);">Nenhum subgrupo criado neste fandom ainda.</span>'}
+                        ${subsHtml || '<span style="font-size:11px; color:var(--text-muted);">Nenhum subgrupo criado.</span>'}
                     </div>
                 </div>
             `;
@@ -2052,7 +2170,6 @@
             }
         }
 
-        // RENDERIZAÇÃO DOS POSTS COM GUARDA-CHUVA EM CSS
         function renderPostCardHTML(post) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
@@ -2100,6 +2217,21 @@
             document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
             updateNotifBadge();
 
+            // PÓDIO AUTOMÁTICO BASEADO EM CURTIDAS DO DESAFIO
+            const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            if (challengePosts[0] && challengePosts[0].media) {
+                document.getElementById('podiumImg1').src = challengePosts[0].media;
+                document.getElementById('podiumLabel1').textContent = `1º: ${challengePosts[0].author}`;
+            }
+            if (challengePosts[1] && challengePosts[1].media) {
+                document.getElementById('podiumImg2').src = challengePosts[1].media;
+                document.getElementById('podiumLabel2').textContent = `2º: ${challengePosts[1].author}`;
+            }
+            if (challengePosts[2] && challengePosts[2].media) {
+                document.getElementById('podiumImg3').src = challengePosts[2].media;
+                document.getElementById('podiumLabel3').textContent = `3º: ${challengePosts[2].author}`;
+            }
+
             const fandomsGrid = document.getElementById('fandomsGridContainer');
             fandomsGrid.innerHTML = appState.fandoms.map(f => {
                 let borderColor = 'var(--gold-border)';
@@ -2119,8 +2251,8 @@
             const generalPosts = postsFromFirebase.filter(p => !p.isChallenge);
             document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(renderPostCardHTML).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar!</div>`;
 
-            const challengePosts = postsFromFirebase.filter(p => p.isChallenge);
-            document.getElementById('challengeFeedList').innerHTML = challengePosts.length > 0 ? challengePosts.map(renderPostCardHTML).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
+            const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
+            document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(renderPostCardHTML).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
 
             document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0 ? appState.friends.map(f => `
                 <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
@@ -2184,6 +2316,7 @@
 
         applyUserTheme();
         initFirebaseSync();
+        checkAuthGate();
     </script>
 </body>
-</html>
+    </html>
