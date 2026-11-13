@@ -336,6 +336,29 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
+<!-- MODAL DE PERFIL PÚBLICO (ETAPA 3 DA SOLICITAÇÃO) -->
+<div id="modal-perfil-publico" class="modal-custom">
+  <div class="caixa-modal" style="max-width: 480px; max-height: 85vh; overflow-y: auto;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
+      <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">Perfil de Usuária</h3>
+      <button onclick="fecharModalPerfilPublico()" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✕</button>
+    </div>
+    
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px; background: rgba(255,255,255,0.04); padding: 12px; border-radius: 12px; border: 1px solid rgba(243,217,139,0.2);">
+      <div id="pub-avatar" style="width: 65px; height: 65px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: white; overflow: hidden; border: 2px solid #f3d98b; flex-shrink: 0;">?</div>
+      <div>
+        <h4 id="pub-nome" style="color: #fff; font-size: 1.1rem; margin: 0 0 4px 0;">Nome</h4>
+        <p id="pub-fandom" style="color: #f3d98b; font-size: 0.8rem; margin: 0;">Fandom não informado</p>
+      </div>
+    </div>
+
+    <h4 style="color: #f3d98b; font-size: 0.9rem; margin-bottom: 10px;">Postagens no Mural:</h4>
+    <div id="pub-feed-posts" style="display: flex; flex-direction: column; gap: 10px;">
+      <p style="color: #aaa; font-size: 0.8rem; text-align: center;">Carregando postagens...</p>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL DE CHAT PRIVADO COM AMIGO -->
 <div id="modal-chat-privado" class="modal-custom">
   <div class="caixa-modal" style="max-width: 450px; height: 500px; display: flex; flex-direction: column;">
@@ -368,14 +391,15 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE NOTIFICAÇÕES -->
+  <!-- MODAL DE NOTIFICAÇÕES (AVALIAÇÃO UMA POR UMA) -->
   <div id="modal-notificacoes" class="modal-custom">
-    <div class="caixa-modal">
+    <div class="caixa-modal" style="max-width: 450px;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">💧 Notificações</h3>
+        <h3 style="color: #f3d98b; font-size: 1.1rem; margin: 0;">💧 Solicitações de Amizade</h3>
         <button onclick="fecharNotificacoesGotinha()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
       </div>
-      <div id="lista-notificacoes-conteudo" style="max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
+      <p style="font-size: 0.75rem; color: #aaa; margin-bottom: 12px;">Avalie cada solicitação enviada para o seu Umbrella:</p>
+      <div id="lista-notificacoes-conteudo" style="max-height: 280px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px;">
         <p style="font-size: 0.8rem; color: #aaa; text-align: center;">Nenhuma notificação nova.</p>
       </div>
     </div>
@@ -398,7 +422,7 @@ border-radius:999px; display:inline-block;}
       </div>
 
       <div style="margin-bottom: 15px; background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border: 1px solid rgba(243,217,139,0.2);">
-        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 8px;">Solicitações Umbrella Pendentes:</h4>
+        <h4 style="font-size: 0.9rem; color: #f3d98b; margin-bottom: 8px;">Solicitações Pendentes de Abrigo (Fandom):</h4>
         <div id="lista-solicitacoes-adm" style="max-height: 140px; overflow-y: auto; display: flex; flex-direction: column; gap: 6px;">
           <p style="font-size:0.75rem; color:#aaa; text-align:center;">Carregando...</p>
         </div>
@@ -420,20 +444,20 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE SOLICITACAO DE FANDOM / ABRIGO -->
+  <!-- MODAL DE SOLICITACAO DE ABRIGO (FANDOM) -->
   <div id="modal-solicitacao" class="modal-custom">
     <div class="caixa-modal">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h3 style="color: #ff4757; font-size: 1.1rem; margin: 0;">☂️ Abrigo Umbrella</h3>
+        <h3 style="color: #ff4757; font-size: 1.1rem; margin: 0;">☂️ Solicitação de Abrigo</h3>
         <button onclick="fecharModalSolicitacao()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
       </div>
-      <p style="font-size: 0.8rem; color: #f3d98b; margin-bottom: 15px; line-height: 1.4;" id="texto-aviso-fandom">Este é um círculo protegido. Quer saber se pode te proteger da chuva?</p>
+      <p style="font-size: 0.8rem; color: #f3d98b; margin-bottom: 15px; line-height: 1.4;" id="texto-aviso-fandom">Este é um círculo protegido. Preencha seus dados para solicitar entrada.</p>
       <div class="grupo-input"><label>Seu Nome / Apelido:</label><input type="text" id="solicitacao-nome" placeholder="Seu apelido"></div>
       <div class="grupo-input">
-        <label>Mensagem de Abrigo:</label>
-        <textarea id="solicitacao-motivo" placeholder="Posso te emprestar um guarda-chuva?" style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);">Posso te emprestar um guarda-chuva?</textarea>
+        <label>Motivo (Por que quer participar?):</label>
+        <textarea id="solicitacao-motivo" placeholder="Quero me abrigar neste fandom..." style="border-radius: 10px; resize: none; height: 60px; padding: 8px; font-size: 0.85rem; width: 100%; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
       </div>
-      <button onclick="enviarSolicitacaoFandomNuvem()" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(243,217,139,0.3); border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;">Compartilhar o Umbrella ☂️</button>
+      <button onclick="enviarSolicitacaoFandomNuvem()" style="width: 100%; padding: 12px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(243,217,139,0.3); border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px;">Enviar Solicitação ☂️</button>
     </div>
   </div>
 
@@ -755,7 +779,7 @@ border-radius:999px; display:inline-block;}
           <div id="listaGaveta" style="font-size: 0.8rem; color: #ccc;">Nenhum item salvo.</div>
         </div>
         <div style="margin-top: 10px; display: flex; flex-direction: column; gap: 6px;">
-          <textarea id="campoGavetaTexto" placeholder="Nota..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
+          <textarea id="campoGavetaTexto" placeholder="Nota ou chave secreta..." style="border-radius: 8px; resize: none; height: 36px; padding: 6px; font-size: 0.75rem;"></textarea>
           <div style="display: flex; gap: 6px; align-items: center;">
             <label for="campoGavetaFoto" style="flex: 1; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); border-radius: 6px; padding: 6px; text-align: center; font-size: 0.7rem; cursor: pointer; color: #f3d98b;" id="label-foto-gaveta">Foto</label>
             <input type="file" id="campoGavetaFoto" accept="image/*" style="display: none;" onchange="atualizarNomeFotoGaveta(this)">
@@ -826,13 +850,16 @@ border-radius:999px; display:inline-block;}
 <script>
 let modoAtualNoCentro = "GERAL";
 
-function abrirNotificacoesGotinha() { document.getElementById('modal-notificacoes').style.display = 'flex'; }
+function abrirNotificacoesGotinha() { 
+  document.getElementById('modal-notificacoes').style.display = 'flex'; 
+  renderizarNotificacoesAmizade();
+}
 function fecharNotificacoesGotinha() { document.getElementById('modal-notificacoes').style.display = 'none'; }
 
 function verificarChaveCriadora(textoDigitado) {
   if (!textoDigitado) return false;
   let chave = textoDigitado.trim().toLowerCase();
-  if (chave === "luana" || chave === "luanaeandre" || chave === "luanaeandre.ls") {
+  if (chave === "luana190515" || chave === "luana" || chave === "luanaeandre" || chave === "luanaeandre.ls") {
     localStorage.setItem('modo_criadora_ativo', 'true');
     let painelCriadora = document.getElementById('painel-criadora');
     if (painelCriadora) painelCriadora.style.display = 'block';
@@ -1257,7 +1284,7 @@ function tentarEntrarComunidade(nomeComunidade, corTema) {
   if (inputNomeSol && nomeSalvo) inputNomeSol.value = nomeSalvo;
   
   let avisoEl = document.getElementById('texto-aviso-fandom');
-  if (avisoEl) avisoEl.innerText = `${nomeComunidade} é um círculo protegido. Quer saber se pode te proteger da chuva?`;
+  if (avisoEl) avisoEl.innerText = `${nomeComunidade} é um círculo protegido. Preencha seus dados para solicitar entrada.`;
   
   document.getElementById('modal-solicitacao').style.display = 'flex';
 }
@@ -1696,6 +1723,7 @@ function comentarGavetaMobile() {
     if (user) {
       aplicarDadosGoogleNaInterface(user);
       verificarOuCriarAmizadeSistema(user.displayName);
+      escutarSolicitacoesAmizadeTempoReal(user.displayName);
     } else {
       carregarAmigosNaInterface([]);
     }
@@ -1764,12 +1792,12 @@ function comentarGavetaMobile() {
     let container = document.getElementById('friends-list');
     if (!container) return;
     if (!listaAmigos || listaAmigos.length === 0) {
-      container.innerHTML = `<li style="white-space: nowrap; color: #aaa; font-size: 0.8rem;">Nenhum amigo no Umbrella ainda. (Envie um guarda-chuva!)</li>`;
+      container.innerHTML = `<li style="white-space: nowrap; color: #aaa; font-size: 0.8rem;">Nenhum amigo no Umbrella ainda.</li>`;
       return;
     }
     let html = "";
     listaAmigos.forEach(amigo => {
-      html += `<li onclick="abrirChatPrivado('${amigo}')" class="online" style="white-space: nowrap; cursor: pointer; color: #f3d98b; font-weight: bold;">${amigo}</li>`;
+      html += `<li onclick="abrirPerfilPublico('${amigo}')" class="online" style="white-space: nowrap; cursor: pointer; color: #f3d98b; font-weight: bold;" title="Ver Perfil">${amigo}</li>`;
     });
     container.innerHTML = html;
   }
@@ -1782,6 +1810,145 @@ function comentarGavetaMobile() {
       containerMob.innerHTML = `<ul style="list-style:none; padding:0; display:flex; flex-direction:column; gap:6px;">${containerDesk.innerHTML}</ul>`;
     }
   }
+
+  // --- MODAL DE PERFIL PÚBLICO (ETAPAS 1, 2 E 3) ---
+  window.abrirPerfilPublico = async function(nomeUsuario) {
+    let modal = document.getElementById('modal-perfil-publico');
+    let elAvatar = document.getElementById('pub-avatar');
+    let elNome = document.getElementById('pub-nome');
+    let elFandom = document.getElementById('pub-fandom');
+    let feedContainer = document.getElementById('pub-feed-posts');
+
+    if (!modal) return;
+    
+    // Configura valores iniciais de carregamento
+    elNome.innerText = nomeUsuario;
+    elFandom.innerText = "Carregando fandom...";
+    elAvatar.innerText = nomeUsuario.charAt(0).toUpperCase();
+    elAvatar.innerHTML = nomeUsuario.charAt(0).toUpperCase();
+    feedContainer.innerHTML = `<p style="color: #aaa; font-size: 0.8rem; text-align: center;">Buscando dados e postagens...</p>`;
+    modal.style.display = 'flex';
+
+    try {
+      // Busca postagens públicas da usuária no Firestore
+      const q = query(collection(db, "posts"), orderBy("criadoEm", "desc"));
+      const snapshot = await getDocs(q);
+      
+      let avatarEncontrado = null;
+      let postsDaUsuariaHtml = "";
+
+      snapshot.forEach(docSnap => {
+        let p = docSnap.data();
+        if (p.autor === nomeUsuario) {
+          if (p.avatar && !avatarEncontrado) avatarEncontrado = p.avatar;
+          postsDaUsuariaHtml += `
+            <div style="background: rgba(0,0,0,0.35); border-radius: 10px; padding: 10px; border-left: 3px solid ${p.cor || '#f3d98b'};">
+              ${p.mensagem ? `<p style="font-size: 0.8rem; color: #fff; margin: 0 0 6px 0; word-break: break-word;">${p.mensagem}</p>` : ''}
+              ${p.midia ? `<div style="max-height: 200px; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer;" onclick="abrirFotoPinterest('${p.midia}')"><img src="${p.midia}" style="width: 100%; height: auto; object-fit: contain;"></div>` : ''}
+            </div>
+          `;
+        }
+      });
+
+      if (avatarEncontrado) {
+        elAvatar.innerHTML = `<img src="${avatarEncontrado}" style="width: 100%; height: 100%; object-fit: cover;">`;
+      }
+
+      elFandom.innerText = `Fandom: ${localStorage.getItem('usuario_fandom') || 'Comunidade Umbrella'}`;
+      feedContainer.innerHTML = postsDaUsuariaHtml || `<p style="color: #aaa; font-size: 0.8rem; text-align: center;">Nenhuma postagem pública encontrada.</p>`;
+
+    } catch (e) {
+      feedContainer.innerHTML = `<p style="color: #ff4757; font-size: 0.8rem; text-align: center;">Erro ao carregar dados.</p>`;
+    }
+  };
+
+  window.fecharModalPerfilPublico = function() {
+    document.getElementById('modal-perfil-publico').style.display = 'none';
+  };
+
+  window.abrirPerfilAmigoVisita = function(nomeAmiga) {
+    abrirPerfilPublico(nomeAmiga);
+  };
+  window.fecharPerfilAmigoVisita = function() {
+    fecharModalPerfilPublico();
+  };
+
+  window.enviarSolicitacaoAmizadeDireta = async function(destinatario) {
+    let remetente = localStorage.getItem('usuario_nome');
+    if (!remetente) { alert("Faça login para enviar solicitação!"); return; }
+    if (remetente === destinatario) { alert("Você não pode enviar para si mesma."); return; }
+
+    try {
+      await addDoc(collection(db, "solicitacoes_amizade"), {
+        de: remetente,
+        para: destinatario,
+        mensagem: "Vamos assistir juntos",
+        criadoEm: serverTimestamp()
+      });
+      alert(`Solicitação de amizade enviada para ${destinatario}! 💧`);
+      fecharModalPerfilPublico();
+    } catch(e) { alert("Erro ao enviar solicitação."); }
+  };
+
+  function escutarSolicitacoesAmizadeTempoReal(meuNome) {
+    if (!meuNome) return;
+    const q = query(collection(db, "solicitacoes_amizade"));
+    onSnapshot(q, (snapshot) => {
+      let minhasPendencias = [];
+      snapshot.forEach(docSnap => {
+        let s = docSnap.data();
+        if (s.para === meuNome) {
+          minhasPendencias.push({ id: docSnap.id, de: s.de });
+        }
+      });
+      window.solicitacoesPendentesCache = minhasPendencias;
+      let contadorEl = document.getElementById('contador-gotinha');
+      if (contadorEl) contadorEl.innerText = minhasPendencias.length;
+    }, () => {});
+  }
+
+  window.renderizarNotificacoesAmizade = function() {
+    let container = document.getElementById('lista-notificacoes-conteudo');
+    if (!container) return;
+    let lista = window.solicitacoesPendentesCache || [];
+    if (lista.length === 0) {
+      container.innerHTML = `<p style="font-size: 0.8rem; color: #aaa; text-align: center;">Nenhuma notificação nova.</p>`;
+      return;
+    }
+    let html = "";
+    lista.forEach(item => {
+      html += `
+        <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 8px; border-left: 3px solid #f3d98b; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div>
+            <b style="color: #f3d98b; font-size: 0.85rem;">${item.de}</b>
+            <p style="color: #fff; font-size: 0.75rem; margin: 2px 0 0 0;">Vamos assistir juntos</p>
+          </div>
+          <div style="display: flex; gap: 6px;">
+            <button onclick="responderSolicitacaoAmizade('${item.id}', '${item.de}', true)" style="background: #4caf50; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Sim</button>
+            <button onclick="responderSolicitacaoAmizade('${item.id}', '${item.de}', false)" style="background: #ff4757; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Não</button>
+          </div>
+        </div>
+      `;
+    });
+    container.innerHTML = html;
+  };
+
+  window.responderSolicitacaoAmizade = async function(docId, remetente, aceito) {
+    try {
+      if (aceito) {
+        let meuNome = localStorage.getItem('usuario_nome');
+        await addDoc(collection(db, "amigos_umbrella"), {
+          usuario1: meuNome,
+          usuario2: remetente,
+          criadoEm: serverTimestamp()
+        });
+        alert(`Vocês agora são amigas no Umbrella! ☂️`);
+        verificarOuCriarAmizadeSistema(meuNome);
+      }
+      await deleteDoc(doc(db, "solicitacoes_amizade", docId));
+      renderizarNotificacoesAmizade();
+    } catch(e) { alert("Erro ao processar resposta."); }
+  };
 
   window.abrirChatPrivado = function(nomeAmigo) {
     window.amigoChatAtual = nomeAmigo;
@@ -1869,6 +2036,7 @@ function comentarGavetaMobile() {
   window.validarECruzarPixelsDesafioUnificado = async function() {
     let legenda = document.getElementById('textoDesafioUnificado')?.value.trim() || "";
     let nomeUsuario = localStorage.getItem('usuario_nome');
+    let fotoPerfilAtual = localStorage.getItem('usuario_foto') || null;
     if (!nomeUsuario) { alert("Faça login!"); return; }
     if (!window.arquivoFotoDesafioUnificado && !window.fotoBiasBase64Temp) { alert("Tire uma foto ou selecione uma imagem!"); return; }
 
@@ -1877,6 +2045,7 @@ function comentarGavetaMobile() {
       try {
         await addDoc(collection(db, "posts"), {
           autor: nomeUsuario,
+          avatar: fotoPerfilAtual,
           mensagem: legenda,
           midia: base64Enviada,
           isVideo: false,
@@ -1920,7 +2089,7 @@ function comentarGavetaMobile() {
       snapshot.forEach((docSnap) => {
         let post = docSnap.data();
         let postId = docSnap.id;
-        criarTopicoChatHTML(postId, post.autor || "Anônimo", post.mensagem || "", post.midia || null, post.cor || "#ff4757", post.likes || 0, mural);
+        criarTopicoChatHTML(postId, post.autor || "Anônimo", post.avatar || null, post.mensagem || "", post.midia || null, post.cor || "#ff4757", post.likes || 0, mural);
       });
     }, (error) => { carregarPostsDoFirestoreFallback(); });
   }
@@ -1937,23 +2106,25 @@ function comentarGavetaMobile() {
       mural.innerHTML = "";
       querySnapshot.forEach((docSnap) => {
         let post = docSnap.data();
-        criarTopicoChatHTML(docSnap.id, post.autor || "Anônimo", post.mensagem || "", post.midia || null, post.cor || "#ff4757", post.likes || 0, mural);
+        criarTopicoChatHTML(docSnap.id, post.autor || "Anônimo", post.avatar || null, post.mensagem || "", post.midia || null, post.cor || "#ff4757", post.likes || 0, mural);
       });
     } catch(e) {}
   }
 
   escutarPostsTempoReal();
 
-  function criarTopicoChatHTML(postId, nome, texto, midiaBase64, corCorrente, likesCount, mural) {
+  function criarTopicoChatHTML(postId, nome, avatarUrl, texto, midiaBase64, corCorrente, likesCount, mural) {
     const topicoDiv = document.createElement('div');
     topicoDiv.style.cssText = `background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(243,217,139,0.2); border-radius: 20px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative;`;
     
     let ehCriadora = localStorage.getItem('modo_criadora_ativo') === 'true';
 
+    let avatarHtml = avatarUrl ? `<img src="${avatarUrl}" style="width: 100%; height: 100%; object-fit: cover;">` : nome.charAt(0).toUpperCase();
+
     let html = `
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-        <div style="width: 32px; height: 32px; border-radius: 50%; background: ${corCorrente}; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; font-weight: bold; border: 1px solid #f3d98b;">${nome.charAt(0).toUpperCase()}</div>
-        <span style="font-size: 0.9rem; font-weight: bold; color: #f3d98b;">${nome}</span>
+        <div onclick="abrirPerfilPublico('${nome}')" style="width: 32px; height: 32px; border-radius: 50%; background: ${corCorrente}; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; font-weight: bold; border: 1px solid #f3d98b; cursor: pointer; overflow: hidden;" title="Ver Perfil">${avatarHtml}</div>
+        <span onclick="abrirPerfilPublico('${nome}')" style="font-size: 0.9rem; font-weight: bold; color: #f3d98b; cursor: pointer;">${nome}</span>
         ${ehCriadora ? `<button onclick="deletarPostFirestore('${postId}')" style="background:rgba(255,71,87,0.2); border:1px solid #ff4757; color:#ff6b81; border-radius:4px; padding:2px 6px; font-size:0.65rem; cursor:pointer; margin-left:auto;">✕</button>` : ''}
       </div>
       <div style="background: rgba(0,0,0,0.3); border-radius: 14px; padding: 12px; margin-bottom: 10px; border: 1px solid rgba(243,217,139,0.15);">
@@ -2115,7 +2286,7 @@ function comentarGavetaMobile() {
     let nomeInput = document.getElementById('solicitacao-nome');
     let motivoInput = document.getElementById('solicitacao-motivo');
     let nome = nomeInput ? nomeInput.value.trim() : "";
-    let motivo = motivoInput ? motivoInput.value.trim() : "Posso te emprestar um guarda-chuva?";
+    let motivo = motivoInput ? motivoInput.value.trim() : "Quero participar do abrigo.";
     
     if (!nome) { alert("Preencha seu nome!"); return; }
     document.getElementById('modal-solicitacao').style.display = 'none';
@@ -2128,7 +2299,7 @@ function comentarGavetaMobile() {
         cor: window.corAtualSelecionada || "#2196f3",
         criadoEm: serverTimestamp()
       });
-      alert("Pedido de abrigo enviado com sucesso!");
+      alert("Solicitação de abrigo enviada com sucesso!");
     } catch (e) { alert("Erro ao enviar."); }
   };
 
@@ -2155,7 +2326,7 @@ function comentarGavetaMobile() {
               <p style="font-size:0.75rem; color:#fff; margin:3px 0 0 0;">"${sol.motivo}"</p>
             </div>
             <div style="display: flex; gap: 6px;">
-              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}')" style="background:#4caf50; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Abrigar ☂️</button>
+              <button onclick="aceitarSolicitacaoNuvem('${docId}', '${sol.usuario}', '${sol.fandom}')" style="background:#4caf50; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">Aprovar ☂️</button>
               <button onclick="negarSolicitacaoNuvem('${docId}')" style="background:#ff4757; color:#fff; border:none; padding:6px 10px; border-radius:6px; font-size:0.75rem; font-weight:bold; cursor:pointer;">✕</button>
             </div>
           </div>
@@ -2167,18 +2338,10 @@ function comentarGavetaMobile() {
 
   window.aceitarSolicitacaoNuvem = async function(docId, usuario, fandom) {
     try {
-      let meuNome = localStorage.getItem('usuario_nome') || "Suporte Umbrella";
-      await addDoc(collection(db, "amigos_umbrella"), {
-        usuario1: meuNome,
-        usuario2: usuario,
-        criadoEm: serverTimestamp()
-      });
       await deleteDoc(doc(db, "solicitacoes_fandoms", docId));
       renderizarSolicitacoesAdmNuvem();
-      fecharPainelAdm();
-      alert(`Agora ${usuario} é seu amigo no Umbrella! ☂️`);
-      verificarOuCriarAmizadeSistema(meuNome);
-    } catch (e) { alert("Erro ao aceitar amizade."); }
+      alert(`Solicitação de ${usuario} aprovada para o fandom ${fandom}!`);
+    } catch (e) { alert("Erro ao aceitar solicitação."); }
   };
 
   window.negarSolicitacaoNuvem = async function(docId) {
