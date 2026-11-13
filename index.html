@@ -43,7 +43,6 @@
             color-scheme: dark;
         }
 
-        /* Fundo fixo usando fundo.jpeg */
         .fixed-background {
             position: fixed;
             inset: 0;
@@ -73,9 +72,10 @@
             border-radius: 20px;
         }
 
+        /* EXPANSIVO NO DESKTOP (SEM TRAVAR) */
         .app-shell {
             width: 100%;
-            max-width: 500px;
+            max-width: 800px;
             margin: 0 auto;
             min-height: 100vh;
             display: flex;
@@ -84,7 +84,31 @@
             position: relative;
         }
 
-        /* TOPO: PERFIL E LOGO DINÂMICA QUE ENCOLHE NO SCROLL */
+        /* BARRA DE PESQUISA FININHA NO TOPO DE TUDO (USANDO ASTERISCO) */
+        .search-top-bar {
+            width: 100%;
+            background: rgba(10, 14, 28, 0.92);
+            border-bottom: 1px solid var(--gold-border);
+            padding: 6px 16px;
+            display: flex;
+            align-items: center;
+            z-index: 45;
+        }
+
+        .search-input-fin {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 11.5px;
+            outline: none;
+            text-align: center;
+        }
+
+        .search-input-fin::placeholder {
+            color: var(--text-muted);
+        }
+
         .top-header {
             position: sticky;
             top: 0;
@@ -116,14 +140,13 @@
             height: 36px;
         }
 
-        /* Botão do Perfil à Esquerda (Foto que diminui no scroll) */
         .header-left-btn {
             position: absolute;
             left: 16px;
             top: 50%;
             transform: translateY(-50%);
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             border: 1.5px solid var(--gold-accent);
             background: var(--glass-dark);
@@ -132,11 +155,12 @@
             padding: 0;
             transition: width 0.25s ease, height 0.25s ease;
             box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            z-index: 5;
         }
 
         .top-header.scrolled .header-left-btn {
-            width: 34px;
-            height: 34px;
+            width: 32px;
+            height: 32px;
         }
 
         .header-left-btn img {
@@ -162,6 +186,7 @@
             font-size: 18px;
             cursor: pointer;
             color: var(--text-main);
+            z-index: 5;
         }
 
         .droplet-badge {
@@ -181,7 +206,7 @@
             padding: 0 4px;
         }
 
-        /* CARROSSEL HORIZONTAL (SEM CAIXAS/QUADRADOS EM VOLTA DAS BOLINHAS, ALTURA EXATA 130PX) */
+        /* CARROSSEL HORIZONTAL */
         .main-carousel-wrapper {
             padding: 8px 14px 16px;
             display: flex;
@@ -191,13 +216,14 @@
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             align-items: center;
+            width: 100%;
+            max-width: 100%;
         }
 
         .main-carousel-wrapper::-webkit-scrollbar {
             display: none;
         }
 
-        /* Cada item solto com 130px de altura, sem fundo quadrado delimitador */
         .carousel-item-clean {
             flex: 0 0 auto;
             height: 130px;
@@ -214,7 +240,6 @@
             transform: translateY(-2px);
         }
 
-        /* 1, 2 e 3. Pódios (130px altura) */
         .podium-item-box {
             width: 85px;
         }
@@ -228,6 +253,9 @@
             background: #060a1e;
             margin-bottom: 6px;
             box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 10px var(--gold-glow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .podium-circle-clean img {
@@ -240,9 +268,9 @@
             font-size: 11px;
             font-weight: 700;
             color: var(--gold-accent);
+            white-space: nowrap;
         }
 
-        /* 4. Card do Desafio do Dia (130px de altura por 240px de largura) */
         .challenge-card-clean {
             width: 240px;
             background: var(--glass-bg);
@@ -274,7 +302,6 @@
             overflow: hidden;
         }
 
-        /* 5, 6 e 7. Fandom, Amigos e Aconchego (130px altura) */
         .tab-item-box {
             width: 90px;
         }
@@ -303,6 +330,7 @@
             font-size: 11.5px;
             font-weight: 600;
             color: var(--text-main);
+            white-space: nowrap;
         }
 
         /* TELAS / ABAS */
@@ -375,50 +403,6 @@
         .fandom-box-card p {
             font-size: 11px;
             color: var(--text-muted);
-        }
-
-        /* Barra do Spotify e Frase Dorama no topo do feed */
-        .feed-top-bar {
-            padding: 12px 14px;
-            margin-bottom: 14px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .dorama-phrase-btn {
-            width: 100%;
-            padding: 8px 12px;
-            border-radius: 12px;
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid var(--gold-border);
-            color: var(--gold-accent);
-            font-size: 12.5px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .spotify-bar {
-            padding: 6px 10px;
-            border-radius: 12px;
-            background: var(--glass-dark);
-            border: 1px solid var(--gold-border);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .spotify-input {
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 12px;
-            flex: 1;
-            outline: none;
         }
 
         .feed-list {
@@ -586,7 +570,7 @@
             left: 50%;
             transform: translateX(-50%);
             width: calc(100% - 24px);
-            max-width: 476px;
+            max-width: 760px;
             z-index: 50;
         }
 
@@ -832,34 +816,6 @@
             color: var(--gold-accent);
             text-align: center;
         }
-
-        .chat-messages {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            max-height: 280px;
-            overflow-y: auto;
-            margin-bottom: 12px;
-        }
-
-        .chat-bubble {
-            max-width: 82%;
-            padding: 9px 13px;
-            border-radius: 16px;
-            background: var(--glass-dark);
-            border: 1px solid var(--gold-border);
-            font-size: 13px;
-            line-height: 1.4;
-        }
-
-        .chat-bubble.me {
-            align-self: flex-end;
-            background: rgba(251, 191, 36, 0.14);
-        }
-
-        .chat-bubble.them {
-            align-self: flex-start;
-        }
     </style>
 </head>
 <body>
@@ -867,9 +823,14 @@
     <div class="fixed-background"></div>
     <div class="fixed-backdrop-overlay"></div>
 
+    <!-- BARRA DE PESQUISA SUPER FININHA NO TOPO DE TUDO (*LUANA) -->
+    <div class="search-top-bar">
+        <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="Pesquisar na plataforma com * (ex: *Luana)" onkeyup="handleGlobalSearch(event)">
+    </div>
+
     <div class="app-shell">
 
-        <!-- TOPO COM PERFIL À ESQUERDA, LOGO DINÂMICA E GOTINHA -->
+        <!-- TOPO COM PERFIL À ESQUERDA, LOGO E GOTINHA -->
         <header class="top-header" id="topHeader">
             <button class="header-left-btn" onclick="openProfileModal()" title="Meu Perfil">
                 <img id="headerUserAvatar" src="aconchego.png" alt="">
@@ -885,9 +846,8 @@
             </button>
         </header>
 
-        <!-- CARROSSEL HORIZONTAL DE ITENS SOLTOS (130PX DE ALTURA, SEM CAIXAS QUADRADAS) -->
+        <!-- CARROSSEL HORIZONTAL -->
         <nav class="main-carousel-wrapper">
-            <!-- 1. Pódio 1 -->
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean">
                     <img id="podiumImg1" src="guarda-chuva.png" alt="">
@@ -895,7 +855,6 @@
                 <span class="podium-label-clean">1º Pódio</span>
             </div>
 
-            <!-- 2. Pódio 2 -->
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(2)">
                 <div class="podium-circle-clean">
                     <img id="podiumImg2" src="fandom.png" alt="">
@@ -903,7 +862,6 @@
                 <span class="podium-label-clean">2º Pódio</span>
             </div>
 
-            <!-- 3. Pódio 3 -->
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(3)">
                 <div class="podium-circle-clean">
                     <img id="podiumImg3" src="amigos.png" alt="">
@@ -911,7 +869,6 @@
                 <span class="podium-label-clean">3º Pódio</span>
             </div>
 
-            <!-- 4. Desafio do Dia (130px altura x 240px largura) -->
             <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
                     <span>☔ Desafio do Dia</span>
@@ -922,7 +879,6 @@
                 <span style="font-size:10px; color:var(--gold-accent);">Ver desafio ➔</span>
             </div>
 
-            <!-- 5. Fandom -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
                 <div class="tab-icon-clean">
                     <img src="fandom.png" alt="">
@@ -930,7 +886,6 @@
                 <span class="tab-label-clean">Fandom</span>
             </div>
 
-            <!-- 6. Amigos -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('amigos')">
                 <div class="tab-icon-clean">
                     <img src="amigos.png" alt="">
@@ -938,7 +893,6 @@
                 <span class="tab-label-clean">Amigos</span>
             </div>
 
-            <!-- 7. Aconchego -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('aconchego')">
                 <div class="tab-icon-clean">
                     <img src="aconchego.png" alt="">
@@ -947,21 +901,8 @@
             </div>
         </nav>
 
-        <!-- TELA 1: FEED PRINCIPAL -->
+        <!-- TELA 1: FEED PRINCIPAL (LIMPO, APENAS POSTAGENS) -->
         <main class="view-section active" id="view-feed">
-            <!-- Barra superior do feed com Spotify e Frase de Dorama (Sem duplicar foto de perfil) -->
-            <div class="glass-panel feed-top-bar">
-                <button class="dorama-phrase-btn" onclick="triggerDoramaInvite()">
-                    🎬 Quero assistir um dorama
-                </button>
-                <div class="spotify-bar">
-                    <input type="text" id="spotifyLinkInput" class="spotify-input" placeholder="Cole o link da música do Spotify...">
-                    <button class="btn-pill-gold" onclick="saveSpotifyTrack()">Salvar</button>
-                    <button class="btn-pill-gold" id="spotifyPlayPauseBtn" onclick="toggleAmbientMusic()">⏸</button>
-                </div>
-                <div id="spotifyEmbedContainer" style="margin-top:4px; display:none;"></div>
-            </div>
-
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
@@ -1015,7 +956,7 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS (COM ADICIONAR NOVO FANDOM POR FORA E SUBGRUPOS SÓ DENTRO) -->
+        <!-- TELA 3: FANDOMS -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms da Comunidade</span>
@@ -1128,13 +1069,13 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v5';
+        const LOCAL_KEY = 'umbrella_clean_state_v7';
 
         const cleanInitialState = {
             user: {
                 uid: '',
                 loggedIn: true,
-                name: 'Luana Souza',
+                name: 'Luana',
                 email: 'luanaeandrels@gmail.com',
                 phone: '',
                 bgColor: 'rgba(6, 10, 30, 0.62)',
@@ -1210,30 +1151,6 @@
             });
         } catch (e) {}
 
-        window.loginWithGoogle = async function () {
-            try {
-                const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-                if (isMobile) {
-                    await signInWithRedirect(auth, provider);
-                } else {
-                    const result = await signInWithPopup(auth, provider);
-                    if (result.user) {
-                        appState.user.uid = result.user.uid;
-                        appState.user.loggedIn = true;
-                        appState.user.name = result.user.displayName || 'Luana Souza';
-                        appState.user.email = result.user.email || '';
-                        if (result.user.photoURL) appState.user.avatar = result.user.photoURL;
-                        saveLocal();
-                        applyUserTheme();
-                        renderAll();
-                        closeUmbrellaModal();
-                    }
-                }
-            } catch (err) {
-                showUmbrellaModal({ title: 'Autenticação Google', htmlBody: 'Erro ao abrir login: ' + err.message });
-            }
-        };
-
         window.showUmbrellaModal = function ({ title, htmlBody, buttons = [] }) {
             const backdrop = document.getElementById('customModalBackdrop');
             document.getElementById('customModalTitle').textContent = title;
@@ -1262,42 +1179,48 @@
             document.getElementById('customModalBackdrop').classList.remove('open');
         };
 
+        // PERFIL DENTRO DA FOTO COM DADOS, MÚSICA E DORAMA
         window.openProfileModal = function () {
             showUmbrellaModal({
-                title: 'Perfil Umbrella',
+                title: `Perfil de ${appState.user.name}`,
                 htmlBody: `
+                    <div style="text-align:center; margin-bottom:14px;">
+                        <img src="${appState.user.avatar}" style="width:70px; height:70px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px;">
+                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
+                        <p style="font-size:12px; color:var(--text-muted);">${appState.user.email}</p>
+                    </div>
+
+                    <button class="btn-gold" style="margin-bottom:12px; display:flex; align-items:center; justify-content:center; gap:6px;" onclick="triggerDoramaInvite('${appState.user.name}')">
+                        🎬 Quero assistir um dorama
+                    </button>
+
+                    <div class="spotify-bar" style="margin-bottom:12px;">
+                        <input type="text" id="spotifyLinkInput" class="spotify-input" placeholder="Cole o link do Spotify..." value="${appState.user.spotifyUrl || ''}">
+                        <button class="btn-pill-gold" onclick="saveSpotifyTrackModal()">Salvar</button>
+                    </div>
+                    <div id="spotifyEmbedContainerModal" style="margin-bottom:12px; display:${appState.user.spotifyUrl ? 'block' : 'none'};">
+                        <iframe style="border-radius:12px" src="${appState.user.spotifyUrl ? appState.user.spotifyUrl.replace('open.spotify.com/', 'open.spotify.com/embed/') : ''}" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>
+                    </div>
+
                     <div class="form-group">
-                        <label class="form-label">Nome</label>
-                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}" placeholder="Seu nome">
+                        <label class="form-label">Alterar Nome</label>
+                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">E-mail</label>
-                        <input type="email" id="obEmail" class="glass-input" value="${appState.user.email}" placeholder="seu@email.com">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Telefone</label>
-                        <input type="tel" id="obPhone" class="glass-input" value="${appState.user.phone}" placeholder="(00) 00000-0000">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Foto de Perfil</label>
-                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Escolher foto</label>
-                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Escolher foto'">
+                        <label class="form-label">Alterar Foto</label>
+                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Escolher nova foto</label>
+                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Escolher nova foto'">
                     </div>
                 `,
                 buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
                     {
-                        label: 'Salvar',
+                        label: 'Salvar Alterações',
                         primary: true,
                         onClick: () => {
                             const name = document.getElementById('obName').value.trim();
-                            const email = document.getElementById('obEmail').value.trim();
-                            const phone = document.getElementById('obPhone').value.trim();
                             const fileInput = document.getElementById('obAvatarFile');
-
                             if (name) appState.user.name = name;
-                            if (email) appState.user.email = email;
-                            appState.user.phone = phone;
 
                             if (fileInput.files && fileInput.files[0]) {
                                 const reader = new FileReader();
@@ -1321,6 +1244,37 @@
             });
         };
 
+        window.saveSpotifyTrackModal = function () {
+            const url = document.getElementById('spotifyLinkInput').value.trim();
+            appState.user.spotifyUrl = url;
+            saveLocal();
+            const container = document.getElementById('spotifyEmbedContainerModal');
+            if (url.includes('spotify.com')) {
+                const embedUrl = url.replace('open.spotify.com/', 'open.spotify.com/embed/');
+                container.innerHTML = `<iframe style="border-radius:12px" src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
+                container.style.display = 'block';
+            }
+        };
+
+        // PESQUISA GLOBAL COM ASTERISCO (*Luana)
+        window.handleGlobalSearch = function (event) {
+            const val = event.target.value.trim();
+            if (val.startsWith('*') && val.length > 1) {
+                const queryUser = val.substring(1).toLowerCase();
+                const matchedPosts = appState.posts.filter(p => p.author.toLowerCase().includes(queryUser));
+                if (event.key === 'Enter') {
+                    const container = document.getElementById('mainFeedList');
+                    if (matchedPosts.length > 0) {
+                        container.innerHTML = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; color:var(--gold-accent); font-size:12.5px;">Resultados para: ${val}</div>` + matchedPosts.map(renderPostCardHTML).join('');
+                    } else {
+                        showUmbrellaModal({ title: 'Busca Umbrella', htmlBody: `Nenhuma publicação encontrada para <strong>${val}</strong>.` });
+                    }
+                }
+            } else if (val === '') {
+                renderAll();
+            }
+        };
+
         window.switchView = function (viewName) {
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const target = document.getElementById('view-' + viewName);
@@ -1333,36 +1287,6 @@
             const item = appState.podium[rank];
             if (!item) return;
             openLightbox(item.img, 'image', item.title);
-        };
-
-        window.saveSpotifyTrack = function () {
-            const url = document.getElementById('spotifyLinkInput').value.trim();
-            appState.user.spotifyUrl = url;
-            saveLocal();
-            const container = document.getElementById('spotifyEmbedContainer');
-            if (url.includes('spotify.com')) {
-                const embedUrl = url.replace('open.spotify.com/', 'open.spotify.com/embed/');
-                container.innerHTML = `<iframe style="border-radius:12px" src="${embedUrl}" width="100%" height="80" frameBorder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"></iframe>`;
-                container.style.display = 'block';
-                ambientPlaying = true;
-                document.getElementById('spotifyPlayPauseBtn').textContent = '⏸';
-            } else {
-                showUmbrellaModal({ title: 'Trilha Sonora', htmlBody: 'Cole um link válido do Spotify.' });
-            }
-        };
-
-        window.toggleAmbientMusic = function () {
-            const container = document.getElementById('spotifyEmbedContainer');
-            const btn = document.getElementById('spotifyPlayPauseBtn');
-            if (ambientPlaying) {
-                container.style.display = 'none';
-                ambientPlaying = false;
-                btn.textContent = '▶';
-            } else if (appState.user.spotifyUrl) {
-                container.style.display = 'block';
-                ambientPlaying = true;
-                btn.textContent = '⏸';
-            }
         };
 
         window.triggerNativeCameraGallery = async function () {
@@ -1555,7 +1479,7 @@
 
         window.triggerDoramaInvite = function (targetUser) {
             if (!targetUser || targetUser === appState.user.name) {
-                showUmbrellaModal({ title: 'Quero assistir um dorama 🎬', htmlBody: 'Seu status interativo está ativo no perfil!' });
+                showUmbrellaModal({ title: 'Quero assistir um dorama 🎬', htmlBody: 'Status interativo ativo no perfil!' });
                 return;
             }
             appState.notifications.unshift({
@@ -1715,7 +1639,6 @@
         function applyUserTheme() {
             document.documentElement.style.setProperty('--user-tint', appState.user.bgColor);
             document.getElementById('headerUserAvatar').src = appState.user.avatar;
-            document.getElementById('spotifyLinkInput').value = appState.user.spotifyUrl || '';
         }
 
         function renderPostCardHTML(post) {
