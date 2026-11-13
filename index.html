@@ -598,10 +598,10 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- CABECALHO DA LOGO COM A IMAGEM "logo.jpg" -->
+  <!-- CABECALHO DA LOGO COM A IMAGEM "logo.png" -->
   <header style="text-align: center; padding: 8px 0 4px;">
     <div class="logo-container" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">
-      <img src="logo.jpg" alt="Umbrella" class="logo-img" onerror="this.style.display='none'">
+      <img src="logo.png" alt="Umbrella" class="logo-img" onerror="this.style.display='none'">
     </div>
     <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
   </header>
@@ -635,7 +635,13 @@ border-radius:999px; display:inline-block;}
         <div class="story-avatar-mob" style="background: #2196f3; overflow: hidden; padding: 0;">
           <img src="fandom.png" alt="Fandom" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>🌐</div>'">
         </div>
-        <span class="story-nome-mob">Comunidade</span><span class="story-arroba-mob">Fandoms</span>
+        <span class="story-nome-mob">Fandom</span><span class="story-arroba-mob">Comunidade</span>
+      </div>
+      <div class="story-item-mob" onclick="abrirGavetaMobile('amigos')">
+        <div class="story-avatar-mob" style="background: #e91e63; overflow: hidden; padding: 0;">
+          <img src="amigos.png" alt="Amigos" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #e91e63; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>💬</div>'">
+        </div>
+        <span class="story-nome-mob">Amigos</span><span class="story-arroba-mob">Bate-papos</span>
       </div>
     </div>
   </div>
@@ -719,7 +725,7 @@ border-radius:999px; display:inline-block;}
       </div>
     </div>
 
-    <!-- COLUNA CENTRAL: FEED GERAL E CAMPO DE POSTAGEM DIRETO -->
+    <!-- COLUNA CENTRAL: CAMPO DE POSTAGEM DIRETO -->
     <div id="coluna-central" class="coluna-mobile ativa-mobile" style="display: flex; flex-direction: column; gap: 14px;">
       
       <!-- CAIXA DE POSTAGEM DIRETA COM A IMAGEM camera.png -->
@@ -727,7 +733,7 @@ border-radius:999px; display:inline-block;}
         <div id="bias-tag-topo" style="display: none; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; color: #f3d98b; margin-bottom: 8px;"></div>
 
         <div style="position: relative; margin-bottom: 12px;">
-          <textarea id="textoDesafioUnificado" placeholder="O que vamos proteger hoje?" oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="border-radius: 14px; resize: none; height: 80px; padding: 12px; font-size: 0.9rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25); outline: none;"></textarea>
+          <textarea id="textoDesafioUnificado" placeholder="Encontrei meu número um tomando chocolate quente..." oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="border-radius: 14px; resize: none; height: 80px; padding: 12px; font-size: 0.9rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25); outline: none;"></textarea>
           <div id="sugestoes-bias-unificado" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 140px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
 
@@ -743,7 +749,7 @@ border-radius:999px; display:inline-block;}
               <img id="preview-mini-img" src="" style="width: 100%; height: 100%; object-fit: cover;">
             </div>
 
-            <span id="label-texto-status-foto" style="font-size: 0.8rem; color: #aaa;">Toque na bolinha para abrir a câmera/galeria</span>
+            <span id="label-texto-status-foto" style="font-size: 0.8rem; color: #aaa;">Encontrei meu número um tomando chocolate quente</span>
           </div>
 
           <button onclick="validarECruzarPixelsDesafioUnificado()" class="btn-tema-bg" style="background: #9c27b0; color: #fff; border: none; border-radius: 10px; padding: 10px 20px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">Publicar</button>
@@ -754,7 +760,7 @@ border-radius:999px; display:inline-block;}
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 20px; border: 1px solid rgba(243,217,139,0.2);">
           <div style="display: flex; align-items: center; gap: 10px;">
             <div>
-              <h4 style="margin: 0; font-size: 0.95rem; color: #fff;" id="titulo-feed-atual">Feed Global</h4>
+              <h4 style="margin: 0; font-size: 0.95rem; color: #fff;" id="titulo-feed-atual">Desafio do Dia</h4>
               <p style="margin: 0; font-size: 0.75rem; color: #ff6b81;" id="sub-feed-atual">Publicações recentes</p>
             </div>
           </div>
@@ -837,7 +843,7 @@ border-radius:999px; display:inline-block;}
       <!-- FANDOMS COM A IMAGEM fandom.png -->
       <div class="card" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandoms</h3>
+          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandom</h3>
           <button onclick="abrirModalNovoTema()" style="background: rgba(243,217,139,0.15); border: 1px dashed #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
         </div>
         <div style="margin-bottom: 8px; width: 100%; height: 100px; border-radius: 8px; overflow: hidden; background: #000; border: 1px solid rgba(243,217,139,0.3); display: flex; align-items: center; justify-content: center;">
@@ -1019,6 +1025,14 @@ function abrirGavetaMobile(tipo) {
       </div>
     `;
     setTimeout(() => renderizarListaFandomsLateralMobile(), 50);
+  } else if (tipo === 'amigos') {
+    container.innerHTML = `
+      <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
+        <h4 style="color: #f3d98b; margin-bottom: 10px;">Bate-papo de Amigos</h4>
+        <div style="font-size: 0.85rem; color: #ccc;">Carolyne (Offline)</div>
+        <div style="font-size: 0.85rem; color: #4caf50; margin-top: 5px;">Suporte Umbrella (Online)</div>
+      </div>
+    `;
   }
 
   overlay.style.display = 'flex';
@@ -1922,7 +1936,7 @@ document.getElementById('image-input').addEventListener('change', function(event
         let statusTxt = document.getElementById('label-texto-status-foto');
         if(labelCirculo) labelCirculo.style.display = 'flex';
         if(previewMini) previewMini.style.display = 'none';
-        if(statusTxt) { statusTxt.innerText = "Toque na bolinha para abrir a câmera/galeria"; statusTxt.style.color = "#aaa"; }
+        if(statusTxt) { statusTxt.innerText = "Encontrei meu número um tomando chocolate quente"; statusTxt.style.color = "#aaa"; }
 
         registrarNoHistoricoGaveta('POSTAGEM', `Publicou no Umbrella: "${legenda ? legenda.slice(0, 20) + '...' : 'Mídia'}"`, base64Enviada);
         alert("Publicado com sucesso no Umbrella!");
