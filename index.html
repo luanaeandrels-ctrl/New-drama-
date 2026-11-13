@@ -1,1 +1,441 @@
 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Umbrella - Doramas, K-Pop & Animes</title>
+  <link rel="manifest" href="manifest.json" />
+  <style>
+    :root {
+      --bg-dark: #060a1e;
+      --glass-bg: rgba(20, 24, 42, 0.65);
+      --glass-border: rgba(251, 191, 36, 0.35); /* Fiozinho dourado sutil */
+      --accent-gold: #fbbf24;
+      --accent-purple: #8b5cf6;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, sans-serif; }
+
+    body {
+      background-color: var(--bg-dark);
+      background-image: linear-gradient(rgba(6, 10, 30, 0.75), rgba(6, 10, 30, 0.88)), url('fundo.jpeg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      backdrop-filter: blur(8px); /* Desfoque elegante no fundo */
+      color: var(--text-main);
+      min-height: 100vh;
+      padding-top: 95px;
+      padding-bottom: 90px;
+    }
+
+    /* TOPO COM LOGO DINÂMICA E GOTINHA DE NOTIFICAÇÃO */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 85px;
+      background: rgba(6, 10, 30, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      transition: height 0.3s ease;
+    }
+
+    header.scrolled { height: 58px; }
+
+    header img.main-logo {
+      height: 65px;
+      width: auto;
+      object-fit: contain;
+      transition: height 0.3s ease;
+    }
+
+    header.scrolled img.main-logo { height: 38px; }
+
+    .notification-badge {
+      position: absolute;
+      right: 20px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--accent-gold);
+      color: #060a1e;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 10px rgba(251, 191, 36, 0.5);
+    }
+
+    /* CONTAINER PRINCIPAL */
+    .app-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px;
+    }
+
+    /* ESTILO GLASS (TRANSLÚCIDO COM BORDA DOURADA SUTIL) */
+    .glass-card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 16px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    }
+
+    /* NAVEGAÇÃO POR BOLINHAS (130px NO MOBILE) */
+    .nav-bubbles {
+      display: flex;
+      gap: 14px;
+      overflow-x: auto;
+      padding: 10px 4px;
+      margin-bottom: 20px;
+      scrollbar-width: none;
+    }
+    .nav-bubbles::-webkit-scrollbar { display: none; }
+
+    .bubble-btn {
+      min-width: 130px;
+      width: 130px;
+      height: 130px;
+      border-radius: 50%;
+      background: var(--glass-bg);
+      border: 2px solid var(--glass-border);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .bubble-btn:hover, .bubble-btn.active {
+      border-color: var(--accent-gold);
+      transform: scale(1.05);
+      background: rgba(139, 92, 246, 0.25);
+    }
+
+    .bubble-btn img {
+      width: 36px;
+      height: 36px;
+      object-fit: contain;
+    }
+
+    /* FEED CONTÍNUO (SEM BORDAS RÍGIDAS) */
+    .feed-stream {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .post-item {
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      padding: 14px;
+    }
+
+    /* BALÃO DE CHAT E ENTRADA PADRÃO DO APP */
+    .chat-input-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 30px;
+      padding: 8px 14px;
+      backdrop-filter: blur(10px);
+      margin-top: 10px;
+    }
+
+    .chat-input-bar input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    .chat-btn-plus, .chat-btn-send {
+      background: none;
+      border: none;
+      color: var(--accent-gold);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    /* POP-UP CUSTOMIZADO UMBRELLA */
+    .umbrella-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(6, 10, 30, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .umbrella-modal-content {
+      background: var(--glass-bg);
+      border: 1px solid var(--accent-gold);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      backdrop-filter: blur(16px);
+      box-shadow: 0 0 25px rgba(251, 191, 36, 0.25);
+    }
+
+    /* VISUALIZADOR PINTEREST (MODAL DE MÍDIA) */
+    .media-viewer {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 3000;
+      justify-content: center;
+      align-items: center;
+      padding: 10px;
+    }
+    .media-viewer img, .media-viewer video {
+      max-width: 100%;
+      max-height: 90vh;
+      object-fit: contain;
+      border-radius: 12px;
+    }
+
+    /* LAYOUT DESKTOP: 3 COLUNAS */
+    @media (min-width: 960px) {
+      .app-container {
+        display: grid;
+        grid-template-columns: 1fr 2fr 1fr;
+        gap: 20px;
+        align-items: start;
+      }
+      .nav-bubbles {
+        flex-direction: column;
+        overflow-x: visible;
+      }
+      .bubble-btn {
+        width: 100%;
+        height: 70px;
+        border-radius: 16px;
+        flex-direction: row;
+        justify-content: flex-start;
+        padding: 0 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOPO -->
+  <header id="appHeader">
+    <img src="logo.png" alt="Umbrella" class="main-logo" onerror="this.src='guarda-chuva.png'" />
+    <div class="notification-badge" onclick="openNotifications()" title="Gotinha de Notificações">💧</div>
+  </header>
+
+  <div class="app-container">
+    
+    <!-- COLUNA ESQUERDA / MENU DE BOLINHAS (130px MOBILE) -->
+    <aside>
+      <div class="nav-bubbles">
+        <button class="bubble-btn active" onclick="switchTab('podio')">
+          🏆 <span>Pódio</span>
+        </button>
+        <button class="bubble-btn" onclick="switchTab('desafios')">
+          🎯 <span>Desafios</span>
+        </button>
+        <button class="bubble-btn" onclick="switchTab('amigos')">
+          👥 <span>Amigos</span>
+        </button>
+        <button class="bubble-btn" onclick="switchTab('fandom')">
+          🌟 <span>Fandom</span>
+        </button>
+        <button class="bubble-btn" onclick="switchTab('aconchego')">
+          🛡️ <span>Aconchego</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- COLUNA CENTRAL / FEED PRINCIPAL E CONTEÚDO -->
+    <main>
+      <div id="mainContentArea" class="glass-card">
+        <h2 style="color: var(--accent-gold); margin-bottom: 12px;">Feed Contínuo Umbrella</h2>
+        <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 16px;">Role para ver as postagens da comunidade protegidas sob o guarda-chuva.</p>
+        
+        <!-- Caixa de envio padrão do App (Estilo chat balão) -->
+        <div class="chat-input-bar">
+          <button class="chat-btn-plus" onclick="triggerNativeCamera()">+</button>
+          <input type="text" id="feedPostText" placeholder="O que vamos proteger hoje?" />
+          <button class="chat-btn-send" onclick="publishFeed()">➤</button>
+        </div>
+      </div>
+
+      <!-- Feed Dinâmico -->
+      <div class="feed-stream" id="feedStream">
+        <div class="post-item">
+          <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;">Luana</div>
+          <p style="font-size: 0.9rem; margin-bottom: 8px;">Bem-vindos ao novo Umbrella! ☔🎬</p>
+          <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-muted);">
+            <span>☂️ Curtir</span>
+            <span>💬 Comentar</span>
+            <span>🔗 Compartilhar</span>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- COLUNA DIREITA / PERFIL & SPOTIFY -->
+    <aside>
+      <div class="glass-card">
+        <h3 style="color: var(--accent-gold); font-size: 1rem; margin-bottom: 8px;">Meu Perfil & Música</h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 10px;">Cole seu link do Spotify para tocar no fundo:</p>
+        <input type="text" id="spotifyInput" placeholder="https://open.spotify.com/..." style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:8px; border-radius:10px; color:#fff; font-size:0.8rem; margin-bottom:8px;" />
+        <button onclick="saveSpotifyMusic()" style="background:var(--accent-purple); color:#fff; border:none; padding:8px 12px; border-radius:10px; font-size:0.8rem; cursor:pointer; width:100%;">Ativar Música</button>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- POPUP CUSTOMIZADO UMBRELLA -->
+  <div id="umbrellaModal" class="umbrella-modal">
+    <div class="umbrella-modal-content">
+      <h3 id="modalTitle" style="color: var(--accent-gold); margin-bottom: 10px;">Aviso Umbrella</h3>
+      <p id="modalMessage" style="font-size: 0.9rem; color: var(--text-main); margin-bottom: 20px;"></p>
+      <button onclick="closeModal()" style="background: var(--accent-gold); color: #060a1e; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer;">Entendido</button>
+    </div>
+  </div>
+
+  <!-- FIREBASE & SCRIPT DE CONTROLE -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
+      authDomain: "new-drama-e729b.firebaseapp.com",
+      projectId: "new-drama-e729b",
+      storageBucket: "new-drama-e729b.firebasestorage.app",
+      messagingSenderId: "1038068499530",
+      appId: "1:1038068499530:web:44fd33a0a628bcad4ad2b3",
+      measurementId: "G-VXNH7S6N36"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    // Efeito de Scroll da Logo
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('appHeader');
+      if (window.scrollY > 25) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    // Navegação entre abas
+    window.switchTab = (tabName) => {
+      document.querySelectorAll('.bubble-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      
+      const area = document.getElementById('mainContentArea');
+      if (tabName === 'aconchego') {
+        area.innerHTML = `
+          <h2 style="color: var(--accent-gold); margin-bottom: 12px;">Meu Aconchego (Histórico)</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">Suas interações e histórico pessoal.</p>
+          <input type="password" id="admMasterCode" placeholder="Digite a senha mestre..." oninput="checkMasterCode(this.value)" style="width:100%; background:rgba(6,10,30,0.6); border:1px solid var(--glass-border); padding:10px; border-radius:10px; color:#fff;" />
+          <div id="adminPanelArea" style="display:none; margin-top:14px; border-top:1px solid var(--glass-border); padding-top:10px;">
+            <p style="color:var(--accent-gold); font-weight:bold;">Painel ADM Liberado (Luanaeandrels)</p>
+            <p style="font-size:0.8rem; color:var(--text-muted);">Gerenciamento de desafios semanais e fandoms ativado.</p>
+          </div>
+        `;
+      } else {
+        area.innerHTML = `
+          <h2 style="color: var(--accent-gold); margin-bottom: 12px;">Seção: ${tabName.toUpperCase()}</h2>
+          <p style="color: var(--text-muted); font-size: 0.9rem;">Módulo configurado com padrão Glassmorphism e fluxo contínuo.</p>
+        `;
+      }
+    };
+
+    // Validação da senha mestre ADM
+    window.checkMasterCode = (val) => {
+      const clean = val.trim().toLowerCase();
+      if (clean === "luanaeandrels" || clean === "luana e andré ls") {
+        document.getElementById('adminPanelArea').style.display = 'block';
+      } else {
+        document.getElementById('adminPanelArea').style.display = 'none';
+      }
+    };
+
+    // Pop-up customizado (Zero alertas padrão)
+    window.showUmbrellaModal = (title, message) => {
+      document.getElementById('modalTitle').innerText = title;
+      document.getElementById('modalMessage').innerText = message;
+      document.getElementById('umbrellaModal').style.display = 'flex';
+    };
+
+    window.closeModal = () => {
+      document.getElementById('umbrellaModal').style.display = 'none';
+    };
+
+    window.openNotifications = () => {
+      showUmbrellaModal("Gotinha de Notificações", "Nenhuma nova solicitação 'Vamos assistir juntos?' no momento.");
+    };
+
+    window.triggerNativeCamera = () => {
+      showUmbrellaModal("Câmera & Galeria", "Abrindo seletor nativo do celular para envio de foto/vídeo...");
+    };
+
+    window.saveSpotifyMusic = () => {
+      const link = document.getElementById('spotifyInput').value;
+      if (!link) return showUmbrellaModal("Atenção", "Insira um link válido do Spotify.");
+      showUmbrellaModal("Spotify Ativado", "Trilha sonora configurada com sucesso para o seu perfil!");
+    };
+
+    window.publishFeed = () => {
+      const txt = document.getElementById('feedPostText').value.trim();
+      if (!txt) return;
+      const stream = document.getElementById('feedStream');
+      stream.innerHTML = `
+        <div class="post-item">
+          <div style="font-weight: bold; color: var(--accent-gold); margin-bottom: 4px;">Luana</div>
+          <p style="font-size: 0.9rem; margin-bottom: 8px;">${txt}</p>
+          <div style="display: flex; gap: 16px; font-size: 0.85rem; color: var(--text-muted);">
+            <span>☂️ Curtir</span>
+            <span>💬 Comentar</span>
+            <span>🔗 Compartilhar</span>
+          </div>
+        </div>
+      ` + stream.innerHTML;
+      document.getElementById('feedPostText').value = "";
+    };
+  </script>
+</body>
+</html>
