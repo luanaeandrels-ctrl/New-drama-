@@ -135,47 +135,239 @@ body::before {
   max-width: 1400px;
   margin: 0 auto;
 }
-.logo-container {
+
+/* ==================================== */
+/* CABEÇALHO INTEGRADO (DESKTOP & MOBILE)*/
+/* ==================================== */
+.header-integrado {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 15px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+/* Esquerda: Pódio Circular */
+.podio-topo-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+.podio-item-topo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.podio-item-topo:hover {
+  transform: scale(1.06);
+}
+.podio-circulo {
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  padding: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+  position: relative;
+}
+.podio-circulo-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #121829;
+  border: 2px solid #060a1e;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+.podio-circulo-inner img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.podio-label {
+  font-size: 0.7rem;
+  font-weight: bold;
+  margin-top: 4px;
+  text-shadow: 0 1px 3px #000;
+}
+
+/* Centro: Logo.png + Subtítulo + Contador */
+.centro-logo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.logo-img-topo {
+  max-height: 75px;
+  width: auto;
+  object-fit: contain;
+  cursor: pointer;
+  filter: drop-shadow(0 0 15px rgba(243,217,139,0.5));
   transition: all 0.3s ease;
 }
-.logo{
-  font-family:Georgia, serif; font-size:58px; font-weight:700;
-  color:#f3d98b; letter-spacing:1px;
-  text-shadow:0 0 20px #f3d98b, 0 0 40px #b8860b;
+.logo-fallback-txt {
+  font-family: Georgia, serif;
+  font-size: 48px;
+  font-weight: 700;
+  color: #f3d98b;
+  letter-spacing: 1px;
+  text-shadow: 0 0 20px #f3d98b, 0 0 40px #b8860b;
   line-height: 1.1;
   cursor: pointer;
+}
+.subtitle {
+  font-size: 14px;
+  letter-spacing: 3px;
+  opacity: 0.85;
+  text-transform: uppercase;
+  margin-top: 4px;
   transition: all 0.3s ease;
+  text-align: center;
 }
-.boneco-logo {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #f3d98b;
-  box-shadow: 0 0 10px rgba(243,217,139,0.5);
+.contador {
+  font-size: 12px;
+  background: rgba(243,217,139,0.15);
+  border: 1px solid #f3d98b;
+  padding: 4px 12px;
+  border-radius: 999px;
+  display: inline-block;
+  margin-top: 6px;
 }
-.subtitle{font-size:18px; letter-spacing:3px; opacity:.8; text-transform:uppercase; margin-top: 4px; transition: all 0.3s ease; text-align: center;}
 
-body.logo-recolhida .logo {
-  font-size: 28px !important;
-  text-shadow: 0 0 10px #f3d98b;
+/* Direita (Desktop): 2 Fandoms em círculos + Botão + */
+.fandoms-topo-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
 }
-body.logo-recolhida .boneco-logo {
-  width: 32px;
-  height: 32px;
+.fandom-circulo-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.fandom-circulo-item:hover {
+  transform: scale(1.06);
+}
+.fandom-circulo-borda {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(45deg, #2196f3, #9c27b0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+}
+.fandom-circulo-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: #121829;
+  border: 2px solid #060a1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #fff;
+  overflow: hidden;
+}
+.fandom-circulo-nome {
+  font-size: 0.7rem;
+  color: #f3d98b;
+  font-weight: bold;
+  margin-top: 4px;
+  max-width: 65px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.btn-mais-fandom-topo {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(243,217,139,0.15);
+  border: 1px dashed #f3d98b;
+  color: #f3d98b;
+  font-size: 1.3rem;
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  margin-bottom: 14px;
+}
+.btn-mais-fandom-topo:hover {
+  background: rgba(243,217,139,0.3);
+}
+
+/* Recolhimento ao rolar */
+body.logo-recolhida .logo-img-topo {
+  max-height: 42px;
 }
 body.logo-recolhida .subtitle {
-  font-size: 11px !important;
+  font-size: 10px;
   letter-spacing: 1px;
   margin-top: 2px;
-  opacity: 0.6;
 }
 
-.layout{display:grid; grid-template-columns:300px 1fr 300px; gap:14px; margin-top:14px; align-items:start; transition: all 0.3s ease;}
+/* Botão Gota de Chuva com Badge */
+.btn-gota-chuva {
+  position: relative;
+  background: rgba(33, 150, 243, 0.2);
+  border: 1px solid rgba(33, 150, 243, 0.6);
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.05rem;
+  transition: transform 0.2s;
+}
+.btn-gota-chuva:hover {
+  transform: scale(1.08);
+  background: rgba(33, 150, 243, 0.35);
+}
+.badge-gota {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background: #ff4757;
+  color: white;
+  font-size: 0.65rem;
+  font-weight: bold;
+  min-width: 17px;
+  height: 17px;
+  border-radius: 999px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  border: 1px solid #060a1e;
+  box-shadow: 0 2px 6px rgba(255,71,87,0.6);
+}
+
+.layout{display:grid; grid-template-columns:300px 1fr 300px; gap:14px; margin-top:10px; align-items:start; transition: all 0.3s ease;}
 .card{
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(243, 217, 139, 0.2); border-radius: 20px; padding: 16px;
@@ -186,8 +378,6 @@ body.logo-recolhida .subtitle {
 input, select, textarea{width:100%; padding: 10px; border-radius:999px; border:1px solid rgba(255,255,255,0.25);
 background:rgba(0,0,0,0.3); color:#fff; outline:none; font-size: 0.85rem;}
 select option { background: #121829; color: #fff; }
-.contador{font-size:13px; background:rgba(243,217,139,0.15); border:1px solid #f3d98b; padding:6px 10px;
-border-radius:999px; display:inline-block;}
 
 #bloco-topo-mobile { display: none; }
 
@@ -196,7 +386,7 @@ border-radius:999px; display:inline-block;}
   gap: 12px;
   overflow-x: auto;
   padding: 8px 4px 12px 4px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   scroll-snap-type: x mandatory;
 }
 .story-item-mob {
@@ -204,14 +394,14 @@ border-radius:999px; display:inline-block;}
   flex-direction: column;
   align-items: center;
   flex-shrink: 0;
-  width: 136px;
+  width: 95px;
   cursor: pointer;
   scroll-snap-align: start;
   text-align: center;
 }
 .story-avatar-mob {
-  width: 130px;  
-  height: 130px; 
+  width: 82px;  
+  height: 82px; 
   border-radius: 50%;
   padding: 3px;
   background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
@@ -227,20 +417,20 @@ border-radius:999px; display:inline-block;}
   border-radius: 50%;
   overflow: hidden;
   background: #111;
-  border: 3px solid #060a1e;
+  border: 2px solid #060a1e;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 .story-avatar-inner img { width: 100%; height: 100%; object-fit: cover; }
 .story-nome-mob {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: #fff;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 132px;
+  max-width: 92px;
 }
 .story-arroba-mob {
   font-size: 0.65rem;
@@ -248,7 +438,7 @@ border-radius:999px; display:inline-block;}
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  max-width: 132px;
+  max-width: 92px;
 }
 
 .story-balao-mob {
@@ -257,31 +447,31 @@ border-radius:999px; display:inline-block;}
   justify-content: center;
   background: rgba(156, 39, 176, 0.25);
   border: 1px solid #9c27b0;
-  border-radius: 20px;
-  padding: 10px 14px;
-  width: 280px;  
-  height: 130px; 
+  border-radius: 18px;
+  padding: 8px 12px;
+  width: 210px;  
+  height: 82px; 
   flex-shrink: 0;
   cursor: pointer;
   scroll-snap-align: start;
   box-shadow: 0 4px 15px rgba(156, 39, 176, 0.4);
 }
 .story-balao-mob span.titulo-b {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: bold;
   color: #f3d98b;
   display: block;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 .story-balao-mob p.texto-b {
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   color: #fff;
   margin: 0;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
   line-height: 1.2;
@@ -303,6 +493,19 @@ border-radius:999px; display:inline-block;}
   .layout{display:block;}
   #bloco-topo-mobile { display: block; }
   #coluna-esquerda, #coluna-direita { display: none !important; }
+  .fandoms-topo-container { display: none !important; }
+  .header-integrado {
+    grid-template-columns: 1fr;
+    gap: 10px;
+    padding: 6px 5px;
+  }
+  .podio-topo-container {
+    justify-content: center;
+    order: 2;
+  }
+  .centro-logo-container {
+    order: 1;
+  }
 }
 </style>
 </head>
@@ -337,7 +540,7 @@ border-radius:999px; display:inline-block;}
 <!-- GAVETA MOBILE EXCLUSIVA -->
 <div id="gaveta-mobile-overlay">
   <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 10px;">
-    <span style="width: 24px;"></span>
+    <span id="titulo-gaveta-mobile" style="color: #f3d98b; font-weight: bold; font-size: 1rem;">Menu</span>
     <button onclick="fecharGavetaMobile()" style="background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer;" title="Fechar">✕</button>
   </div>
   <div id="conteudo-dinamico-gaveta-mobile" style="display: flex; flex-direction: column; gap: 14px; padding-bottom: 30px;"></div>
@@ -365,7 +568,6 @@ border-radius:999px; display:inline-block;}
       <button onclick="fecharModalPublicacao()" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✕</button>
     </div>
 
-    <!-- ÁREA DO BALÃO DE PRÉ-VISUALIZAÇÃO DA MÍDIA -->
     <div id="preview-container-midia" style="width: 100%; height: 160px; background: rgba(0,0,0,0.4); border-radius: 14px; border: 1px dashed rgba(255,255,255,0.25); display: flex; align-items: center; justify-content: center; margin-bottom: 12px; overflow: hidden; position: relative; padding: 6px;">
       <span id="preview-placeholder-txt" style="font-size: 0.8rem; color: #aaa;">Nenhuma foto ou vídeo selecionado</span>
       <img id="preview-img-tag" src="" style="width: 100%; height: 100%; object-fit: contain; border-radius: 10px; display: none;">
@@ -386,16 +588,53 @@ border-radius:999px; display:inline-block;}
   </div>
 </div>
 
+<!-- MODAL DA GOTA DE CHUVA (NOTIFICAÇÕES E CONVITES DE AMIZADE) -->
+<div id="modal-gota-chuva" class="modal-custom">
+  <div class="caixa-modal" style="border: 1px solid #2196f3; box-shadow: 0 0 25px rgba(33,150,243,0.4);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px;">
+      <h3 style="color: #64b5f6; font-size: 1.1rem; margin: 0; display: flex; align-items: center; gap: 6px;">💧 Gotas de Chuva</h3>
+      <button onclick="fecharModalGotaChuva()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+    </div>
+    <div id="lista-notificacoes-gota" style="display: flex; flex-direction: column; gap: 10px; max-height: 320px; overflow-y: auto;">
+      <p style="font-size: 0.85rem; color: #aaa; text-align: center; padding: 20px;">Nenhuma gota nova por enquanto.</p>
+    </div>
+    <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 14px 0;">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+      <span style="font-size: 0.75rem; color: #aaa;">Precisa de ajuda?</span>
+      <button onclick="fecharModalGotaChuva(); abrirSuporteDesenvolvedor();" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #f3d98b; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; cursor: pointer;">Suporte</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE PERFIL PÚBLICO DE USUÁRIO (PARA ENVIAR CONVITE DE AMIZADE) -->
+<div id="modal-perfil-publico" class="modal-custom">
+  <div class="caixa-modal" style="text-align: center; border: 2px solid #9c27b0;">
+    <div style="display: flex; justify-content: flex-end;">
+      <button onclick="fecharModalPerfilPublico()" style="background: none; border: none; color: #fff; font-size: 1.1rem; cursor: pointer;">✕</button>
+    </div>
+    <div id="avatar-perfil-publico" style="width: 75px; height: 75px; border-radius: 50%; background: #ff4757; margin: 0 auto 10px auto; display: flex; align-items: center; justify-content: center; font-size: 2rem; font-weight: bold; color: #fff; border: 2px solid #f3d98b; overflow: hidden;">?</div>
+    <h3 id="nome-perfil-publico" style="color: #f3d98b; font-size: 1.2rem; margin-bottom: 4px;">Usuária</h3>
+    <p id="status-amizade-publico" style="font-size: 0.8rem; color: #aaa; margin-bottom: 16px;">Membro do Abrigo Umbrella</p>
+    <div id="acao-convite-dorama-container">
+      <button onclick="enviarConviteDorama()" style="width: 100%; padding: 12px; background: linear-gradient(45deg, #9c27b0, #2196f3); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(156,39,176,0.4);">🎬 Quero ver um dorama</button>
+    </div>
+  </div>
+</div>
+
 <div class="app">
-  <!-- CABECALHO DO USUARIO -->
+  <!-- CABEÇALHO DO USUÁRIO -->
   <div style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; background: rgba(0,0,0,0.2); border-radius: 12px; margin-bottom: 8px; border: 1px solid rgba(255,255,255,0.1);">
     <div style="display: flex; align-items: center; gap: 8px;">
       <div id="avatar-usuario" style="width: 32px; height: 32px; border-radius: 50%; background: #ff4757; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; overflow: hidden; border: 1px solid #f3d98b;">?</div>
       <span id="nome-usuario" style="font-weight: bold; font-size: 0.85rem; color: #fff;">Visitante</span>
     </div>
-    <div style="display: flex; gap: 6px; align-items: center;">
+    <div style="display: flex; gap: 8px; align-items: center;">
       <button id="btn-acao-perfil" onclick="clicarBotaoPerfil()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 5px 12px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.75rem;">Entrar</button>
-      <button onclick="abrirSuporteDesenvolvedor()" style="background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 8px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.85rem;">⋮</button>
+      <!-- BOTÃO GOTA DE CHUVA INTERATIVA COM CONTADOR -->
+      <button onclick="abrirModalGotaChuva()" class="btn-gota-chuva" title="Gotas de Chuva (Notificações)">
+        💧
+        <span id="contador-gota-chuva" class="badge-gota">0</span>
+      </button>
     </div>
   </div>
 
@@ -451,7 +690,7 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- MODAL DE SOLICITACAO DE FANDOM / ABRIGO (ESTILO DORAMA) -->
+  <!-- MODAL DE SOLICITACAO DE FANDOM / ABRIGO -->
   <div id="modal-solicitacao" class="modal-custom">
     <div class="caixa-modal">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
@@ -573,54 +812,79 @@ border-radius:999px; display:inline-block;}
     </div>
   </div>
 
-  <!-- CABECALHO DA LOGO PRINCIPAL COM ALINHAMENTO DE BONEQUINHOS -->
-  <header style="text-align: center; padding: 8px 0 4px;">
-    <div class="logo-container">
-      <img src="homem.jpg" alt="Homem" class="boneco-logo" onerror="this.style.display='none'">
-      <div class="logo" id="texto-logo-principal" onclick="voltarParaFeedPrincipal()" title="Voltar ao início">Umbrella</div>
-      <img src="mulher.jpg" alt="Mulher" class="boneco-logo" onerror="this.style.display='none'">
+  <!-- CABEÇALHO INTEGRADO (DESKTOP & MOBILE) -->
+  <header class="header-integrado">
+    <!-- ESQUERDA: Pódio circular com os 3 primeiros lugares -->
+    <div class="podio-topo-container">
+      <div class="podio-item-topo" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')" title="1º Lugar - Ouro">
+        <div class="podio-circulo" style="background: linear-gradient(45deg, #ffd700, #b8860b);">
+          <div class="podio-circulo-inner">🥇</div>
+        </div>
+        <span class="podio-label" style="color: #ffd700;">1º Ouro</span>
+      </div>
+
+      <div class="podio-item-topo" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')" title="2º Lugar - Prata">
+        <div class="podio-circulo" style="background: linear-gradient(45deg, #e0e0e0, #888888);">
+          <div class="podio-circulo-inner">🥈</div>
+        </div>
+        <span class="podio-label" style="color: #c0c0c0;">2º Prata</span>
+      </div>
+
+      <div class="podio-item-topo" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')" title="3º Lugar - Bronze">
+        <div class="podio-circulo" style="background: linear-gradient(45deg, #cd7f32, #8b4513);">
+          <div class="podio-circulo-inner">🥉</div>
+        </div>
+        <span class="podio-label" style="color: #cd7f32;">3º Bronze</span>
+      </div>
     </div>
-    <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
+
+    <!-- CENTRO: Imagem logo.png + Subtítulo + Contador de votos -->
+    <div class="centro-logo-container">
+      <img src="logo.png" alt="Umbrella" class="logo-img-topo" id="img-logo-principal" onclick="voltarParaFeedPrincipal()" title="Voltar ao início" onerror="this.style.display='none'; document.getElementById('texto-logo-principal').style.display='block';">
+      <div class="logo-fallback-txt" id="texto-logo-principal" style="display: none;" onclick="voltarParaFeedPrincipal()">Umbrella</div>
+      <div class="subtitle" id="subtitulo-logo-topo">doramas k-pop animes</div>
+      <div>
+        <span class="contador"><span id="txt-votos-hoje">Votos de hoje</span>: <span id="curtidasUsadas">0</span>/3</span>
+      </div>
+    </div>
+
+    <!-- DIREITA (DESKTOP): 2 Fandoms em círculos + botão + -->
+    <div class="fandoms-topo-container" id="fandoms-topo-desktop">
+      <!-- Renderizado via JS -->
+    </div>
   </header>
 
-  <!-- BLOCO EXCLUSIVO MOBILE: STORIES -->
+  <!-- BLOCO EXCLUSIVO MOBILE: STORIES COM NOVOS ÍCONES -->
   <div id="bloco-topo-mobile">
     <div class="stories-mobile-container">
-      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1517841905240-472988babdf9')">
-        <div class="story-avatar-mob"><div class="story-avatar-inner" style="background: #111;"></div></div>
-        <span class="story-nome-mob">1º Lugar</span><span class="story-arroba-mob">Ouro</span>
-      </div>
-      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1534528741775-53994a69daeb')">
-        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #c0c0c0, #888);"><div class="story-avatar-inner" style="background: #111;"></div></div>
-        <span class="story-nome-mob">2º Lugar</span><span class="story-arroba-mob">Prata</span>
-      </div>
-      <div class="story-item-mob" onclick="abrirFotoPinterest('https://images.unsplash.com/photo-1524504388940-b1c1722653e1')">
-        <div class="story-avatar-mob" style="background: linear-gradient(45deg, #cd7f32, #8b4513);"><div class="story-avatar-inner" style="background: #111;"></div></div>
-        <span class="story-nome-mob">3º Lugar</span><span class="story-arroba-mob">Bronze</span>
-      </div>
       <div class="story-balao-mob" onclick="abrirGavetaMobile('desafio')">
         <span class="titulo-b">Desafio do Dia</span>
         <p class="texto-b" id="texto-resumo-desafio-mob">Carregando...</p>
       </div>
-      <div class="story-item-mob" onclick="abrirGavetaMobile('gaveta')">
+      
+      <!-- Meu Aconchego (aconchego.png) -->
+      <div class="story-item-mob" onclick="abrirGavetaMobile('aconchego')">
         <div class="story-avatar-mob" style="background: #9c27b0; overflow: hidden; padding: 0;">
-          <img src="gaveta.jpg" alt="Gaveta" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #f3d98b; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>📂</div>'">
+          <img src="aconchego.png" alt="Meu Aconchego" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #f3d98b; font-size: 1.6rem;\'>🛋️</div>'">
         </div>
-        <span class="story-nome-mob">Gaveta</span><span class="story-arroba-mob">Privado</span>
+        <span class="story-nome-mob">Meu Aconchego</span><span class="story-arroba-mob">Privado</span>
       </div>
+
+      <!-- Fandom (fandom.png) -->
       <div class="story-item-mob" onclick="abrirGavetaMobile('fandoms')">
         <div class="story-avatar-mob" style="background: #2196f3; overflow: hidden; padding: 0;">
-          <img src="comunidade.jpg" alt="Comunidade" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #2196f3; font-size: 1.8rem; display: flex; align-items: center; justify-content: center;\'>🌐</div>'">
+          <img src="fandom.png" alt="Fandom" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #2196f3; font-size: 1.6rem;\'>🌐</div>'">
         </div>
-        <span class="story-nome-mob">Comunidade</span><span class="story-arroba-mob">Fandoms</span>
+        <span class="story-nome-mob">Fandom</span><span class="story-arroba-mob">Abrigos</span>
       </div>
-    </div>
-  </div>
 
-  <!-- CONTADOR DE CURTIDAS -->
-  <div style="text-align: center; margin: 4px 0 8px 0;">
-    <div style="font-size: 13px;">
-      <span class="contador"><span id="txt-votos-hoje">Votos de hoje</span>: <span id="curtidasUsadas">0</span>/3</span>
+      <!-- Amigos (amigos.png) -->
+      <div class="story-item-mob" onclick="abrirGavetaMobile('amigos')">
+        <div class="story-avatar-mob" style="background: #4caf50; overflow: hidden; padding: 0;">
+          <img src="amigos.png" alt="Amigos" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.onerror=null; this.parentNode.innerHTML='<div class=\'story-avatar-inner\' style=\'background: #121829; color: #4caf50; font-size: 1.6rem;\'>🎬</div>'">
+        </div>
+        <span class="story-nome-mob">Amigos</span><span class="story-arroba-mob">Conectados</span>
+      </div>
     </div>
   </div>
 
@@ -645,7 +909,7 @@ border-radius:999px; display:inline-block;}
           <button onclick="atualizarDesafioDoDiaGlobal()" class="btn-tema-bg" style="background: #9c27b0; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.8rem; width: 100%;">Atualizar</button>
         </div>
 
-        <!-- PAINEL UNIFICADO DO DESAFIO (BLOCO ÚNICO FLUIDO) -->
+        <!-- PAINEL UNIFICADO DO DESAFIO -->
         <div id="bloco-envio-desafio-esq" style="margin-bottom: 12px;"></div>
 
         <button onclick="abrirDesafioNoCentro()" class="btn-tema-bg" style="width: 100%; margin-bottom: 14px; background: rgba(156,39,176,0.3); border: 1px solid #9c27b0; color: #fff; padding: 6px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Ver Envio das Colegas</button>
@@ -680,9 +944,11 @@ border-radius:999px; display:inline-block;}
       <div class="card" id="painel-central-container" style="margin-bottom: 0; background: transparent; border: none; box-shadow: none; padding: 0;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 20px; border: 1px solid rgba(243,217,139,0.2);">
           <div style="display: flex; align-items: center; gap: 10px;">
-            <div style="width: 38px; height: 38px; border-radius: 50%; background: #2196f3; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white;" id="icone-feed-titulo" class="btn-tema-bg">💬</div>
+            <div style="width: 38px; height: 38px; border-radius: 50%; background: #2196f3; display: flex; align-items: center; justify-content: center; font-weight: bold; color: white; overflow: hidden;" id="icone-feed-titulo" class="btn-tema-bg">
+              <img src="fandom.png" alt="Fandom" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerText='💬';">
+            </div>
             <div>
-              <h4 style="margin: 0; font-size: 0.95rem; color: #fff;" id="titulo-feed-atual">Comunidade</h4>
+              <h4 style="margin: 0; font-size: 0.95rem; color: #fff;" id="titulo-feed-atual">Fandom</h4>
               <p style="margin: 0; font-size: 0.75rem; color: #ff6b81;" id="sub-feed-atual">Feed global</p>
             </div>
           </div>
@@ -690,10 +956,10 @@ border-radius:999px; display:inline-block;}
             <button id="btn-adm-comunidade" onclick="verificarSenhaAdm()" style="display: none; background: rgba(243,217,139,0.2); color: #f3d98b; border: 1px solid #f3d98b; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">👑 ADM</button>
             <button id="btn-voltar-geral" onclick="voltarParaFeedPrincipal()" style="display: none; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 5px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">Voltar</button>
             
-            <!-- BOTÃO DE DISPARO COM CAMERA.JPG -->
-            <button onclick="abrirModalPublicacao()" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Disparar Foto">
+            <!-- BOTÃO DE DISPARO COM CAMERA.PNG -->
+            <button onclick="abrirModalPublicacao()" style="background: none; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;" title="Nova Publicação">
               <div style="width: 44px; height: 44px; border-radius: 50%; background: #111; border: 2px solid #f3d98b; display: flex; align-items: center; justify-content: center; overflow: hidden; box-shadow: 0 4px 15px rgba(243,217,139,0.4);">
-                <img src="camera.jpg" alt="Câmera" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.src='camera.jpg'; this.onerror=function(){this.style.display='none';}">
+                <img src="camera.png" alt="Câmera" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.style.display='none'; this.parentNode.innerHTML='<span style=\'font-size:1.2rem;\'>📸</span>';">
               </div>
             </button>
           </div>
@@ -707,7 +973,7 @@ border-radius:999px; display:inline-block;}
           <div id="lista-subgrupos-interno" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
         </div>
 
-        <!-- MURAL DO FEED (FLUIDO E LIVRE) -->
+        <!-- MURAL DO FEED -->
         <div id="mural-chat-comunidade" style="display: flex; flex-direction: column; gap: 14px; margin-top: 10px;">
           <div style="text-align: center; padding: 30px; color: #aaa; font-size: 0.85rem; background: rgba(255,255,255,0.04); border-radius: 20px; border: 1px dashed rgba(255,255,255,0.1);">
             Carregando publicações...
@@ -718,38 +984,14 @@ border-radius:999px; display:inline-block;}
 
     <!-- COLUNA DIREITA -->
     <div id="coluna-direita" class="coluna-mobile" style="display: flex; flex-direction: column; gap: 14px;">
-      <div class="card" style="border: 2px solid #f3d98b; background: rgba(243, 217, 139, 0.08); margin-bottom: 0;">
-        <h3 class="btn-tema-texto" style="color: #f3d98b; text-align: center; font-size: 1rem;">Campeão da Semana</h3>
-        <p class="small" style="text-align: center; margin-bottom: 8px;">Fixado no trono</p>
-        
-        <div style="display: flex; flex-direction: column; gap: 8px; padding: 4px;">
-          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(243,217,139,0.2); padding: 8px 10px; border-radius: 8px; border: 1px solid #ffd700;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #ffd700; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"></div>
-              <div><span style="font-size: 0.75rem; font-weight: bold; color: #ffd700; display: block;">🥇 Ouro</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Ouro</span></div>
-            </div>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; border: 1px solid #c0c0c0;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #c0c0c0; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"></div>
-              <div><span style="font-size: 0.75rem; font-weight: bold; color: #c0c0c0; display: block;">🥈 Prata</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Prata</span></div>
-            </div>
-          </div>
-
-          <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 8px 10px; border-radius: 8px; border: 1px solid #cd7f32;">
-            <div style="display: flex; align-items: center; gap: 10px;">
-              <div style="width: 40px; height: 40px; border-radius: 50%; border: 2px solid #cd7f32; background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;"></div>
-              <div><span style="font-size: 0.75rem; font-weight: bold; color: #cd7f32; display: block;">🥉 Bronze</span><span style="font-size: 0.8rem; color: #fff; font-weight: bold;">Destaque Bronze</span></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- MINHA GAVETA -->
+      
+      <!-- MEU ACONCHEGO (aconchego.png) -->
       <div class="card" id="card-minha-gaveta" style="padding: 16px; margin-bottom: 0;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
-          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Minha Gaveta</h3>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="aconchego.png" alt="Meu Aconchego" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #f3d98b;" onerror="this.style.display='none'">
+            <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Meu Aconchego</h3>
+          </div>
           <button onclick="alternarGavetaNoCentro(event)" style="background: rgba(243,217,139,0.2); border: 1px solid #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;" id="btn-ver-gaveta-centro">Abrir</button>
         </div>
         <div style="margin-top: 8px; background: rgba(255, 255, 255, 0.04); padding: 10px; border-radius: 8px; border: 1px dashed rgba(255, 255, 255, 0.2); max-height: 180px; overflow-y: auto;">
@@ -765,10 +1007,27 @@ border-radius:999px; display:inline-block;}
         </div>
       </div>
 
-      <!-- FANDOMS -->
+      <!-- AMIGOS CONECTADOS (amigos.png) -->
+      <div class="card" style="padding: 16px; margin-bottom: 0; border: 1px solid rgba(76, 175, 80, 0.35);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="amigos.png" alt="Amigos" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #4caf50;" onerror="this.style.display='none'">
+            <h3 style="font-size: 1rem; margin: 0; color: #81c784;">Amigos</h3>
+          </div>
+          <span id="contador-amigos-dir" style="font-size: 0.7rem; background: rgba(76,175,80,0.2); color: #81c784; padding: 2px 8px; border-radius: 999px; font-weight: bold;">0</span>
+        </div>
+        <div id="lista-amigos-conectados" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;">
+          <p style="font-size: 0.78rem; color: #aaa; text-align: center; padding: 10px;">Clique no nome de alguém no feed para convidar para ver um dorama!</p>
+        </div>
+      </div>
+
+      <!-- FANDOMS (fandom.png) -->
       <div class="card" style="padding: 16px; margin-bottom: 0;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-          <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandoms</h3>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <img src="fandom.png" alt="Fandom" style="width: 28px; height: 28px; border-radius: 50%; object-fit: cover; border: 1px solid #2196f3;" onerror="this.style.display='none'">
+            <h3 class="btn-tema-texto" style="font-size: 1rem; margin: 0; color: #f3d98b;">Fandom</h3>
+          </div>
           <button onclick="abrirModalNovoTema()" style="background: rgba(243,217,139,0.15); border: 1px dashed #f3d98b; color: #f3d98b; padding: 3px 8px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; font-weight: bold;">+ Gerenciar</button>
         </div>
         <div id="lista-comunidades-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 220px; overflow-y: auto;"></div>
@@ -959,9 +1218,11 @@ function tirarFotoWebcamPC() {
 function abrirGavetaMobile(tipo) {
   let overlay = document.getElementById('gaveta-mobile-overlay');
   let container = document.getElementById('conteudo-dinamico-gaveta-mobile');
+  let titulo = document.getElementById('titulo-gaveta-mobile');
   container.innerHTML = "";
 
   if (tipo === 'desafio') {
+    if (titulo) titulo.innerText = "Desafio & Meus Bias";
     container.innerHTML = `
       <div style="background: rgba(156,39,176,0.1); border: 2px solid #9c27b0; padding: 15px; border-radius: 14px; margin-bottom: 12px;">
         <h4 style="color: #f3d98b; margin-bottom: 5px;" id="sub-titulo-desafio-mob">${obterDesafioDoDiaAtual()}</h4>
@@ -980,7 +1241,8 @@ function abrirGavetaMobile(tipo) {
       renderizarCardDesafioEsquerda();
       carregarMeusBiasNaInterfaceMobile();
     }, 50);
-  } else if (tipo === 'gaveta') {
+  } else if (tipo === 'aconchego') {
+    if (titulo) titulo.innerText = "Meu Aconchego";
     container.innerHTML = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
         <textarea id="campoGavetaTextoMob" placeholder="Nota..." style="border-radius: 10px; height: 50px; padding: 8px; font-size: 0.8rem; margin-bottom: 8px;"></textarea>
@@ -995,6 +1257,7 @@ function abrirGavetaMobile(tipo) {
     `;
     setTimeout(() => carregarHistoricoNaGavetaMobile(), 50);
   } else if (tipo === 'fandoms') {
+    if (titulo) titulo.innerText = "Fandom";
     container.innerHTML = `
       <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(243,217,139,0.3);">
         <button onclick="abrirModalNovoTema()" style="width: 100%; padding: 12px; background: rgba(243,217,139,0.2); border: 1px dashed #f3d98b; color: #f3d98b; border-radius: 10px; font-weight: bold; cursor: pointer; margin-bottom: 12px;">+ Criar Fandom</button>
@@ -1002,6 +1265,14 @@ function abrirGavetaMobile(tipo) {
       </div>
     `;
     setTimeout(() => renderizarListaFandomsLateralMobile(), 50);
+  } else if (tipo === 'amigos') {
+    if (titulo) titulo.innerText = "Amigos Conectados";
+    container.innerHTML = `
+      <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 14px; border: 1px solid rgba(76,175,80,0.4);">
+        <div id="lista-amigos-conectados-mob" style="display: flex; flex-direction: column; gap: 8px;"></div>
+      </div>
+    `;
+    setTimeout(() => renderizarListaAmigosMobile(), 50);
   }
 
   overlay.style.display = 'flex';
@@ -1039,7 +1310,40 @@ let subgruposFandoms = JSON.parse(localStorage.getItem('fandoms_subgrupos') || '
 window.fandomAtualSelecionado = "";
 window.corAtualSelecionada = "";
 
+function renderizarFandomsTopoDesktop() {
+  let container = document.getElementById('fandoms-topo-desktop');
+  if (!container) return;
+  container.innerHTML = "";
+  let coresPadroes = ["#2196f3", "#9c27b0", "#00bcd4", "#e91e63"];
+  
+  // Exibe os 2 primeiros fandoms em círculos lado a lado
+  let doisPrimeiros = comunidadesAprovadas.slice(0, 2);
+  doisPrimeiros.forEach((nomeFandom, index) => {
+    let cor = coresPadroes[index % coresPadroes.length];
+    let item = document.createElement('div');
+    item.className = "fandom-circulo-item";
+    item.title = `Entrar em ${nomeFandom}`;
+    item.onclick = () => tentarEntrarComunidade(nomeFandom, cor);
+    item.innerHTML = `
+      <div class="fandom-circulo-borda" style="background: ${cor};">
+        <div class="fandom-circulo-inner">${nomeFandom.charAt(0).toUpperCase()}</div>
+      </div>
+      <span class="fandom-circulo-nome">${nomeFandom}</span>
+    `;
+    container.appendChild(item);
+  });
+
+  // Botão + para adicionar ou trocar fandoms
+  let btnMais = document.createElement('button');
+  btnMais.className = "btn-mais-fandom-topo";
+  btnMais.innerText = "+";
+  btnMais.title = "Adicionar ou trocar fandoms";
+  btnMais.onclick = () => abrirModalNovoTema();
+  container.appendChild(btnMais);
+}
+
 function renderizarListaFandomsLateral() {
+  renderizarFandomsTopoDesktop();
   let container = document.getElementById('lista-comunidades-container');
   if (!container) return;
   container.innerHTML = "";
@@ -1075,12 +1379,26 @@ function renderizarFandomsNoModalGerenciamento() {
   let containerModal = document.getElementById('lista-fandoms-gerenciar-modal');
   if (!containerModal) return;
   containerModal.innerHTML = "";
-  comunidadesAprovadas.forEach((fandom) => {
+  comunidadesAprovadas.forEach((fandom, idx) => {
     let itemDiv = document.createElement('div');
     itemDiv.style.cssText = "display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 6px;";
-    itemDiv.innerHTML = `<span style="font-size: 0.8rem; color: #fff; font-weight: bold;">${fandom}</span> <button onclick="excluirFandom('${fandom}')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">✕</button>`;
+    itemDiv.innerHTML = `
+      <span style="font-size: 0.8rem; color: #fff; font-weight: bold;">${fandom}</span>
+      <div style="display: flex; gap: 6px;">
+        ${idx > 1 ? `<button onclick="promoverFandomTopo('${fandom}')" style="background: rgba(33,150,243,0.2); border: 1px solid #2196f3; color: #64b5f6; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; cursor: pointer;" title="Fixar no topo">⬆ Topo</button>` : ''}
+        <button onclick="excluirFandom('${fandom}')" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer;">✕</button>
+      </div>
+    `;
     containerModal.appendChild(itemDiv);
   });
+}
+
+function promoverFandomTopo(nomeFandom) {
+  comunidadesAprovadas = comunidadesAprovadas.filter(f => f !== nomeFandom);
+  comunidadesAprovadas.unshift(nomeFandom);
+  localStorage.setItem('fandoms_aprovados', JSON.stringify(comunidadesAprovadas));
+  renderizarListaFandomsLateral();
+  renderizarFandomsNoModalGerenciamento();
 }
 
 function excluirFandom(nomeFandom) {
@@ -1140,7 +1458,7 @@ function carregarHistoricoNaGavetaMobile() {
       <div style="background: rgba(0,0,0,0.35); padding: 10px; border-radius: 8px; border-left: 3px solid ${corBadge}; position: relative;">
         <p style="margin: 0 0 6px 0; font-size: 0.8rem; color: #fff; word-break: break-word;">${item.texto}</p>
         ${item.foto ? `<div style="margin-top: 6px; width: 100%; border-radius: 6px; overflow: hidden; background: #000; cursor: pointer;" onclick="abrirFotoPinterest('${item.foto}')"><img src="${item.foto}" style="width: 100%; height: auto; display: block; object-fit: contain;"></div>` : ''}
-        <button onclick="removerItemGaveta(${index}); abrirGavetaMobile('gaveta')" style="position: absolute; top: 8px; right: 8px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">✕</button>
+        <button onclick="removerItemGaveta(${index}); abrirGavetaMobile('aconchego')" style="position: absolute; top: 8px; right: 8px; background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 4px; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; cursor: pointer;">✕</button>
       </div>
     `;
   });
@@ -1214,24 +1532,20 @@ function renderizarCardDesafioEsquerda() {
       </div>
     `;
   } else {
-    // BLOCO ÚNICO INTEGRADO COM BOTÃO REDONDO MINIMALISTA (SEM CAIXA QUADRADA DE WINDOWS XP)
     htmlConteudo = `
       <div style="display: flex; flex-direction: column; gap: 8px; background: rgba(0,0,0,0.25); padding: 12px; border-radius: 12px; border: 1px solid rgba(243,217,139,0.3);">
         
-        <!-- BUSCA E SELEÇÃO DO BIAS DOS 1 A 1000 -->
         <div style="position: relative;">
           <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Selecionar Bias (1 a 1000):</label>
           <input type="text" id="inputBuscaBiasUnificado" placeholder="Digite o nome ou número (ex: 1)..." oninput="filtrarBuscaBiasUnificado(this.value, 'esq')" style="padding: 8px; font-size: 0.8rem; background: rgba(0,0,0,0.4);">
           <div id="sugestoes-bias-unificado" style="display: none; position: absolute; top: 100%; left: 0; right: 0; background: #121829; border: 1px solid #f3d98b; border-radius: 8px; max-height: 140px; overflow-y: auto; z-index: 99; margin-top: 2px; box-shadow: 0 5px 15px rgba(0,0,0,0.6);"></div>
         </div>
 
-        <!-- COMENTÁRIO / CONTEXTO DO DESAFIO -->
         <div style="position: relative;">
           <label style="font-size: 0.75rem; color: #f3d98b; margin-bottom: 3px; display: block;">Contexto do Desafio:</label>
           <textarea id="textoDesafioUnificado" placeholder="O que vamos proteger hoje" style="border-radius: 8px; resize: none; height: 50px; padding: 6px; font-size: 0.75rem; width: 100%; background: rgba(0,0,0,0.4); color: #fff; border: 1px solid rgba(255,255,255,0.25);"></textarea>
         </div>
 
-        <!-- BOTÃO REDONDO MINIMALISTA DE FOTO + ENVIO -->
         <div style="display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-top: 2px;">
           
           <div style="display: flex; align-items: center; gap: 8px;">
@@ -1364,18 +1678,18 @@ function alternarGavetaNoCentro(event) {
   let painelCentral = document.getElementById('painel-central-container');
   let btnVerGaveta = document.getElementById('btn-ver-gaveta-centro');
 
-  if (modoAtualNoCentro !== "GAVETA") {
-    modoAtualNoCentro = "GAVETA";
+  if (modoAtualNoCentro !== "ACONCHEGO") {
+    modoAtualNoCentro = "ACONCHEGO";
     if(layoutGrid) layoutGrid.style.gridTemplateColumns = "300px 1fr 240px";
     if(btnVerGaveta) btnVerGaveta.innerText = "✕";
-    document.getElementById('titulo-feed-atual').innerText = "Minha Gaveta";
+    document.getElementById('titulo-feed-atual').innerText = "Meu Aconchego";
     document.getElementById('sub-feed-atual').innerText = "Histórico";
     document.getElementById('btn-voltar-geral').style.display = 'block';
     
     let historicoSalvo = JSON.parse(localStorage.getItem('minha_gaveta_historico') || '[]');
     let htmlGavetaCentro = `
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: rgba(255,255,255,0.04); padding: 14px; border-radius: 20px; border: 1px solid rgba(243,217,139,0.2);">
-        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">Minha Gaveta</h3>
+        <h3 style="color: #f3d98b; margin: 0; font-size: 1.1rem;">Meu Aconchego</h3>
       </div>
     `;
     if (historicoSalvo.length === 0) {
@@ -1495,9 +1809,6 @@ function entrarComunidadeEfetivo(nomeComunidade, corTema) {
   document.getElementById('btn-adm-comunidade').style.display = 'block';
   document.getElementById('btn-voltar-geral').style.display = 'block';
   document.getElementById('container-subgrupos').style.display = 'block';
-  
-  let logoEl = document.getElementById('texto-logo-principal');
-  if(logoEl) logoEl.innerText = nomeComunidade;
   
   aplicarEstiloTema(corTema);
   localStorage.setItem('usuario_cor_tema', corTema);
@@ -1761,6 +2072,123 @@ function removerBias(posicao) {
   }
 }
 
+/* ======================================================== */
+/* SISTEMA DE AMIZADE ("QUERO VER UM DORAMA") E GOTA DE CHUVA */
+/* ======================================================== */
+window.usuarioPerfilVisitado = null;
+
+function abrirPerfilPublicoUsuario(nomeAlvo, corAlvo) {
+  let meuNome = localStorage.getItem('usuario_nome');
+  if (meuNome && meuNome.toLowerCase() === nomeAlvo.toLowerCase()) {
+    abrirMenuLateral();
+    return;
+  }
+
+  window.usuarioPerfilVisitado = { nome: nomeAlvo, cor: corAlvo || '#ff4757' };
+  document.getElementById('nome-perfil-publico').innerText = nomeAlvo;
+  let avatarEl = document.getElementById('avatar-perfil-publico');
+  avatarEl.style.background = corAlvo || '#ff4757';
+  avatarEl.innerText = nomeAlvo.charAt(0).toUpperCase();
+
+  let amigos = JSON.parse(localStorage.getItem('meus_amigos_umbrella') || '[]');
+  let jaEhAmigo = amigos.some(a => a.nome.toLowerCase() === nomeAlvo.toLowerCase());
+
+  let statusEl = document.getElementById('status-amizade-publico');
+  let acaoContainer = document.getElementById('acao-convite-dorama-container');
+
+  if (jaEhAmigo) {
+    statusEl.innerText = "✨ Vocês já são amigos de dorama!";
+    statusEl.style.color = "#81c784";
+    acaoContainer.innerHTML = `<button disabled style="width: 100%; padding: 12px; background: rgba(76,175,80,0.2); border: 1px solid #4caf50; color: #81c784; border-radius: 12px; font-weight: bold; font-size: 0.9rem;">✓ Conectados</button>`;
+  } else {
+    statusEl.innerText = "Membro do Abrigo Umbrella";
+    statusEl.style.color = "#aaa";
+    acaoContainer.innerHTML = `<button onclick="enviarConviteDorama()" style="width: 100%; padding: 12px; background: linear-gradient(45deg, #9c27b0, #2196f3); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.9rem; box-shadow: 0 4px 15px rgba(156,39,176,0.4);">🎬 Quero ver um dorama</button>`;
+  }
+
+  document.getElementById('modal-perfil-publico').style.display = 'flex';
+}
+
+function fecharModalPerfilPublico() {
+  document.getElementById('modal-perfil-publico').style.display = 'none';
+}
+
+function abrirModalGotaChuva() {
+  if (window.renderizarNotificacoesGotaChuva) window.renderizarNotificacoesGotaChuva();
+  document.getElementById('modal-gota-chuva').style.display = 'flex';
+}
+
+function fecharModalGotaChuva() {
+  document.getElementById('modal-gota-chuva').style.display = 'none';
+}
+
+function renderizarListaAmigos() {
+  let amigos = JSON.parse(localStorage.getItem('meus_amigos_umbrella') || '[]');
+  let containerDir = document.getElementById('lista-amigos-conectados');
+  let badgeDir = document.getElementById('contador-amigos-dir');
+  if (badgeDir) badgeDir.innerText = amigos.length;
+
+  if (!containerDir) return;
+  if (amigos.length === 0) {
+    containerDir.innerHTML = `<p style="font-size: 0.78rem; color: #aaa; text-align: center; padding: 10px;">Clique no nome de alguém no feed para convidar para ver um dorama!</p>`;
+    return;
+  }
+
+  containerDir.innerHTML = "";
+  amigos.forEach((amigo, index) => {
+    let div = document.createElement('div');
+    div.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(76,175,80,0.1); padding: 8px 10px; border-radius: 10px; border: 1px solid rgba(76,175,80,0.3);";
+    div.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 30px; height: 30px; border-radius: 50%; background: ${amigo.cor || '#4caf50'}; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; font-size: 0.8rem;">${amigo.nome.charAt(0).toUpperCase()}</div>
+        <div>
+          <span style="font-size: 0.82rem; font-weight: bold; color: #fff; display: block;">${amigo.nome}</span>
+          <span style="font-size: 0.68rem; color: #81c784;">🎬 Assistindo juntos</span>
+        </div>
+      </div>
+      <button onclick="removerAmigo(${index})" style="background: none; border: none; color: #ff6b81; cursor: pointer; font-size: 0.8rem;" title="Desfazer amizade">✕</button>
+    `;
+    containerDir.appendChild(div);
+  });
+}
+
+function renderizarListaAmigosMobile() {
+  let amigos = JSON.parse(localStorage.getItem('meus_amigos_umbrella') || '[]');
+  let containerMob = document.getElementById('lista-amigos-conectados-mob');
+  if (!containerMob) return;
+
+  if (amigos.length === 0) {
+    containerMob.innerHTML = `<p style="font-size: 0.82rem; color: #aaa; text-align: center; padding: 15px;">Nenhum amigo conectado ainda. Toque no nome de alguém no feed para convidar!</p>`;
+    return;
+  }
+
+  containerMob.innerHTML = "";
+  amigos.forEach((amigo, index) => {
+    let div = document.createElement('div');
+    div.style.cssText = "display: flex; align-items: center; justify-content: space-between; background: rgba(76,175,80,0.12); padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(76,175,80,0.3);";
+    div.innerHTML = `
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 36px; height: 36px; border-radius: 50%; background: ${amigo.cor || '#4caf50'}; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;">${amigo.nome.charAt(0).toUpperCase()}</div>
+        <div>
+          <span style="font-size: 0.9rem; font-weight: bold; color: #fff; display: block;">${amigo.nome}</span>
+          <span style="font-size: 0.75rem; color: #81c784;">🎬 Vamos assistir!!!</span>
+        </div>
+      </div>
+      <button onclick="removerAmigo(${index}); abrirGavetaMobile('amigos');" style="background: rgba(255,71,87,0.2); border: 1px solid #ff4757; color: #ff6b81; border-radius: 6px; padding: 4px 8px; font-size: 0.75rem; cursor: pointer;">✕</button>
+    `;
+    containerMob.appendChild(div);
+  });
+}
+
+function removerAmigo(index) {
+  if (confirm("Remover amigo da lista?")) {
+    let amigos = JSON.parse(localStorage.getItem('meus_amigos_umbrella') || '[]');
+    amigos.splice(index, 1);
+    localStorage.setItem('meus_amigos_umbrella', JSON.stringify(amigos));
+    renderizarListaAmigos();
+  }
+}
+
 window.addEventListener('DOMContentLoaded', () => {
   let corSalva = localStorage.getItem('usuario_cor_tema');
   if (corSalva) aplicarEstiloTema(corSalva);
@@ -1789,6 +2217,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   renderizarListaFandomsLateral();
+  renderizarListaAmigos();
   carregarMeusBiasNaInterface();
   carregarHistoricoNaGaveta();
   renderizarCardDesafioEsquerda();
@@ -1844,11 +2273,11 @@ function comentarGavetaMobile() {
   if (fileInput.files && fileInput.files[0]) {
     converterImagemParaHD(fileInput.files[0], 1000, 1000, function(hdBase64) {
       registrarNoHistoricoGaveta('NOTA', texto || 'Foto', hdBase64);
-      abrirGavetaMobile('gaveta');
+      abrirGavetaMobile('aconchego');
     });
   } else {
     registrarNoHistoricoGaveta('NOTA', texto);
-    abrirGavetaMobile('gaveta');
+    abrirGavetaMobile('aconchego');
   }
 }
 </script>
@@ -1964,6 +2393,131 @@ function comentarGavetaMobile() {
     }
   };
 
+  /* ======================================================== */
+  /* CONVITES DE AMIZADE ("VAMOS ASSISTIR!!!") NA GOTA         */
+  /* ======================================================== */
+  window.convitesRecebidosCache = [];
+
+  window.enviarConviteDorama = async function() {
+    let meuNome = localStorage.getItem('usuario_nome');
+    if (!meuNome) { alert("Faça login primeiro para convidar!"); return; }
+    if (!window.usuarioPerfilVisitado) return;
+
+    let minhaCor = localStorage.getItem('usuario_cor_tema') || '#9c27b0';
+
+    try {
+      await addDoc(collection(db, "convites_dorama"), {
+        de: meuNome,
+        deCor: minhaCor,
+        para: window.usuarioPerfilVisitado.nome,
+        paraCor: window.usuarioPerfilVisitado.cor,
+        mensagem: "Vamos assistir!!!",
+        status: "pendente",
+        criadoEm: serverTimestamp()
+      });
+      fecharModalPerfilPublico();
+      alert(`💧 Convite enviado para a gota de chuva de ${window.usuarioPerfilVisitado.nome}!`);
+    } catch (e) {
+      alert("Erro ao enviar convite.");
+    }
+  };
+
+  function escutarGotasDeChuvaTempoReal() {
+    const q = query(collection(db, "convites_dorama"), orderBy("criadoEm", "desc"));
+    onSnapshot(q, (snapshot) => {
+      let meuNome = (localStorage.getItem('usuario_nome') || "").toLowerCase();
+      let pendentesParaMim = [];
+
+      snapshot.forEach((docSnap) => {
+        let dados = docSnap.data();
+        // Verifica convites pendentes destinados à usuária logada
+        if (meuNome && dados.para && dados.para.toLowerCase() === meuNome && dados.status === "pendente") {
+          pendentesParaMim.push({ id: docSnap.id, ...dados });
+        }
+        // Se um convite que eu enviei foi aceito, sincroniza automaticamente na minha lista de amigos
+        if (meuNome && dados.de && dados.de.toLowerCase() === meuNome && dados.status === "aceito") {
+          sincronizarAmigoLocal(dados.para, dados.paraCor || "#4caf50");
+        }
+      });
+
+      window.convitesRecebidosCache = pendentesParaMim;
+      atualizarContadorGotaChuva(pendentesParaMim.length);
+      if (document.getElementById('modal-gota-chuva').style.display === 'flex') {
+        window.renderizarNotificacoesGotaChuva();
+      }
+    });
+  }
+
+  function sincronizarAmigoLocal(nomeAmigo, corAmigo) {
+    let amigos = JSON.parse(localStorage.getItem('meus_amigos_umbrella') || '[]');
+    if (!amigos.some(a => a.nome.toLowerCase() === nomeAmigo.toLowerCase())) {
+      amigos.push({ nome: nomeAmigo, cor: corAmigo });
+      localStorage.setItem('meus_amigos_umbrella', JSON.stringify(amigos));
+      renderizarListaAmigos();
+    }
+  }
+
+  function atualizarContadorGotaChuva(qtd) {
+    let badge = document.getElementById('contador-gota-chuva');
+    if (!badge) return;
+    if (qtd > 0) {
+      badge.innerText = qtd;
+      badge.style.display = 'flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  window.renderizarNotificacoesGotaChuva = function() {
+    let container = document.getElementById('lista-notificacoes-gota');
+    if (!container) return;
+
+    if (!window.convitesRecebidosCache || window.convitesRecebidosCache.length === 0) {
+      container.innerHTML = `<p style="font-size: 0.85rem; color: #aaa; text-align: center; padding: 20px;">Nenhuma gota nova por enquanto.</p>`;
+      return;
+    }
+
+    container.innerHTML = "";
+    window.convitesRecebidosCache.forEach(conv => {
+      let item = document.createElement('div');
+      item.style.cssText = "background: rgba(33,150,243,0.12); border: 1px solid rgba(33,150,243,0.4); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; gap: 8px;";
+      item.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: ${conv.deCor || '#9c27b0'}; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;">${conv.de.charAt(0).toUpperCase()}</div>
+          <div>
+            <b style="font-size: 0.85rem; color: #f3d98b;">${conv.de}</b>
+            <p style="font-size: 0.8rem; color: #fff; margin: 2px 0 0 0;">🎬 "${conv.mensagem}"</p>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <button onclick="responderConviteDorama('${conv.id}', '${conv.de}', '${conv.deCor || '#9c27b0'}', true)" style="flex: 1; padding: 7px; background: #4caf50; color: #fff; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Sim</button>
+          <button onclick="responderConviteDorama('${conv.id}', '${conv.de}', '${conv.deCor || '#9c27b0'}', false)" style="flex: 1; padding: 7px; background: rgba(255,71,87,0.25); border: 1px solid #ff4757; color: #ff6b81; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 0.8rem;">Não</button>
+        </div>
+      `;
+      container.appendChild(item);
+    });
+  };
+
+  window.responderConviteDorama = async function(docId, nomeRemetente, corRemetente, aceitou) {
+    try {
+      const convRef = doc(db, "convites_dorama", docId);
+      if (aceitou) {
+        await updateDoc(convRef, { status: "aceito" });
+        sincronizarAmigoLocal(nomeRemetente, corRemetente);
+        alert(`🎬 Agora você e ${nomeRemetente} são amigos de dorama!`);
+      } else {
+        await deleteDoc(convRef);
+      }
+    } catch (e) {
+      alert("Erro ao responder convite.");
+    }
+  };
+
+  escutarGotasDeChuvaTempoReal();
+
+  /* ======================================================== */
+  /* POSTS DO FEED                                            */
+  /* ======================================================== */
   window.enviarMensagemChatComunidade = async function() {
     let nomeUsuario = localStorage.getItem('usuario_nome');
     if (!nomeUsuario) { alert("Faça login!"); return; }
@@ -2002,7 +2556,6 @@ function comentarGavetaMobile() {
     }
   };
 
-  // Escuta em tempo real do Feed (Firestore onSnapshot)
   function escutarPostsTempoReal() {
     let mural = document.getElementById('mural-chat-comunidade');
     if (!mural) return;
@@ -2049,20 +2602,21 @@ function comentarGavetaMobile() {
     topicoDiv.style.cssText = `background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(243,217,139,0.2); border-radius: 20px; padding: 16px; margin-bottom: 14px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); position: relative;`;
     
     let ehCriadora = localStorage.getItem('modo_criadora_ativo') === 'true';
+    let nomeEscapado = nome.replace(/'/g, "\\'");
 
     let html = `
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 10px;">
-        <div style="width: 32px; height: 32px; border-radius: 50%; background: ${corCorrente}; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; font-weight: bold; border: 1px solid #f3d98b;">${nome.charAt(0).toUpperCase()}</div>
-        <span style="font-size: 0.9rem; font-weight: bold; color: #f3d98b;">${nome}</span>
+        <div onclick="abrirPerfilPublicoUsuario('${nomeEscapado}', '${corCorrente}')" style="display: flex; align-items: center; gap: 8px; cursor: pointer;" title="Ver perfil de ${nome}">
+          <div style="width: 32px; height: 32px; border-radius: 50%; background: ${corCorrente}; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; color: white; font-weight: bold; border: 1px solid #f3d98b;">${nome.charAt(0).toUpperCase()}</div>
+          <span style="font-size: 0.9rem; font-weight: bold; color: #f3d98b; text-decoration: underline dotted rgba(243,217,139,0.5);">${nome}</span>
+        </div>
         ${ehCriadora ? `<button onclick="deletarPostFirestore('${postId}')" style="background:rgba(255,71,87,0.2); border:1px solid #ff4757; color:#ff6b81; border-radius:4px; padding:2px 6px; font-size:0.65rem; cursor:pointer; margin-left:auto;">✕</button>` : ''}
       </div>
-      <!-- BALÃO DE FOTO / VÍDEO & CONTEÚDO -->
       <div style="background: rgba(0,0,0,0.3); border-radius: 14px; padding: 12px; margin-bottom: 10px; border: 1px solid rgba(243,217,139,0.15);">
         ${texto ? `<p class="texto-conteudo-post" style="margin: 0 0 ${midiaBase64 ? '8px' : '0'}; font-size: 0.85rem; color: #fff; word-break: break-word;">${texto}</p>` : ''}
         ${midiaBase64 ? (isVideo ? `<video src="${midiaBase64}" controls style="width: 100%; height: auto; border-radius: 10px; display: block;"></video>` : `<div style="cursor: pointer; width: 100%; border-radius: 10px; overflow: hidden; background: #000; display: flex; align-items: center; justify-content: center;" onclick="abrirFotoPinterest('${midiaBase64}')"><img src="${midiaBase64}" style="width: 100%; height: auto; display: block; object-fit: contain; border-radius: 10px;"></div>`) : ''}
       </div>
       <div style="margin-top: 6px; display: flex; gap: 12px; justify-content: flex-end; align-items: center;">
-        <!-- BOTÃO DE CURTIR GUARDA-CHUVINHA CUSTOMIZADO (SVG) -->
         <button onclick="curtirPostFirestore('${postId}', this)" style="background: rgba(243,217,139,0.1); border: 1px solid #f3d98b; color: #f3d98b; padding: 5px 12px; border-radius: 999px; cursor: pointer; font-size: 0.75rem; font-weight: bold; display: flex; align-items: center; gap: 6px;" title="Proteger com guarda-chuva">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f3d98b" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 2v10"></path>
