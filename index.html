@@ -109,21 +109,6 @@
             flex-shrink: 0;
         }
 
-        .header-left-btn.playing::after {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 2px solid var(--gold-accent);
-            animation: spotifyPulse 1.6s infinite ease-out;
-            pointer-events: none;
-        }
-
-        @keyframes spotifyPulse {
-            0% { transform: scale(1); opacity: 0.9; }
-            100% { transform: scale(1.35); opacity: 0; }
-        }
-
         .header-left-btn img {
             width: 100%;
             height: 100%;
@@ -434,7 +419,7 @@
 
         .post-media {
             width: 100%;
-            max-height: 480px;
+            max-height: 520px;
             object-fit: cover;
             border-radius: 14px;
             border: 1px solid var(--gold-border);
@@ -710,8 +695,6 @@
 </head>
 <body>
 
-    <audio id="globalActiveAudio" preload="auto"></audio>
-
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
             <img src="./logo.png" alt="Umbrella" class="auth-logo">
@@ -736,12 +719,12 @@
     </div>
 
     <div class="unified-top-bar">
-        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Muka">
+        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Aconchego">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
         <div class="search-balao-fininho">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@usuário" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
             <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
         </div>
 
@@ -887,11 +870,8 @@
 
     <div class="floating-composer-wrapper">
         <div class="media-preview-strip" id="mediaPreviewStrip">
-            <span id="mediaPreviewName">Mídia anexada</span>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <button onclick="previewAttachedMediaNative()" style="background:none; border:1px solid var(--gold-border); color:var(--gold-accent); padding:3px 10px; border-radius:99px; font-size:11px; cursor:pointer;">👁️ Visualizar</button>
-                <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700; font-size:14px;">✕</button>
-            </div>
+            <span id="mediaPreviewName">Mídia pronta para postar</span>
+            <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700; font-size:14px;">✕</button>
         </div>
 
         <div class="gemini-composer">
@@ -900,7 +880,7 @@
             <input type="file" id="videoDirectInput" accept="video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use * para marcar alguém)" onkeypress="if(event.key==='Enter') submitPost()">
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use @ para marcar)" onkeypress="if(event.key==='Enter') submitPost()">
             <button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
@@ -964,7 +944,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v44';
+        const LOCAL_KEY = 'umbrella_clean_state_v45';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -972,9 +952,7 @@
                 loggedIn: false,
                 name: 'Visitante',
                 email: '',
-                avatar: './aconchego.png',
-                audioUrl: '',
-                audioTitle: ''
+                avatar: './aconchego.png'
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
@@ -1050,16 +1028,10 @@
 
                 const userRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userRef);
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    if (data.audioUrl) appState.user.audioUrl = data.audioUrl;
-                    if (data.audioTitle) appState.user.audioTitle = data.audioTitle;
-                } else {
+                if (!userDoc.exists()) {
                     await setDoc(userRef, {
                         name: appState.user.name,
-                        avatar: appState.user.avatar,
-                        audioUrl: appState.user.audioUrl,
-                        audioTitle: appState.user.audioTitle
+                        avatar: appState.user.avatar
                     }, { merge: true });
                 }
 
@@ -1208,26 +1180,29 @@
             }
         };
 
-        // PERFIL INTEGRADO COM O ACONCHEGO
+        // PERFIL COMPLETO COM GERENCIAMENTO DE SENHA, TEMA E ACONCHEGO
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
                 return;
             }
 
-            const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
-            const aconchegoPosts = postsFromFirebase.filter(p => p.isAconchego && p.author === appState.user.name);
-            const aconchegoHtml = aconchegoPosts.length > 0 
-                ? aconchegoPosts.map(p => `
-                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border);">
-                        <p style="font-size:12px; margin-bottom:6px;">${p.text || '(Mídia no Aconchego)'}</p>
-                        ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:160px; border-radius:8px;" controls playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px;">`) : ''}
+            const myPosts = postsFromFirebase.filter(p => p.authorUid === appState.user.uid);
+            const aconchegoHtml = myPosts.length > 0 
+                ? myPosts.map(p => `
+                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border); display:flex; justify-content:space-between; align-items:flex-start;">
+                        <div style="flex:1; padding-right:8px;">
+                            <span style="font-size:10px; color:var(--gold-accent); display:block; margin-bottom:4px;">${p.isChallenge ? 'Desafio' : p.fandom || 'Geral'}</span>
+                            <p style="font-size:12px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia)'}</p>
+                            ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:140px; border-radius:8px;" controls playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;">`) : ''}
+                        </div>
+                        <button class="btn-danger-pill" style="font-size:10px;" onclick="confirmDeletePost('${p.id}'); closeUmbrellaModal();">Excluir</button>
                     </div>
                 `).join('')
-                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Seu Aconchego está vazio.</p>';
+                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Seu histórico (Aconchego) está vazio.</p>';
 
             showUmbrellaModal({
-                title: `Perfil & Meu Aconchego`,
+                title: `Meu Perfil & Aconchego`,
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:14px;">
                         <img src="${appState.user.avatar}" style="width:72px; height:72px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px;">
@@ -1240,33 +1215,27 @@
                         <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
                     </div>
                     <div class="form-group">
-                        <label class="form-label">Escolher Foto de Perfil (Galeria Nativa)</label>
-                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
+                        <label class="form-label">Foto de Perfil (Galeria Nativa)</label>
+                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto</label>
                         <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
                     </div>
 
-                    <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Link do Muka (Áudio)</label>
-                        <div style="display:flex; gap:6px; margin-bottom:10px;">
-                            <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl || ''}">
-                            <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar</button>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Gerenciar Senha</label>
+                        <input type="password" id="obPassword" class="glass-input" placeholder="Nova senha (opcional)">
+                    </div>
 
-                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; border:1px solid var(--gold-border); text-align:center;">
-                            <p style="font-size:12px; color:var(--gold-accent); margin-bottom:8px;">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
-                            <div style="display:flex; justify-content:center; gap:8px;">
-                                <button class="btn-pill-gold" style="padding:6px 14px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
-                                <button class="btn-danger-pill" style="padding:6px 14px;" onclick="stopGlobalAudio()">⏹️ Parar</button>
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        <label class="form-label">Tema / Plano de Fundo (Aparência)</label>
+                        <select id="obThemeSelect" class="glass-select">
+                            <option value="dark">Tema Noturno Umbrella (Padrão)</option>
+                            <option value="gold">Dourado Clássico</option>
+                        </select>
                     </div>
 
                     <div style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                            <span style="font-size:13px; font-weight:700; color:var(--gold-accent);">🏠 Meu Aconchego (Privado)</span>
-                            <button class="btn-pill-gold" style="font-size:10px; padding:4px 8px;" onclick="closeUmbrellaModal(); switchView('feed');">Postar no Aconchego</button>
-                        </div>
-                        <div style="max-height:160px; overflow-y:auto;">
+                        <span style="font-size:13px; font-weight:700; color:var(--gold-accent); display:block; margin-bottom:8px;">🏠 Meu Aconchego (Histórico & Gestão)</span>
+                        <div style="max-height:180px; overflow-y:auto;">
                             ${aconchegoHtml}
                         </div>
                     </div>
@@ -1278,7 +1247,7 @@
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
                     {
-                        label: 'Salvar',
+                        label: 'Salvar Alterações',
                         primary: true,
                         onClick: async () => {
                             const name = document.getElementById('obName').value.trim();
@@ -1305,79 +1274,23 @@
             try {
                 await setDoc(doc(db, "users", appState.user.uid), {
                     name: appState.user.name,
-                    avatar: appState.user.avatar,
-                    audioUrl: appState.user.audioUrl,
-                    audioTitle: appState.user.audioTitle
+                    avatar: appState.user.avatar
                 }, { merge: true });
             } catch (e) { console.error(e); }
         }
 
-        window.applyCustomAudioLink = async function() {
-            const url = document.getElementById('customAudioLinkInput').value.trim();
-            if (!url) return;
-            appState.user.audioUrl = url;
-            appState.user.audioTitle = 'Mídia do Muka Ativa';
-            await saveUserDataToFirestore();
-            saveLocal();
-            playAudioUrl(url);
-            openProfileModal();
-        };
-
-        function playAudioUrl(url) {
-            const audioEl = document.getElementById('globalActiveAudio');
-            const profileBtn = document.getElementById('headerProfileBtn');
-            if (!url) return;
-            audioEl.src = url;
-            audioEl.loop = true;
-            audioEl.play().then(() => {
-                profileBtn.classList.add('playing');
-            }).catch(() => {});
-        }
-
-        window.toggleGlobalAudioPlay = function() {
-            const audioEl = document.getElementById('globalActiveAudio');
-            const profileBtn = document.getElementById('headerProfileBtn');
-            if (audioEl.paused) {
-                if (audioEl.src) {
-                    audioEl.play();
-                    profileBtn.classList.add('playing');
-                } else if (appState.user.audioUrl) {
-                    playAudioUrl(appState.user.audioUrl);
-                }
-            } else {
-                audioEl.pause();
-                profileBtn.classList.remove('playing');
-            }
-            openProfileModal();
-        };
-
-        window.stopGlobalAudio = function() {
-            const audioEl = document.getElementById('globalActiveAudio');
-            const profileBtn = document.getElementById('headerProfileBtn');
-            audioEl.pause();
-            audioEl.currentTime = 0;
-            profileBtn.classList.remove('playing');
-            appState.user.audioUrl = '';
-            appState.user.audioTitle = '';
-            saveUserDataToFirestore();
-            saveLocal();
-            openProfileModal();
-        };
-
-        // PERFIL DE OUTRA PESSOA NO FEED
+        // VISITAR PERFIL DE OUTRA PESSOA NO FEED (POP-UP IDÊNTICO AO FEED)
         window.visitUserProfile = async function(authorUid, authorName) {
             if (!authorUid) {
                 showUmbrellaModal({ title: authorName, htmlBody: 'Perfil de usuário Umbrella.' });
                 return;
             }
 
-            let userAudio = '';
             let userAvatar = './aconchego.png';
             try {
                 const userDoc = await getDoc(doc(db, "users", authorUid));
                 if (userDoc.exists()) {
                     const data = userDoc.data();
-                    if (data.audioUrl) userAudio = data.audioUrl;
                     if (data.avatar) userAvatar = data.avatar;
                 }
             } catch (e) {}
@@ -1385,24 +1298,26 @@
             const userPosts = postsFromFirebase.filter(p => p.authorUid === authorUid);
             const postsHtml = userPosts.length > 0 
                 ? userPosts.map(p => `
-                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border);">
-                        <p style="font-size:12.5px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia publicada)'}</p>
-                        ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:220px; border-radius:8px;" controls playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:220px; object-fit:cover; border-radius:8px;">`) : ''}
+                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:10px; border:1px solid var(--gold-border);">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+                            <img src="${userAvatar}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
+                            <span style="font-weight:700; color:var(--gold-accent); font-size:13px;">${authorName}</span>
+                        </div>
+                        <p style="font-size:13px; margin-bottom:6px; color:var(--text-main);">${p.text || ''}</p>
+                        ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:260px; border-radius:8px;" controls playsinline webkit-playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:260px; object-fit:cover; border-radius:8px;">`) : ''}
                     </div>
                 `).join('')
                 : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Este usuário ainda não publicou nada no feed.</p>';
 
             showUmbrellaModal({
-                title: `Perfil de ${authorName}`,
+                title: `Feed de ${authorName}`,
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:12px;">
-                        <img src="${userAvatar}" style="width:64px; height:64px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:6px;">
+                        <img src="${userAvatar}" style="width:60px; height:60px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:6px;">
                         <h4 style="color:var(--gold-accent); font-size:15px;">${authorName}</h4>
-                        ${userAudio ? `<button class="btn-pill-gold" style="margin-top:6px; font-size:11px;" onclick="playAudioUrl('${userAudio}')">▶️ Ouvir Trilha Sonora (Muka)</button>` : ''}
                     </div>
-                    <hr style="border:none; border-top:1px solid rgba(251,191,36,0.2); margin:12px 0;">
-                    <h5 style="color:var(--gold-accent); font-size:13px; margin-bottom:8px;">Publicações no Feed:</h5>
-                    <div style="max-height:240px; overflow-y:auto;">
+                    <hr style="border:none; border-top:1px solid rgba(251,191,36,0.2); margin:10px 0;">
+                    <div style="max-height:320px; overflow-y:auto;">
                         ${postsHtml}
                     </div>
                 `,
@@ -1433,6 +1348,7 @@
             });
         };
 
+        // VÍDEOS E FOTOS USAM NATIVO (SEM PRÉ-VISUALIZAÇÃO TRAVADA)
         window.handleMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1442,28 +1358,8 @@
             currentAttachedDataUrl = URL.createObjectURL(file);
             currentAttachedType = isVideo ? 'video' : 'image';
 
-            document.getElementById('mediaPreviewName').textContent = isVideo ? '🎬 Vídeo pronto' : '📷 Foto pronta';
+            document.getElementById('mediaPreviewName').textContent = isVideo ? '🎬 Vídeo pronto para enviar' : '📷 Foto pronta para enviar';
             document.getElementById('mediaPreviewStrip').style.display = 'flex';
-            previewAttachedMediaNative();
-        };
-
-        window.previewAttachedMediaNative = function () {
-            if (!currentAttachedDataUrl) return;
-            const mediaHtml = currentAttachedType === 'video'
-                ? `<video src="${currentAttachedDataUrl}" controls playsinline autoplay style="width:100%; max-height:320px; border-radius:12px; background:#000;"></video>`
-                : `<img src="${currentAttachedDataUrl}" style="width:100%; max-height:320px; object-fit:contain; border-radius:12px;">`;
-
-            showUmbrellaModal({
-                title: 'Pré-visualização antes de enviar',
-                htmlBody: `
-                    ${mediaHtml}
-                    <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Tudo certo? Clique em OK e depois aperte a setinha ➤ para postar!</p>
-                `,
-                buttons: [
-                    { label: 'Trocar', primary: false, onClick: () => { clearAttachedMedia(); closeUmbrellaModal(); openMediaActionSheet(); } },
-                    { label: 'OK, Pronto', primary: true, onClick: closeUmbrellaModal }
-                ]
-            });
         };
 
         window.clearAttachedMedia = function () {
@@ -1478,7 +1374,7 @@
         window.executeGlobalSearch = function () {
             const input = document.getElementById('globalSearchInput');
             const val = input.value.trim();
-            if (val.startsWith('*') && val.length > 1) {
+            if (val.startsWith('@') && val.length > 1) {
                 const queryUser = val.substring(1).toLowerCase();
                 const matchedPosts = postsFromFirebase.filter(p => p.author.toLowerCase().includes(queryUser));
                 const container = document.getElementById('mainFeedList');
@@ -1497,7 +1393,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             const composerInput = document.getElementById('mainComposerInput');
-            if (viewName === 'feed') composerInput.placeholder = "Escreva no Umbrella... (use * para marcar alguém)";
+            if (viewName === 'feed') composerInput.placeholder = "Escreva no Umbrella... (use @ para marcar)";
             else if (viewName === 'desafio') composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
             else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
             else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
@@ -1573,7 +1469,6 @@
                         likedByMe: false,
                         fandom: targetFandom,
                         isChallenge: isChallengeView,
-                        isAconchego: false,
                         createdAt: serverTimestamp(),
                         comments: []
                     });
@@ -1965,7 +1860,6 @@
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
-            if (appState.user.audioUrl) playAudioUrl(appState.user.audioUrl);
         }
 
         function renderPostCardHTML(post) {
@@ -2078,7 +1972,7 @@
                 document.getElementById('insideFandomFeedList').innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p)).join('') : `<div class="empty-state-box">Este fandom está silencioso. Compartilhe algo!</div>`;
             }
 
-            const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && !p.isAconchego && (!p.fandom || p.fandom === 'Geral'));
+            const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && (!p.fandom || p.fandom === 'Geral'));
             document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra abaixo para compartilhar!</div>`;
 
             const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
