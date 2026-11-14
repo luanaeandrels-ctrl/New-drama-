@@ -87,7 +87,6 @@
             border-radius: 50%;
         }
 
-        /* 1. Cabeçalho Superior Dinâmico Atualizado */
         .unified-top-bar {
             width: 100%;
             max-width: 850px;
@@ -125,22 +124,21 @@
             border-radius: 50%;
         }
 
-        /* Gotinha de notificação na foto do perfil */
         .droplet-badge-overlay {
             position: absolute;
             top: -2px;
             right: -2px;
             background: var(--gold-accent);
             color: #060a1e;
-            font-size: 9px;
+            font-size: 8px;
             font-weight: 800;
-            min-width: 16px;
-            height: 16px;
+            min-width: 14px;
+            height: 14px;
             border-radius: 99px;
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 0 3px;
+            padding: 0 2px;
             border: 1px solid #060a1e;
             z-index: 5;
         }
@@ -536,7 +534,7 @@
 
         .like-umbrella-btn.liked span { color: var(--gold-accent); }
 
-        /* 2. Barra Inferior Recolhível com Botão Circular */
+        /* Barra Inferior Recolhível com a Setinha Original Bonitinha */
         .floating-composer-wrapper {
             position: fixed;
             bottom: 22px;
@@ -556,13 +554,13 @@
         }
 
         .composer-toggle-fab {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
-            background: var(--glass-bg);
+            background: rgba(251, 191, 36, 0.2);
             border: 1.5px solid var(--gold-accent);
             color: var(--gold-accent);
-            font-size: 20px;
+            font-size: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -898,11 +896,11 @@
         </div>
     </div>
 
-    <!-- Top Bar Atualizada: Perfil com gotinha na esq, CherBluss no centro e Lupa expansível na dir -->
+    <!-- Top Bar: Foto e gotinha na esq, CherBluss no centro, Lupinha expansível na dir -->
     <div class="unified-top-bar" id="unifiedTopBar">
         <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego Dedicado">
             <img id="headerUserAvatar" src="./aconchego.png" alt="" onerror="this.src='./logo.png'">
-            <span class="droplet-badge-overlay" id="notifBadge">0</span>
+            <span class="droplet-badge-overlay" id="notifBadge" onclick="event.stopPropagation(); openNotificationsModal()">0</span>
         </button>
 
         <div class="top-bar-title-center notranslate" id="topBarCenterTitle" translate="no">CherBluss</div>
@@ -969,7 +967,7 @@
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
-        <!-- Seção de Perfil Completa com Edição Controlada por 3 Pontinhos (⋮) -->
+        <!-- Perfil Dedicado com Edição Controlada por 3 Pontinhos (⋮) -->
         <section class="view-section" id="view-meu-perfil">
             <div class="glass-panel" style="padding:20px; margin-bottom:14px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
@@ -1029,6 +1027,7 @@
             </div>
         </section>
 
+        <!-- Visita ao Perfil de Outra Coleguinha -->
         <section class="view-section" id="view-user-profile-feed">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -1152,9 +1151,9 @@
 
     </div>
 
-    <!-- Barra Inferior Recolhível com Botão Circular -->
+    <!-- Barra Inferior Recolhível com a Setinha Bonitinha Original -->
     <div class="floating-composer-wrapper" id="floatingComposerWrapper">
-        <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir publicador">✏️</button>
+        <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button>
         <div class="gemini-composer">
             <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria Nativa">+</button>
             <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
@@ -1592,7 +1591,7 @@
             saveLocal();
         };
 
-        // Gerenciamento de Edição por 3 Pontinhos no Perfil
+        // Edição do perfil pelo botão de 3 pontinhos (⋮)
         let isProfileEditable = false;
         window.toggleProfileEditMode = function() {
             isProfileEditable = !isProfileEditable;
@@ -1709,7 +1708,6 @@
                 }
             } catch (e) {}
 
-            document.getElementById('headerUserAvatar').querySelector('img')?.setAttribute('src', userAvatar);
             document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
 
             document.getElementById('visitedProfileAvatar').src = userAvatar;
@@ -1949,6 +1947,7 @@
                 document.getElementById('galleryDirectInput').value = '';
                 document.getElementById('challengeCameraInput').value = '';
                 document.getElementById('challengeGalleryInput').value = '';
+                document.getElementById('floatingComposerWrapper').classList.remove('expanded');
 
                 saveLocal();
                 renderAll();
@@ -1958,7 +1957,7 @@
             }
         }
 
-        // Função para expandir e recolher a barra de busca ao clicar na lupa
+        // Expandir barra de busca pela lupa
         window.toggleSearchExpansion = function() {
             const container = document.getElementById('searchBalaoContainer');
             container.classList.toggle('expanded');
@@ -1970,7 +1969,7 @@
             }
         };
 
-        // Função para abrir/fechar a barra inferior flutuante
+        // Abrir/fechar a caixa de digitar do Rodapé pela setinha original (Anti-vazamento)
         window.toggleComposerPanel = function() {
             requireAuthForAction(() => {
                 const wrapper = document.getElementById('floatingComposerWrapper');
@@ -2330,7 +2329,7 @@
                     if (alreadyRequested) {
                         showCherBlussModal({
                             title: `Solicitação Pendente ⏳`,
-                            htmlBody: `Você já enviou uma solicitação para entrar em <strong>${fandomName}</strong>. Aguarde o administrador aprovar na gotinha 💧.`
+                            htmlBody: `Você já enviou uma solicitação para entrar em <strong>${fandomName}</strong>. Aguarde o administrador aprovar.`
                         });
                     } else {
                         showCherBlussModal({
@@ -2698,7 +2697,6 @@
             `).join('');
         }
 
-        // Evento de rolagem para recolher o carrossel e o título do topo
         window.addEventListener('scroll', () => {
             const carouselSec = document.getElementById('carouselWrapper');
             const centerTitle = document.getElementById('topBarCenterTitle');
