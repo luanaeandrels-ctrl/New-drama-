@@ -406,7 +406,7 @@
             cursor: pointer;
         }
 
-        /* Perfil Fluido (Fim dos Quadrados Rígidos) */
+        /* Perfil Fluido (Sem Caixas Rígidas) */
         .profile-hero-top {
             display: flex;
             align-items: flex-start;
@@ -769,7 +769,7 @@
 
         .like-umbrella-btn.liked span { color: var(--gold-accent); }
 
-        /* Barra Inferior Inteligente */
+        /* Barra Inferior Inteligente (Sem Glassmorphism em botões avulsos) */
         .floating-composer-wrapper {
             position: fixed;
             bottom: 22px;
@@ -794,7 +794,7 @@
             width: 44px;
             height: 44px;
             border-radius: 50%;
-            background: rgba(14, 18, 34, 0.92);
+            background: #0e1222;
             border: 1.5px solid var(--gold-accent);
             color: var(--gold-accent);
             font-size: 17px;
@@ -814,7 +814,7 @@
             align-items: center;
             gap: 8px;
             padding: 6px 10px;
-            background: rgba(14, 18, 34, 0.96);
+            background: #0e1222;
             border: 1px solid var(--gold-border);
             border-radius: 9999px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
@@ -862,7 +862,7 @@
             height: 36px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
-            background: rgba(251, 191, 36, 0.2);
+            background: transparent;
             color: var(--gold-accent);
             font-size: 15px;
             display: flex;
@@ -1203,7 +1203,7 @@
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
-        <!-- Tela de Próprio Perfil -->
+        <!-- Tela de Próprio Perfil (Foto única e identificação limpa) -->
         <section class="view-section" id="view-meu-perfil">
             <div style="padding:16px 4px; margin-bottom:14px;">
                 <div class="profile-hero-top">
@@ -1298,7 +1298,7 @@
             </div>
         </section>
 
-        <!-- Visita ao Perfil de Outra Pessoa -->
+        <!-- Visita ao Perfil de Outra Pessoa (Pódio e Desafio somem, botão de dorama e amizade) -->
         <section class="view-section" id="view-user-profile-feed">
             <div style="padding:16px 4px; margin-bottom:14px;">
                 <div class="profile-hero-top">
@@ -1434,7 +1434,7 @@
 
     </div>
 
-    <!-- Barra Inferior de Envio Inteligente -->
+    <!-- Barra Inferior de Envio Inteligente (Recolhida inicialmente, recolhe sozinha após envio) -->
     <div class="floating-composer-wrapper" id="floatingComposerWrapper">
         <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button>
         <div class="gemini-composer">
@@ -1448,7 +1448,7 @@
         </div>
     </div>
 
-    <!-- Rodapé Oficial -->
+    <!-- Rodapé Oficial com nome e e-mail -->
     <footer class="app-footer notranslate" translate="no">
         Sher Bluss • sherbluss.suporte@gmail.com
     </footer>
@@ -1509,7 +1509,7 @@
         const provider = new GoogleAuthProvider();
 
         const CLOUDINARY_CLOUD_NAME = 'l6tlvzln';
-        const CLOUDINARY_UPLOAD_PRESET = 'unsigned_upload'; // preset padrão ou anônimo do Cloudinary
+        const CLOUDINARY_UPLOAD_PRESET = 'unsigned_upload';
 
         const LOCAL_KEY = 'sherbluss_state_v3';
 
@@ -1609,7 +1609,7 @@
             return false;
         }
 
-        // Função crucial de Upload para o Cloudinary (Vídeos e Fotos)
+        // Correção Crítica de Vídeos e Fotos direcionados ao Cloudinary (l6tlvzln)
         async function uploadMediaToCloudinary(file) {
             const resourceType = file.type.startsWith('video/') ? 'video' : 'image';
             const formData = new FormData();
@@ -1629,7 +1629,6 @@
                 }
             } catch (error) {
                 console.error("Erro no Cloudinary:", error);
-                // Fallback seguro usando ObjectURL caso ocorra falha de rede/configuração offline momentânea
                 return { url: URL.createObjectURL(file), type: resourceType };
             }
         }
@@ -2066,7 +2065,7 @@
                     </div>
                 `,
                 buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
+                    { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
                     {
                         label: 'Criar Bolinha ✨',
                         primary: true,
@@ -2082,7 +2081,7 @@
                             saveLocal();
                             renderMyAconchegoShowcase();
                             await saveUserDataToFirestore();
-                            closeCherBlussModal();
+                            closeSherBlussModal();
                         }
                     }
                 ]
@@ -2162,7 +2161,7 @@
                 `).join('');
             }
 
-            showCherBlussModal({
+            showSherBlussModal({
                 title: 'Opções da Publicação',
                 htmlBody: `
                     <div style="display:flex; flex-direction:column; gap:6px;">
@@ -2189,7 +2188,7 @@
                 const existingIdx = (appState.user.savedItems || []).findIndex(item => item.postId === postId && item.folderId === folderId);
                 if (existingIdx !== -1) {
                     closeCherBlussModal();
-                    showCherBlussModal({ title: 'Já Salvo 🌸', htmlBody: `Este item já está guardado em <strong>${folderName}</strong>.` });
+                    showSherBlussModal({ title: 'Já Salvo 🌸', htmlBody: `Este item já está guardado em <strong>${folderName}</strong>.` });
                     return;
                 }
 
@@ -2209,7 +2208,7 @@
                 saveLocal();
                 await saveUserDataToFirestore();
                 closeCherBlussModal();
-                showCherBlussModal({ title: 'Guardado com Carinho! 🏠', htmlBody: `Item salvo em <strong>${folderName}</strong>.` });
+                showSherBlussModal({ title: 'Guardado com Carinho! 🏠', htmlBody: `Item salvo em <strong>${folderName}</strong>.` });
             });
         };
 
@@ -2247,7 +2246,7 @@
             if (!raw.startsWith('@')) raw = '@' + raw;
 
             if (raw === (appState.user.handle || '').toLowerCase()) {
-                showCherBlussModal({ title: 'Aviso', htmlBody: 'Você não pode bloquear o seu próprio @.' });
+                showSherBlussModal({ title: 'Aviso', htmlBody: 'Você não pode bloquear o seu próprio @.' });
                 return;
             }
 
@@ -2535,12 +2534,12 @@
                     await saveUserDataToFirestore();
                     await refreshVisitedUserHeaderAndButton(targetName, targetHandle);
 
-                    showCherBlussModal({
+                    showSherBlussModal({
                         title: 'Convite Enviado! 🎬',
                         htmlBody: `Você enviou <em>"Vamos assistir juntos?"</em> para <strong>${targetName}</strong>.`
                     });
                 } catch (e) {
-                    showCherBlussModal({ title: 'Erro', htmlBody: e.message });
+                    showSherBlussModal({ title: 'Erro', htmlBody: e.message });
                 }
             });
         };
@@ -2554,14 +2553,14 @@
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
-                    showCherBlussModal({ title: 'Notificações 💧', htmlBody: 'Nenhum novo aviso no momento.' });
+                    showSherBlussModal({ title: 'Notificações 💧', htmlBody: 'Nenhum novo aviso no momento.' });
                     return;
                 }
 
                 const notif = appState.notifications[0];
 
                 if (notif.type === 'friend_request') {
-                    showCherBlussModal({
+                    showSherBlussModal({
                         title: 'Convite de Amizade 🎬',
                         htmlBody: `<p>${notif.text}</p><p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Deseja aceitar a amizade?</p>`,
                         buttons: [
@@ -2573,7 +2572,7 @@
                                     saveLocal();
                                     await saveUserDataToFirestore();
                                     syncAllNotifications();
-                                    closeCherBlussModal();
+                                    closeSherBlussModal();
                                 }
                             },
                             {
@@ -2608,8 +2607,8 @@
 
                                     syncAllNotifications();
                                     renderAll();
-                                    closeCherBlussModal();
-                                    showCherBlussModal({
+                                    closeSherBlussModal();
+                                    showSherBlussModal({
                                         title: 'Agora vocês são amigas! 🌸',
                                         htmlBody: `Você e <strong>${notif.fromName}</strong> agora estão na lista de amigos!`
                                     });
@@ -2618,11 +2617,11 @@
                         ]
                     });
                 } else if (notif.type === 'fandom_request') {
-                    showCherBlussModal({
+                    showSherBlussModal({
                         title: 'Solicitação de Fandom 🔒',
                         htmlBody: `<p>${notif.text}</p>`,
                         buttons: [
-                            { label: 'Não', primary: false, onClick: closeCherBlussModal },
+                            { label: 'Não', primary: false, onClick: closeSherBlussModal },
                             { 
                                 label: 'Sim ✅', 
                                 primary: true, 
@@ -2633,22 +2632,22 @@
                                             pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
                                         });
                                     } catch (e) {}
-                                    closeCherBlussModal(); 
+                                    closeSherBlussModal(); 
                                 } 
                             }
                         ]
                     });
                 } else if (notif.type === 'mention') {
-                    showCherBlussModal({
+                    showSherBlussModal({
                         title: 'Marcação em Comentário 💬',
                         htmlBody: `<p>${notif.text}</p>`,
                         buttons: [
-                            { label: 'Fechar', primary: false, onClick: closeCherBlussModal },
+                            { label: 'Fechar', primary: false, onClick: closeSherBlussModal },
                             {
                                 label: 'Ver Comentário ➔',
                                 primary: true,
                                 onClick: () => {
-                                    closeCherBlussModal();
+                                    closeSherBlussModal();
                                     navigateToPostDirect(notif.postId, notif.fandom, notif.isChallenge);
                                 }
                             }
@@ -3058,7 +3057,7 @@
 
                     input.value = '';
                     
-                    // Recolhimento automático imediato após envio por texto (Enter ou botão)
+                    // Recolhimento automático imediato após envio por texto
                     document.getElementById('floatingComposerWrapper').classList.remove('expanded');
 
                     saveLocal();
@@ -3075,14 +3074,14 @@
                     title: '🗑️ Excluir Publicação',
                     htmlBody: 'Você realmente deseja apagar essa publicação?',
                     buttons: [
-                        { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
+                        { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
                         {
                             label: 'Sim, Apagar',
                             primary: true,
                             onClick: async () => {
                                 try {
                                     await deleteDoc(doc(db, "posts", postId));
-                                    closeCherBlussModal();
+                                    closeSherBlussModal();
                                     renderMyAconchegoPosts();
                                 } catch (e) {
                                     showSherBlussModal({ title: 'Erro', htmlBody: e.message });
@@ -3158,7 +3157,7 @@
                         </div>
                     `,
                     buttons: [
-                        { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
+                        { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
                         {
                             label: 'Criar Fandom Trancado',
                             primary: true,
@@ -3176,7 +3175,7 @@
                                             pendingRequests: [],
                                             createdAt: serverTimestamp()
                                         });
-                                        closeCherBlussModal();
+                                        closeSherBlussModal();
                                     } catch (e) {
                                         showSherBlussModal({ title: 'Erro', htmlBody: e.message });
                                     }
@@ -3210,7 +3209,7 @@
                         title: `Fandom Particular 🔒`,
                         htmlBody: `O espaço <strong>${fandomName}</strong> é trancado. Deseja enviar uma solicitação de entrada?`,
                         buttons: [
-                            { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
+                            { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
                             {
                                 label: 'Enviar Solicitação 📩',
                                 primary: true,
@@ -3222,7 +3221,7 @@
                                                 name: appState.user.name
                                             })
                                         });
-                                        closeCherBlussModal();
+                                        closeSherBlussModal();
                                     } catch (e) {
                                         showSherBlussModal({ title: 'Erro', htmlBody: e.message });
                                     }
@@ -3243,7 +3242,7 @@
             showSherBlussModal({
                 title: `Opções • ${activeFandomFilter}`,
                 htmlBody: adminHtml || '<p style="font-size:12px; color:var(--text-muted);">Sem opções extras para membros comuns.</p>',
-                buttons: [{ label: 'Fechar', primary: false, onClick: closeCherBlussModal }]
+                buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
             });
         };
 
@@ -3270,7 +3269,7 @@
             showSherBlussModal({
                 title: `Membros • ${fandomName}`,
                 htmlBody: `<div style="max-height:220px; overflow-y:auto;">${membersHtml}</div>`,
-                buttons: [{ label: 'Concluir', primary: true, onClick: closeCherBlussModal }]
+                buttons: [{ label: 'Concluir', primary: true, onClick: closeSherBlussModal }]
             });
         };
 
@@ -3292,7 +3291,7 @@
                     <div class="form-group"><label class="form-label">Sábado / Domingo</label><input type="text" id="admSabDom" class="glass-input" value="${d.sabadoDomingo || ''}"></div>
                 `,
                 buttons: [
-                    { label: 'Fechar', primary: false, onClick: closeCherBlussModal },
+                    { label: 'Fechar', primary: false, onClick: closeSherBlussModal },
                     { 
                         label: 'Salvar 6 Desafios', 
                         primary: true, 
@@ -3307,7 +3306,7 @@
                             };
                             saveLocal(); 
                             renderAll(); 
-                            closeCherBlussModal(); 
+                            closeSherBlussModal(); 
                         } 
                     }
                 ]
