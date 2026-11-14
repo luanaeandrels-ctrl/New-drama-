@@ -102,7 +102,6 @@
             top: 0;
         }
 
-        /* BOLINHA DO PERFIL COM ANIMAÇÃO SPOTIFY */
         .header-left-btn {
             position: relative;
             width: 38px;
@@ -948,10 +947,10 @@
 </head>
 <body>
 
-    <!-- ELEMENTO DE ÁUDIO GLOBAL DO MUKA -->
+    <!-- ELEMENTO DE ÁUDIO GLOBAL -->
     <audio id="globalActiveAudio" preload="auto"></audio>
 
-    <!-- TELA DE LOGIN / BLOQUEIO -->
+    <!-- TELA DE LOGIN -->
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
             <img src="./logo.png" alt="Umbrella" class="auth-logo">
@@ -1001,7 +1000,7 @@
             </div>
         </div>
 
-        <!-- CARROSSEL / NAVEGAÇÃO -->
+        <!-- CARROSSEL -->
         <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
@@ -1061,7 +1060,7 @@
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
-        <!-- TELA DE VISITA A PERFIL DE AMIGO (SÓ O FEED DELE) -->
+        <!-- TELA DE VISITA A PERFIL DE AMIGO -->
         <section class="view-section" id="view-visit-profile">
             <div class="glass-panel" style="padding:12px 16px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;">
                 <div style="display:flex; align-items:center; gap:12px;">
@@ -1166,12 +1165,13 @@
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
-        <!-- TELA 5: ACONCHEGO -->
+        <!-- TELA 5: ACONCHEGO (GERENCIADOR DE ATIVIDADE & EXCLUSÃO) -->
         <section class="view-section" id="view-aconchego">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meu Aconchego</span>
                 <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
+            <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px; padding:0 4px;">Aqui fica o registro de tudo o que você postou no Umbrella. Somente aqui você pode gerenciar e apagar suas publicações.</p>
             <div class="feed-list" id="aconchegoHistoryList"></div>
         </section>
 
@@ -1311,7 +1311,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v42';
+        const LOCAL_KEY = 'umbrella_clean_state_v43';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1565,17 +1565,21 @@
             }
         };
 
-        // PERFIL COMPLETO (COM SELEÇÃO DE TEMA, CORES E PLAYER DO MUKA)
+        // PERFIL COM PLAYER COMPLETO (BARRINHA QUE SEGUE DE UM CANTO AO OUTRO)
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
                 return;
             }
 
-            const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
+            const audioEl = document.getElementById('globalActiveAudio');
+            const isPlaying = !audioEl.paused && audioEl.src !== '';
+            const currentTime = audioEl.currentTime || 0;
+            const duration = audioEl.duration || 100;
+            const progressPercent = (currentTime / (duration || 1)) * 100;
 
             showUmbrellaModal({
-                title: `Meu Perfil & Personalização`,
+                title: `Meu Perfil & Player Completo`,
                 htmlBody: `
                     <div class="profile-scrollable-content">
                         <div style="text-align:center; margin-bottom:14px;">
@@ -1603,18 +1607,27 @@
                         </div>
 
                         <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Link do Muka (Trilha Sonora / Mídia)</label>
-                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Cole o link direto do Muka ou áudio:</p>
+                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Playerzinho do Muka</label>
+                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Link do áudio/Muka:</p>
                             <div style="display:flex; gap:6px; margin-bottom:12px;">
                                 <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl || ''}">
                                 <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar</button>
                             </div>
 
-                            <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px solid var(--gold-border); text-align:center;">
-                                <p style="font-size:12px; color:var(--gold-accent); margin-bottom:8px;" id="nowPlayingTitle">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
+                            <!-- Player Compacto com Barra de Progresso de ponta a ponta -->
+                            <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px solid var(--gold-border);">
+                                <p style="font-size:12px; color:var(--gold-accent); margin-bottom:6px; text-align:center;" id="nowPlayingTitle">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
+                                
+                                <!-- Barrinha de Progresso de um canto ao outro -->
+                                <div style="width:100%; height:6px; background:rgba(255,255,255,0.15); border-radius:99px; margin-bottom:10px; cursor:pointer; overflow:hidden; position:relative;" onclick="seekAudioPosition(event)">
+                                    <div id="audioProgressBarFill" style="width:${progressPercent}%; height:100%; background:var(--gold-accent); border-radius:99px; transition:width 0.1s linear;"></div>
+                                </div>
+
                                 <div style="display:flex; justify-content:center; gap:8px;">
-                                    <button class="btn-pill-gold" style="padding:6px 14px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
-                                    <button class="btn-danger-pill" style="padding:6px 14px;" onclick="stopGlobalAudio()">⏹️ Parar</button>
+                                    <button class="btn-pill-gold" style="padding:5px 12px; font-size:11px;" onclick="skipAudioTime(-5)">⏪ -5s</button>
+                                    <button class="btn-pill-gold" style="padding:5px 14px; font-size:11px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
+                                    <button class="btn-pill-gold" style="padding:5px 12px; font-size:11px;" onclick="skipAudioTime(5)">⏩ +5s</button>
+                                    <button class="btn-danger-pill" style="padding:5px 10px; font-size:11px;" onclick="stopGlobalAudio()">⏹️</button>
                                 </div>
                             </div>
                         </div>
@@ -1731,7 +1744,34 @@
             openProfileModal();
         };
 
-        // FUNÇÃO DE VISITAR O PERFIL DE ALGUÉM (EXIBE SÓ O FEED DELE COMO VISITANTE)
+        window.skipAudioTime = function(sec) {
+            const audioEl = document.getElementById('globalActiveAudio');
+            if (audioEl && !isNaN(audioEl.duration)) {
+                audioEl.currentTime = Math.min(Math.max(0, audioEl.currentTime + sec), audioEl.duration);
+            }
+        };
+
+        window.seekAudioPosition = function(event) {
+            const audioEl = document.getElementById('globalActiveAudio');
+            const rect = event.currentTarget.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const width = rect.width;
+            const percent = clickX / width;
+            if (audioEl && !isNaN(audioEl.duration)) {
+                audioEl.currentTime = percent * audioEl.duration;
+            }
+        };
+
+        // Atualizador contínuo da barrinha do player se o modal estiver aberto
+        setInterval(() => {
+            const audioEl = document.getElementById('globalActiveAudio');
+            const fill = document.getElementById('audioProgressBarFill');
+            if (fill && audioEl && !isNaN(audioEl.duration) && audioEl.duration > 0) {
+                const pct = (audioEl.currentTime / audioEl.duration) * 100;
+                fill.style.width = pct + '%';
+            }
+        }, 250);
+
         window.visitUserProfile = async function(authorUid, authorName, authorAvatar) {
             if (!authorUid) {
                 alert(`Perfil de ${authorName}`);
@@ -2008,7 +2048,6 @@
             });
         };
 
-        // ENVIO DIRETO SEM BARRA DE PORCENTAGEM
         window.submitPost = async function () {
             if (isUploadingPost) return;
             requireAuthForAction(async () => {
@@ -2093,8 +2132,8 @@
         window.confirmDeletePost = function (postId) {
             requireAuthForAction(() => {
                 showUmbrellaModal({
-                    title: '🗑️ Excluir Publicação',
-                    htmlBody: 'Você realmente deseja apagar essa publicação?',
+                    title: '🗑️ Excluir Publicação do Aconchego',
+                    htmlBody: 'Você realmente deseja apagar essa publicação do seu histórico?',
                     buttons: [
                         { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                         {
@@ -2135,15 +2174,6 @@
                     saveLocal();
                 } catch (e) { console.error("Erro ao curtir:", e); }
             });
-        };
-
-        window.replyToUserInComment = function (authorName) {
-            const input = document.getElementById('mainComposerInput');
-            if (input) {
-                input.value = `*${authorName} `;
-                input.focus();
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
         };
 
         window.submitInlineComment = async function (postId) {
@@ -2501,7 +2531,7 @@
                 `,
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective').value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
+                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective'].value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
                 ]
             });
         }
@@ -2536,7 +2566,8 @@
             }
         }
 
-        function renderPostCardHTML(post, isAconchegoTab = false) {
+        // RENDERIZADOR DE POSTAGEM (O BOTÃO DE APAGAR SÓ APARECE NA ABA ACONCHEGO)
+        window.renderPostCardHTML = function(post, isAconchegoTab = false) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls playsinline></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
@@ -2557,7 +2588,8 @@
                 </div>
             `).join('');
 
-            const showDelete = (isAconchegoTab || post.fandom !== 'Geral') && appState.user.loggedIn && post.author === appState.user.name;
+            // REGRA ESTrita: O botão de exclusão da postagem só aparece se estiver EXATAMENTE na aba Aconchego e o post pertencer ao usuário logado.
+            const showDelete = isAconchegoTab && appState.user.loggedIn && post.authorUid === appState.user.uid;
 
             return `
                 <article class="post-card-clean">
@@ -2572,7 +2604,7 @@
                                 <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)} (🎵 Ouvir perfil)</div>
                             </div>
                         </div>
-                        ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar">✕</button>` : ''}
+                        ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar do Aconchego">✕ Apagar</button>` : ''}
                     </div>
 
                     ${post.text ? `<p class="post-text">${post.text}</p>` : ''}
@@ -2649,7 +2681,6 @@
                 container.innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p, false)).join('') : `<div class="empty-state-box">Este fandom está privadamente silencioso. Compartilhe a primeira foto linda que você achou!</div>`;
             }
 
-            // RENDERIZAÇÃO DA VISITA AO PERFIL DO AMIGO (SÓ O FEED DELE)
             if (visitedProfileData) {
                 document.getElementById('visitUsername').textContent = visitedProfileData.name;
                 document.getElementById('visitAvatar').src = visitedProfileData.avatar;
@@ -2658,13 +2689,15 @@
                 visitContainer.innerHTML = userPosts.length > 0 ? userPosts.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Este usuário ainda não publicou nenhuma foto ou vídeo no feed.</div>`;
             }
 
+            // Feed Geral (isAconchegoTab = false, logo NÃO exibe botão de apagar)
             const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && !p.isAconchego && (!p.fandom || p.fandom === 'Geral'));
             document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar!</div>`;
 
             const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
             document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
 
-            const aconchegoPosts = postsFromFirebase.filter(p => p.isAconchego && p.author === appState.user.name);
+            // Aconchego (isAconchegoTab = true, logo EXIBE o botão de apagar postagens próprias)
+            const aconchegoPosts = postsFromFirebase.filter(p => p.authorUid === appState.user.uid || p.author === appState.user.name);
             document.getElementById('aconchegoHistoryList').innerHTML = aconchegoPosts.length > 0 ? aconchegoPosts.map(p => renderPostCardHTML(p, true)).join('') : `<div class="glass-panel empty-state-box">Seu espaço Aconchego está vazio.<br>Escreva algo usando o campo abaixo nesta aba!</div>`;
 
             document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0 ? appState.friends.map(f => `
