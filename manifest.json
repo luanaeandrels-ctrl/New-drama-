@@ -1,15 +1,26 @@
 {
-  "name": "Novo Drama",
-  "short_name": "NovoDrama",
-  "start_url": "/",
+  "name": "CherBluss",
+  "short_name": "CherBluss",
+  "description": "Comunidade CherBluss",
+  "lang": "pt-BR",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#0f0f13",
-  "theme_color": "#0f0f13",
+  "orientation": "portrait",
+  "background_color": "#060a1e",
+  "theme_color": "#060a1e",
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "./logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./logo.png",
+      "sizes": "1024x1024",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
