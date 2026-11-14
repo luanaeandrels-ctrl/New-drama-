@@ -718,14 +718,14 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR DINÂMICA (MUDA PARA O PERFIL VISITADO OU FICA NORMAL) -->
+    <!-- BARRA SUPERIOR DINÂMICA -->
     <div class="unified-top-bar" id="unifiedTopBar">
-        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Aconchego">
+        <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego Dedicado">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
         <div class="search-balao-fininho" id="searchBalaoContainer">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@usuário" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@seu_arroba" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
             <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
         </div>
 
@@ -788,17 +788,60 @@
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
+        <!-- SEÇÃO DEDICADA: MEU PERFIL & ACONCHEGO -->
+        <section class="view-section" id="view-meu-perfil">
+            <div class="glass-panel" style="padding:20px; margin-bottom:14px;">
+                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+                    <span class="section-title">Meu Perfil & Aconchego Dedicado</span>
+                    <button class="btn-pill-gold" onclick="switchView('feed')">Voltar ao Feed</button>
+                </div>
+
+                <div style="text-align:center; margin-bottom:16px;">
+                    <img id="myProfilePageAvatar" src="./aconchego.png" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px;">
+                    <h4 id="myProfilePageNameDisplay" style="color:var(--gold-accent); font-size:16px;">Usuário</h4>
+                    <p id="myProfilePageHandleDisplay" style="font-size:12px; color:var(--gold-accent);">@arroba</p>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Meu Nome Completo</label>
+                    <input type="text" id="profileEditName" class="glass-input" oninput="saveProfileChangesLive()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Meu @Arroba (Para te acharem no Umbrella)</label>
+                    <input type="text" id="profileEditHandle" class="glass-input" placeholder="@exemplo" oninput="saveProfileChangesLive()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Foto de Perfil (Galeria Nativa)</label>
+                    <label for="profileEditAvatarFile" class="custom-file-trigger" id="profileAvatarLabel">Alterar foto do perfil</label>
+                    <input type="file" id="profileEditAvatarFile" accept="image/*" style="display:none;" onchange="handleProfileAvatarSelected(event)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tema / Plano de Fundo</label>
+                    <select id="profileEditTheme" class="glass-select" onchange="saveProfileChangesLive()">
+                        <option value="dark">Tema Noturno Umbrella (Padrão)</option>
+                        <option value="gold">Dourado Clássico</option>
+                    </select>
+                </div>
+                <button class="btn-danger-pill" style="width:100%; padding:10px; margin-top:8px;" onclick="logoutAccount()">🚪 Sair da Conta</button>
+            </div>
+
+            <div class="glass-panel" style="padding:16px;">
+                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:12px;">🏠 Meu Aconchego (Gerenciar Publicações & Curtidas)</h4>
+                <div class="feed-list" id="myAconchegoPostsList"></div>
+            </div>
+        </section>
+
         <!-- SEÇÃO DE PERFIL DE OUTRO USUÁRIO (TELA DEDICADA) -->
         <section class="view-section" id="view-user-profile-feed">
-            <div style="display:flex; align-items:center; justify-content:between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <img id="visitedProfileAvatar" src="./aconchego.png" style="width:36px; height:36px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
                     <div>
                         <span id="visitedProfileTitleName" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Perfil</span>
-                        <span style="font-size:11px; color:var(--text-muted); display:block;">• Feed do Usuário</span>
+                        <span id="visitedProfileHandleSub" style="font-size:11px; color:var(--text-muted); display:block;">• @arroba</span>
                     </div>
                 </div>
-                <button class="btn-pill-gold" onclick="closeVisitedUserProfile()">Voltar ao Feed Principal</button>
+                <button class="btn-pill-gold" onclick="closeVisitedUserProfile()">Voltar ao Feed</button>
             </div>
             <div class="feed-list" id="visitedProfileFeedList"></div>
         </section>
@@ -858,7 +901,7 @@
         </section>
 
         <section class="view-section" id="view-inside-fandom">
-            <div style="display:flex; align-items:center; justify-content:between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <span style="font-size:16px;">🔓</span>
                     <div>
@@ -885,11 +928,6 @@
     </div>
 
     <div class="floating-composer-wrapper">
-        <div class="media-preview-strip" id="mediaPreviewStrip">
-            <span id="mediaPreviewName">Mídia pronta para postar</span>
-            <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700; font-size:14px;">✕</button>
-        </div>
-
         <div class="gemini-composer">
             <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria Nativa">+</button>
             <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
@@ -960,15 +998,17 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v47';
+        const LOCAL_KEY = 'umbrella_clean_state_v48';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
                 uid: '',
                 loggedIn: false,
-                name: 'Visitante',
+                name: 'Usuário',
+                handle: '@usuario',
                 email: '',
-                avatar: './aconchego.png'
+                avatar: './aconchego.png',
+                theme: 'dark'
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
@@ -976,7 +1016,7 @@
             fandoms: [],
             subgroups: {},
             friends: [
-                { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
+                { id: 'f_1', name: 'Amiga Dorama', handle: '@amigadorama', avatar: './amigos.png', status: 'Amizade ativa' }
             ],
             notifications: []
         };
@@ -1040,6 +1080,9 @@
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
                 appState.user.name = user.displayName || 'Usuário Umbrella';
+                if (!appState.user.handle || appState.user.handle === '@usuario') {
+                    appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuario');
+                }
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
 
@@ -1048,8 +1091,14 @@
                 if (!userDoc.exists()) {
                     await setDoc(userRef, {
                         name: appState.user.name,
+                        handle: appState.user.handle,
                         avatar: appState.user.avatar
                     }, { merge: true });
+                } else {
+                    const data = userDoc.data();
+                    if (data.handle) appState.user.handle = data.handle;
+                    if (data.name) appState.user.name = data.name;
+                    if (data.avatar) appState.user.avatar = data.avatar;
                 }
 
                 saveLocal();
@@ -1078,6 +1127,7 @@
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
                 appState.user.name = user.displayName || 'Usuário Google';
+                appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuario');
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
                 saveLocal();
@@ -1096,9 +1146,9 @@
                 <img src="./logo.png" alt="Umbrella" class="auth-logo" style="max-width:90px;">
                 <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta no Umbrella</h3>
                 <div class="form-group"><input type="text" id="regName" class="glass-input" placeholder="Seu Nome"></div>
+                <div class="form-group"><input type="text" id="regHandle" class="glass-input" placeholder="Seu @Arroba (Ex: @luana)"></div>
                 <div class="form-group"><input type="email" id="regEmail" class="glass-input" placeholder="Seu E-mail"></div>
                 <div class="form-group"><input type="password" id="regPass" class="glass-input" placeholder="Crie uma Senha"></div>
-                <div class="form-group"><input type="password" id="regPassConfirm" class="glass-input" placeholder="Confirme a Senha"></div>
                 <button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualRegister()">Cadastrar</button>
                 <button class="btn-pill-gold" style="width:100%;" onclick="location.reload()">Voltar</button>
             `;
@@ -1106,16 +1156,16 @@
 
         window.submitManualRegister = function () {
             const name = document.getElementById('regName').value.trim();
+            const handle = document.getElementById('regHandle').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const pass = document.getElementById('regPass').value;
-            const confirm = document.getElementById('regPassConfirm').value;
 
-            if (!name || !email || !pass) { showUmbrellaModal({ title: 'Atenção', htmlBody: 'Preencha todos os campos!' }); return; }
-            if (pass !== confirm) { showUmbrellaModal({ title: 'Atenção', htmlBody: 'As senhas não coincidem!' }); return; }
+            if (!name || !handle || !email || !pass) { showUmbrellaModal({ title: 'Atenção', htmlBody: 'Preencha todos os campos!' }); return; }
 
             appState.user.uid = 'manual_' + Date.now();
             appState.user.loggedIn = true;
             appState.user.name = name;
+            appState.user.handle = handle.startsWith('@') ? handle : '@' + handle;
             appState.user.email = email;
             saveLocal();
             applyUserTheme();
@@ -1143,6 +1193,7 @@
             appState.user.uid = 'manual_' + email.replace(/[^a-zA-Z0-9]/g, '_');
             appState.user.loggedIn = true;
             appState.user.name = email.split('@')[0];
+            appState.user.handle = '@' + email.split('@')[0];
             appState.user.email = email;
             saveLocal();
             applyUserTheme();
@@ -1155,10 +1206,10 @@
             try { await signOut(auth); } catch (e) {}
             appState.user.loggedIn = false;
             appState.user.uid = '';
-            appState.user.name = 'Visitante';
+            appState.user.name = 'Usuário';
+            appState.user.handle = '@usuario';
             appState.user.email = '';
             saveLocal();
-            closeUmbrellaModal();
             location.reload();
         };
 
@@ -1197,127 +1248,108 @@
             }
         };
 
-        // PERFIL COMPLETO COM MEU ACONCHEGO (HISTÓRICO)
-        window.openProfileModal = function () {
+        // ALTERAR PARA A SEÇÃO DEDICADA DE PERFIL & ACONCHEGO
+        window.switchToProfileSection = function() {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
                 return;
             }
+            activeVisitedUserUid = null;
+            document.getElementById('searchBalaoContainer').style.display = 'flex';
+            document.getElementById('dropletBtnElement').style.display = 'flex';
 
+            document.getElementById('profileEditName').value = appState.user.name;
+            document.getElementById('profileEditHandle').value = appState.user.handle;
+            document.getElementById('myProfilePageAvatar').src = appState.user.avatar;
+            document.getElementById('myProfilePageNameDisplay').textContent = appState.user.name;
+            document.getElementById('myProfilePageHandleDisplay').textContent = appState.user.handle;
+            document.getElementById('profileEditTheme').value = appState.user.theme || 'dark';
+
+            renderMyAconchegoPosts();
+
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-meu-perfil').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.saveProfileChangesLive = async function() {
+            const nameVal = document.getElementById('profileEditName').value.trim();
+            const handleVal = document.getElementById('profileEditHandle').value.trim();
+            const themeVal = document.getElementById('profileEditTheme').value;
+
+            if (nameVal) appState.user.name = nameVal;
+            if (handleVal) appState.user.handle = handleVal.startsWith('@') ? handleVal : '@' + handleVal;
+            appState.user.theme = themeVal;
+
+            document.getElementById('myProfilePageNameDisplay').textContent = appState.user.name;
+            document.getElementById('myProfilePageHandleDisplay').textContent = appState.user.handle;
+
+            saveLocal();
+            await saveUserDataToFirestore();
+        };
+
+        window.handleProfileAvatarSelected = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            document.getElementById('profileAvatarLabel').textContent = file.name;
+            appState.user.avatar = URL.createObjectURL(file);
+            document.getElementById('myProfilePageAvatar').src = appState.user.avatar;
+            applyUserTheme();
+            saveLocal();
+            await saveUserDataToFirestore();
+        };
+
+        function renderMyAconchegoPosts() {
             const myPosts = postsFromFirebase.filter(p => p.authorUid === appState.user.uid);
-            const aconchegoHtml = myPosts.length > 0 
+            const container = document.getElementById('myAconchegoPostsList');
+            container.innerHTML = myPosts.length > 0 
                 ? myPosts.map(p => `
                     <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border); display:flex; justify-content:space-between; align-items:flex-start;">
                         <div style="flex:1; padding-right:8px;">
-                            <span style="font-size:10px; color:var(--gold-accent); display:block; margin-bottom:4px;">${p.isChallenge ? 'Desafio' : p.fandom || 'Geral'}</span>
+                            <span style="font-size:10px; color:var(--gold-accent); display:block; margin-bottom:4px;">${formatPostDate(p.createdAt)} • ${p.isChallenge ? 'Desafio' : p.fandom || 'Geral'}</span>
                             <p style="font-size:12px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia)'}</p>
                             ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:140px; border-radius:8px;" controls playsinline webkit-playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;">`) : ''}
                         </div>
-                        <button class="btn-danger-pill" style="font-size:10px;" onclick="confirmDeletePost('${p.id}'); closeUmbrellaModal();">Excluir</button>
+                        <button class="btn-danger-pill" style="font-size:10px;" onclick="confirmDeletePost('${p.id}')">Excluir</button>
                     </div>
                 `).join('')
-                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Seu histórico (Aconchego) está vazio.</p>';
-
-            showUmbrellaModal({
-                title: `Meu Perfil & Aconchego`,
-                htmlBody: `
-                    <div style="text-align:center; margin-bottom:14px;">
-                        <img src="${appState.user.avatar}" style="width:72px; height:72px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px;">
-                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
-                        <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Nome Completo</label>
-                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Foto de Perfil (Galeria Nativa)</label>
-                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto</label>
-                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Gerenciar Senha</label>
-                        <input type="password" id="obPassword" class="glass-input" placeholder="Nova senha (opcional)">
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Tema / Plano de Fundo (Aparência)</label>
-                        <select id="obThemeSelect" class="glass-select">
-                            <option value="dark">Tema Noturno Umbrella (Padrão)</option>
-                            <option value="gold">Dourado Clássico</option>
-                        </select>
-                    </div>
-
-                    <div style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <span style="font-size:13px; font-weight:700; color:var(--gold-accent); display:block; margin-bottom:8px;">🏠 Meu Aconchego (Histórico & Gestão)</span>
-                        <div style="max-height:180px; overflow-y:auto;">
-                            ${aconchegoHtml}
-                        </div>
-                    </div>
-
-                    <div style="margin-top:14px; text-align:center;">
-                        <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
-                    </div>
-                `,
-                buttons: [
-                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                    {
-                        label: 'Salvar Alterações',
-                        primary: true,
-                        onClick: async () => {
-                            const name = document.getElementById('obName').value.trim();
-                            if (name) appState.user.name = name;
-
-                            const avatarInput = document.getElementById('obAvatarFile');
-                            if (avatarInput.files && avatarInput.files[0]) {
-                                const file = avatarInput.files[0];
-                                appState.user.avatar = URL.createObjectURL(file);
-                            }
-                            await saveUserDataToFirestore();
-                            saveLocal();
-                            applyUserTheme();
-                            renderAll();
-                            closeUmbrellaModal();
-                        }
-                    }
-                ]
-            });
-        };
+                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Seu histórico do Aconchego está vazio. Suas postagens e vídeos curtidos ficarão aqui.</p>';
+        }
 
         async function saveUserDataToFirestore() {
             if (!appState.user.uid) return;
             try {
                 await setDoc(doc(db, "users", appState.user.uid), {
                     name: appState.user.name,
+                    handle: appState.user.handle,
                     avatar: appState.user.avatar
                 }, { merge: true });
             } catch (e) { console.error(e); }
         }
 
-        // VISITAR PERFIL DE OUTRO USUÁRIO (TELA DEDICADA / MODO FEED DA PESSOA)
-        window.visitUserProfile = async function(authorUid, authorName) {
+        // VISITAR PERFIL DE OUTRO USUÁRIO (TELA DEDICADA)
+        window.visitUserProfile = async function(authorUid, authorName, authorHandle) {
             if (!authorUid) return;
             activeVisitedUserUid = authorUid;
 
             let userAvatar = './aconchego.png';
+            let userHandle = authorHandle || '@usuario';
             try {
                 const userDoc = await getDoc(doc(db, "users", authorUid));
                 if (userDoc.exists()) {
                     const data = userDoc.data();
                     if (data.avatar) userAvatar = data.avatar;
+                    if (data.handle) userHandle = data.handle;
                 }
             } catch (e) {}
 
-            // Atualiza a barra superior para mostrar que estamos no perfil do colega
             document.getElementById('headerUserAvatar').src = userAvatar;
             document.getElementById('searchBalaoContainer').style.display = 'none';
             document.getElementById('dropletBtnElement').style.display = 'none';
 
-            // Configura a tela dedicada do perfil
             document.getElementById('visitedProfileAvatar').src = userAvatar;
             document.getElementById('visitedProfileTitleName').textContent = authorName;
+            document.getElementById('visitedProfileHandleSub').textContent = `• ${userHandle}`;
 
             const userPosts = postsFromFirebase.filter(p => p.authorUid === authorUid);
             const container = document.getElementById('visitedProfileFeedList');
@@ -1370,25 +1402,61 @@
             currentAttachedDataUrl = URL.createObjectURL(file);
             currentAttachedType = isVideo ? 'video' : 'image';
 
-            document.getElementById('mediaPreviewName').textContent = isVideo ? '🎬 Vídeo pronto para enviar' : '📷 Foto pronta para enviar';
-            document.getElementById('mediaPreviewStrip').style.display = 'flex';
+            // Envio imediato limpo para evitar qualquer travamento de pré-visualização em aparelhos como A11
+            await submitPostDirectlyWithMedia(currentAttachedDataUrl, currentAttachedType);
         };
 
-        window.clearAttachedMedia = function () {
-            currentAttachedDataUrl = null;
-            currentAttachedType = null;
-            document.getElementById('cameraDirectInput').value = '';
-            document.getElementById('videoDirectInput').value = '';
-            document.getElementById('galleryDirectInput').value = '';
-            document.getElementById('mediaPreviewStrip').style.display = 'none';
-        };
+        async function submitPostDirectlyWithMedia(mediaUrl, mediaType) {
+            const input = document.getElementById('mainComposerInput');
+            const text = input.value.trim();
+
+            const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
+            const isInsideFandomView = document.getElementById('view-inside-fandom').classList.contains('active');
+
+            if (isChallengeView && !appState.bias.id) {
+                showUmbrellaModal({ title: 'Bias Obrigatório', htmlBody: 'Cadastre seu Bias representante antes de postar no Desafio.' });
+                return;
+            }
+
+            try {
+                const targetFandom = isInsideFandomView ? activeFandomFilter : 'Geral';
+
+                await addDoc(collection(db, "posts"), {
+                    author: appState.user.name,
+                    authorUid: appState.user.uid,
+                    authorHandle: appState.user.handle,
+                    avatar: appState.user.avatar,
+                    text: text,
+                    media: mediaUrl || '',
+                    mediaType: mediaType || '',
+                    likes: 0,
+                    likedByMe: false,
+                    fandom: targetFandom,
+                    isChallenge: isChallengeView,
+                    createdAt: serverTimestamp(),
+                    comments: []
+                });
+
+                input.value = '';
+                currentAttachedDataUrl = null;
+                currentAttachedType = null;
+                document.getElementById('cameraDirectInput').value = '';
+                document.getElementById('videoDirectInput').value = '';
+                document.getElementById('galleryDirectInput').value = '';
+
+                saveLocal();
+                renderAll();
+            } catch (e) {
+                showUmbrellaModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
+            }
+        }
 
         window.executeGlobalSearch = function () {
             const input = document.getElementById('globalSearchInput');
             const val = input.value.trim();
             if (val.startsWith('@') && val.length > 1) {
                 const queryUser = val.substring(1).toLowerCase();
-                const matchedPosts = postsFromFirebase.filter(p => p.author.toLowerCase().includes(queryUser));
+                const matchedPosts = postsFromFirebase.filter(p => (p.authorHandle && p.authorHandle.toLowerCase().includes(queryUser)) || p.author.toLowerCase().includes(queryUser));
                 const container = document.getElementById('mainFeedList');
                 if (matchedPosts.length > 0) {
                     container.innerHTML = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; color:var(--gold-accent); font-size:12.5px;">Resultados para: ${val}</div>` + matchedPosts.map(p => renderPostCardHTML(p)).join('');
@@ -1459,11 +1527,6 @@
                     return;
                 }
 
-                if (isInsideFandomView && !activeFandomFilter) {
-                    showUmbrellaModal({ title: 'Fandom não selecionado', htmlBody: 'Abra um Fandom primeiro.' });
-                    return;
-                }
-
                 if (isInsideFandomView && activeFandomFilter) {
                     const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
                     if (!fandomObj || !hasFandomAccess(fandomObj)) {
@@ -1478,6 +1541,7 @@
                     await addDoc(collection(db, "posts"), {
                         author: appState.user.name,
                         authorUid: appState.user.uid,
+                        authorHandle: appState.user.handle,
                         avatar: appState.user.avatar,
                         text: text,
                         media: currentAttachedDataUrl || '',
@@ -1491,7 +1555,8 @@
                     });
 
                     input.value = '';
-                    clearAttachedMedia();
+                    currentAttachedDataUrl = null;
+                    currentAttachedType = null;
                     saveLocal();
                     renderAll();
                 } catch (e) {
@@ -1514,6 +1579,7 @@
                                 try {
                                     await deleteDoc(doc(db, "posts", postId));
                                     closeUmbrellaModal();
+                                    renderMyAconchegoPosts();
                                 } catch (e) {
                                     showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
                                 }
@@ -1910,18 +1976,19 @@
             `).join('');
 
             const postDateStr = formatPostDate(post.createdAt);
+            const userHandleDisplay = post.authorHandle || '@usuario';
 
             return `
                 <article class="post-card-clean">
                     <div class="post-header">
-                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}')">
+                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}', '${userHandleDisplay}')">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">
                                     ${post.author}
                                     ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
                                 </div>
-                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : post.fandom}</div>
+                                <div class="post-meta">${userHandleDisplay} • ${post.isChallenge ? 'Desafio Semanal' : post.fandom}</div>
                             </div>
                         </div>
                         <div style="font-size:11px; color:var(--text-muted); font-weight:600;">
@@ -2014,7 +2081,7 @@
                     <img src="${f.avatar}" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
                     <div>
                         <div style="font-size:14px; font-weight:700;">${f.name}</div>
-                        <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
+                        <div style="font-size:11.5px; color:var(--text-muted);">${f.handle || '@amigo'} • ${f.status}</div>
                     </div>
                 </div>
             `).join('');
