@@ -144,6 +144,7 @@
             border: 1.5px solid #060a1e;
             z-index: 6;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+            cursor: pointer;
         }
 
         .droplet-badge-overlay span {
@@ -406,7 +407,7 @@
             cursor: pointer;
         }
 
-        /* Perfil Fluido (Sem Caixas Rígidas) */
+        /* Perfil Fluido */
         .profile-hero-top {
             display: flex;
             align-items: flex-start;
@@ -769,7 +770,6 @@
 
         .like-umbrella-btn.liked span { color: var(--gold-accent); }
 
-        /* Barra Inferior Inteligente (Sem Glassmorphism em botões avulsos) */
         .floating-composer-wrapper {
             position: fixed;
             bottom: 22px;
@@ -1203,7 +1203,7 @@
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
-        <!-- Tela de Próprio Perfil (Foto única e identificação limpa) -->
+        <!-- Tela de Próprio Perfil -->
         <section class="view-section" id="view-meu-perfil">
             <div style="padding:16px 4px; margin-bottom:14px;">
                 <div class="profile-hero-top">
@@ -1213,7 +1213,7 @@
                         <span id="myProfilePageHandleDisplay" class="profile-handle-under-130 notranslate">@arroba</span>
                         <div class="edit-trigger-row">
                             <button class="discrete-edit-btn" onclick="toggleProfileEditMode()">✏️ editar</button>
-                            <button class="dots-menu-btn" style="padding:2px 9px; font-size:13px;" onclick="toggleProfileEditMode()" title="Opções de Edição">⋮</button>
+                            <button class="dots-menu-btn" style="padding:2px 9px; font-size:13px;" onclick="openProfileQuickMenu()" title="Opções do Perfil">⋮</button>
                         </div>
                     </div>
 
@@ -1298,7 +1298,7 @@
             </div>
         </section>
 
-        <!-- Visita ao Perfil de Outra Pessoa (Pódio e Desafio somem, botão de dorama e amizade) -->
+        <!-- Visita ao Perfil de Outra Pessoa -->
         <section class="view-section" id="view-user-profile-feed">
             <div style="padding:16px 4px; margin-bottom:14px;">
                 <div class="profile-hero-top">
@@ -1434,7 +1434,7 @@
 
     </div>
 
-    <!-- Barra Inferior de Envio Inteligente (Recolhida inicialmente, recolhe sozinha após envio) -->
+    <!-- Barra Inferior de Envio Inteligente -->
     <div class="floating-composer-wrapper" id="floatingComposerWrapper">
         <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button>
         <div class="gemini-composer">
@@ -1448,7 +1448,7 @@
         </div>
     </div>
 
-    <!-- Rodapé Oficial com nome e e-mail -->
+    <!-- Rodapé -->
     <footer class="app-footer notranslate" translate="no">
         Sher Bluss • sherbluss.suporte@gmail.com
     </footer>
@@ -1609,7 +1609,6 @@
             return false;
         }
 
-        // Correção Crítica de Vídeos e Fotos direcionados ao Cloudinary (l6tlvzln)
         async function uploadMediaToCloudinary(file) {
             const resourceType = file.type.startsWith('video/') ? 'video' : 'image';
             const formData = new FormData();
@@ -2009,6 +2008,7 @@
             saveLocal();
         };
 
+        // Botão Editar isolado (abre/fecha o painel)
         window.toggleProfileEditMode = function() {
             isProfileEditable = !isProfileEditable;
             const panel = document.getElementById('profileEditPanel');
@@ -2020,6 +2020,20 @@
             } else {
                 showSherBlussModal({ title: 'Perfil Atualizado 🌸', htmlBody: 'Suas alterações foram salvas com sucesso.' });
             }
+        };
+
+        // Menu de três pontinhos (⋮) do perfil isolado
+        window.openProfileQuickMenu = function() {
+            showSherBlussModal({
+                title: 'Opções Rápidas do Perfil',
+                htmlBody: `
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <button class="btn-gold" onclick="closeSherBlussModal(); toggleProfileEditMode();">⚙️ Abrir Configurações</button>
+                        <button class="btn-pill-gold" style="width:100%;" onclick="closeSherBlussModal(); switchView('feed');">🏠 Ir para o Feed Principal</button>
+                    </div>
+                `,
+                buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
+            });
         };
 
         window.saveUniverseBioLive = async function(val) {
@@ -2145,6 +2159,7 @@
             row.innerHTML = html;
         }
 
+        // Opções e gerenciamento de posts e itens salvos no Aconchego (excluir ou remover dos salvos)
         window.openPostThreeDotsMenu = function(postId) {
             const post = postsFromFirebase.find(p => p.id === postId);
             if (!post) return;
@@ -2176,7 +2191,7 @@
                         ` : ''}
                     </div>
                 `,
-                buttons: [{ label: 'Fechar', primary: false, onClick: closeCherBlussModal }]
+                buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
             });
         };
 
@@ -2384,7 +2399,10 @@
             let html = myPosts.map(p => renderPostCardHTML(p)).join('');
             html += savedPosts.map(item => `
                 <div style="background:rgba(251,191,36,0.05); padding:12px; border-radius:14px; margin-bottom:10px; border:1px dashed var(--gold-border);">
-                    <span style="font-size:10.5px; color:var(--gold-accent); display:block; margin-bottom:4px;">🏠 Guardado em ${item.folderName} • Original de ${item.author}</span>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:10.5px; color:var(--gold-accent);">🏠 Guardado em ${item.folderName} • Original de ${item.author}</span>
+                        <button class="btn-danger-pill" style="font-size:10px;" onclick="removeSavedItemFromCantinho('${item.saveId}')">Remover</button>
+                    </div>
                     ${item.text ? `<p style="font-size:13px; margin-bottom:6px; color:var(--text-main);">${item.text}</p>` : ''}
                     ${item.media ? (item.mediaType === 'video'
                         ? `<video src="${item.media}" style="width:100%; max-height:280px; object-fit:contain; border-radius:10px; background:#000;" controls playsinline webkit-playsinline preload="metadata"></video>`
@@ -2428,7 +2446,6 @@
 
             activeVisitedUserUid = authorUid;
 
-            // Pódio e Desafio somem ao visitar o perfil de terceiros
             document.getElementById('carouselWrapper').classList.add('hidden-in-profile');
             document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
 
@@ -2550,6 +2567,7 @@
             switchView('feed');
         };
 
+        // Pop-up funcional de Notificações ativado pela gotinha no topo
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
@@ -2820,7 +2838,7 @@
                             </button>
                         </div>
                     `,
-                    buttons: [{ label: 'Cancelar', primary: false, onClick: closeCherBlussModal }]
+                    buttons: [{ label: 'Cancelar', primary: false, onClick: closeSherBlussModal }]
                 });
             });
         };
@@ -2880,7 +2898,6 @@
                 document.getElementById('challengeCameraInput').value = '';
                 document.getElementById('challengeGalleryInput').value = '';
 
-                // Recolhimento automático imediato da barra inferior
                 document.getElementById('floatingComposerWrapper').classList.remove('expanded');
 
                 saveLocal();
@@ -3056,8 +3073,6 @@
                     });
 
                     input.value = '';
-                    
-                    // Recolhimento automático imediato após envio por texto
                     document.getElementById('floatingComposerWrapper').classList.remove('expanded');
 
                     saveLocal();
