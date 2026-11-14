@@ -663,11 +663,6 @@
             flex-shrink: 0;
         }
 
-        .composer-send-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
         .media-preview-strip {
             display: none;
             align-items: center;
@@ -938,7 +933,7 @@
             cursor: pointer;
         }
 
-        /* Estilização da barra de rolagem invisível/fina no modal de perfil */
+        /* Barra de rolagem invisível/fina no modal de perfil */
         .profile-scrollable-content {
             max-height: 65vh;
             overflow-y: auto;
@@ -957,7 +952,7 @@
 </head>
 <body>
 
-    <!-- ELEMENTO DE ÁUDIO OCULTO PARA MÚSICA / MUKA -->
+    <!-- ELEMENTO DE ÁUDIO / MÚSICA / MUKA -->
     <audio id="globalActiveAudio" preload="auto"></audio>
 
     <!-- TELA DE LOGIN / BLOQUEIO AO INTERAGIR -->
@@ -986,7 +981,7 @@
 
     <!-- BARRA SUPERIOR -->
     <div class="unified-top-bar">
-        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Música">
+        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Muka">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
@@ -1288,7 +1283,7 @@
         import {
             getStorage,
             ref,
-            uploadBytesResumable,
+            uploadBytes,
             getDownloadURL
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
@@ -1308,7 +1303,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v40';
+        const LOCAL_KEY = 'umbrella_clean_state_v41';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1345,13 +1340,6 @@
         let rawEditorImageObj = null;
         let editorRotation = 0;
         let editorFilterPreset = 'none';
-
-        const presetMusicList = [
-            { title: '🌸 Lo-Fi Chill (Aconchego)', url: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf7f6.mp3?filename=lofi-study-112191.mp3' },
-            { title: '✨ K-Pop Instrumental Soft', url: 'https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8c3c3a4f6.mp3?filename=chill-abstract-intention-12099.mp3' },
-            { title: '☕ Café Acústico', url: 'https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=acoustic-guitars-10515.mp3' },
-            { title: '🌙 Piano Melancólico Dorama', url: 'https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f792cb.mp3?filename=relaxing-light-piano-118844.mp3' }
-        ];
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -1566,24 +1554,17 @@
             }
         };
 
-        // MODAL DO PERFIL ATUALIZADO COM O CAMPO DE LINK LIVRE (MUKA / VÍDEO / ÁUDIO) E SCROLL INVISÍVEL
+        // PERFIL COM PLAYER SIMPLES (PLAY, PAUSE) E LINK DO MUKA
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
                 return;
             }
 
-            const musicOptionsHtml = presetMusicList.map(m => `
-                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; margin-bottom:6px;">
-                    <span style="font-size:12.5px; color:var(--text-main);">${m.title}</span>
-                    <button class="btn-pill-gold" style="padding:4px 10px; font-size:11px;" onclick="selectAndPlayPresetMusic('${m.url}', '${m.title}')">▶ Tocar</button>
-                </div>
-            `).join('');
-
             const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
 
             showUmbrellaModal({
-                title: `Perfil & Player de ${appState.user.name}`,
+                title: `Perfil & Player do Muka`,
                 htmlBody: `
                     <div class="profile-scrollable-content">
                         <div style="text-align:center; margin-bottom:14px;">
@@ -1603,21 +1584,20 @@
                         </div>
 
                         <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Colar Link Direto (Muka / Vídeo / Áudio)</label>
-                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Cole o link direto do arquivo de mídia ou do Muka para tocar no player:</p>
-                            <div style="display:flex; gap:6px; margin-bottom:10px;">
-                                <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl && appState.user.audioUrl.startsWith('http') && !presetMusicList.some(m => m.url === appState.user.audioUrl) ? appState.user.audioUrl : ''}">
-                                <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar Link</button>
+                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Link do Muka (Mídia / Áudio)</label>
+                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Cole o link direto do Muka abaixo:</p>
+                            <div style="display:flex; gap:6px; margin-bottom:12px;">
+                                <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl || ''}">
+                                <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar</button>
                             </div>
-                        </div>
 
-                        <div class="form-group" style="margin-top:10px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Músicas Padrão (Sugestões)</label>
-                            ${musicOptionsHtml}
-
-                            <div style="display:flex; gap:8px; margin-top:10px;">
-                                <button class="btn-gold" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pausar' : '▶️ Tocar'}</button>
-                                <button class="btn-danger-pill" onclick="stopGlobalAudio()">⏹️ Desligar</button>
+                            <!-- Playerzinho Simples Estilo Mini -->
+                            <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px solid var(--gold-border); text-align:center;">
+                                <p style="font-size:12px; color:var(--gold-accent); margin-bottom:8px;" id="nowPlayingTitle">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
+                                <div style="display:flex; justify-content:center; gap:8px;">
+                                    <button class="btn-pill-gold" style="padding:6px 14px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
+                                    <button class="btn-danger-pill" style="padding:6px 14px;" onclick="stopGlobalAudio()">⏹️ Parar</button>
+                                </div>
                             </div>
                         </div>
 
@@ -1669,7 +1649,7 @@
                     audioUrl: appState.user.audioUrl,
                     audioTitle: appState.user.audioTitle
                 }, { merge: true });
-            } catch (e) { console.error("Erro ao salvar dados do usuário:", e); }
+            } catch (e) { console.error("Erro ao salvar dados:", e); }
         }
 
         window.applyCustomAudioLink = async function() {
@@ -1680,21 +1660,12 @@
                 return;
             }
             appState.user.audioUrl = url;
-            appState.user.audioTitle = 'Mídia Customizada (Muka)';
+            appState.user.audioTitle = 'Mídia do Muka Ativa';
             await saveUserDataToFirestore();
             saveLocal();
             playAudioUrl(url);
-            alert('Link salvo e tocando no perfil!');
-        };
-
-        window.selectAndPlayPresetMusic = async function(url, title) {
-            appState.user.audioUrl = url;
-            appState.user.audioTitle = title;
-            await saveUserDataToFirestore();
-            saveLocal();
-            playAudioUrl(url);
-            closeUmbrellaModal();
-            alert(`Trilha sonora definida: ${title}`);
+            alert('Link do Muka salvo e tocando!');
+            openProfileModal();
         };
 
         function playAudioUrl(url) {
@@ -1705,7 +1676,7 @@
             audioEl.loop = true;
             audioEl.play().then(() => {
                 profileBtn.classList.add('playing');
-            }).catch(e => { console.log("Autoplay bloqueado pelo navegador", e); });
+            }).catch(e => { console.log("Autoplay bloqueado", e); });
         }
 
         window.toggleGlobalAudioPlay = function() {
@@ -1715,14 +1686,14 @@
                 if (audioEl.src) {
                     audioEl.play();
                     profileBtn.classList.add('playing');
-                } else if (presetMusicList.length > 0) {
-                    selectAndPlayPresetMusic(presetMusicList[0].url, presetMusicList[0].title);
+                } else if (appState.user.audioUrl) {
+                    playAudioUrl(appState.user.audioUrl);
                 }
             } else {
                 audioEl.pause();
                 profileBtn.classList.remove('playing');
             }
-            closeUmbrellaModal();
+            openProfileModal();
         };
 
         window.stopGlobalAudio = function() {
@@ -1732,11 +1703,13 @@
             audioEl.currentTime = 0;
             profileBtn.classList.remove('playing');
             appState.user.audioUrl = '';
+            appState.user.audioTitle = '';
             saveUserDataToFirestore();
             saveLocal();
-            closeUmbrellaModal();
+            openProfileModal();
         };
 
+        // FUNÇÃO ATIVADA PARA VISITAR O PERFIL DE ALGUÉM
         window.visitUserProfile = async function(authorUid, authorName) {
             if (!authorUid) {
                 alert(`Perfil de ${authorName}`);
@@ -1748,9 +1721,9 @@
                     const uData = userDoc.data();
                     if (uData.audioUrl) {
                         playAudioUrl(uData.audioUrl);
-                        alert(`🎧 Entrando no perfil de ${authorName}. Tocando trilha sonora: ${uData.audioTitle || 'Música'}`);
+                        alert(`🎧 Entrando no perfil de ${authorName}. Tocando trilha sonora/Muka.`);
                     } else {
-                        alert(`Perfil de ${authorName} (Sem trilha sonora ativa).`);
+                        alert(`Perfil de ${authorName} visitado (Sem mídia ativa).`);
                     }
                 } else {
                     alert(`Perfil de ${authorName}`);
@@ -1802,7 +1775,7 @@
                         <div style="width:100%; max-height:300px; display:flex; justify-content:center; align-items:center; background:#000; border-radius:12px; overflow:hidden;">
                             <video src="${videoBlobUrl}" controls playsinline style="max-width:100%; max-height:280px;"></video>
                         </div>
-                        <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Vídeo pronto! Clique em OK e depois na setinha ➤ para enviar.</p>
+                        <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Vídeo pronto! Clique em OK e depois na setinha ➤ para enviar rapidamente.</p>
                     `,
                     buttons: [{ label: 'OK / Concluir', primary: true, onClick: closeUmbrellaModal }]
                 });
@@ -2005,6 +1978,7 @@
             });
         };
 
+        // ENVIO DE POSTAGEM RÁPIDO E DIRETO (SEM BARRA DE PORCENTAGEM QUE TRAVA)
         window.submitPost = async function () {
             if (isUploadingPost) return;
             requireAuthForAction(async () => {
@@ -2038,8 +2012,6 @@
                 isUploadingPost = true;
                 sendBtn.disabled = true;
                 sendBtn.textContent = '⏳';
-                const previewNameEl = document.getElementById('mediaPreviewName');
-                const oldPreviewText = previewNameEl.textContent;
 
                 try {
                     let downloadUrl = '';
@@ -2050,25 +2022,9 @@
                         const safeExt = isVideo ? 'mp4' : 'jpg';
                         const safeName = `${Date.now()}_${Math.floor(Math.random()*1000)}.${safeExt}`;
                         const storageRef = ref(storage, `posts_media/${safeName}`);
-                        const metadata = {
-                            contentType: currentAttachedFileObj.type || (isVideo ? 'video/mp4' : 'image/jpeg')
-                        };
-
-                        downloadUrl = await new Promise((resolve, reject) => {
-                            const uploadTask = uploadBytesResumable(storageRef, currentAttachedFileObj, metadata);
-                            uploadTask.on('state_changed',
-                                (snapshot) => {
-                                    const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
-                                    previewNameEl.textContent = `Enviando mídia... ${pct}%`;
-                                },
-                                (error) => reject(error),
-                                async () => {
-                                    const url = await getDownloadURL(uploadTask.snapshot.ref);
-                                    resolve(url);
-                                }
-                            );
-                        });
-
+                        
+                        const snapshot = await uploadBytes(storageRef, currentAttachedFileObj);
+                        downloadUrl = await getDownloadURL(snapshot.ref);
                         mediaType = isVideo ? 'video' : 'image';
                     }
 
@@ -2095,7 +2051,6 @@
                     saveLocal();
                     renderAll();
                 } catch (e) {
-                    previewNameEl.textContent = oldPreviewText;
                     showUmbrellaModal({ title: 'Erro ao Enviar Mídia', htmlBody: `Não foi possível enviar: ${e.message}` });
                 } finally {
                     isUploadingPost = false;
