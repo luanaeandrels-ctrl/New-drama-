@@ -1122,7 +1122,7 @@
                     🔑 Continuar com o Google
                 </button>
                 <button class="btn-gold" onclick="showManualRegisterForm()">
-                    📝 Criar Conta com E-mail
+                    📝 Criar Conta com E-mail e Senha
                 </button>
                 <button class="btn-pill-gold" style="width:100%; margin-top:4px;" onclick="showManualLoginForm()">
                     Já tem uma conta? Entrar
@@ -1477,7 +1477,9 @@
             signInWithPopup,
             GoogleAuthProvider,
             onAuthStateChanged,
-            signOut
+            signOut,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import {
             getFirestore,
@@ -1786,9 +1788,9 @@
             if (user) {
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuária Sher Bluss';
+                appState.user.name = user.displayName || user.email.split('@')[0];
                 if (!appState.user.handle || appState.user.handle === '@usuaria') {
-                    appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuaria');
+                    appState.user.handle = '@' + appState.user.name.toLowerCase().replace(/[^a-z0-9]/g, '');
                 }
                 appState.user.email = user.email || '';
                 if (user.photoURL && appState.user.avatar === './aconchego.png') {
@@ -1830,6 +1832,10 @@
                 applyUserTheme();
                 syncAllNotifications();
                 renderAll();
+            } else {
+                appState.user.loggedIn = false;
+                appState.user.uid = '';
+                saveLocal();
             }
         });
 
@@ -1847,20 +1853,8 @@
 
         window.loginWithGoogle = async function () {
             try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                appState.user.uid = user.uid;
-                appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuária Google';
-                appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuaria');
-                appState.user.email = user.email || '';
-                if (user.photoURL) appState.user.avatar = user.photoURL;
-                await saveUserDataToFirestore();
-                saveLocal();
-                applyUserTheme();
+                await signInWithPopup(auth, provider);
                 closeAuthGate();
-                syncAllNotifications();
-                renderAll();
             } catch (error) {
                 showSherBlussModal({ title: 'Aviso de Login', htmlBody: error.message });
             }
@@ -1870,12 +1864,12 @@
             const card = document.getElementById('authCardMain');
             card.innerHTML = `
                 <img src="./logo.png" alt="Sher Bluss" class="auth-logo" style="max-width:90px;">
-                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta no <span translate="no">Sher Bluss</span></h3>
+                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta Real (Firebase)</h3>
                 <div class="form-group"><input type="text" id="regName" class="glass-input" placeholder="Seu Nome"></div>
                 <div class="form-group"><input type="text" id="regHandle" class="glass-input" placeholder="Seu @Arroba (Ex: @luana)"></div>
                 <div class="form-group"><input type="email" id="regEmail" class="glass-input" placeholder="Seu E-mail"></div>
-                <div class="form-group"><input type="password" id="regPass" class="glass-input" placeholder="Crie uma Senha"></div>
-                <button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualRegister()">Cadastrar</button>
+                <div class="form-group"><input type="password" id="regPass" class="glass-input" placeholder="Crie uma Senha (mín. 6 dígitos)"></div>
+                <button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualRegister()">Cadastrar Conta</button>
                 <button class="btn-pill-gold" style="width:100%;" onclick="location.reload()">Voltar</button>
             `;
         };
@@ -1891,24 +1885,30 @@
                 return;
             }
 
-            appState.user.uid = 'manual_' + Date.now();
-            appState.user.loggedIn = true;
-            appState.user.name = name;
-            appState.user.handle = handle.startsWith('@') ? handle : '@' + handle;
-            appState.user.email = email;
-            await saveUserDataToFirestore();
-            saveLocal();
-            applyUserTheme();
-            closeAuthGate();
-            syncAllNotifications();
-            renderAll();
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, pass);
+                const user = userCredential.user;
+                appState.user.uid = user.uid;
+                appState.user.loggedIn = true;
+                appState.user.name = name;
+                appState.user.handle = handle.startsWith('@') ? handle : '@' + handle;
+                appState.user.email = email;
+                await saveUserDataToFirestore();
+                saveLocal();
+                applyUserTheme();
+                closeAuthGate();
+                syncAllNotifications();
+                renderAll();
+            } catch (error) {
+                showSherBlussModal({ title: 'Erro no Cadastro', htmlBody: error.message });
+            }
         };
 
         window.showManualLoginForm = function () {
             const card = document.getElementById('authCardMain');
             card.innerHTML = `
                 <img src="./logo.png" alt="Sher Bluss" class="auth-logo" style="max-width:90px;">
-                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Entrar na sua Conta</h3>
+                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Entrar com E-mail e Senha</h3>
                 <div class="form-group"><input type="email" id="logEmail" class="glass-input" placeholder="Seu E-mail"></div>
                 <div class="form-group"><input type="password" id="logPass" class="glass-input" placeholder="Sua Senha"></div>
                 <button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualLogin()">Entrar</button>
@@ -1923,17 +1923,12 @@
                 showSherBlussModal({ title: 'Atenção', htmlBody: 'Informe e-mail e senha.' });
                 return;
             }
-            appState.user.uid = 'manual_' + email.replace(/[^a-zA-Z0-9]/g, '_');
-            appState.user.loggedIn = true;
-            appState.user.name = email.split('@')[0];
-            appState.user.handle = '@' + email.split('@')[0];
-            appState.user.email = email;
-            await saveUserDataToFirestore();
-            saveLocal();
-            applyUserTheme();
-            closeAuthGate();
-            syncAllNotifications();
-            renderAll();
+            try {
+                await signInWithEmailAndPassword(auth, email, pass);
+                closeAuthGate();
+            } catch (error) {
+                showSherBlussModal({ title: 'Erro ao Entrar', htmlBody: error.message });
+            }
         };
 
         window.logoutAccount = async function () {
@@ -2868,12 +2863,11 @@
                     media: mediaUrl || '',
                     mediaType: mediaType || '',
                     likes: 0,
-                    likedByMe: false,
+                    likedBy: [],
                     fandom: targetFandom,
                     isPrivateFandom: isPrivateFandom,
                     isChallenge: isChallenge,
                     biasName: isChallenge ? appState.bias.name : '',
-                    biasId: isChallenge ? appState.bias.id : null,
                     createdAt: serverTimestamp(),
                     comments: []
                 });
@@ -3048,7 +3042,7 @@
                         media: '',
                         mediaType: '',
                         likes: 0,
-                        likedByMe: false,
+                        likedBy: [],
                         fandom: targetFandom,
                         isPrivateFandom: isPrivateFandom,
                         isChallenge: isChallengeView,
@@ -3101,21 +3095,31 @@
             requireAuthForAction(async () => {
                 const post = postsFromFirebase.find(p => p.id === postId);
                 if (!post) return;
-                if (post.isChallenge && !post.likedByMe) {
+
+                const likedByArray = post.likedBy || [];
+                const alreadyLiked = likedByArray.includes(appState.user.uid);
+
+                if (post.isChallenge && !alreadyLiked) {
                     if (appState.dailyVotes.used >= 3) {
                         showSherBlussModal({ title: 'Limite Atingido', htmlBody: 'Você já usou seus 3 votos de hoje.' });
                         return;
                     }
                     appState.dailyVotes.used += 1;
-                } else if (post.isChallenge && post.likedByMe) {
+                } else if (post.isChallenge && alreadyLiked) {
                     appState.dailyVotes.used = Math.max(0, appState.dailyVotes.used - 1);
                 }
 
-                const newLiked = !post.likedByMe;
-                const newLikes = (post.likes || 0) + (newLiked ? 1 : -1);
+                const newLikedBy = alreadyLiked
+                    ? likedByArray.filter(uid => uid !== appState.user.uid)
+                    : [...likedByArray, appState.user.uid];
+                
+                const newLikes = newLikedBy.length;
 
                 try {
-                    await updateDoc(doc(db, "posts", postId), { likes: newLikes, likedByMe: newLiked });
+                    await updateDoc(doc(db, "posts", postId), { 
+                        likes: newLikes, 
+                        likedBy: newLikedBy 
+                    });
                     saveLocal();
                 } catch (e) { console.error(e); }
             });
@@ -3429,6 +3433,8 @@
                 ? `Desafio Semanal${post.biasName ? ' • ' + post.biasName : ''}` 
                 : (post.fandom || 'Geral');
 
+            const likedByMe = (post.likedBy || []).includes(appState.user.uid);
+
             return `
                 <article class="post-card-clean" id="post_card_${post.id}">
                     <div class="post-header">
@@ -3452,7 +3458,7 @@
                     ${mediaHtml}
 
                     <div class="post-actions-clean">
-                        <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
+                        <button class="like-umbrella-btn ${likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
                             <span>🌸</span>
                             <span>${post.likes || 0}</span>
                         </button>
