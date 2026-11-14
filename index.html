@@ -548,19 +548,6 @@
             flex-shrink: 0;
         }
 
-        .media-preview-strip {
-            display: none;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 16px;
-            margin-bottom: 8px;
-            font-size: 12px;
-            color: var(--gold-accent);
-            border-radius: 99px;
-            background: rgba(14, 18, 34, 0.92);
-            border: 1px solid var(--gold-border);
-        }
-
         .form-group { margin-bottom: 12px; }
         .form-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
 
@@ -718,7 +705,6 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR DINÂMICA -->
     <div class="unified-top-bar" id="unifiedTopBar">
         <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego Dedicado">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
@@ -846,6 +832,7 @@
             <div class="feed-list" id="visitedProfileFeedList"></div>
         </section>
 
+        <!-- SEÇÃO DESAFIO COM BOTÃO DE POSTAR E FOTO FRONTAL RESTRITA -->
         <section class="view-section" id="view-desafio">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Desafio Semanal</span>
@@ -863,8 +850,11 @@
                 </div>
             </div>
 
+            <!-- CADASTRO DE BIAS COM FOTO FRONTAL -->
             <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
-                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:10px;">Meu Bias Representante (ID 1 a 1000)</h4>
+                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:4px;">Meu Bias Representante (ID 1 a 1000)</h4>
+                <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">Insira a <strong>foto frontal</strong> para a verificação por pixels do sistema.</p>
+                
                 <div class="form-group">
                     <label class="form-label">Nome do Bias</label>
                     <input type="text" id="biasNameInput" class="glass-input" placeholder="Nome do artista" oninput="checkSecretBiasTrigger(this.value)">
@@ -883,7 +873,26 @@
                         <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="1 a 1000">
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label class="form-label">Foto Frontal (Verificação por Pixels)</label>
+                    <label for="biasFrontalFile" class="custom-file-trigger" id="biasFrontalLabel">📷 Enviar foto frontal</label>
+                    <input type="file" id="biasFrontalFile" accept="image/*" style="display:none;" onchange="document.getElementById('biasFrontalLabel').textContent = this.files[0]?.name || 'Foto frontal anexada'">
+                </div>
+
                 <button class="btn-gold" onclick="saveBiasRegistration()">Salvar Representante</button>
+            </div>
+
+            <!-- BOTÃO DEDICADO PARA POSTAR NO DESAFIO -->
+            <div class="glass-panel" style="padding:16px; margin-bottom:14px; text-align:center;">
+                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:8px;">Participar do Desafio</h4>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Envie sua foto ou vídeo representando o tema da semana:</p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-gold" style="flex:1;" onclick="document.getElementById('challengeCameraInput').click()">📸 Tirar Foto Frontal</button>
+                    <button class="btn-pill-gold" style="flex:1;" onclick="document.getElementById('challengeGalleryInput').click()">🖼️ Enviar Mídia</button>
+                </div>
+                <input type="file" id="challengeCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleChallengeMediaSelected(event)">
+                <input type="file" id="challengeGalleryInput" accept="image/*,video/*" style="display:none;" onchange="handleChallengeMediaSelected(event)">
             </div>
 
             <div class="feed-list" id="challengeFeedList"></div>
@@ -998,7 +1007,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v48';
+        const LOCAL_KEY = 'umbrella_clean_state_v49';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1010,7 +1019,8 @@
                 avatar: './aconchego.png',
                 theme: 'dark'
             },
-            bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
+            bias: { name: '', role: 'Ator', id: null, frontalUrl: '', lastUpdated: 0 },
+            registeredBiases: [], // Salva todos os cadastros para checar duplicidade
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             fandoms: [],
@@ -1024,7 +1034,6 @@
         let postsFromFirebase = [];
         let currentAttachedDataUrl = null;
         let currentAttachedType = null;
-        let currentFileName = '';
         let activeFandomFilter = null;
         let activeVisitedUserUid = null;
 
@@ -1248,7 +1257,6 @@
             }
         };
 
-        // ALTERAR PARA A SEÇÃO DEDICADA DE PERFIL & ACONCHEGO
         window.switchToProfileSection = function() {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1327,7 +1335,6 @@
             } catch (e) { console.error(e); }
         }
 
-        // VISITAR PERFIL DE OUTRO USUÁRIO (TELA DEDICADA)
         window.visitUserProfile = async function(authorUid, authorName, authorHandle) {
             if (!authorUid) return;
             activeVisitedUserUid = authorUid;
@@ -1396,60 +1403,93 @@
         window.handleMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
-            currentFileName = file.name || `midia_${Date.now()}`;
-            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp)$/i.test(currentFileName);
-
-            currentAttachedDataUrl = URL.createObjectURL(file);
-            currentAttachedType = isVideo ? 'video' : 'image';
-
-            // Envio imediato limpo para evitar qualquer travamento de pré-visualização em aparelhos como A11
-            await submitPostDirectlyWithMedia(currentAttachedDataUrl, currentAttachedType);
+            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp)$/i.test(file.name);
+            await submitPostDirectlyWithMedia(URL.createObjectURL(file), isVideo ? 'video' : 'image');
         };
 
-        async function submitPostDirectlyWithMedia(mediaUrl, mediaType) {
-            const input = document.getElementById('mainComposerInput');
-            const text = input.value.trim();
-
-            const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
-            const isInsideFandomView = document.getElementById('view-inside-fandom').classList.contains('active');
-
-            if (isChallengeView && !appState.bias.id) {
-                showUmbrellaModal({ title: 'Bias Obrigatório', htmlBody: 'Cadastre seu Bias representante antes de postar no Desafio.' });
+        // POSTAR FOTO NO DESAFIO DIRETAMENTE
+        window.handleChallengeMediaSelected = async function (event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp)$/i.test(file.name);
+            
+            if (!appState.bias.id) {
+                showUmbrellaModal({ title: 'Bias Obrigatório', htmlBody: 'Cadastre seu Bias representante e envie a foto frontal antes de postar no Desafio.' });
                 return;
             }
 
-            try {
-                const targetFandom = isInsideFandomView ? activeFandomFilter : 'Geral';
+            await submitPostDirectlyWithMedia(URL.createObjectURL(file), isVideo ? 'video' : 'image', true);
+        };
 
+        async function submitPostDirectlyWithMedia(mediaUrl, mediaType, isChallenge = false) {
+            const input = document.getElementById('mainComposerInput');
+            const text = input ? input.value.trim() : '';
+
+            try {
                 await addDoc(collection(db, "posts"), {
                     author: appState.user.name,
                     authorUid: appState.user.uid,
                     authorHandle: appState.user.handle,
                     avatar: appState.user.avatar,
-                    text: text,
+                    text: text || (isChallenge ? `Representando meu Bias ${appState.bias.name} (#${appState.bias.id}) no Desafio!` : ''),
                     media: mediaUrl || '',
                     mediaType: mediaType || '',
                     likes: 0,
                     likedByMe: false,
-                    fandom: targetFandom,
-                    isChallenge: isChallengeView,
+                    fandom: 'Geral',
+                    isChallenge: isChallenge,
                     createdAt: serverTimestamp(),
                     comments: []
                 });
 
-                input.value = '';
-                currentAttachedDataUrl = null;
-                currentAttachedType = null;
+                if (input) input.value = '';
                 document.getElementById('cameraDirectInput').value = '';
                 document.getElementById('videoDirectInput').value = '';
                 document.getElementById('galleryDirectInput').value = '';
+                document.getElementById('challengeCameraInput').value = '';
+                document.getElementById('challengeGalleryInput').value = '';
 
                 saveLocal();
                 renderAll();
+                showUmbrellaModal({ title: 'Publicado com Sucesso! ☔', htmlBody: 'Sua mídia foi enviada perfeitamente.' });
             } catch (e) {
                 showUmbrellaModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
             }
         }
+
+        // CADASTRO DE BIAS COM VERIFICAÇÃO DE DUPLICIDADE (MENSAGEM FOFA)
+        window.saveBiasRegistration = function () {
+            requireAuthForAction(() => {
+                const name = document.getElementById('biasNameInput').value.trim();
+                const role = document.getElementById('biasRoleInput').value;
+                const idNum = parseInt(document.getElementById('biasIdInput').value, 10);
+                const frontalFile = document.getElementById('biasFrontalFile').files[0];
+
+                if (!name || isNaN(idNum) || idNum < 1 || idNum > 1000) {
+                    showUmbrellaModal({ title: 'Dados Incompletos', htmlBody: 'Informe o nome e o ID oficial (1 a 1000).' });
+                    return;
+                }
+
+                // Verifica se já está cadastrado nas posições do usuário
+                const alreadyExists = appState.registeredBiases.some(b => b.id === idNum || b.name.toLowerCase() === name.toLowerCase());
+                if (alreadyExists) {
+                    showUmbrellaModal({
+                        title: 'Já cadastrado 🌸',
+                        htmlBody: `Opa! Este representante (<strong>${name}</strong> - ID #${idNum}) já está guardadinho no seu pódio ou nas suas posições. Escolha outro Bias!`
+                    });
+                    return;
+                }
+
+                const frontalUrl = frontalFile ? URL.createObjectURL(frontalFile) : './guarda-chuva.png';
+
+                appState.bias = { name, role, id: idNum, frontalUrl, lastUpdated: Date.now() };
+                appState.registeredBiases.push({ name, id: idNum });
+
+                saveLocal();
+                renderAll();
+                showUmbrellaModal({ title: 'Representante Salvo! ☔', htmlBody: `Bias <strong>${name}</strong> (#${idNum}) cadastrado com sucesso com verificação de foto frontal!` });
+            });
+        };
 
         window.executeGlobalSearch = function () {
             const input = document.getElementById('globalSearchInput');
@@ -1495,22 +1535,6 @@
             } else {
                 showUmbrellaModal({ title: `${rank}º Pódio Automático`, htmlBody: 'Ainda não há participações suficientes para este pódio nesta semana.' });
             }
-        };
-
-        window.saveBiasRegistration = function () {
-            requireAuthForAction(() => {
-                const name = document.getElementById('biasNameInput').value.trim();
-                const role = document.getElementById('biasRoleInput').value;
-                const idNum = parseInt(document.getElementById('biasIdInput').value, 10);
-                if (!name || isNaN(idNum) || idNum < 1 || idNum > 1000) {
-                    showUmbrellaModal({ title: 'Dados Incompletos', htmlBody: 'Informe nome e ID (1 a 1000).' });
-                    return;
-                }
-                appState.bias = { name, role, id: idNum, lastUpdated: Date.now() };
-                saveLocal();
-                renderAll();
-                showUmbrellaModal({ title: 'Representante Salvo!', htmlBody: `Bias <strong>${name}</strong> (#${idNum}) cadastrado.` });
-            });
         };
 
         window.submitPost = async function () {
