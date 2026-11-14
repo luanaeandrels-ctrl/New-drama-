@@ -663,6 +663,11 @@
             flex-shrink: 0;
         }
 
+        .composer-send-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
         .media-preview-strip {
             display: none;
             align-items: center;
@@ -922,11 +927,37 @@
         }
 
         .lightbox-caption { margin-top: 12px; font-size: 13px; color: var(--gold-accent); text-align: center; }
+
+        .dots-menu-btn {
+            background: transparent;
+            border: 1px solid var(--gold-border);
+            color: var(--gold-accent);
+            border-radius: 99px;
+            padding: 2px 10px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        /* Estilização da barra de rolagem invisível/fina no modal de perfil */
+        .profile-scrollable-content {
+            max-height: 65vh;
+            overflow-y: auto;
+            padding-right: 4px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
+        }
+        .profile-scrollable-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .profile-scrollable-content::-webkit-scrollbar-thumb {
+            background: rgba(251, 191, 36, 0.3);
+            border-radius: 99px;
+        }
     </style>
 </head>
 <body>
 
-    <!-- ELEMENTO DE ÁUDIO OCULTO PARA TOCAR MÚSICA EM SEGUNDO PLANO -->
+    <!-- ELEMENTO DE ÁUDIO OCULTO PARA MÚSICA / MUKA -->
     <audio id="globalActiveAudio" preload="auto"></audio>
 
     <!-- TELA DE LOGIN / BLOQUEIO AO INTERAGIR -->
@@ -1107,10 +1138,10 @@
         <section class="view-section" id="view-inside-fandom">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:16px;">🔒</span>
+                    <span style="font-size:16px;">🔓</span>
                     <div>
                         <span id="insideFandomTitle" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Fandom</span>
-                        <span id="insideFandomActiveCount" style="font-size:11px; color:var(--text-muted); display:block;">• Grupo Ativo</span>
+                        <span id="insideFandomActiveCount" style="font-size:11px; color:var(--text-muted); display:block;">• Espaço Privado Autorizado</span>
                     </div>
                 </div>
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -1158,7 +1189,7 @@
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
             <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use * para marcar alguém)" onkeypress="if(event.key==='Enter') submitPost()">
-            <button type="button" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
+            <button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
 
@@ -1250,12 +1281,14 @@
             updateDoc,
             serverTimestamp,
             setDoc,
-            getDoc
+            getDoc,
+            arrayUnion,
+            arrayRemove
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
         import {
             getStorage,
             ref,
-            uploadBytes,
+            uploadBytesResumable,
             getDownloadURL
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
@@ -1275,7 +1308,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v38';
+        const LOCAL_KEY = 'umbrella_clean_state_v40';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1292,7 +1325,7 @@
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
-            fandoms: [], // Carregado do Firestore em tempo real
+            fandoms: [],
             subgroups: {},
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
@@ -1307,6 +1340,7 @@
         let currentAttachedType = null;
         let currentFileName = '';
         let activeFandomFilter = null;
+        let isUploadingPost = false;
 
         let rawEditorImageObj = null;
         let editorRotation = 0;
@@ -1324,7 +1358,6 @@
         }
 
         function initFirebaseSync() {
-            // Sincronização de Posts em tempo real
             const qPosts = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(qPosts, (snapshot) => {
                 postsFromFirebase = [];
@@ -1334,15 +1367,37 @@
                 renderAll();
             }, (error) => { console.error("Erro ao sincronizar posts:", error); });
 
-            // Sincronização de Fandoms em tempo real para todas as contas e dispositivos
             const qFandoms = query(collection(db, "fandoms"));
             onSnapshot(qFandoms, (snapshot) => {
                 appState.fandoms = [];
                 snapshot.forEach((docSnap) => {
                     appState.fandoms.push({ id: docSnap.id, ...docSnap.data() });
                 });
+                syncFandomNotifications();
                 renderAll();
             }, (error) => { console.error("Erro ao sincronizar fandoms:", error); });
+        }
+
+        function syncFandomNotifications() {
+            if (!appState.user.loggedIn || !appState.user.uid) return;
+            const fandomNotifs = [];
+            appState.fandoms.forEach(f => {
+                const isAdminOrCreator = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
+                if (isAdminOrCreator && f.pendingRequests && f.pendingRequests.length > 0) {
+                    f.pendingRequests.forEach(req => {
+                        fandomNotifs.push({
+                            type: 'fandom_request',
+                            fandomId: f.id,
+                            fandomName: f.name,
+                            requesterUid: req.uid,
+                            requesterName: req.name,
+                            text: `🔒 <strong>${req.name}</strong> solicitou entrada no fandom privado <strong>${f.name}</strong>.`
+                        });
+                    });
+                }
+            });
+            appState.notifications = fandomNotifs;
+            updateNotifBadge();
         }
 
         onAuthStateChanged(auth, async (user) => {
@@ -1370,6 +1425,7 @@
 
                 saveLocal();
                 applyUserTheme();
+                syncFandomNotifications();
                 renderAll();
             }
         });
@@ -1398,6 +1454,7 @@
                 saveLocal();
                 applyUserTheme();
                 closeAuthGate();
+                syncFandomNotifications();
                 renderAll();
             } catch (error) { alert('Erro no login com Google: ' + error.message); }
         };
@@ -1432,6 +1489,7 @@
             saveLocal();
             applyUserTheme();
             closeAuthGate();
+            syncFandomNotifications();
             renderAll();
         };
 
@@ -1451,13 +1509,14 @@
             const email = document.getElementById('logEmail').value.trim();
             const pass = document.getElementById('logPass').value;
             if (!email || !pass) { alert('Informe e-mail e senha.'); return; }
-            appState.user.uid = 'manual_user';
+            appState.user.uid = 'manual_' + email.replace(/[^a-zA-Z0-9]/g, '_');
             appState.user.loggedIn = true;
             appState.user.name = email.split('@')[0];
             appState.user.email = email;
             saveLocal();
             applyUserTheme();
             closeAuthGate();
+            syncFandomNotifications();
             renderAll();
         };
 
@@ -1507,6 +1566,7 @@
             }
         };
 
+        // MODAL DO PERFIL ATUALIZADO COM O CAMPO DE LINK LIVRE (MUKA / VÍDEO / ÁUDIO) E SCROLL INVISÍVEL
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1523,37 +1583,47 @@
             const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
 
             showUmbrellaModal({
-                title: `Perfil & Música de ${appState.user.name}`,
+                title: `Perfil & Player de ${appState.user.name}`,
                 htmlBody: `
-                    <div style="text-align:center; margin-bottom:14px;">
-                        <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
-                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
-                        <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Nome Completo</label>
-                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">Escolher Foto de Perfil</label>
-                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
-                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
-                    </div>
-
-                    <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                        <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Trilha Sonora do Perfil</label>
-                        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Quem visitar seu perfil ou post vai ouvir esta música:</p>
-                        ${musicOptionsHtml}
-
-                        <div style="display:flex; gap:8px; margin-top:10px;">
-                            <button class="btn-gold" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pausar' : '▶️ Tocar'}</button>
-                            <button class="btn-danger-pill" onclick="stopGlobalAudio()">⏹️ Desligar</button>
+                    <div class="profile-scrollable-content">
+                        <div style="text-align:center; margin-bottom:14px;">
+                            <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
+                            <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
+                            <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
                         </div>
-                    </div>
 
-                    <div style="margin-top:14px; text-align:center;">
-                        <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
+                        <div class="form-group">
+                            <label class="form-label">Nome Completo</label>
+                            <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Escolher Foto de Perfil</label>
+                            <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
+                            <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
+                        </div>
+
+                        <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
+                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Colar Link Direto (Muka / Vídeo / Áudio)</label>
+                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Cole o link direto do arquivo de mídia ou do Muka para tocar no player:</p>
+                            <div style="display:flex; gap:6px; margin-bottom:10px;">
+                                <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl && appState.user.audioUrl.startsWith('http') && !presetMusicList.some(m => m.url === appState.user.audioUrl) ? appState.user.audioUrl : ''}">
+                                <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar Link</button>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-top:10px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
+                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Músicas Padrão (Sugestões)</label>
+                            ${musicOptionsHtml}
+
+                            <div style="display:flex; gap:8px; margin-top:10px;">
+                                <button class="btn-gold" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pausar' : '▶️ Tocar'}</button>
+                                <button class="btn-danger-pill" onclick="stopGlobalAudio()">⏹️ Desligar</button>
+                            </div>
+                        </div>
+
+                        <div style="margin-top:14px; text-align:center;">
+                            <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
+                        </div>
                     </div>
                 `,
                 buttons: [
@@ -1602,6 +1672,21 @@
             } catch (e) { console.error("Erro ao salvar dados do usuário:", e); }
         }
 
+        window.applyCustomAudioLink = async function() {
+            const linkInput = document.getElementById('customAudioLinkInput');
+            const url = linkInput.value.trim();
+            if (!url) {
+                alert('Cole um link válido.');
+                return;
+            }
+            appState.user.audioUrl = url;
+            appState.user.audioTitle = 'Mídia Customizada (Muka)';
+            await saveUserDataToFirestore();
+            saveLocal();
+            playAudioUrl(url);
+            alert('Link salvo e tocando no perfil!');
+        };
+
         window.selectAndPlayPresetMusic = async function(url, title) {
             appState.user.audioUrl = url;
             appState.user.audioTitle = title;
@@ -1620,7 +1705,7 @@
             audioEl.loop = true;
             audioEl.play().then(() => {
                 profileBtn.classList.add('playing');
-            }).catch(e => { console.log("Autoplay bloqueado", e); });
+            }).catch(e => { console.log("Autoplay bloqueado pelo navegador", e); });
         }
 
         window.toggleGlobalAudioPlay = function() {
@@ -1696,33 +1781,38 @@
         window.handleMediaSelected = function (event) {
             const file = event.target.files[0];
             if (!file) return;
-            currentFileName = file.name;
+            currentFileName = file.name || `midia_${Date.now()}`;
             currentAttachedFileObj = file;
-            const isVideo = file.type.startsWith('video/');
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                if (isVideo) {
-                    currentAttachedMedia = e.target.result;
-                    currentAttachedType = 'video';
-                    document.getElementById('mediaPreviewName').textContent = `🎬 Vídeo: ${file.name}`;
-                    document.getElementById('reopenEditorBtn').style.display = 'none';
-                    document.getElementById('mediaPreviewStrip').style.display = 'flex';
+            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp)$/i.test(currentFileName);
 
-                    showUmbrellaModal({
-                        title: 'Pré-visualização do Vídeo 🎬',
-                        htmlBody: `
-                            <div style="width:100%; max-height:300px; display:flex; justify-content:center; align-items:center; background:#000; border-radius:12px; overflow:hidden;">
-                                <video src="${e.target.result}" controls style="max-width:100%; max-height:280px;"></video>
-                            </div>
-                            <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Vídeo pronto para envio!</p>
-                        `,
-                        buttons: [{ label: 'OK / Concluir', primary: true, onClick: closeUmbrellaModal }]
-                    });
-                } else {
-                    openPhotoStudio(e.target.result);
+            if (isVideo) {
+                if (currentAttachedMedia && currentAttachedMedia.startsWith('blob:')) {
+                    URL.revokeObjectURL(currentAttachedMedia);
                 }
-            };
-            reader.readAsDataURL(file);
+                const videoBlobUrl = URL.createObjectURL(file);
+                currentAttachedMedia = videoBlobUrl;
+                currentAttachedType = 'video';
+                document.getElementById('mediaPreviewName').textContent = `🎬 Vídeo: ${currentFileName}`;
+                document.getElementById('reopenEditorBtn').style.display = 'none';
+                document.getElementById('mediaPreviewStrip').style.display = 'flex';
+
+                showUmbrellaModal({
+                    title: 'Pré-visualização do Vídeo 🎬',
+                    htmlBody: `
+                        <div style="width:100%; max-height:300px; display:flex; justify-content:center; align-items:center; background:#000; border-radius:12px; overflow:hidden;">
+                            <video src="${videoBlobUrl}" controls playsinline style="max-width:100%; max-height:280px;"></video>
+                        </div>
+                        <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Vídeo pronto! Clique em OK e depois na setinha ➤ para enviar.</p>
+                    `,
+                    buttons: [{ label: 'OK / Concluir', primary: true, onClick: closeUmbrellaModal }]
+                });
+            } else {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    openPhotoStudio(e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
         };
 
         window.openPhotoStudio = function (dataUrl) {
@@ -1839,6 +1929,9 @@
         };
 
         window.clearAttachedMedia = function () {
+            if (currentAttachedMedia && currentAttachedMedia.startsWith('blob:')) {
+                URL.revokeObjectURL(currentAttachedMedia);
+            }
             currentAttachedFileObj = null;
             currentAttachedMedia = null;
             currentAttachedType = null;
@@ -1874,7 +1967,7 @@
             } else if (viewName === 'desafio') {
                 composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
             } else if (viewName === 'fandom') {
-                composerInput.placeholder = "Selecione um Fandom para abrir...";
+                composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
             } else if (viewName === 'inside-fandom') {
                 composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
             } else if (viewName === 'aconchego') {
@@ -1913,8 +2006,10 @@
         };
 
         window.submitPost = async function () {
+            if (isUploadingPost) return;
             requireAuthForAction(async () => {
                 const input = document.getElementById('mainComposerInput');
+                const sendBtn = document.getElementById('mainSendBtn');
                 const text = input.value.trim();
                 if (!text && !currentAttachedFileObj) return;
 
@@ -1932,15 +2027,49 @@
                     return;
                 }
 
+                if (isInsideFandomView && activeFandomFilter) {
+                    const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
+                    if (!fandomObj || !hasFandomAccess(fandomObj)) {
+                        showUmbrellaModal({ title: 'Acesso Negado 🔒', htmlBody: 'Você precisa ser aprovado neste Fandom para publicar aqui.' });
+                        return;
+                    }
+                }
+
+                isUploadingPost = true;
+                sendBtn.disabled = true;
+                sendBtn.textContent = '⏳';
+                const previewNameEl = document.getElementById('mediaPreviewName');
+                const oldPreviewText = previewNameEl.textContent;
+
                 try {
                     let downloadUrl = '';
                     let mediaType = '';
 
                     if (currentAttachedFileObj) {
-                        const storageRef = ref(storage, `posts_media/${Date.now()}_${currentAttachedFileObj.name}`);
-                        const snapshot = await uploadBytes(storageRef, currentAttachedFileObj);
-                        downloadUrl = await getDownloadURL(snapshot.ref);
-                        mediaType = currentAttachedFileObj.type.startsWith('video/') ? 'video' : 'image';
+                        const isVideo = currentAttachedType === 'video' || currentAttachedFileObj.type.startsWith('video/');
+                        const safeExt = isVideo ? 'mp4' : 'jpg';
+                        const safeName = `${Date.now()}_${Math.floor(Math.random()*1000)}.${safeExt}`;
+                        const storageRef = ref(storage, `posts_media/${safeName}`);
+                        const metadata = {
+                            contentType: currentAttachedFileObj.type || (isVideo ? 'video/mp4' : 'image/jpeg')
+                        };
+
+                        downloadUrl = await new Promise((resolve, reject) => {
+                            const uploadTask = uploadBytesResumable(storageRef, currentAttachedFileObj, metadata);
+                            uploadTask.on('state_changed',
+                                (snapshot) => {
+                                    const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                                    previewNameEl.textContent = `Enviando mídia... ${pct}%`;
+                                },
+                                (error) => reject(error),
+                                async () => {
+                                    const url = await getDownloadURL(uploadTask.snapshot.ref);
+                                    resolve(url);
+                                }
+                            );
+                        });
+
+                        mediaType = isVideo ? 'video' : 'image';
                     }
 
                     const targetFandom = isInsideFandomView ? activeFandomFilter : 'Geral';
@@ -1966,7 +2095,12 @@
                     saveLocal();
                     renderAll();
                 } catch (e) {
-                    showUmbrellaModal({ title: 'Erro ao Publicar', htmlBody: `Não foi possível enviar ao Firebase: ${e.message}` });
+                    previewNameEl.textContent = oldPreviewText;
+                    showUmbrellaModal({ title: 'Erro ao Enviar Mídia', htmlBody: `Não foi possível enviar: ${e.message}` });
+                } finally {
+                    isUploadingPost = false;
+                    sendBtn.disabled = false;
+                    sendBtn.textContent = '➤';
                 }
             });
         };
@@ -2056,23 +2190,38 @@
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
-                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova notificação ou solicitação.' });
+                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação pendente nos seus Fandoms.' });
                     return;
                 }
                 const notif = appState.notifications[0];
                 showUmbrellaModal({
-                    title: 'Notificação / Solicitação 💧',
-                    htmlBody: `<p>${notif.text}</p>`,
+                    title: 'Solicitação de Fandom 🔒',
+                    htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Ao aprovar, esta pessoa poderá ver e publicar dentro deste espaço particular.</p>`,
                     buttons: [
-                        { label: 'Fechar', primary: false, onClick: () => { appState.notifications.shift(); saveLocal(); updateNotifBadge(); closeUmbrellaModal(); } },
+                        {
+                            label: 'Recusar',
+                            primary: false,
+                            onClick: async () => {
+                                try {
+                                    const fRef = doc(db, "fandoms", notif.fandomId);
+                                    await updateDoc(fRef, {
+                                        pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
+                                    });
+                                } catch (e) { console.error(e); }
+                                closeUmbrellaModal();
+                            }
+                        },
                         { 
-                            label: 'Aprovar / Aceitar', 
+                            label: 'Aprovar Entrada ✅', 
                             primary: true, 
-                            onClick: () => { 
-                                appState.notifications.shift(); 
-                                saveLocal(); 
-                                updateNotifBadge(); 
-                                renderAll(); 
+                            onClick: async () => { 
+                                try {
+                                    const fRef = doc(db, "fandoms", notif.fandomId);
+                                    await updateDoc(fRef, {
+                                        members: arrayUnion(notif.requesterUid),
+                                        pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
+                                    });
+                                } catch (e) { alert("Erro ao aprovar: " + e.message); }
                                 closeUmbrellaModal(); 
                             } 
                         }
@@ -2081,12 +2230,12 @@
             });
         };
 
-        // CRIAR FANDOM DIRETAMENTE NO FIRESTORE (SINCRONIZADO PARA TODOS)
         window.openCreateFandomModal = function () {
             requireAuthForAction(() => {
                 showUmbrellaModal({
-                    title: 'Criar Novo Fandom Particular',
+                    title: 'Criar Novo Fandom Particular 🔒',
                     htmlBody: `
+                        <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;">Este espaço nasce trancado. Outros usuários precisarão enviar solicitação para você aprovar.</p>
                         <div class="form-group">
                             <label class="form-label">Nome do Fandom</label>
                             <input type="text" id="newFandomNameInput" class="glass-input" placeholder="Ex: MeuFandomPrivado...">
@@ -2105,7 +2254,7 @@
                     buttons: [
                         { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                         {
-                            label: 'Criar Fandom',
+                            label: 'Criar Fandom Trancado',
                             primary: true,
                             onClick: async () => {
                                 const name = document.getElementById('newFandomNameInput').value.trim();
@@ -2113,7 +2262,7 @@
                                 const dotColor = document.getElementById('newFandomDotColor').value;
 
                                 if (name) {
-                                    const exists = appState.fandoms.find(f => f.name === name);
+                                    const exists = appState.fandoms.find(f => f.name.toLowerCase() === name.toLowerCase());
                                     if (!exists) {
                                         try {
                                             await addDoc(collection(db, "fandoms"), {
@@ -2122,6 +2271,8 @@
                                                 dotColor,
                                                 creatorUid: appState.user.uid,
                                                 admins: [appState.user.uid],
+                                                members: [appState.user.uid],
+                                                pendingRequests: [],
                                                 createdAt: serverTimestamp()
                                             });
                                             closeUmbrellaModal();
@@ -2137,11 +2288,70 @@
             });
         };
 
+        function hasFandomAccess(fandomObj) {
+            if (!appState.user.loggedIn || !appState.user.uid) return false;
+            if (fandomObj.creatorUid === appState.user.uid) return true;
+            if (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)) return true;
+            if (fandomObj.members && fandomObj.members.includes(appState.user.uid)) return true;
+            return false;
+        }
+
+        window.selectFandom = function (fandomName) {
+            requireAuthForAction(() => {
+                const fandomObj = appState.fandoms.find(f => f.name === fandomName);
+                if (!fandomObj) return;
+
+                if (hasFandomAccess(fandomObj)) {
+                    activeFandomFilter = fandomName;
+                    document.getElementById('insideFandomTitle').textContent = fandomName;
+                    switchView('inside-fandom');
+                } else {
+                    const alreadyRequested = fandomObj.pendingRequests && fandomObj.pendingRequests.some(r => r.uid === appState.user.uid);
+                    if (alreadyRequested) {
+                        showUmbrellaModal({
+                            title: `Solicitação Pendente ⏳`,
+                            htmlBody: `Você já enviou uma solicitação para entrar em <strong>${fandomName}</strong>. Aguarde o administrador aprovar na gotinha 💧.`
+                        });
+                    } else {
+                        showUmbrellaModal({
+                            title: `Fandom Particular 🔒`,
+                            htmlBody: `O espaço <strong>${fandomName}</strong> é trancado. Deseja enviar uma solicitação de entrada para o administrador?`,
+                            buttons: [
+                                { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                                {
+                                    label: 'Enviar Solicitação 📩',
+                                    primary: true,
+                                    onClick: async () => {
+                                        try {
+                                            const fRef = doc(db, "fandoms", fandomObj.id);
+                                            await updateDoc(fRef, {
+                                                pendingRequests: arrayUnion({
+                                                    uid: appState.user.uid,
+                                                    name: appState.user.name
+                                                })
+                                            });
+                                            closeUmbrellaModal();
+                                            showUmbrellaModal({
+                                                title: 'Solicitação Enviada! ✅',
+                                                htmlBody: `Seu pedido para entrar em <strong>${fandomName}</strong> foi enviado ao administrador.`
+                                            });
+                                        } catch (e) {
+                                            alert("Erro ao enviar solicitação: " + e.message);
+                                        }
+                                    }
+                                }
+                            ]
+                        });
+                    }
+                }
+            });
+        };
+
         window.openFandomOptionsMenu = function () {
             const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
             const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
 
-            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeUmbrellaModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Administradores</button>` : '';
+            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeUmbrellaModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
             let deleteHtml = isCreatorOrAdmin ? `<button class="btn-danger-pill" style="width:100%; padding:10px;" onclick="closeUmbrellaModal(); confirmDeleteFandom('${fandomObj.id}', '${activeFandomFilter}')">🗑️ Excluir Fandom</button>` : '';
 
             showUmbrellaModal({
@@ -2164,48 +2374,66 @@
             postsFromFirebase.filter(p => p.fandom === fandomName).forEach(p => {
                 if (p.authorUid && p.author) { membersMap[p.authorUid] = p.author; }
             });
+            if (fandomObj.members) {
+                fandomObj.members.forEach(mUid => {
+                    if (!membersMap[mUid]) membersMap[mUid] = mUid === appState.user.uid ? appState.user.name : `Membro (${mUid.slice(0,5)})`;
+                });
+            }
             if (appState.user.uid) membersMap[appState.user.uid] = appState.user.name;
 
             let membersHtml = '';
             for (const [uid, uname] of Object.entries(membersMap)) {
                 const isAdmin = fandomObj.admins && fandomObj.admins.includes(uid);
+                const isCreator = fandomObj.creatorUid === uid;
                 membersHtml += `
                     <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; margin-bottom:6px;">
                         <div>
                             <span style="font-size:13px; color:var(--text-main); font-weight:600;">${uname}</span>
                             ${isAdmin ? '<span class="admin-badge" style="margin-left:6px;">Admin</span>' : ''}
                         </div>
-                        <div>
+                        <div style="display:flex; gap:4px;">
                             ${isAdmin ? 
-                                `<button class="btn-danger-pill" style="font-size:10px;" onclick="demoteAdmin('${fandomObj.id}', '${fandomName}', '${uid}')">Remover</button>` : 
-                                `<button class="btn-pill-gold" style="font-size:10px;" onclick="promoteAdmin('${fandomObj.id}', '${fandomName}', '${uid}')">Promover a Admin</button>`
+                                `<button class="btn-danger-pill" style="font-size:10px;" onclick="demoteAdmin('${fandomObj.id}', '${fandomName}', '${uid}')">Tirar Admin</button>` : 
+                                `<button class="btn-pill-gold" style="font-size:10px;" onclick="promoteAdmin('${fandomObj.id}', '${fandomName}', '${uid}')">Promover</button>`
                             }
+                            ${!isCreator ? `<button class="btn-danger-pill" style="font-size:10px;" onclick="kickMember('${fandomObj.id}', '${fandomName}', '${uid}')">Expulsar</button>` : ''}
                         </div>
                     </div>
                 `;
             }
 
             showUmbrellaModal({
-                title: `Administradores • ${fandomName}`,
+                title: `Membros & Admins • ${fandomName}`,
                 htmlBody: `
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Promova membros a administradores após conversa:</p>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Gerencie quem tem acesso e quem administra este espaço:</p>
                     <div style="max-height:220px; overflow-y:auto;">${membersHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhum membro ativo ainda.</p>'}</div>
                 `,
                 buttons: [{ label: 'Concluir', primary: true, onClick: closeUmbrellaModal }]
             });
         };
 
+        window.kickMember = async function(fandomId, fandomName, uid) {
+            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
+            if (!fandomObj || fandomObj.creatorUid === uid) return;
+            try {
+                await updateDoc(doc(db, "fandoms", fandomId), {
+                    members: arrayRemove(uid),
+                    admins: arrayRemove(uid)
+                });
+                openManageAdminsModal(fandomName);
+            } catch (e) { alert("Erro ao remover membro: " + e.message); }
+        };
+
         window.promoteAdmin = async function(fandomId, fandomName, uid) {
             const fandomObj = appState.fandoms.find(f => f.name === fandomName);
             if (fandomObj) {
-                if (!fandomObj.admins) fandomObj.admins = [];
-                if (!fandomObj.admins.includes(uid)) {
-                    fandomObj.admins.push(uid);
-                    try {
-                        await updateDoc(doc(db, "fandoms", fandomId), { admins: fandomObj.admins });
-                        openManageAdminsModal(fandomName);
-                    } catch (e) { alert("Erro ao promover: " + e.message); }
-                }
+                try {
+                    await updateDoc(doc(db, "fandoms", fandomId), {
+                        admins: arrayUnion(uid),
+                        members: arrayUnion(uid)
+                    });
+                    openManageAdminsModal(fandomName);
+                } catch (e) { alert("Erro ao promover: " + e.message); }
             }
         };
 
@@ -2216,9 +2444,8 @@
                     alert("O criador principal não pode ser removido como admin.");
                     return;
                 }
-                fandomObj.admins = fandomObj.admins.filter(id => id !== uid);
                 try {
-                    await updateDoc(doc(db, "fandoms", fandomId), { admins: fandomObj.admins });
+                    await updateDoc(doc(db, "fandoms", fandomId), { admins: arrayRemove(uid) });
                     openManageAdminsModal(fandomName);
                 } catch (e) { alert("Erro ao remover admin: " + e.message); }
             }
@@ -2275,12 +2502,6 @@
             });
         };
 
-        window.selectFandom = function (fandomName) {
-            activeFandomFilter = fandomName;
-            document.getElementById('insideFandomTitle').textContent = fandomName;
-            switchView('inside-fandom');
-        };
-
         window.closeCurrentFandom = function () {
             activeFandomFilter = null;
             switchView('fandom');
@@ -2329,7 +2550,7 @@
 
         function renderPostCardHTML(post, isAconchegoTab = false) {
             const mediaHtml = post.media
-                ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
+                ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls playsinline></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
 
             let isAdmin = false;
@@ -2415,6 +2636,7 @@
                     const fname = f.name;
                     const borderCol = f.borderColor || '#fbbf24';
                     const dotCol = f.dotColor || '#fbbf24';
+                    const unlocked = hasFandomAccess(f);
 
                     return `
                         <div class="glass-panel fandom-box-card" style="border-color: ${borderCol};" onclick="selectFandom('${fname}')">
@@ -2422,13 +2644,18 @@
                                 <span class="fandom-dot" style="background-color: ${dotCol}; color: ${dotCol};"></span>
                                 ${fname}
                             </h4>
-                            <p>🔒 Particular</p>
+                            <p>${unlocked ? '🔓 Acesso Liberado' : '🔒 Solicitar Entrada'}</p>
                         </div>
                     `;
                 }).join('');
             }
 
             if (activeFandomFilter) {
+                const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
+                if (!fandomObj || !hasFandomAccess(fandomObj)) {
+                    closeCurrentFandom();
+                    return;
+                }
                 const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
                 const container = document.getElementById('insideFandomFeedList');
                 container.innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p, false)).join('') : `<div class="empty-state-box">Este fandom está privadamente silencioso. Compartilhe a primeira foto linda que você achou!</div>`;
