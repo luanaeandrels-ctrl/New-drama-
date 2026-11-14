@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Umbrella</title>
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#060a1e">
@@ -10,16 +10,16 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --glass-bg: rgba(255, 255, 255, 0.08);
-            --glass-dark: rgba(14, 18, 34, 0.25);
+            --glass-bg: rgba(18, 24, 46, 0.78);
+            --glass-dark: rgba(14, 18, 34, 0.45);
             --gold-border: rgba(251, 191, 36, 0.45);
             --gold-accent: #fbbf24;
             --text-main: #f8fafc;
-            --text-muted: rgba(226, 232, 240, 0.65);
+            --text-muted: rgba(226, 232, 240, 0.7);
             --danger: #f43f5e;
             --theme-color-accent: #060a1e;
         }
@@ -29,10 +29,9 @@
             margin: 0;
             padding: 0;
             -webkit-tap-highlight-color: transparent;
-            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
         }
 
-        /* FUNDO PNG FIXO EM TELA CHEIA */
         html, body {
             width: 100%;
             min-height: 100vh;
@@ -43,13 +42,12 @@
             color-scheme: dark;
         }
 
+        /* Vidro leve sem pesar na GPU do celular */
         .glass-panel {
             background: var(--glass-bg);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
             border: 1px solid var(--gold-border);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 0 12px rgba(251, 191, 36, 0.05);
-            border-radius: 22px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border-radius: 20px;
         }
 
         .app-shell {
@@ -58,7 +56,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-bottom: 115px;
+            padding-bottom: 110px;
             position: relative;
             z-index: 1;
         }
@@ -67,9 +65,7 @@
             position: fixed;
             inset: 0;
             z-index: 200;
-            background: rgba(4, 7, 18, 0.82);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: rgba(4, 7, 18, 0.88);
             display: none;
             align-items: center;
             justify-content: center;
@@ -78,32 +74,30 @@
 
         .auth-card {
             width: 100%;
-            max-width: 420px;
-            padding: 28px;
+            max-width: 400px;
+            padding: 26px;
             text-align: center;
         }
 
         .auth-logo {
-            max-width: 120px;
-            margin-bottom: 16px;
-            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+            max-width: 110px;
+            margin-bottom: 14px;
         }
 
         .unified-top-bar {
             width: 100%;
             max-width: 850px;
             margin: 0 auto;
-            padding: 14px 24px 8px;
+            padding: 12px 20px 8px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 14px;
+            gap: 12px;
             z-index: 45;
             position: sticky;
             top: 0;
         }
 
-        /* BOLINHA DO PERFIL COM ANIMAÇÃO SPOTIFY */
         .header-left-btn {
             position: relative;
             width: 38px;
@@ -111,17 +105,15 @@
             border-radius: 50%;
             border: 1.5px solid var(--gold-accent);
             background: var(--glass-dark);
-            overflow: visible;
             cursor: pointer;
             padding: 0;
             flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .header-left-btn.playing::after {
             content: '';
             position: absolute;
-            inset: -5px;
+            inset: -4px;
             border-radius: 50%;
             border: 2px solid var(--gold-accent);
             animation: spotifyPulse 1.6s infinite ease-out;
@@ -129,8 +121,8 @@
         }
 
         @keyframes spotifyPulse {
-            0% { transform: scale(1); opacity: 0.95; }
-            100% { transform: scale(1.4); opacity: 0; }
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.35); opacity: 0; }
         }
 
         .header-left-btn img {
@@ -144,15 +136,12 @@
         .search-balao-fininho {
             flex: 1;
             height: 36px;
-            background: rgba(14, 18, 34, 0.35);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(14, 18, 34, 0.65);
             border: 1px solid var(--gold-border);
             border-radius: 9999px;
-            padding: 0 12px 0 18px;
+            padding: 0 12px 0 16px;
             display: flex;
             align-items: center;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.2);
         }
 
         .search-input-fin {
@@ -160,7 +149,7 @@
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 12.5px;
+            font-size: 13px;
             outline: none;
             text-align: center;
         }
@@ -173,7 +162,7 @@
             color: var(--gold-accent);
             font-size: 14px;
             cursor: pointer;
-            padding: 4px 8px;
+            padding: 4px 6px;
             flex-shrink: 0;
         }
 
@@ -211,90 +200,68 @@
 
         .logo-section {
             width: 100%;
-            padding: 6px 24px 12px;
+            padding: 4px 20px 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            max-height: 190px;
-            opacity: 1;
-            overflow: hidden;
-            transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-                        opacity 0.25s ease,
-                        padding 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+            max-height: 170px;
+            transition: max-height 0.25s ease, opacity 0.2s ease;
         }
 
         .logo-section.scrolled {
             max-height: 0;
             opacity: 0;
-            padding-top: 0;
-            padding-bottom: 0;
-            pointer-events: none;
-        }
-
-        .logo-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
+            padding: 0;
+            overflow: hidden;
         }
 
         .brand-logo {
-            max-height: 155px;
-            max-width: 90%;
-            width: auto;
-            height: auto;
+            max-height: 140px;
+            max-width: 85%;
             object-fit: contain;
             display: block;
-            filter: drop-shadow(0 4px 16px rgba(0, 0, 0, 0.55));
         }
 
+        /* Rolagem horizontal nativa suave do celular */
         .main-carousel-wrapper {
             width: 100%;
-            padding: 6px 24px 22px;
+            padding: 6px 20px 18px;
             display: flex;
-            gap: 18px;
+            gap: 16px;
             overflow-x: auto;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             align-items: center;
-            cursor: grab;
         }
 
-        .main-carousel-wrapper:active { cursor: grabbing; }
         .main-carousel-wrapper::-webkit-scrollbar { display: none; }
 
         @media (min-width: 769px) {
             .main-carousel-wrapper {
-                overflow-x: visible;
                 justify-content: center;
-                gap: 24px;
-                cursor: default;
+                gap: 22px;
                 max-width: 1200px;
                 margin: 0 auto;
             }
-            .main-carousel-wrapper:active { cursor: default; }
         }
 
         .carousel-item-clean {
             flex: 0 0 auto;
-            height: 125px;
+            height: 118px;
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: transform 0.2s ease;
         }
 
-        .carousel-item-clean:hover { transform: translateY(-2px); }
-
-        .podium-item-box { width: 92px; }
+        .podium-item-box { width: 88px; }
 
         .podium-circle-clean {
-            width: 72px;
-            height: 72px;
+            width: 68px;
+            height: 68px;
             border-radius: 50%;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.08);
@@ -304,36 +271,30 @@
             justify-content: center;
         }
 
-        .podium-circle-1 { border: 3px solid #fbbf24; box-shadow: 0 0 15px rgba(251, 191, 36, 0.7); }
-        .podium-circle-2 { border: 3px solid #cbd5e1; box-shadow: 0 0 15px rgba(203, 213, 225, 0.7); }
-        .podium-circle-3 { border: 3px solid #d97706; box-shadow: 0 0 15px rgba(217, 119, 6, 0.7); }
+        .podium-circle-1 { border: 2.5px solid #fbbf24; }
+        .podium-circle-2 { border: 2.5px solid #cbd5e1; }
+        .podium-circle-3 { border: 2.5px solid #d97706; }
 
         .podium-circle-clean img { width: 100%; height: 100%; object-fit: cover; }
 
         .podium-label-clean {
-            font-size: 11.5px;
+            font-size: 11px;
             font-weight: 700;
             color: var(--gold-accent);
             white-space: nowrap;
-            text-shadow: 0 1px 4px rgba(0,0,0,0.7);
         }
 
         .challenge-card-clean {
-            width: 260px;
+            width: 245px;
             background: var(--glass-bg);
             border: 1.5px solid var(--gold-accent);
-            border-radius: 18px;
+            border-radius: 16px;
             padding: 12px 14px;
             justify-content: space-between;
             align-items: flex-start;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.25);
-            backdrop-filter: blur(10px);
         }
 
         .challenge-header {
-            display: flex;
-            align-items: center;
-            gap: 6px;
             font-size: 11px;
             font-weight: 700;
             color: var(--gold-accent);
@@ -350,32 +311,21 @@
             overflow: hidden;
         }
 
-        .tab-item-box {
-            width: 92px;
-            background: transparent;
-            border: none;
-        }
+        .tab-item-box { width: 86px; }
 
         .tab-icon-free {
-            width: 74px;
-            height: 74px;
+            width: 70px;
+            height: 70px;
             margin-bottom: 6px;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: transparent;
-            border: none;
-            border-radius: 0;
-            padding: 0;
-            box-shadow: none;
         }
 
         .tab-icon-free img {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            display: block;
-            filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.55));
         }
 
         .tab-label-clean {
@@ -383,24 +333,17 @@
             font-weight: 600;
             color: var(--text-main);
             white-space: nowrap;
-            text-shadow: 0 1px 5px rgba(0,0,0,0.85);
         }
 
         .view-section {
             display: none;
             width: 100%;
-            max-width: 780px;
+            max-width: 760px;
             margin: 0 auto;
-            padding: 0 24px;
-            animation: fadeIn 0.25s ease forwards;
+            padding: 0 20px;
         }
 
         .view-section.active { display: block; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
 
         .section-header-bar {
             display: flex;
@@ -413,22 +356,19 @@
         .section-title { font-size: 14.5px; font-weight: 700; color: var(--gold-accent); }
 
         .btn-pill-gold {
-            background: rgba(251, 191, 36, 0.14);
+            background: rgba(251, 191, 36, 0.16);
             border: 1px solid var(--gold-border);
             color: var(--gold-accent);
-            font-size: 11.5px;
+            font-size: 12px;
             font-weight: 600;
             padding: 6px 14px;
             border-radius: 99px;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
 
-        .btn-pill-gold:hover { background: rgba(251, 191, 36, 0.28); }
-
         .btn-danger-pill {
-            background: rgba(244, 63, 94, 0.15);
-            border: 1px solid rgba(244, 63, 94, 0.4);
+            background: rgba(244, 63, 94, 0.18);
+            border: 1px solid rgba(244, 63, 94, 0.45);
             color: #fda4af;
             font-size: 11px;
             font-weight: 600;
@@ -436,11 +376,10 @@
             border-radius: 99px;
             cursor: pointer;
         }
-        .btn-danger-pill:hover { background: rgba(244, 63, 94, 0.3); }
 
         .fandoms-grid-container {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
             gap: 12px;
             margin-bottom: 14px;
         }
@@ -450,12 +389,8 @@
             text-align: center;
             cursor: pointer;
             border-radius: 16px;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-            backdrop-filter: blur(10px);
-            position: relative;
         }
 
-        .fandom-box-card:hover { transform: translateY(-2px); border-color: var(--gold-accent); }
         .fandom-box-card h4 { font-size: 13.5px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; }
         .fandom-box-card p { font-size: 10.5px; color: var(--text-muted); }
 
@@ -464,24 +399,22 @@
             height: 10px;
             border-radius: 50%;
             display: inline-block;
-            box-shadow: 0 0 8px currentColor;
         }
 
         .feed-list { display: flex; flex-direction: column; gap: 14px; }
 
         .empty-state-box {
-            padding: 28px 18px;
+            padding: 26px 16px;
             text-align: center;
             color: var(--text-muted);
             font-size: 13px;
             line-height: 1.5;
         }
 
-        /* POSTAGEM LIMPA SEM CAIXA PESADA EM VOLTA */
         .post-card-clean {
             padding: 12px 0;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.15);
-            margin-bottom: 10px;
+            border-bottom: 1px solid rgba(251, 191, 36, 0.18);
+            margin-bottom: 8px;
         }
 
         .post-header {
@@ -501,8 +434,7 @@
             object-fit: cover;
         }
 
-        .post-author-name { font-size: 13px; font-weight: 600; color: var(--gold-accent); display: flex; align-items: center; gap: 6px; }
-        .post-author-name:hover { text-decoration: underline; }
+        .post-author-name { font-size: 13.5px; font-weight: 600; color: var(--gold-accent); display: flex; align-items: center; gap: 6px; }
         .post-meta { font-size: 10.5px; color: var(--text-muted); }
 
         .admin-badge {
@@ -515,20 +447,18 @@
             font-weight: 700;
         }
 
-        .post-text { font-size: 13.5px; line-height: 1.5; margin-bottom: 8px; word-break: break-word; color: var(--text-main); }
+        .post-text { font-size: 14px; line-height: 1.5; margin-bottom: 8px; word-break: break-word; color: var(--text-main); }
 
         .post-media {
             width: 100%;
-            max-height: 400px;
+            max-height: 420px;
             object-fit: cover;
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid var(--gold-border);
             margin-bottom: 8px;
-            cursor: zoom-in;
             display: block;
         }
 
-        /* COMENTÁRIOS E AÇÕES LIMPOS */
         .comments-section-clean {
             margin-top: 6px;
             display: flex;
@@ -537,8 +467,8 @@
         }
 
         .comment-item-clean {
-            font-size: 12px;
-            background: rgba(255, 255, 255, 0.03);
+            font-size: 12.5px;
+            background: rgba(255, 255, 255, 0.05);
             padding: 6px 10px;
             border-radius: 10px;
             display: flex;
@@ -554,12 +484,12 @@
 
         .comment-input-clean {
             flex: 1;
-            background: rgba(10, 14, 28, 0.4);
+            background: rgba(10, 14, 28, 0.65);
             border: 1px solid var(--gold-border);
             border-radius: 99px;
-            padding: 5px 12px;
+            padding: 6px 12px;
             color: var(--text-main);
-            font-size: 11.5px;
+            font-size: 12px;
             outline: none;
         }
 
@@ -577,32 +507,22 @@
             background: transparent;
             border: none;
             color: var(--text-main);
-            font-size: 12.5px;
+            font-size: 13px;
             font-weight: 600;
             cursor: pointer;
             padding: 2px 6px;
-        }
-
-        .umbrella-icon-css {
-            font-size: 16px;
-            transition: transform 0.2s ease, filter 0.2s ease;
-        }
-
-        .like-umbrella-btn.liked .umbrella-icon-css {
-            filter: drop-shadow(0 0 8px rgba(251, 191, 36, 0.9));
-            transform: scale(1.2);
         }
 
         .like-umbrella-btn.liked span { color: var(--gold-accent); }
 
         .floating-composer-wrapper {
             position: fixed;
-            bottom: 24px;
+            bottom: 22px;
             left: 50%;
             transform: translateX(-50%);
             width: 100%;
-            max-width: 780px;
-            padding: 0 24px;
+            max-width: 760px;
+            padding: 0 20px;
             z-index: 50;
         }
 
@@ -610,13 +530,11 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            padding: 6px 12px;
-            background: rgba(14, 18, 34, 0.55);
-            backdrop-filter: blur(14px);
-            -webkit-backdrop-filter: blur(14px);
+            padding: 6px 10px;
+            background: rgba(14, 18, 34, 0.88);
             border: 1px solid var(--gold-border);
             border-radius: 9999px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
         }
 
         .composer-plus-btn {
@@ -627,8 +545,6 @@
             background: transparent;
             color: var(--gold-accent);
             font-size: 22px;
-            font-weight: 400;
-            line-height: 1;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -646,14 +562,14 @@
             padding: 6px 4px;
         }
 
-        .composer-input::placeholder { color: var(--text-muted); opacity: 0.8; }
+        .composer-input::placeholder { color: var(--text-muted); }
 
         .composer-send-btn {
             width: 36px;
             height: 36px;
             border-radius: 50%;
             border: 1px solid var(--gold-border);
-            background: rgba(251, 191, 36, 0.15);
+            background: rgba(251, 191, 36, 0.2);
             color: var(--gold-accent);
             font-size: 15px;
             display: flex;
@@ -672,7 +588,8 @@
             font-size: 12px;
             color: var(--gold-accent);
             border-radius: 99px;
-            background: rgba(10, 14, 28, 0.85);
+            background: rgba(14, 18, 34, 0.92);
+            border: 1px solid var(--gold-border);
         }
 
         .form-group { margin-bottom: 12px; }
@@ -682,22 +599,18 @@
             width: 100%;
             padding: 10px 13px;
             border-radius: 13px;
-            background: rgba(10, 14, 28, 0.45);
+            background: rgba(10, 14, 28, 0.75);
             border: 1px solid var(--gold-border);
             color: var(--text-main);
-            font-size: 13px;
+            font-size: 13.5px;
             outline: none;
-            appearance: none;
-            -webkit-appearance: none;
         }
-
-        .glass-select option { background-color: #0e1326; color: #f8fafc; }
 
         .custom-file-trigger {
             width: 100%;
             padding: 10px 13px;
             border-radius: 13px;
-            background: rgba(10, 14, 28, 0.45);
+            background: rgba(10, 14, 28, 0.65);
             border: 1px dashed var(--gold-border);
             color: var(--gold-accent);
             font-size: 12.5px;
@@ -710,16 +623,13 @@
             width: 100%;
             padding: 11px 16px;
             border-radius: 14px;
-            background: rgba(251, 191, 36, 0.16);
+            background: rgba(251, 191, 36, 0.2);
             border: 1px solid var(--gold-accent);
             color: var(--gold-accent);
             font-size: 13.5px;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.2s ease;
         }
-
-        .btn-gold:hover { background: rgba(251, 191, 36, 0.28); }
 
         .app-footer {
             position: fixed;
@@ -728,19 +638,17 @@
             width: 100%;
             text-align: center;
             font-size: 10.5px;
-            color: rgba(248, 250, 252, 0.75);
-            text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+            color: rgba(248, 250, 252, 0.7);
             z-index: 45;
             pointer-events: none;
         }
 
+        /* Pop-up moderno e bonito (substitui janelas feias do sistema) */
         .modal-backdrop {
             position: fixed;
             inset: 0;
             z-index: 100;
-            background: rgba(4, 7, 18, 0.65);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: rgba(4, 7, 18, 0.82);
             display: none;
             align-items: center;
             justify-content: center;
@@ -751,145 +659,28 @@
 
         .modal-box { 
             width: 100%; 
-            max-width: 440px; 
+            max-width: 420px; 
             padding: 22px; 
-            max-height: 85vh; 
+            max-height: 88vh; 
             overflow-y: auto; 
-            scrollbar-width: thin;
-            scrollbar-color: var(--gold-border) transparent;
+            animation: popIn 0.18s ease-out;
         }
-        .modal-box::-webkit-scrollbar { width: 6px; }
-        .modal-box::-webkit-scrollbar-thumb { background: var(--gold-border); border-radius: 99px; }
+
+        @keyframes popIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
 
         .modal-title { font-size: 16px; font-weight: 700; color: var(--gold-accent); margin-bottom: 10px; }
-        .modal-body-text { font-size: 13.5px; line-height: 1.55; color: var(--text-main); margin-bottom: 18px; }
+        .modal-body-text { font-size: 13.5px; line-height: 1.5; color: var(--text-main); margin-bottom: 16px; }
         .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
 
-        .studio-modal-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 150;
-            background: rgba(3, 5, 14, 0.92);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: space-between;
-            padding: 18px;
-            animation: fadeIn 0.2s ease;
-        }
-
-        .studio-modal-overlay.open { display: flex; }
-
-        .studio-top-bar {
-            width: 100%;
-            max-width: 560px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-bottom: 10px;
-        }
-
-        .studio-canvas-area {
-            flex: 1;
-            width: 100%;
-            max-width: 560px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
-            border-radius: 24px;
-            border: 1px solid var(--gold-border);
-            background: rgba(10, 14, 28, 0.5);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-        }
-
-        #editorCanvas {
-            max-width: 100%;
-            max-height: 52vh;
-            object-fit: contain;
-            border-radius: 16px;
-        }
-
-        .studio-controls-panel {
-            width: 100%;
-            max-width: 560px;
-            background: rgba(16, 22, 42, 0.85);
-            border: 1px solid var(--gold-border);
-            border-radius: 24px;
-            padding: 16px 20px;
-            margin-top: 14px;
-        }
-
-        .studio-filters-row {
-            display: flex;
-            gap: 8px;
-            overflow-x: auto;
-            padding-bottom: 12px;
-            margin-bottom: 12px;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.15);
-            scrollbar-width: none;
-        }
-
-        .studio-filters-row::-webkit-scrollbar { display: none; }
-
-        .filter-chip {
-            padding: 6px 14px;
-            border-radius: 99px;
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(251, 191, 36, 0.25);
-            color: var(--text-main);
-            font-size: 11.5px;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-            transition: all 0.2s ease;
-        }
-
-        .filter-chip.active {
-            background: var(--gold-accent);
-            color: #060a1e;
-            border-color: var(--gold-accent);
-        }
-
-        .studio-sliders-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px 16px;
-            margin-bottom: 12px;
-        }
-
-        .slider-control label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-            color: var(--text-muted);
-            margin-bottom: 4px;
-        }
-
-        .slider-control input[type="range"] {
-            width: 100%;
-            accent-color: var(--gold-accent);
-            height: 4px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 4px;
-            outline: none;
-        }
-
-        .studio-tools-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: 10px;
-        }
-
+        /* Visualizador Nativo Fullscreen (Permite Zoom Nativo do Celular e Player Nativo) */
         .lightbox-overlay {
             position: fixed;
             inset: 0;
             z-index: 120;
-            background: rgba(2, 4, 12, 0.88);
+            background: rgba(2, 4, 12, 0.95);
             display: none;
             flex-direction: column;
             align-items: center;
@@ -911,12 +702,13 @@
             color: var(--gold-accent);
             font-size: 18px;
             cursor: pointer;
+            z-index: 125;
         }
 
         .lightbox-media {
             max-width: 100%;
-            max-height: 84vh;
-            border-radius: 16px;
+            max-height: 82vh;
+            border-radius: 14px;
             border: 1px solid var(--gold-border);
             object-fit: contain;
         }
@@ -932,30 +724,13 @@
             font-size: 13px;
             cursor: pointer;
         }
-
-        /* Barra de rolagem invisível/fina no modal de perfil */
-        .profile-scrollable-content {
-            max-height: 65vh;
-            overflow-y: auto;
-            padding-right: 4px;
-            scrollbar-width: thin;
-            scrollbar-color: rgba(251, 191, 36, 0.3) transparent;
-        }
-        .profile-scrollable-content::-webkit-scrollbar {
-            width: 4px;
-        }
-        .profile-scrollable-content::-webkit-scrollbar-thumb {
-            background: rgba(251, 191, 36, 0.3);
-            border-radius: 99px;
-        }
     </style>
 </head>
 <body>
 
-    <!-- ELEMENTO DE ÁUDIO / MÚSICA / MUKA -->
     <audio id="globalActiveAudio" preload="auto"></audio>
 
-    <!-- TELA DE LOGIN / BLOQUEIO AO INTERAGIR -->
+    <!-- TELA DE LOGIN -->
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
             <img src="./logo.png" alt="Umbrella" class="auth-logo">
@@ -1028,7 +803,6 @@
                 <span class="podium-label-clean" id="podiumLabel3">3º Pódio</span>
             </div>
 
-            <!-- Desafio do Dia -->
             <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
                     <span>☔ Desafio do Dia</span>
@@ -1039,7 +813,6 @@
                 <span style="font-size:10px; color:var(--gold-accent);">Ver desafio ➔</span>
             </div>
 
-            <!-- Abas -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
                 <div class="tab-icon-free">
                     <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./guarda-chuva.png';">
@@ -1105,18 +878,13 @@
                         <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="1 a 1000">
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label">Foto de Referência Oficial do Bias</label>
-                    <label for="biasRefFileInput" class="custom-file-trigger" id="biasRefFileLabel">Selecionar imagem de referência</label>
-                    <input type="file" id="biasRefFileInput" accept="image/*,video/*" style="display:none;" onchange="document.getElementById('biasRefFileLabel').textContent = this.files[0]?.name || 'Selecionar imagem'">
-                </div>
                 <button class="btn-gold" onclick="saveBiasRegistration()">Salvar Representante</button>
             </div>
 
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS (LISTA DE ENTRADA) -->
+        <!-- TELA 3: FANDOMS -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms Particulares</span>
@@ -1125,11 +893,10 @@
                     <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
                 </div>
             </div>
-
             <div class="fandoms-grid-container" id="fandomsGridContainer"></div>
         </section>
 
-        <!-- TELA 3.1: DENTRO DO FANDOM (PORTA ABERTA) -->
+        <!-- TELA 3.1: DENTRO DO FANDOM -->
         <section class="view-section" id="view-inside-fandom">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -1144,7 +911,6 @@
                     <button onclick="closeCurrentFandom()" style="background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); color:#fda4af; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:700;" title="Fechar Fandom">✕</button>
                 </div>
             </div>
-
             <div class="feed-list" id="insideFandomFeedList"></div>
         </section>
 
@@ -1170,17 +936,19 @@
 
     <!-- BARRA DE POSTAGEM FLUTUANTE -->
     <div class="floating-composer-wrapper">
-        <div class="glass-panel media-preview-strip" id="mediaPreviewStrip">
+        <div class="media-preview-strip" id="mediaPreviewStrip">
             <span id="mediaPreviewName">Mídia anexada</span>
             <div style="display:flex; gap:10px; align-items:center;">
-                <button id="reopenEditorBtn" onclick="openPhotoStudioWithCurrent()" style="background:none; border:1px solid var(--gold-border); color:var(--gold-accent); padding:2px 8px; border-radius:99px; font-size:11px; cursor:pointer; display:none;">✨ Editar</button>
-                <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700;">✕</button>
+                <button onclick="previewAttachedMediaNative()" style="background:none; border:1px solid var(--gold-border); color:var(--gold-accent); padding:3px 10px; border-radius:99px; font-size:11px; cursor:pointer;">👁️ Visualizar</button>
+                <button onclick="clearAttachedMedia()" style="background:none; border:none; color:var(--danger); cursor:pointer; font-weight:700; font-size:14px;">✕</button>
             </div>
         </div>
 
         <div class="gemini-composer">
-            <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria">+</button>
-            <input type="file" id="cameraDirectInput" accept="image/*,video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
+            <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria Nativa">+</button>
+            <!-- Inputs nativos do celular -->
+            <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
+            <input type="file" id="videoDirectInput" accept="video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
             <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use * para marcar alguém)" onkeypress="if(event.key==='Enter') submitPost()">
@@ -1192,7 +960,7 @@
         umbrella.suporte@gmail.com
     </footer>
 
-    <!-- MODAL GERAL -->
+    <!-- POP-UP ESTILIZADO (BONITINHO) -->
     <div class="modal-backdrop" id="customModalBackdrop">
         <div class="glass-panel modal-box">
             <h3 class="modal-title" id="customModalTitle">Umbrella</h3>
@@ -1201,60 +969,14 @@
         </div>
     </div>
 
-    <!-- ESTÚDIO DE EDIÇÃO -->
-    <div class="studio-modal-overlay" id="pinterestStudioModal">
-        <div class="studio-top-bar">
-            <button class="btn-pill-gold" style="border-color:rgba(244,63,94,0.5); color:#fda4af;" onclick="closePhotoStudio()">Cancelar</button>
-            <span style="font-size:14px; font-weight:700; color:var(--gold-accent);">✨ Estúdio Umbrella</span>
-            <button class="btn-pill-gold" style="background:var(--gold-accent); color:#060a1e; font-weight:700;" onclick="applyPhotoStudioChanges()">Concluir</button>
-        </div>
-
-        <div class="studio-canvas-area">
-            <canvas id="editorCanvas"></canvas>
-        </div>
-
-        <div class="studio-controls-panel">
-            <div class="studio-filters-row" id="studioFiltersRow">
-                <button class="filter-chip active" onclick="setStudioFilter('none', this)">Original</button>
-                <button class="filter-chip" onclick="setStudioFilter('golden', this)">Dourado ✨</button>
-                <button class="filter-chip" onclick="setStudioFilter('drama', this)">K-Drama 🎬</button>
-                <button class="filter-chip" onclick="setStudioFilter('soft', this)">Aconchego 🌸</button>
-                <button class="filter-chip" onclick="setStudioFilter('bw', this)">Noir P&B 🖤</button>
-            </div>
-
-            <div class="studio-sliders-grid">
-                <div class="slider-control">
-                    <label><span>Brilho</span><span id="valBrightness">100%</span></label>
-                    <input type="range" id="sliderBrightness" min="50" max="160" value="100" oninput="updateStudioRender()">
-                </div>
-                <div class="slider-control">
-                    <label><span>Contraste</span><span id="valContrast">100%</span></label>
-                    <input type="range" id="sliderContrast" min="50" max="160" value="100" oninput="updateStudioRender()">
-                </div>
-                <div class="slider-control">
-                    <label><span>Saturação</span><span id="valSaturate">100%</span></label>
-                    <input type="range" id="sliderSaturate" min="0" max="180" value="100" oninput="updateStudioRender()">
-                </div>
-                <div class="slider-control">
-                    <label><span>Zoom / Enquadrar</span><span id="valZoom">1.0x</span></label>
-                    <input type="range" id="sliderZoom" min="100" max="200" value="100" oninput="updateStudioRender()">
-                </div>
-            </div>
-
-            <div class="studio-tools-row">
-                <button class="btn-pill-gold" onclick="rotateStudioImage()">↻ Girar 90°</button>
-                <button class="btn-pill-gold" onclick="resetStudioSettings()">Restaurar Original</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="lightbox-overlay" id="pinterestLightbox">
+    <!-- VISUALIZADOR NATIVO FULLSCREEN (COM CONTROLES NATIVOS DO CELULAR) -->
+    <div class="lightbox-overlay" id="nativeMediaLightbox">
         <button class="lightbox-close" onclick="closeLightbox()">✕</button>
         <div id="lightboxMediaContainer" style="display:flex; justify-content:center; align-items:center; width:100%;"></div>
         <p class="lightbox-caption" id="lightboxCaption"></p>
     </div>
 
-    <!-- SCRIPT FIREBASE E SISTEMA -->
+    <!-- SCRIPT FIREBASE E SISTEMA LEVE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import {
@@ -1280,12 +1002,6 @@
             arrayUnion,
             arrayRemove
         } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-        import {
-            getStorage,
-            ref,
-            uploadBytes,
-            getDownloadURL
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
@@ -1300,10 +1016,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v41';
+        const LOCAL_KEY = 'umbrella_clean_state_v42';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1312,8 +1027,6 @@
                 name: 'Visitante',
                 email: '',
                 avatar: './aconchego.png',
-                bgImage: './fundo.png',
-                themeAccentColor: '#060a1e',
                 audioUrl: '',
                 audioTitle: ''
             },
@@ -1325,21 +1038,15 @@
             friends: [
                 { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
             ],
-            notifications: [],
-            history: []
+            notifications: []
         };
 
         let postsFromFirebase = [];
-        let currentAttachedFileObj = null;
-        let currentAttachedMedia = null;
+        let currentAttachedDataUrl = null;
         let currentAttachedType = null;
         let currentFileName = '';
         let activeFandomFilter = null;
         let isUploadingPost = false;
-
-        let rawEditorImageObj = null;
-        let editorRotation = 0;
-        let editorFilterPreset = 'none';
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -1353,7 +1060,7 @@
                     postsFromFirebase.push({ id: docSnap.id, ...docSnap.data() });
                 });
                 renderAll();
-            }, (error) => { console.error("Erro ao sincronizar posts:", error); });
+            });
 
             const qFandoms = query(collection(db, "fandoms"));
             onSnapshot(qFandoms, (snapshot) => {
@@ -1363,7 +1070,7 @@
                 });
                 syncFandomNotifications();
                 renderAll();
-            }, (error) => { console.error("Erro ao sincronizar fandoms:", error); });
+            });
         }
 
         function syncFandomNotifications() {
@@ -1444,7 +1151,9 @@
                 closeAuthGate();
                 syncFandomNotifications();
                 renderAll();
-            } catch (error) { alert('Erro no login com Google: ' + error.message); }
+            } catch (error) {
+                showUmbrellaModal({ title: 'Aviso de Login', htmlBody: error.message });
+            }
         };
 
         window.showManualRegisterForm = function () {
@@ -1467,8 +1176,8 @@
             const pass = document.getElementById('regPass').value;
             const confirm = document.getElementById('regPassConfirm').value;
 
-            if (!name || !email || !pass) { alert('Preencha todos os campos!'); return; }
-            if (pass !== confirm) { alert('As senhas não coincidem!'); return; }
+            if (!name || !email || !pass) { showUmbrellaModal({ title: 'Atenção', htmlBody: 'Preencha todos os campos!' }); return; }
+            if (pass !== confirm) { showUmbrellaModal({ title: 'Atenção', htmlBody: 'As senhas não coincidem!' }); return; }
 
             appState.user.uid = 'manual_' + Date.now();
             appState.user.loggedIn = true;
@@ -1496,7 +1205,7 @@
         window.submitManualLogin = function () {
             const email = document.getElementById('logEmail').value.trim();
             const pass = document.getElementById('logPass').value;
-            if (!email || !pass) { alert('Informe e-mail e senha.'); return; }
+            if (!email || !pass) { showUmbrellaModal({ title: 'Atenção', htmlBody: 'Informe e-mail e senha.' }); return; }
             appState.user.uid = 'manual_' + email.replace(/[^a-zA-Z0-9]/g, '_');
             appState.user.loggedIn = true;
             appState.user.name = email.split('@')[0];
@@ -1519,6 +1228,7 @@
             location.reload();
         };
 
+        /* POP-UP BONITINHO ESTILO VIDRO E DOURADO */
         window.showUmbrellaModal = function ({ title, htmlBody, buttons = [] }) {
             const backdrop = document.getElementById('customModalBackdrop');
             document.getElementById('customModalTitle').textContent = title;
@@ -1528,7 +1238,7 @@
             actionsEl.innerHTML = '';
 
             if (buttons.length === 0) {
-                buttons = [{ label: 'Fechar', primary: true, onClick: closeUmbrellaModal }];
+                buttons = [{ label: 'OK', primary: true, onClick: closeUmbrellaModal }];
             }
 
             buttons.forEach(btn => {
@@ -1554,7 +1264,6 @@
             }
         };
 
-        // PERFIL COM PLAYER SIMPLES (PLAY, PAUSE) E LINK DO MUKA
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1566,50 +1275,46 @@
             showUmbrellaModal({
                 title: `Perfil & Player do Muka`,
                 htmlBody: `
-                    <div class="profile-scrollable-content">
-                        <div style="text-align:center; margin-bottom:14px;">
-                            <img src="${appState.user.avatar}" style="width:75px; height:75px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px; box-shadow:0 4px 14px rgba(0,0,0,0.5);">
-                            <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
-                            <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
+                    <div style="text-align:center; margin-bottom:14px;">
+                        <img src="${appState.user.avatar}" style="width:72px; height:72px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px;">
+                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
+                        <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Nome Completo</label>
+                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Escolher Foto de Perfil (Galeria Nativa)</label>
+                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
+                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
+                    </div>
+
+                    <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
+                        <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Link do Muka (Áudio)</label>
+                        <div style="display:flex; gap:6px; margin-bottom:10px;">
+                            <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl || ''}">
+                            <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar</button>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Nome Completo</label>
-                            <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Escolher Foto de Perfil</label>
-                            <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
-                            <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
-                        </div>
-
-                        <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Link do Muka (Mídia / Áudio)</label>
-                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Cole o link direto do Muka abaixo:</p>
-                            <div style="display:flex; gap:6px; margin-bottom:12px;">
-                                <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl || ''}">
-                                <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar</button>
-                            </div>
-
-                            <!-- Playerzinho Simples Estilo Mini -->
-                            <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px solid var(--gold-border); text-align:center;">
-                                <p style="font-size:12px; color:var(--gold-accent); margin-bottom:8px;" id="nowPlayingTitle">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
-                                <div style="display:flex; justify-content:center; gap:8px;">
-                                    <button class="btn-pill-gold" style="padding:6px 14px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
-                                    <button class="btn-danger-pill" style="padding:6px 14px;" onclick="stopGlobalAudio()">⏹️ Parar</button>
-                                </div>
+                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; border:1px solid var(--gold-border); text-align:center;">
+                            <p style="font-size:12px; color:var(--gold-accent); margin-bottom:8px;">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
+                            <div style="display:flex; justify-content:center; gap:8px;">
+                                <button class="btn-pill-gold" style="padding:6px 14px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
+                                <button class="btn-danger-pill" style="padding:6px 14px;" onclick="stopGlobalAudio()">⏹️ Parar</button>
                             </div>
                         </div>
+                    </div>
 
-                        <div style="margin-top:14px; text-align:center;">
-                            <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
-                        </div>
+                    <div style="margin-top:14px; text-align:center;">
+                        <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
                     </div>
                 `,
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
                     {
-                        label: 'Salvar Alterações',
+                        label: 'Salvar',
                         primary: true,
                         onClick: async () => {
                             const name = document.getElementById('obName').value.trim();
@@ -1617,23 +1322,14 @@
 
                             const avatarInput = document.getElementById('obAvatarFile');
                             if (avatarInput.files && avatarInput.files[0]) {
-                                const reader = new FileReader();
-                                reader.onload = async (e) => {
-                                    appState.user.avatar = e.target.result;
-                                    await saveUserDataToFirestore();
-                                    saveLocal();
-                                    applyUserTheme();
-                                    renderAll();
-                                    closeUmbrellaModal();
-                                };
-                                reader.readAsDataURL(avatarInput.files[0]);
-                            } else {
-                                await saveUserDataToFirestore();
-                                saveLocal();
-                                applyUserTheme();
-                                renderAll();
-                                closeUmbrellaModal();
+                                const compressedAvatar = await compressImageNative(avatarInput.files[0], 250, 0.75);
+                                appState.user.avatar = compressedAvatar;
                             }
+                            await saveUserDataToFirestore();
+                            saveLocal();
+                            applyUserTheme();
+                            renderAll();
+                            closeUmbrellaModal();
                         }
                     }
                 ]
@@ -1649,22 +1345,17 @@
                     audioUrl: appState.user.audioUrl,
                     audioTitle: appState.user.audioTitle
                 }, { merge: true });
-            } catch (e) { console.error("Erro ao salvar dados:", e); }
+            } catch (e) { console.error(e); }
         }
 
         window.applyCustomAudioLink = async function() {
-            const linkInput = document.getElementById('customAudioLinkInput');
-            const url = linkInput.value.trim();
-            if (!url) {
-                alert('Cole um link válido.');
-                return;
-            }
+            const url = document.getElementById('customAudioLinkInput').value.trim();
+            if (!url) return;
             appState.user.audioUrl = url;
             appState.user.audioTitle = 'Mídia do Muka Ativa';
             await saveUserDataToFirestore();
             saveLocal();
             playAudioUrl(url);
-            alert('Link do Muka salvo e tocando!');
             openProfileModal();
         };
 
@@ -1676,7 +1367,7 @@
             audioEl.loop = true;
             audioEl.play().then(() => {
                 profileBtn.classList.add('playing');
-            }).catch(e => { console.log("Autoplay bloqueado", e); });
+            }).catch(() => {});
         }
 
         window.toggleGlobalAudioPlay = function() {
@@ -1709,40 +1400,40 @@
             openProfileModal();
         };
 
-        // FUNÇÃO ATIVADA PARA VISITAR O PERFIL DE ALGUÉM
         window.visitUserProfile = async function(authorUid, authorName) {
             if (!authorUid) {
-                alert(`Perfil de ${authorName}`);
+                showUmbrellaModal({ title: authorName, htmlBody: 'Perfil de usuário Umbrella.' });
                 return;
             }
             try {
                 const userDoc = await getDoc(doc(db, "users", authorUid));
-                if (userDoc.exists()) {
-                    const uData = userDoc.data();
-                    if (uData.audioUrl) {
-                        playAudioUrl(uData.audioUrl);
-                        alert(`🎧 Entrando no perfil de ${authorName}. Tocando trilha sonora/Muka.`);
-                    } else {
-                        alert(`Perfil de ${authorName} visitado (Sem mídia ativa).`);
-                    }
+                if (userDoc.exists() && userDoc.data().audioUrl) {
+                    playAudioUrl(userDoc.data().audioUrl);
+                    showUmbrellaModal({ title: `🎧 Perfil de ${authorName}`, htmlBody: 'Tocando a trilha sonora / Muka deste perfil!' });
                 } else {
-                    alert(`Perfil de ${authorName}`);
+                    showUmbrellaModal({ title: `Perfil de ${authorName}`, htmlBody: 'Este usuário não possui trilha sonora ativa no momento.' });
                 }
-            } catch (e) { alert(`Perfil de ${authorName}`); }
+            } catch (e) {
+                showUmbrellaModal({ title: authorName, htmlBody: 'Perfil visitado.' });
+            }
         };
 
+        /* SELETOR NATIVO DO CELULAR COM POP-UP BONITINHO */
         window.openMediaActionSheet = function () {
             requireAuthForAction(() => {
                 showUmbrellaModal({
                     title: 'Adicionar Mídia ☔',
                     htmlBody: `
-                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Escolha como deseja adicionar sua foto, vídeo ou arquivo:</p>
+                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Escolha usando os recursos nativos do seu celular:</p>
                         <div style="display:flex; flex-direction:column; gap:10px;">
                             <button class="btn-gold" onclick="closeUmbrellaModal(); document.getElementById('cameraDirectInput').click();">
-                                📸 Tirar Foto / Gravar Vídeo
+                                📸 Câmera Nativa (Foto)
+                            </button>
+                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeUmbrellaModal(); document.getElementById('videoDirectInput').click();">
+                                🎥 Câmera Nativa (Gravar Vídeo)
                             </button>
                             <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeUmbrellaModal(); document.getElementById('galleryDirectInput').click();">
-                                🖼️ Escolher da Galeria (Fotos e Vídeos)
+                                🖼️ Galeria Nativa (Fotos e Vídeos)
                             </button>
                         </div>
                     `,
@@ -1751,164 +1442,87 @@
             });
         };
 
-        window.handleMediaSelected = function (event) {
+        /* COMPRESSÃO LEVE E RÁPIDA PARA NÃO TRAVAR O ENVIO */
+        function compressImageNative(file, maxWidth = 800, quality = 0.72) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxWidth) {
+                            h = Math.round((h * maxWidth) / w);
+                            w = maxWidth;
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        /* VISUALIZADOR NATIVO DE FOTO E VÍDEO ANTES DE ENVIAR */
+        window.handleMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
             currentFileName = file.name || `midia_${Date.now()}`;
-            currentAttachedFileObj = file;
             const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp)$/i.test(currentFileName);
 
             if (isVideo) {
-                if (currentAttachedMedia && currentAttachedMedia.startsWith('blob:')) {
-                    URL.revokeObjectURL(currentAttachedMedia);
+                if (file.size > 12 * 1024 * 1024) {
+                    showUmbrellaModal({ title: 'Vídeo Muito Grande', htmlBody: 'Escolha um vídeo mais curto (até 12MB) para enviar rápido pelo celular.' });
+                    return;
                 }
-                const videoBlobUrl = URL.createObjectURL(file);
-                currentAttachedMedia = videoBlobUrl;
-                currentAttachedType = 'video';
-                document.getElementById('mediaPreviewName').textContent = `🎬 Vídeo: ${currentFileName}`;
-                document.getElementById('reopenEditorBtn').style.display = 'none';
-                document.getElementById('mediaPreviewStrip').style.display = 'flex';
-
-                showUmbrellaModal({
-                    title: 'Pré-visualização do Vídeo 🎬',
-                    htmlBody: `
-                        <div style="width:100%; max-height:300px; display:flex; justify-content:center; align-items:center; background:#000; border-radius:12px; overflow:hidden;">
-                            <video src="${videoBlobUrl}" controls playsinline style="max-width:100%; max-height:280px;"></video>
-                        </div>
-                        <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Vídeo pronto! Clique em OK e depois na setinha ➤ para enviar rapidamente.</p>
-                    `,
-                    buttons: [{ label: 'OK / Concluir', primary: true, onClick: closeUmbrellaModal }]
-                });
-            } else {
                 const reader = new FileReader();
                 reader.onload = (e) => {
-                    openPhotoStudio(e.target.result);
+                    currentAttachedDataUrl = e.target.result;
+                    currentAttachedType = 'video';
+                    document.getElementById('mediaPreviewName').textContent = `🎬 Vídeo pronto`;
+                    document.getElementById('mediaPreviewStrip').style.display = 'flex';
+                    previewAttachedMediaNative();
                 };
                 reader.readAsDataURL(file);
-            }
-        };
-
-        window.openPhotoStudio = function (dataUrl) {
-            const img = new Image();
-            img.onload = () => {
-                rawEditorImageObj = img;
-                resetStudioSettings(false);
-                document.getElementById('pinterestStudioModal').classList.add('open');
-                updateStudioRender();
-            };
-            img.src = dataUrl;
-        };
-
-        window.openPhotoStudioWithCurrent = function () {
-            if (currentAttachedMedia && currentAttachedType === 'image') {
-                openPhotoStudio(currentAttachedMedia);
-            }
-        };
-
-        window.closePhotoStudio = function () {
-            document.getElementById('pinterestStudioModal').classList.remove('open');
-            document.getElementById('cameraDirectInput').value = '';
-            document.getElementById('galleryDirectInput').value = '';
-        };
-
-        window.setStudioFilter = function (preset, btnEl) {
-            editorFilterPreset = preset;
-            document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
-            if (btnEl) btnEl.classList.add('active');
-            updateStudioRender();
-        };
-
-        window.rotateStudioImage = function () {
-            editorRotation = (editorRotation + 90) % 360;
-            updateStudioRender();
-        };
-
-        window.resetStudioSettings = function (shouldRender = true) {
-            editorRotation = 0;
-            editorFilterPreset = 'none';
-            document.getElementById('sliderBrightness').value = 100;
-            document.getElementById('sliderContrast').value = 100;
-            document.getElementById('sliderSaturate').value = 100;
-            document.getElementById('sliderZoom').value = 100;
-            document.querySelectorAll('.filter-chip').forEach((c, idx) => {
-                c.classList.toggle('active', idx === 0);
-            });
-            if (shouldRender) updateStudioRender();
-        };
-
-        window.updateStudioRender = function () {
-            if (!rawEditorImageObj) return;
-            const canvas = document.getElementById('editorCanvas');
-            const ctx = canvas.getContext('2d');
-
-            const b = document.getElementById('sliderBrightness').value;
-            const c = document.getElementById('sliderContrast').value;
-            const s = document.getElementById('sliderSaturate').value;
-            const z = document.getElementById('sliderZoom').value / 100;
-
-            document.getElementById('valBrightness').textContent = b + '%';
-            document.getElementById('valContrast').textContent = c + '%';
-            document.getElementById('valSaturate').textContent = s + '%';
-            document.getElementById('valZoom').textContent = z.toFixed(1) + 'x';
-
-            const isRotated = editorRotation === 90 || editorRotation === 270;
-            const origW = rawEditorImageObj.width;
-            const origH = rawEditorImageObj.height;
-
-            const maxDim = 1080;
-            let scale = 1;
-            if (Math.max(origW, origH) > maxDim) {
-                scale = maxDim / Math.max(origW, origH);
-            }
-
-            const targetW = (isRotated ? origH : origW) * scale;
-            const targetH = (isRotated ? origW : origH) * scale;
-
-            canvas.width = targetW;
-            canvas.height = targetH;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            let presetCss = '';
-            if (editorFilterPreset === 'golden') presetCss = 'sepia(25%) hue-rotate(-10deg) ';
-            else if (editorFilterPreset === 'drama') presetCss = 'contrast(115%) saturate(85%) brightness(95%) ';
-            else if (editorFilterPreset === 'soft') presetCss = 'brightness(108%) contrast(92%) saturate(110%) ';
-            else if (editorFilterPreset === 'bw') presetCss = 'grayscale(100%) contrast(115%) ';
-
-            ctx.filter = `${presetCss}brightness(${b}%) contrast(${c}%) saturate(${s}%)`;
-
-            ctx.save();
-            ctx.translate(canvas.width / 2, canvas.height / 2);
-            ctx.rotate((editorRotation * Math.PI) / 180);
-            ctx.scale(z, z);
-
-            const drawW = origW * scale;
-            const drawH = origH * scale;
-            ctx.drawImage(rawEditorImageObj, -drawW / 2, -drawH / 2, drawW, drawH);
-            ctx.restore();
-        };
-
-        window.applyPhotoStudioChanges = function () {
-            const canvas = document.getElementById('editorCanvas');
-            canvas.toBlob((blob) => {
-                currentAttachedFileObj = new File([blob], currentFileName || 'editado.jpg', { type: 'image/jpeg' });
-                currentAttachedMedia = canvas.toDataURL('image/jpeg', 0.9);
+            } else {
+                const compressedDataUrl = await compressImageNative(file, 800, 0.72);
+                currentAttachedDataUrl = compressedDataUrl;
                 currentAttachedType = 'image';
-                document.getElementById('mediaPreviewName').textContent = `📷 Foto Editada: ${currentFileName || 'imagem.jpg'}`;
-                document.getElementById('reopenEditorBtn').style.display = 'inline-block';
+                document.getElementById('mediaPreviewName').textContent = `📷 Foto pronta`;
                 document.getElementById('mediaPreviewStrip').style.display = 'flex';
-                closePhotoStudio();
-            }, 'image/jpeg', 0.9);
+                previewAttachedMediaNative();
+            }
+        };
+
+        window.previewAttachedMediaNative = function () {
+            if (!currentAttachedDataUrl) return;
+            const mediaHtml = currentAttachedType === 'video'
+                ? `<video src="${currentAttachedDataUrl}" controls playsinline autoplay style="width:100%; max-height:320px; border-radius:12px; background:#000;"></video>`
+                : `<img src="${currentAttachedDataUrl}" style="width:100%; max-height:320px; object-fit:contain; border-radius:12px;">`;
+
+            showUmbrellaModal({
+                title: 'Pré-visualização antes de enviar',
+                htmlBody: `
+                    ${mediaHtml}
+                    <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Tudo certo? Clique em OK e depois aperte a setinha ➤ para postar!</p>
+                `,
+                buttons: [
+                    { label: 'Trocar', primary: false, onClick: () => { clearAttachedMedia(); closeUmbrellaModal(); openMediaActionSheet(); } },
+                    { label: 'OK, Pronto', primary: true, onClick: closeUmbrellaModal }
+                ]
+            });
         };
 
         window.clearAttachedMedia = function () {
-            if (currentAttachedMedia && currentAttachedMedia.startsWith('blob:')) {
-                URL.revokeObjectURL(currentAttachedMedia);
-            }
-            currentAttachedFileObj = null;
-            currentAttachedMedia = null;
+            currentAttachedDataUrl = null;
             currentAttachedType = null;
             document.getElementById('cameraDirectInput').value = '';
+            document.getElementById('videoDirectInput').value = '';
             document.getElementById('galleryDirectInput').value = '';
             document.getElementById('mediaPreviewStrip').style.display = 'none';
         };
@@ -1935,19 +1549,12 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             const composerInput = document.getElementById('mainComposerInput');
-            if (viewName === 'feed') {
-                composerInput.placeholder = "Escreva no Umbrella... (use * para marcar alguém)";
-            } else if (viewName === 'desafio') {
-                composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
-            } else if (viewName === 'fandom') {
-                composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
-            } else if (viewName === 'inside-fandom') {
-                composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
-            } else if (viewName === 'aconchego') {
-                composerInput.placeholder = "Escreva no seu Aconchego pessoal...";
-            } else if (viewName === 'amigos') {
-                composerInput.placeholder = "Mande uma mensagem para seus amigos...";
-            }
+            if (viewName === 'feed') composerInput.placeholder = "Escreva no Umbrella... (use * para marcar alguém)";
+            else if (viewName === 'desafio') composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
+            else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
+            else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
+            else if (viewName === 'aconchego') composerInput.placeholder = "Escreva no seu Aconchego pessoal...";
+            else if (viewName === 'amigos') composerInput.placeholder = "Mande uma mensagem para seus amigos...";
 
             renderAll();
         };
@@ -1978,14 +1585,14 @@
             });
         };
 
-        // ENVIO DE POSTAGEM RÁPIDO E DIRETO (SEM BARRA DE PORCENTAGEM QUE TRAVA)
+        /* ENVIO DIRETO NO FIRESTORE SEM TRAVAR NA AMPULHETA */
         window.submitPost = async function () {
             if (isUploadingPost) return;
             requireAuthForAction(async () => {
                 const input = document.getElementById('mainComposerInput');
                 const sendBtn = document.getElementById('mainSendBtn');
                 const text = input.value.trim();
-                if (!text && !currentAttachedFileObj) return;
+                if (!text && !currentAttachedDataUrl) return;
 
                 const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
                 const isAconchegoView = document.getElementById('view-aconchego').classList.contains('active');
@@ -2014,20 +1621,6 @@
                 sendBtn.textContent = '⏳';
 
                 try {
-                    let downloadUrl = '';
-                    let mediaType = '';
-
-                    if (currentAttachedFileObj) {
-                        const isVideo = currentAttachedType === 'video' || currentAttachedFileObj.type.startsWith('video/');
-                        const safeExt = isVideo ? 'mp4' : 'jpg';
-                        const safeName = `${Date.now()}_${Math.floor(Math.random()*1000)}.${safeExt}`;
-                        const storageRef = ref(storage, `posts_media/${safeName}`);
-                        
-                        const snapshot = await uploadBytes(storageRef, currentAttachedFileObj);
-                        downloadUrl = await getDownloadURL(snapshot.ref);
-                        mediaType = isVideo ? 'video' : 'image';
-                    }
-
                     const targetFandom = isInsideFandomView ? activeFandomFilter : 'Geral';
 
                     await addDoc(collection(db, "posts"), {
@@ -2035,8 +1628,8 @@
                         authorUid: appState.user.uid,
                         avatar: appState.user.avatar,
                         text: text,
-                        media: downloadUrl,
-                        mediaType: mediaType,
+                        media: currentAttachedDataUrl || '',
+                        mediaType: currentAttachedType || '',
                         likes: 0,
                         likedByMe: false,
                         fandom: targetFandom,
@@ -2051,7 +1644,7 @@
                     saveLocal();
                     renderAll();
                 } catch (e) {
-                    showUmbrellaModal({ title: 'Erro ao Enviar Mídia', htmlBody: `Não foi possível enviar: ${e.message}` });
+                    showUmbrellaModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
                 } finally {
                     isUploadingPost = false;
                     sendBtn.disabled = false;
@@ -2074,7 +1667,9 @@
                                 try {
                                     await deleteDoc(doc(db, "posts", postId));
                                     closeUmbrellaModal();
-                                } catch (e) { alert("Erro ao apagar: " + e.message); }
+                                } catch (e) {
+                                    showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+                                }
                             }
                         }
                     ]
@@ -2100,20 +1695,10 @@
                 const newLikes = (post.likes || 0) + (newLiked ? 1 : -1);
 
                 try {
-                    const postRef = doc(db, "posts", postId);
-                    await updateDoc(postRef, { likes: newLikes, likedByMe: newLiked });
+                    await updateDoc(doc(db, "posts", postId), { likes: newLikes, likedByMe: newLiked });
                     saveLocal();
-                } catch (e) { console.error("Erro ao curtir:", e); }
+                } catch (e) { console.error(e); }
             });
-        };
-
-        window.replyToUserInComment = function (authorName) {
-            const input = document.getElementById('mainComposerInput');
-            if (input) {
-                input.value = `*${authorName} `;
-                input.focus();
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
         };
 
         window.submitInlineComment = async function (postId) {
@@ -2128,7 +1713,9 @@
                 try {
                     await updateDoc(doc(db, "posts", postId), { comments });
                     input.value = '';
-                } catch (e) { alert("Erro ao comentar: " + e.message); }
+                } catch (e) {
+                    showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+                }
             });
         };
 
@@ -2139,7 +1726,7 @@
             comments.splice(commentIndex, 1);
             try {
                 await updateDoc(doc(db, "posts", postId), { comments });
-            } catch (e) { alert("Erro ao apagar comentário: " + e.message); }
+            } catch (e) { console.error(e); }
         };
 
         window.openNotificationsModal = function () {
@@ -2158,11 +1745,10 @@
                             primary: false,
                             onClick: async () => {
                                 try {
-                                    const fRef = doc(db, "fandoms", notif.fandomId);
-                                    await updateDoc(fRef, {
+                                    await updateDoc(doc(db, "fandoms", notif.fandomId), {
                                         pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
                                     });
-                                } catch (e) { console.error(e); }
+                                } catch (e) {}
                                 closeUmbrellaModal();
                             }
                         },
@@ -2171,12 +1757,11 @@
                             primary: true, 
                             onClick: async () => { 
                                 try {
-                                    const fRef = doc(db, "fandoms", notif.fandomId);
-                                    await updateDoc(fRef, {
+                                    await updateDoc(doc(db, "fandoms", notif.fandomId), {
                                         members: arrayUnion(notif.requesterUid),
                                         pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
                                     });
-                                } catch (e) { alert("Erro ao aprovar: " + e.message); }
+                                } catch (e) {}
                                 closeUmbrellaModal(); 
                             } 
                         }
@@ -2201,7 +1786,7 @@
                                 <input type="color" id="newFandomBorderColor" value="#fbbf24" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
                             </div>
                             <div class="form-group">
-                                <label class="form-label">Cor da Bolinha / Emblema</label>
+                                <label class="form-label">Cor da Bolinha</label>
                                 <input type="color" id="newFandomDotColor" value="#fbbf24" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
                             </div>
                         </div>
@@ -2231,9 +1816,11 @@
                                                 createdAt: serverTimestamp()
                                             });
                                             closeUmbrellaModal();
-                                        } catch (e) { alert("Erro ao criar fandom: " + e.message); }
+                                        } catch (e) {
+                                            showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+                                        }
                                     } else {
-                                        alert("Já existe um fandom com esse nome!");
+                                        showUmbrellaModal({ title: 'Aviso', htmlBody: 'Já existe um fandom com esse nome!' });
                                     }
                                 }
                             }
@@ -2278,8 +1865,7 @@
                                     primary: true,
                                     onClick: async () => {
                                         try {
-                                            const fRef = doc(db, "fandoms", fandomObj.id);
-                                            await updateDoc(fRef, {
+                                            await updateDoc(doc(db, "fandoms", fandomObj.id), {
                                                 pendingRequests: arrayUnion({
                                                     uid: appState.user.uid,
                                                     name: appState.user.name
@@ -2288,10 +1874,10 @@
                                             closeUmbrellaModal();
                                             showUmbrellaModal({
                                                 title: 'Solicitação Enviada! ✅',
-                                                htmlBody: `Seu pedido para entrar em <strong>${fandomName}</strong> foi enviado ao administrador.`
+                                                htmlBody: `Seu pedido para entrar em <strong>${fandomName}</strong> foi enviado.`
                                             });
                                         } catch (e) {
-                                            alert("Erro ao enviar solicitação: " + e.message);
+                                            showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
                                         }
                                     }
                                 }
@@ -2314,7 +1900,6 @@
                 htmlBody: `
                     <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Gerencie as configurações deste espaço particular:</p>
                     ${adminHtml}
-                    <button class="btn-pill-gold" style="width:100%; margin-bottom:8px;" onclick="closeUmbrellaModal(); openCreateSubgroupModal('${activeFandomFilter}')">✨ Criar Subgrupo</button>
                     ${deleteHtml}
                 `,
                 buttons: [{ label: 'Fechar', primary: false, onClick: closeUmbrellaModal }]
@@ -2327,7 +1912,7 @@
 
             const membersMap = {};
             postsFromFirebase.filter(p => p.fandom === fandomName).forEach(p => {
-                if (p.authorUid && p.author) { membersMap[p.authorUid] = p.author; }
+                if (p.authorUid && p.author) membersMap[p.authorUid] = p.author;
             });
             if (fandomObj.members) {
                 fandomObj.members.forEach(mUid => {
@@ -2359,10 +1944,7 @@
 
             showUmbrellaModal({
                 title: `Membros & Admins • ${fandomName}`,
-                htmlBody: `
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Gerencie quem tem acesso e quem administra este espaço:</p>
-                    <div style="max-height:220px; overflow-y:auto;">${membersHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhum membro ativo ainda.</p>'}</div>
-                `,
+                htmlBody: `<div style="max-height:220px; overflow-y:auto;">${membersHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhum membro ativo ainda.</p>'}</div>`,
                 buttons: [{ label: 'Concluir', primary: true, onClick: closeUmbrellaModal }]
             });
         };
@@ -2370,69 +1952,21 @@
         window.kickMember = async function(fandomId, fandomName, uid) {
             const fandomObj = appState.fandoms.find(f => f.name === fandomName);
             if (!fandomObj || fandomObj.creatorUid === uid) return;
-            try {
-                await updateDoc(doc(db, "fandoms", fandomId), {
-                    members: arrayRemove(uid),
-                    admins: arrayRemove(uid)
-                });
-                openManageAdminsModal(fandomName);
-            } catch (e) { alert("Erro ao remover membro: " + e.message); }
+            await updateDoc(doc(db, "fandoms", fandomId), { members: arrayRemove(uid), admins: arrayRemove(uid) });
+            openManageAdminsModal(fandomName);
         };
 
         window.promoteAdmin = async function(fandomId, fandomName, uid) {
-            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
-            if (fandomObj) {
-                try {
-                    await updateDoc(doc(db, "fandoms", fandomId), {
-                        admins: arrayUnion(uid),
-                        members: arrayUnion(uid)
-                    });
-                    openManageAdminsModal(fandomName);
-                } catch (e) { alert("Erro ao promover: " + e.message); }
-            }
+            await updateDoc(doc(db, "fandoms", fandomId), { admins: arrayUnion(uid), members: arrayUnion(uid) });
+            openManageAdminsModal(fandomName);
         };
 
         window.demoteAdmin = async function(fandomId, fandomName, uid) {
             const fandomObj = appState.fandoms.find(f => f.name === fandomName);
-            if (fandomObj && fandomObj.admins) {
-                if (fandomObj.creatorUid === uid) {
-                    alert("O criador principal não pode ser removido como admin.");
-                    return;
-                }
-                try {
-                    await updateDoc(doc(db, "fandoms", fandomId), { admins: arrayRemove(uid) });
-                    openManageAdminsModal(fandomName);
-                } catch (e) { alert("Erro ao remover admin: " + e.message); }
+            if (fandomObj && fandomObj.creatorUid !== uid) {
+                await updateDoc(doc(db, "fandoms", fandomId), { admins: arrayRemove(uid) });
+                openManageAdminsModal(fandomName);
             }
-        };
-
-        window.openCreateSubgroupModal = function (fandomName) {
-            showUmbrellaModal({
-                title: `Criar Subgrupo em ${fandomName}`,
-                htmlBody: `
-                    <div class="form-group">
-                        <label class="form-label">Nome do Subgrupo</label>
-                        <input type="text" id="subGroupNameInput" class="glass-input" placeholder="Ex: Fotos e Memes">
-                    </div>
-                `,
-                buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
-                    {
-                        label: 'Criar Subgrupo',
-                        primary: true,
-                        onClick: () => {
-                            const subName = document.getElementById('subGroupNameInput').value.trim();
-                            if (subName) {
-                                if (!appState.subgroups[fandomName]) appState.subgroups[fandomName] = [];
-                                appState.subgroups[fandomName].push(subName);
-                                saveLocal();
-                                alert(`Subgrupo "${subName}" criado com sucesso!`);
-                            }
-                            closeUmbrellaModal();
-                        }
-                    }
-                ]
-            });
         };
 
         window.confirmDeleteFandom = function (fandomId, fandomName) {
@@ -2445,12 +1979,9 @@
                         label: 'Sim, Apagar',
                         primary: true,
                         onClick: async () => {
-                            try {
-                                await deleteDoc(doc(db, "fandoms", fandomId));
-                                delete appState.subgroups[fandomName];
-                                closeCurrentFandom();
-                                closeUmbrellaModal();
-                            } catch (e) { alert("Erro ao excluir fandom: " + e.message); }
+                            await deleteDoc(doc(db, "fandoms", fandomId));
+                            closeCurrentFandom();
+                            closeUmbrellaModal();
                         }
                     }
                 ]
@@ -2466,7 +1997,6 @@
             showUmbrellaModal({
                 title: '✨ Painel de Edição do Desafio Semanal',
                 htmlBody: `
-                    <p style="font-size:13px; color:var(--text-muted); margin-bottom:12px;">Modifique a diretriz oficial do desafio semanal:</p>
                     <div class="form-group"><label class="form-label">Diretriz / Tema</label><input type="text" id="admDirective" class="glass-input" value="${appState.directive}"></div>
                 `,
                 buttons: [
@@ -2476,17 +2006,20 @@
             });
         }
 
+        /* VISUALIZADOR NATIVO DO CELULAR AO TOCAR NA FOTO OU VÍDEO */
         window.openLightbox = function (src, type, caption = '') {
             if (!src) return;
-            const lb = document.getElementById('pinterestLightbox');
+            const lb = document.getElementById('nativeMediaLightbox');
             const container = document.getElementById('lightboxMediaContainer');
             document.getElementById('lightboxCaption').textContent = caption;
-            container.innerHTML = type === 'video' ? `<video src="${src}" class="lightbox-media" controls autoplay></video>` : `<img src="${src}" class="lightbox-media" alt="">`;
+            container.innerHTML = type === 'video'
+                ? `<video src="${src}" class="lightbox-media" controls autoplay playsinline></video>`
+                : `<img src="${src}" class="lightbox-media" alt="">`;
             lb.classList.add('open');
         };
 
         window.closeLightbox = function () {
-            document.getElementById('pinterestLightbox').classList.remove('open');
+            document.getElementById('nativeMediaLightbox').classList.remove('open');
             document.getElementById('lightboxMediaContainer').innerHTML = '';
         };
 
@@ -2498,14 +2031,14 @@
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
-            if (appState.user.audioUrl) {
-                playAudioUrl(appState.user.audioUrl);
-            }
+            if (appState.user.audioUrl) playAudioUrl(appState.user.audioUrl);
         }
 
         function renderPostCardHTML(post, isAconchegoTab = false) {
             const mediaHtml = post.media
-                ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls playsinline></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
+                ? (post.mediaType === 'video'
+                    ? `<video src="${post.media}" class="post-media" controls playsinline preload="metadata"></video>`
+                    : `<img src="${post.media}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
 
             let isAdmin = false;
@@ -2524,19 +2057,19 @@
                 </div>
             `).join('');
 
-            const showDelete = (isAconchegoTab || post.fandom !== 'Geral') && appState.user.loggedIn && post.author === appState.user.name;
+            const showDelete = appState.user.loggedIn && post.authorUid === appState.user.uid;
 
             return `
                 <article class="post-card-clean">
                     <div class="post-header">
-                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}')" title="Visitar perfil e ouvir trilha sonora">
+                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}')">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">
                                     ${post.author}
                                     ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
                                 </div>
-                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)} (🎵 Ouvir perfil)</div>
+                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)}</div>
                             </div>
                         </div>
                         ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar">✕</button>` : ''}
@@ -2547,7 +2080,7 @@
 
                     <div class="post-actions-clean">
                         <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
-                            <span class="umbrella-icon-css">☔</span>
+                            <span>☔</span>
                             <span>${post.likes || 0}</span>
                         </button>
                     </div>
@@ -2556,7 +2089,7 @@
                         ${commentsHtml}
                         <div class="comment-input-row">
                             <input type="text" id="inlineCommentInput_${post.id}" class="comment-input-clean" placeholder="Responder..." onkeypress="if(event.key==='Enter') submitInlineComment('${post.id}')">
-                            <button class="btn-pill-gold" style="padding:3px 8px; font-size:10.5px;" onclick="submitInlineComment('${post.id}')">Enviar</button>
+                            <button class="btn-pill-gold" style="padding:3px 10px; font-size:11px;" onclick="submitInlineComment('${post.id}')">Enviar</button>
                         </div>
                     </div>
                 </article>
@@ -2588,16 +2121,12 @@
                 fandomsGrid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column: 1 / -1;">Nenhum Fandom particular criado ainda. Clique em "+ Criar Fandom" para começar!</div>`;
             } else {
                 fandomsGrid.innerHTML = appState.fandoms.map(f => {
-                    const fname = f.name;
-                    const borderCol = f.borderColor || '#fbbf24';
-                    const dotCol = f.dotColor || '#fbbf24';
                     const unlocked = hasFandomAccess(f);
-
                     return `
-                        <div class="glass-panel fandom-box-card" style="border-color: ${borderCol};" onclick="selectFandom('${fname}')">
+                        <div class="glass-panel fandom-box-card" style="border-color: ${f.borderColor || '#fbbf24'};" onclick="selectFandom('${f.name}')">
                             <h4 style="color: var(--gold-accent);">
-                                <span class="fandom-dot" style="background-color: ${dotCol}; color: ${dotCol};"></span>
-                                ${fname}
+                                <span class="fandom-dot" style="background-color: ${f.dotColor || '#fbbf24'};"></span>
+                                ${f.name}
                             </h4>
                             <p>${unlocked ? '🔓 Acesso Liberado' : '🔒 Solicitar Entrada'}</p>
                         </div>
@@ -2612,71 +2141,34 @@
                     return;
                 }
                 const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
-                const container = document.getElementById('insideFandomFeedList');
-                container.innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p, false)).join('') : `<div class="empty-state-box">Este fandom está privadamente silencioso. Compartilhe a primeira foto linda que você achou!</div>`;
+                document.getElementById('insideFandomFeedList').innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p, false)).join('') : `<div class="empty-state-box">Este fandom está silencioso. Compartilhe algo!</div>`;
             }
 
             const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && !p.isAconchego && (!p.fandom || p.fandom === 'Geral'));
-            document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar!</div>`;
+            document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra abaixo para compartilhar!</div>`;
 
             const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
             document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
 
             const aconchegoPosts = postsFromFirebase.filter(p => p.isAconchego && p.author === appState.user.name);
-            document.getElementById('aconchegoHistoryList').innerHTML = aconchegoPosts.length > 0 ? aconchegoPosts.map(p => renderPostCardHTML(p, true)).join('') : `<div class="glass-panel empty-state-box">Seu espaço Aconchego está vazio.<br>Escreva algo usando o campo abaixo nesta aba!</div>`;
+            document.getElementById('aconchegoHistoryList').innerHTML = aconchegoPosts.length > 0 ? aconchegoPosts.map(p => renderPostCardHTML(p, true)).join('') : `<div class="glass-panel empty-state-box">Seu espaço Aconchego está vazio.</div>`;
 
-            document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0 ? appState.friends.map(f => `
-                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${f.avatar}" style="width:48px; height:48px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
-                        <div>
-                            <div style="font-size:14px; font-weight:700;">${f.name}</div>
-                            <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
-                        </div>
+            document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
+                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; gap:10px;">
+                    <img src="${f.avatar}" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                    <div>
+                        <div style="font-size:14px; font-weight:700;">${f.name}</div>
+                        <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
                     </div>
                 </div>
-            `).join('') : `<div class="glass-panel empty-state-box">Sua lista de amigos está vazia.</div>`;
-        }
-
-        const carousel = document.getElementById('carouselWrapper');
-        if (carousel) {
-            carousel.addEventListener('wheel', (evt) => {
-                if (window.innerWidth <= 768) {
-                    evt.preventDefault();
-                    carousel.scrollLeft += evt.deltaY;
-                }
-            });
-
-            let isDown = false;
-            let startX;
-            let scrollLeft;
-
-            carousel.addEventListener('mousedown', (e) => {
-                if (window.innerWidth > 768) return;
-                isDown = true;
-                carousel.classList.add('active');
-                startX = e.pageX - carousel.offsetLeft;
-                scrollLeft = carousel.scrollLeft;
-            });
-            carousel.addEventListener('mouseleave', () => { isDown = false; });
-            carousel.addEventListener('mouseup', () => { isDown = false; });
-            carousel.addEventListener('mousemove', (e) => {
-                if (!isDown || window.innerWidth > 768) return;
-                e.preventDefault();
-                const x = e.pageX - carousel.offsetLeft;
-                const walk = (x - startX) * 2;
-                carousel.scrollLeft = scrollLeft - walk;
-            });
+            `).join('');
         }
 
         window.addEventListener('scroll', () => {
             const logoSec = document.getElementById('logoSection');
-            if (window.scrollY > 25) {
-                logoSec.classList.add('scrolled');
-            } else {
-                logoSec.classList.remove('scrolled');
-            }
-        });
+            if (window.scrollY > 25) logoSec.classList.add('scrolled');
+            else logoSec.classList.remove('scrolled');
+        }, { passive: true });
 
         applyUserTheme();
         initFirebaseSync();
