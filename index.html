@@ -32,6 +32,7 @@
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
+        /* FUNDO PNG FIXO EM TELA CHEIA */
         html, body {
             width: 100%;
             min-height: 100vh;
@@ -102,6 +103,7 @@
             top: 0;
         }
 
+        /* BOLINHA DO PERFIL COM ANIMAÇÃO SPOTIFY */
         .header-left-btn {
             position: relative;
             width: 38px;
@@ -475,6 +477,7 @@
             line-height: 1.5;
         }
 
+        /* POSTAGEM LIMPA SEM CAIXA PESADA EM VOLTA */
         .post-card-clean {
             padding: 12px 0;
             border-bottom: 1px solid rgba(251, 191, 36, 0.15);
@@ -525,6 +528,7 @@
             display: block;
         }
 
+        /* COMENTÁRIOS E AÇÕES LIMPOS */
         .comments-section-clean {
             margin-top: 6px;
             display: flex;
@@ -929,6 +933,7 @@
             cursor: pointer;
         }
 
+        /* Barra de rolagem invisível/fina no modal de perfil */
         .profile-scrollable-content {
             max-height: 65vh;
             overflow-y: auto;
@@ -947,10 +952,10 @@
 </head>
 <body>
 
-    <!-- ELEMENTO DE ÁUDIO GLOBAL -->
+    <!-- ELEMENTO DE ÁUDIO / MÚSICA / MUKA -->
     <audio id="globalActiveAudio" preload="auto"></audio>
 
-    <!-- TELA DE LOGIN -->
+    <!-- TELA DE LOGIN / BLOQUEIO AO INTERAGIR -->
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
             <img src="./logo.png" alt="Umbrella" class="auth-logo">
@@ -981,11 +986,11 @@
         </button>
 
         <div class="search-balao-fininho">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário ou ID" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="*usuário" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
             <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
         </div>
 
-        <button class="droplet-btn" onclick="openNotificationsModal()" title="Notificações e Amizades">
+        <button class="droplet-btn" onclick="openNotificationsModal()" title="Notificações">
             💧
             <span class="droplet-badge" id="notifBadge">0</span>
         </button>
@@ -1000,7 +1005,7 @@
             </div>
         </div>
 
-        <!-- CARROSSEL -->
+        <!-- CARROSSEL / NAVEGAÇÃO -->
         <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
@@ -1023,6 +1028,7 @@
                 <span class="podium-label-clean" id="podiumLabel3">3º Pódio</span>
             </div>
 
+            <!-- Desafio do Dia -->
             <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
                     <span>☔ Desafio do Dia</span>
@@ -1033,6 +1039,7 @@
                 <span style="font-size:10px; color:var(--gold-accent);">Ver desafio ➔</span>
             </div>
 
+            <!-- Abas -->
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
                 <div class="tab-icon-free">
                     <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./guarda-chuva.png';">
@@ -1059,24 +1066,6 @@
         <main class="view-section active" id="view-feed">
             <div class="feed-list" id="mainFeedList"></div>
         </main>
-
-        <!-- TELA DE VISITA A PERFIL DE AMIGO -->
-        <section class="view-section" id="view-visit-profile">
-            <div class="glass-panel" style="padding:12px 16px; margin-bottom:14px; display:flex; align-items:center; justify-content:space-between;">
-                <div style="display:flex; align-items:center; gap:12px;">
-                    <img id="visitAvatar" src="./aconchego.png" style="width:44px; height:44px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover;">
-                    <div>
-                        <span style="font-size:11px; color:var(--text-muted); display:block;">Visitando o perfil de</span>
-                        <span id="visitUsername" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Usuário</span>
-                    </div>
-                </div>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn-pill-gold" id="visitAddFriendBtn" onclick="sendFriendRequestFromVisit()">Adicionar 🤝</button>
-                    <button class="btn-pill-gold" onclick="switchView('feed')">Voltar ↩</button>
-                </div>
-            </div>
-            <div class="feed-list" id="visitUserFeedList"></div>
-        </section>
 
         <!-- TELA 2: DESAFIO SEMANAL -->
         <section class="view-section" id="view-desafio">
@@ -1127,7 +1116,7 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS -->
+        <!-- TELA 3: FANDOMS (LISTA DE ENTRADA) -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms Particulares</span>
@@ -1140,7 +1129,7 @@
             <div class="fandoms-grid-container" id="fandomsGridContainer"></div>
         </section>
 
-        <!-- TELA 3.1: DENTRO DO FANDOM -->
+        <!-- TELA 3.1: DENTRO DO FANDOM (PORTA ABERTA) -->
         <section class="view-section" id="view-inside-fandom">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -1162,29 +1151,25 @@
         <!-- TELA 4: AMIGOS -->
         <section class="view-section" id="view-amigos">
             <div class="glass-panel section-header-bar">
-                <span class="section-title">Meus Amigos & Conexões</span>
+                <span class="section-title">Meus Amigos</span>
                 <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
-            </div>
-            <div class="glass-panel" style="padding:14px; margin-bottom:12px;">
-                <p style="font-size:12px; color:var(--text-muted); margin-bottom:8px;">Vamos ver juntos? Adicione sua colega buscando pelo nome ou ID no topo da tela para testar conversas e fandoms!</p>
             </div>
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
-        <!-- TELA 5: ACONCHEGO (GERENCIADOR DE ATIVIDADE & EXCLUSÃO) -->
+        <!-- TELA 5: ACONCHEGO -->
         <section class="view-section" id="view-aconchego">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meu Aconchego</span>
                 <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
-            <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px; padding:0 4px;">Aqui fica o registro de tudo o que você postou no Umbrella. Somente aqui você pode gerenciar e apagar suas publicações.</p>
             <div class="feed-list" id="aconchegoHistoryList"></div>
         </section>
 
     </div>
 
     <!-- BARRA DE POSTAGEM FLUTUANTE -->
-    <div class="floating-composer-wrapper" id="floatingComposerWrapper">
+    <div class="floating-composer-wrapper">
         <div class="glass-panel media-preview-strip" id="mediaPreviewStrip">
             <span id="mediaPreviewName">Mídia anexada</span>
             <div style="display:flex; gap:10px; align-items:center;">
@@ -1269,6 +1254,7 @@
         <p class="lightbox-caption" id="lightboxCaption"></p>
     </div>
 
+    <!-- SCRIPT FIREBASE E SISTEMA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import {
@@ -1317,7 +1303,7 @@
         const storage = getStorage(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v44';
+        const LOCAL_KEY = 'umbrella_clean_state_v41';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1336,8 +1322,9 @@
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             fandoms: [],
             subgroups: {},
-            friends: [],
-            friendRequests: [],
+            friends: [
+                { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
+            ],
             notifications: [],
             history: []
         };
@@ -1349,7 +1336,6 @@
         let currentFileName = '';
         let activeFandomFilter = null;
         let isUploadingPost = false;
-        let visitedProfileData = null;
 
         let rawEditorImageObj = null;
         let editorRotation = 0;
@@ -1367,7 +1353,7 @@
                     postsFromFirebase.push({ id: docSnap.id, ...docSnap.data() });
                 });
                 renderAll();
-            }, (error) => { console.error("Erro posts:", error); });
+            }, (error) => { console.error("Erro ao sincronizar posts:", error); });
 
             const qFandoms = query(collection(db, "fandoms"));
             onSnapshot(qFandoms, (snapshot) => {
@@ -1375,21 +1361,19 @@
                 snapshot.forEach((docSnap) => {
                     appState.fandoms.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                syncNotifications();
+                syncFandomNotifications();
                 renderAll();
-            }, (error) => { console.error("Erro fandoms:", error); });
+            }, (error) => { console.error("Erro ao sincronizar fandoms:", error); });
         }
 
-        function syncNotifications() {
+        function syncFandomNotifications() {
             if (!appState.user.loggedIn || !appState.user.uid) return;
-            const combinedNotifs = [];
-
-            // Notificações de Fandom
+            const fandomNotifs = [];
             appState.fandoms.forEach(f => {
                 const isAdminOrCreator = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
                 if (isAdminOrCreator && f.pendingRequests && f.pendingRequests.length > 0) {
                     f.pendingRequests.forEach(req => {
-                        combinedNotifs.push({
+                        fandomNotifs.push({
                             type: 'fandom_request',
                             fandomId: f.id,
                             fandomName: f.name,
@@ -1400,21 +1384,7 @@
                     });
                 }
             });
-
-            // Notificações de Amizade
-            if (appState.friendRequests && appState.friendRequests.length > 0) {
-                appState.friendRequests.forEach(req => {
-                    combinedNotifs.push({
-                        type: 'friend_request',
-                        requesterUid: req.uid,
-                        requesterName: req.name,
-                        requesterAvatar: req.avatar || './aconchego.png',
-                        text: `🤝 <strong>${req.name}</strong> quer ser seu amigo no Umbrella. Vamos ver juntos?`
-                    });
-                });
-            }
-
-            appState.notifications = combinedNotifs;
+            appState.notifications = fandomNotifs;
             updateNotifBadge();
         }
 
@@ -1432,24 +1402,18 @@
                     const data = userDoc.data();
                     if (data.audioUrl) appState.user.audioUrl = data.audioUrl;
                     if (data.audioTitle) appState.user.audioTitle = data.audioTitle;
-                    if (data.themeColor) appState.user.themeAccentColor = data.themeColor;
-                    if (data.friends) appState.friends = data.friends;
-                    if (data.friendRequests) appState.friendRequests = data.friendRequests;
                 } else {
                     await setDoc(userRef, {
                         name: appState.user.name,
                         avatar: appState.user.avatar,
                         audioUrl: appState.user.audioUrl,
-                        audioTitle: appState.user.audioTitle,
-                        themeColor: appState.user.themeAccentColor,
-                        friends: appState.friends,
-                        friendRequests: appState.friendRequests
+                        audioTitle: appState.user.audioTitle
                     }, { merge: true });
                 }
 
                 saveLocal();
                 applyUserTheme();
-                syncNotifications();
+                syncFandomNotifications();
                 renderAll();
             }
         });
@@ -1478,7 +1442,7 @@
                 saveLocal();
                 applyUserTheme();
                 closeAuthGate();
-                syncNotifications();
+                syncFandomNotifications();
                 renderAll();
             } catch (error) { alert('Erro no login com Google: ' + error.message); }
         };
@@ -1513,7 +1477,7 @@
             saveLocal();
             applyUserTheme();
             closeAuthGate();
-            syncNotifications();
+            syncFandomNotifications();
             renderAll();
         };
 
@@ -1540,7 +1504,7 @@
             saveLocal();
             applyUserTheme();
             closeAuthGate();
-            syncNotifications();
+            syncFandomNotifications();
             renderAll();
         };
 
@@ -1590,21 +1554,17 @@
             }
         };
 
-        // PERFIL COM PLAYER COMPLETO (BARRINHA DE PONTA A PONTA)
+        // PERFIL COM PLAYER SIMPLES (PLAY, PAUSE) E LINK DO MUKA
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
                 return;
             }
 
-            const audioEl = document.getElementById('globalActiveAudio');
-            const isPlaying = !audioEl.paused && audioEl.src !== '';
-            const currentTime = audioEl.currentTime || 0;
-            const duration = audioEl.duration || 100;
-            const progressPercent = (currentTime / (duration || 1)) * 100;
+            const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
 
             showUmbrellaModal({
-                title: `Meu Perfil & Player Completo`,
+                title: `Perfil & Player do Muka`,
                 htmlBody: `
                     <div class="profile-scrollable-content">
                         <div style="text-align:center; margin-bottom:14px;">
@@ -1624,35 +1584,19 @@
                         </div>
 
                         <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎨 Cor do Tema (Mantém a textura .png)</label>
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <input type="color" id="obThemeColor" value="${appState.user.themeAccentColor || '#060a1e'}" style="width:50px; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
-                                <span style="font-size:12px; color:var(--text-muted);">Escolha a cor principal mantendo o fundo original.</span>
-                            </div>
-                        </div>
-
-                        <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Playerzinho do Muka</label>
-                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Link do áudio/Muka:</p>
+                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Link do Muka (Mídia / Áudio)</label>
+                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Cole o link direto do Muka abaixo:</p>
                             <div style="display:flex; gap:6px; margin-bottom:12px;">
                                 <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl || ''}">
                                 <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar</button>
                             </div>
 
-                            <!-- Player Compacto com Barra de Progresso de ponta a ponta -->
-                            <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px solid var(--gold-border);">
-                                <p style="font-size:12px; color:var(--gold-accent); margin-bottom:6px; text-align:center;" id="nowPlayingTitle">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
-                                
-                                <!-- Barrinha de Progresso de um canto ao outro -->
-                                <div style="width:100%; height:6px; background:rgba(255,255,255,0.15); border-radius:99px; margin-bottom:10px; cursor:pointer; overflow:hidden; position:relative;" onclick="seekAudioPosition(event)">
-                                    <div id="audioProgressBarFill" style="width:${progressPercent}%; height:100%; background:var(--gold-accent); border-radius:99px; transition:width 0.1s linear;"></div>
-                                </div>
-
+                            <!-- Playerzinho Simples Estilo Mini -->
+                            <div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:12px; border:1px solid var(--gold-border); text-align:center;">
+                                <p style="font-size:12px; color:var(--gold-accent); margin-bottom:8px;" id="nowPlayingTitle">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
                                 <div style="display:flex; justify-content:center; gap:8px;">
-                                    <button class="btn-pill-gold" style="padding:5px 12px; font-size:11px;" onclick="skipAudioTime(-5)">⏪ -5s</button>
-                                    <button class="btn-pill-gold" style="padding:5px 14px; font-size:11px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
-                                    <button class="btn-pill-gold" style="padding:5px 12px; font-size:11px;" onclick="skipAudioTime(5)">⏩ +5s</button>
-                                    <button class="btn-danger-pill" style="padding:5px 10px; font-size:11px;" onclick="stopGlobalAudio()">⏹️</button>
+                                    <button class="btn-pill-gold" style="padding:6px 14px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
+                                    <button class="btn-danger-pill" style="padding:6px 14px;" onclick="stopGlobalAudio()">⏹️ Parar</button>
                                 </div>
                             </div>
                         </div>
@@ -1670,9 +1614,6 @@
                         onClick: async () => {
                             const name = document.getElementById('obName').value.trim();
                             if (name) appState.user.name = name;
-
-                            const themeColor = document.getElementById('obThemeColor').value;
-                            if (themeColor) appState.user.themeAccentColor = themeColor;
 
                             const avatarInput = document.getElementById('obAvatarFile');
                             if (avatarInput.files && avatarInput.files[0]) {
@@ -1706,10 +1647,7 @@
                     name: appState.user.name,
                     avatar: appState.user.avatar,
                     audioUrl: appState.user.audioUrl,
-                    audioTitle: appState.user.audioTitle,
-                    themeColor: appState.user.themeAccentColor,
-                    friends: appState.friends,
-                    friendRequests: appState.friendRequests
+                    audioTitle: appState.user.audioTitle
                 }, { merge: true });
             } catch (e) { console.error("Erro ao salvar dados:", e); }
         }
@@ -1717,13 +1655,16 @@
         window.applyCustomAudioLink = async function() {
             const linkInput = document.getElementById('customAudioLinkInput');
             const url = linkInput.value.trim();
-            if (!url) { alert('Cole um link válido.'); return; }
+            if (!url) {
+                alert('Cole um link válido.');
+                return;
+            }
             appState.user.audioUrl = url;
             appState.user.audioTitle = 'Mídia do Muka Ativa';
             await saveUserDataToFirestore();
             saveLocal();
             playAudioUrl(url);
-            alert('Link do Muka salvo e pronto!');
+            alert('Link do Muka salvo e tocando!');
             openProfileModal();
         };
 
@@ -1742,7 +1683,7 @@
             const audioEl = document.getElementById('globalActiveAudio');
             const profileBtn = document.getElementById('headerProfileBtn');
             if (audioEl.paused) {
-                if (audioEl.src && audioEl.src !== window.location.href) {
+                if (audioEl.src) {
                     audioEl.play();
                     profileBtn.classList.add('playing');
                 } else if (appState.user.audioUrl) {
@@ -1768,95 +1709,26 @@
             openProfileModal();
         };
 
-        window.skipAudioTime = function(sec) {
-            const audioEl = document.getElementById('globalActiveAudio');
-            if (audioEl && !isNaN(audioEl.duration)) {
-                audioEl.currentTime = Math.min(Math.max(0, audioEl.currentTime + sec), audioEl.duration);
-            }
-        };
-
-        window.seekAudioPosition = function(event) {
-            const audioEl = document.getElementById('globalActiveAudio');
-            const rect = event.currentTarget.getBoundingClientRect();
-            const clickX = event.clientX - rect.left;
-            const width = rect.width;
-            const percent = clickX / width;
-            if (audioEl && !isNaN(audioEl.duration)) {
-                audioEl.currentTime = percent * audioEl.duration;
-            }
-        };
-
-        setInterval(() => {
-            const audioEl = document.getElementById('globalActiveAudio');
-            const fill = document.getElementById('audioProgressBarFill');
-            if (fill && audioEl && !isNaN(audioEl.duration) && audioEl.duration > 0) {
-                const pct = (audioEl.currentTime / audioEl.duration) * 100;
-                fill.style.width = pct + '%';
-            }
-        }, 250);
-
-        // FUNÇÃO DE SOLICITAÇÃO DE AMIZADE (VAMOS VER JUNTOS)
-        window.visitUserProfile = async function(authorUid, authorName, authorAvatar) {
+        // FUNÇÃO ATIVADA PARA VISITAR O PERFIL DE ALGUÉM
+        window.visitUserProfile = async function(authorUid, authorName) {
             if (!authorUid) {
                 alert(`Perfil de ${authorName}`);
                 return;
             }
-
-            visitedProfileData = { uid: authorUid, name: authorName, avatar: authorAvatar || './aconchego.png' };
-
             try {
                 const userDoc = await getDoc(doc(db, "users", authorUid));
                 if (userDoc.exists()) {
                     const uData = userDoc.data();
-                    if (uData.audioUrl) playAudioUrl(uData.audioUrl);
-                    if (uData.avatar) visitedProfileData.avatar = uData.avatar;
+                    if (uData.audioUrl) {
+                        playAudioUrl(uData.audioUrl);
+                        alert(`🎧 Entrando no perfil de ${authorName}. Tocando trilha sonora/Muka.`);
+                    } else {
+                        alert(`Perfil de ${authorName} visitado (Sem mídia ativa).`);
+                    }
+                } else {
+                    alert(`Perfil de ${authorName}`);
                 }
-            } catch (e) { console.error(e); }
-
-            // Atualiza botão de amizade na visita
-            const addBtn = document.getElementById('visitAddFriendBtn');
-            const isAlreadyFriend = appState.friends.some(f => f.uid === authorUid);
-            if (isAlreadyFriend) {
-                addBtn.textContent = 'Amigos ✅';
-                addBtn.disabled = true;
-            } else {
-                addBtn.textContent = 'Adicionar 🤝';
-                addBtn.disabled = false;
-            }
-
-            switchView('visit-profile');
-        };
-
-        window.sendFriendRequestFromVisit = async function() {
-            if (!visitedProfileData || !visitedProfileData.uid) return;
-            requireAuthForAction(async () => {
-                try {
-                    const targetUserRef = doc(db, "users", visitedProfileData.uid);
-                    await updateDoc(targetUserRef, {
-                        friendRequests: arrayUnion({
-                            uid: appState.user.uid,
-                            name: appState.user.name,
-                            avatar: appState.user.avatar
-                        })
-                    });
-                    showUmbrellaModal({
-                        title: 'Pedido de Amizade Enviado 🤝',
-                        htmlBody: `Solicitação enviada para <strong>${visitedProfileData.name}</strong>! Vamos ver juntos quando ela aceitar.`
-                    });
-                } catch (e) {
-                    alert("Erro ao enviar solicitação: " + e.message);
-                }
-            });
-        };
-
-        window.acceptFriendRequest = async function(reqUid, reqName, reqAvatar) {
-            appState.friends.push({ uid: reqUid, name: reqName, avatar: reqAvatar, status: 'Amizade conectada ☔' });
-            appState.friendRequests = appState.friendRequests.filter(r => r.uid !== reqUid);
-            await saveUserDataToFirestore();
-            saveLocal();
-            syncNotifications();
-            renderAll();
-            showUmbrellaModal({ title: 'Amizade Aceita! 🎉', htmlBody: `Agora você e <strong>${reqName}</strong> são amigos no Umbrella!` });
+            } catch (e) { alert(`Perfil de ${authorName}`); }
         };
 
         window.openMediaActionSheet = function () {
@@ -1903,7 +1775,7 @@
                         <div style="width:100%; max-height:300px; display:flex; justify-content:center; align-items:center; background:#000; border-radius:12px; overflow:hidden;">
                             <video src="${videoBlobUrl}" controls playsinline style="max-width:100%; max-height:280px;"></video>
                         </div>
-                        <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Vídeo carregado no cache! Clique em OK e depois na setinha ➤ para enviar para o balde do Firebase.</p>
+                        <p style="font-size:12px; color:var(--gold-accent); text-align:center; margin-top:10px;">Vídeo pronto! Clique em OK e depois na setinha ➤ para enviar rapidamente.</p>
                     `,
                     buttons: [{ label: 'OK / Concluir', primary: true, onClick: closeUmbrellaModal }]
                 });
@@ -2062,13 +1934,6 @@
             if (target) target.classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            const composerWrapper = document.getElementById('floatingComposerWrapper');
-            if (viewName === 'visit-profile') {
-                composerWrapper.style.display = 'none';
-            } else {
-                composerWrapper.style.display = 'block';
-            }
-
             const composerInput = document.getElementById('mainComposerInput');
             if (viewName === 'feed') {
                 composerInput.placeholder = "Escreva no Umbrella... (use * para marcar alguém)";
@@ -2113,7 +1978,7 @@
             });
         };
 
-        // ENVIO DE POSTAGEM COM TRATAMENTO DO BALDE DO FIREBASE STORAGE
+        // ENVIO DE POSTAGEM RÁPIDO E DIRETO (SEM BARRA DE PORCENTAGEM QUE TRAVA)
         window.submitPost = async function () {
             if (isUploadingPost) return;
             requireAuthForAction(async () => {
@@ -2158,7 +2023,6 @@
                         const safeName = `${Date.now()}_${Math.floor(Math.random()*1000)}.${safeExt}`;
                         const storageRef = ref(storage, `posts_media/${safeName}`);
                         
-                        // Upload seguro para o balde do Firebase Storage
                         const snapshot = await uploadBytes(storageRef, currentAttachedFileObj);
                         downloadUrl = await getDownloadURL(snapshot.ref);
                         mediaType = isVideo ? 'video' : 'image';
@@ -2187,7 +2051,7 @@
                     saveLocal();
                     renderAll();
                 } catch (e) {
-                    showUmbrellaModal({ title: 'Erro ao Enviar Mídia (Balde Firebase)', htmlBody: `Não foi possível enviar para o storage: ${e.message}` });
+                    showUmbrellaModal({ title: 'Erro ao Enviar Mídia', htmlBody: `Não foi possível enviar: ${e.message}` });
                 } finally {
                     isUploadingPost = false;
                     sendBtn.disabled = false;
@@ -2199,8 +2063,8 @@
         window.confirmDeletePost = function (postId) {
             requireAuthForAction(() => {
                 showUmbrellaModal({
-                    title: '🗑️ Excluir Publicação do Aconchego',
-                    htmlBody: 'Você realmente deseja apagar essa publicação do seu histórico?',
+                    title: '🗑️ Excluir Publicação',
+                    htmlBody: 'Você realmente deseja apagar essa publicação?',
                     buttons: [
                         { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
                         {
@@ -2239,8 +2103,17 @@
                     const postRef = doc(db, "posts", postId);
                     await updateDoc(postRef, { likes: newLikes, likedByMe: newLiked });
                     saveLocal();
-                } catch (e) { console.error(e); }
+                } catch (e) { console.error("Erro ao curtir:", e); }
             });
+        };
+
+        window.replyToUserInComment = function (authorName) {
+            const input = document.getElementById('mainComposerInput');
+            if (input) {
+                input.value = `*${authorName} `;
+                input.focus();
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
         };
 
         window.submitInlineComment = async function (postId) {
@@ -2272,63 +2145,43 @@
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
-                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova notificação ou pedido pendente no momento.' });
+                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação pendente nos seus Fandoms.' });
                     return;
                 }
                 const notif = appState.notifications[0];
-                if (notif.type === 'fandom_request') {
-                    showUmbrellaModal({
-                        title: 'Solicitação de Fandom 🔒',
-                        htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Ao aprovar, esta pessoa poderá ver e publicar dentro deste espaço particular.</p>`,
-                        buttons: [
-                            {
-                                label: 'Recusar',
-                                primary: false,
-                                onClick: async () => {
-                                    try {
-                                        const fRef = doc(db, "fandoms", notif.fandomId);
-                                        await updateDoc(fRef, {
-                                            pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
-                                        });
-                                    } catch (e) { console.error(e); }
-                                    closeUmbrellaModal();
-                                }
-                            },
-                            { 
-                                label: 'Aprovar Entrada ✅', 
-                                primary: true, 
-                                onClick: async () => { 
-                                    try {
-                                        const fRef = doc(db, "fandoms", notif.fandomId);
-                                        await updateDoc(fRef, {
-                                            members: arrayUnion(notif.requesterUid),
-                                            pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
-                                        });
-                                    } catch (e) { alert("Erro ao aprovar: " + e.message); }
-                                    closeUmbrellaModal(); 
-                                } 
+                showUmbrellaModal({
+                    title: 'Solicitação de Fandom 🔒',
+                    htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Ao aprovar, esta pessoa poderá ver e publicar dentro deste espaço particular.</p>`,
+                    buttons: [
+                        {
+                            label: 'Recusar',
+                            primary: false,
+                            onClick: async () => {
+                                try {
+                                    const fRef = doc(db, "fandoms", notif.fandomId);
+                                    await updateDoc(fRef, {
+                                        pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
+                                    });
+                                } catch (e) { console.error(e); }
+                                closeUmbrellaModal();
                             }
-                        ]
-                    });
-                } else if (notif.type === 'friend_request') {
-                    showUmbrellaModal({
-                        title: 'Pedido de Amizade 🤝',
-                        htmlBody: `<p>${notif.text}</p>`,
-                        buttons: [
-                            { label: 'Recusar', primary: false, onClick: () => {
-                                appState.friendRequests = appState.friendRequests.filter(r => r.uid !== notif.requesterUid);
-                                saveUserDataToFirestore();
-                                saveLocal();
-                                syncNotifications();
-                                closeUmbrellaModal();
-                            }},
-                            { label: 'Aceitar Amizade ✅', primary: true, onClick: () => {
-                                acceptFriendRequest(notif.requesterUid, notif.requesterName, notif.requesterAvatar);
-                                closeUmbrellaModal();
-                            }}
-                        ]
-                    });
-                }
+                        },
+                        { 
+                            label: 'Aprovar Entrada ✅', 
+                            primary: true, 
+                            onClick: async () => { 
+                                try {
+                                    const fRef = doc(db, "fandoms", notif.fandomId);
+                                    await updateDoc(fRef, {
+                                        members: arrayUnion(notif.requesterUid),
+                                        pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
+                                    });
+                                } catch (e) { alert("Erro ao aprovar: " + e.message); }
+                                closeUmbrellaModal(); 
+                            } 
+                        }
+                    ]
+                });
             });
         };
 
@@ -2618,7 +2471,7 @@
                 `,
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective'].value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
+                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective').value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
                 ]
             });
         }
@@ -2645,16 +2498,12 @@
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
-            if (appState.user.themeAccentColor) {
-                document.documentElement.style.setProperty('--theme-color-accent', appState.user.themeAccentColor);
-            }
             if (appState.user.audioUrl) {
                 playAudioUrl(appState.user.audioUrl);
             }
         }
 
-        // RENDERIZADOR DE POSTAGEM (EXCLUI APENAS NO ACONCHEGO)
-        window.renderPostCardHTML = function(post, isAconchegoTab = false) {
+        function renderPostCardHTML(post, isAconchegoTab = false) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video' ? `<video src="${post.media}" class="post-media" controls playsinline></video>` : `<img src="${post.media}" class="post-media" alt="" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
@@ -2675,23 +2524,22 @@
                 </div>
             `).join('');
 
-            // O botão de exclusão só aparece se estiver EXATAMENTE na aba Aconchego e o post for do próprio usuário logado.
-            const showDelete = isAconchegoTab && appState.user.loggedIn && post.authorUid === appState.user.uid;
+            const showDelete = (isAconchegoTab || post.fandom !== 'Geral') && appState.user.loggedIn && post.author === appState.user.name;
 
             return `
                 <article class="post-card-clean">
                     <div class="post-header">
-                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}', '${post.avatar}')" title="Visitar perfil e trilha sonora">
+                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}')" title="Visitar perfil e ouvir trilha sonora">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">
                                     ${post.author}
                                     ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
                                 </div>
-                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)} (🎵 Perfil)</div>
+                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)} (🎵 Ouvir perfil)</div>
                             </div>
                         </div>
-                        ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar do Aconchego">✕ Apagar</button>` : ''}
+                        ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar">✕</button>` : ''}
                     </div>
 
                     ${post.text ? `<p class="post-text">${post.text}</p>` : ''}
@@ -2765,39 +2613,29 @@
                 }
                 const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
                 const container = document.getElementById('insideFandomFeedList');
-                container.innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p, false)).join('') : `<div class="empty-state-box">Este fandom está privadamente silencioso. Compartilhe a primeira foto ou vídeo!</div>`;
+                container.innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p, false)).join('') : `<div class="empty-state-box">Este fandom está privadamente silencioso. Compartilhe a primeira foto linda que você achou!</div>`;
             }
 
-            if (visitedProfileData) {
-                document.getElementById('visitUsername').textContent = visitedProfileData.name;
-                document.getElementById('visitAvatar').src = visitedProfileData.avatar;
-                const userPosts = postsFromFirebase.filter(p => p.authorUid === visitedProfileData.uid || p.author === visitedProfileData.name);
-                const visitContainer = document.getElementById('visitUserFeedList');
-                visitContainer.innerHTML = userPosts.length > 0 ? userPosts.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Este usuário ainda não publicou nenhuma foto ou vídeo no feed.</div>`;
-            }
-
-            // Feed Geral (isAconchegoTab = false)
             const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && !p.isAconchego && (!p.fandom || p.fandom === 'Geral'));
             document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra flutuante abaixo para compartilhar!</div>`;
 
             const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
             document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
 
-            // Aconchego (isAconchegoTab = true)
-            const aconchegoPosts = postsFromFirebase.filter(p => p.authorUid === appState.user.uid || p.author === appState.user.name);
+            const aconchegoPosts = postsFromFirebase.filter(p => p.isAconchego && p.author === appState.user.name);
             document.getElementById('aconchegoHistoryList').innerHTML = aconchegoPosts.length > 0 ? aconchegoPosts.map(p => renderPostCardHTML(p, true)).join('') : `<div class="glass-panel empty-state-box">Seu espaço Aconchego está vazio.<br>Escreva algo usando o campo abaixo nesta aba!</div>`;
 
             document.getElementById('friendsListContainer').innerHTML = appState.friends.length > 0 ? appState.friends.map(f => `
-                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="visitUserProfile('${f.uid || ''}', '${f.name}', '${f.avatar}')">
+                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between;">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <img src="${f.avatar}" style="width:48px; height:48px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
                         <div>
-                            <div style="font-size:14px; font-weight:700; color:var(--gold-accent);">${f.name} (Visitar Perfil)</div>
+                            <div style="font-size:14px; font-weight:700;">${f.name}</div>
                             <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
                         </div>
                     </div>
                 </div>
-            `).join('') : `<div class="glass-panel empty-state-box">Sua lista de amigos está vazia. Visite perfis e adicione sua colega para testar!</div>`;
+            `).join('') : `<div class="glass-panel empty-state-box">Sua lista de amigos está vazia.</div>`;
         }
 
         const carousel = document.getElementById('carouselWrapper');
