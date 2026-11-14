@@ -3239,14 +3239,53 @@
 
         window.openFandomOptionsMenu = function () {
             const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
-            const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
+            if (!fandomObj) return;
 
-            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeSherBlussModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
+            const isCreatorOrAdmin = fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid));
+            const isCreator = fandomObj.creatorUid === appState.user.uid;
+
+            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px; width:100%;" onclick="closeSherBlussModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
+            
+            let deleteHtml = isCreator ? `<button class="btn-danger-pill" style="margin-top:8px; width:100%; padding:10px;" onclick="closeSherBlussModal(); confirmDeleteFandom('${fandomObj.id}', '${activeFandomFilter}')">🗑️ Excluir Fandom</button>` : '';
 
             showSherBlussModal({
                 title: `Opções • ${activeFandomFilter}`,
-                htmlBody: adminHtml || '<p style="font-size:12px; color:var(--text-muted);">Sem opções extras para membros comuns.</p>',
+                htmlBody: `
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        ${adminHtml}
+                        ${deleteHtml}
+                        ${!adminHtml && !deleteHtml ? '<p style="font-size:12px; color:var(--text-muted);">Sem opções extras para membros comuns.</p>' : ''}
+                    </div>
+                `,
                 buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
+            });
+        };
+
+        window.confirmDeleteFandom = function(fandomId, fandomName) {
+            requireAuthForAction(() => {
+                showSherBlussModal({
+                    title: '🗑️ Excluir Fandom',
+                    htmlBody: `Tem certeza que deseja excluir o fandom <strong>${fandomName}</strong>? Essa ação não pode ser desfeita.`,
+                    buttons: [
+                        { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
+                        {
+                            label: 'Sim, Excluir',
+                            primary: true,
+                            onClick: async () => {
+                                try {
+                                    await deleteDoc(doc(db, "fandoms", fandomId));
+                                    closeSherBlussModal();
+                                    appState.fandoms = appState.fandoms.filter(f => f.id !== fandomId);
+                                    activeFandomFilter = null;
+                                    switchView('fandom');
+                                    showSherBlussModal({ title: 'Fandom Excluído 🌸', htmlBody: `O fandom <strong>${fandomName}</strong> foi apagado com sucesso.` });
+                                } catch (e) {
+                                    showSherBlussModal({ title: 'Erro', htmlBody: e.message });
+                                }
+                            }
+                        }
+                    ]
+                });
             });
         };
 
