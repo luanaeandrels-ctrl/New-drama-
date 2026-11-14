@@ -718,17 +718,18 @@
         </div>
     </div>
 
-    <div class="unified-top-bar">
+    <!-- BARRA SUPERIOR DINÂMICA (MUDA PARA O PERFIL VISITADO OU FICA NORMAL) -->
+    <div class="unified-top-bar" id="unifiedTopBar">
         <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Aconchego">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
-        <div class="search-balao-fininho">
+        <div class="search-balao-fininho" id="searchBalaoContainer">
             <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@usuário" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
             <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
         </div>
 
-        <button class="droplet-btn" onclick="openNotificationsModal()" title="Notificações">
+        <button class="droplet-btn" id="dropletBtnElement" onclick="openNotificationsModal()" title="Notificações">
             💧
             <span class="droplet-badge" id="notifBadge">0</span>
         </button>
@@ -787,6 +788,21 @@
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
+        <!-- SEÇÃO DE PERFIL DE OUTRO USUÁRIO (TELA DEDICADA) -->
+        <section class="view-section" id="view-user-profile-feed">
+            <div style="display:flex; align-items:center; justify-content:between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <img id="visitedProfileAvatar" src="./aconchego.png" style="width:36px; height:36px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                    <div>
+                        <span id="visitedProfileTitleName" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Perfil</span>
+                        <span style="font-size:11px; color:var(--text-muted); display:block;">• Feed do Usuário</span>
+                    </div>
+                </div>
+                <button class="btn-pill-gold" onclick="closeVisitedUserProfile()">Voltar ao Feed Principal</button>
+            </div>
+            <div class="feed-list" id="visitedProfileFeedList"></div>
+        </section>
+
         <section class="view-section" id="view-desafio">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Desafio Semanal</span>
@@ -842,7 +858,7 @@
         </section>
 
         <section class="view-section" id="view-inside-fandom">
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
+            <div style="display:flex; align-items:center; justify-content:between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
                     <span style="font-size:16px;">🔓</span>
                     <div>
@@ -880,7 +896,7 @@
             <input type="file" id="videoDirectInput" accept="video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella... (use @ para marcar)" onkeypress="if(event.key==='Enter') submitPost()">
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella..." onkeypress="if(event.key==='Enter') submitPost()">
             <button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
@@ -944,7 +960,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v46';
+        const LOCAL_KEY = 'umbrella_clean_state_v47';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -970,6 +986,7 @@
         let currentAttachedType = null;
         let currentFileName = '';
         let activeFandomFilter = null;
+        let activeVisitedUserUid = null;
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -1180,7 +1197,7 @@
             }
         };
 
-        // PERFIL COMPLETO COM GERENCIAMENTO DE SENHA, TEMA E ACONCHEGO
+        // PERFIL COMPLETO COM MEU ACONCHEGO (HISTÓRICO)
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1194,7 +1211,7 @@
                         <div style="flex:1; padding-right:8px;">
                             <span style="font-size:10px; color:var(--gold-accent); display:block; margin-bottom:4px;">${p.isChallenge ? 'Desafio' : p.fandom || 'Geral'}</span>
                             <p style="font-size:12px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia)'}</p>
-                            ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:140px; border-radius:8px;" controls playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;">`) : ''}
+                            ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:140px; border-radius:8px;" controls playsinline webkit-playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;">`) : ''}
                         </div>
                         <button class="btn-danger-pill" style="font-size:10px;" onclick="confirmDeletePost('${p.id}'); closeUmbrellaModal();">Excluir</button>
                     </div>
@@ -1279,12 +1296,10 @@
             } catch (e) { console.error(e); }
         }
 
-        // VISITAR PERFIL DE OUTRA PESSOA NO FEED (POP-UP IDÊNTICO AO FEED)
+        // VISITAR PERFIL DE OUTRO USUÁRIO (TELA DEDICADA / MODO FEED DA PESSOA)
         window.visitUserProfile = async function(authorUid, authorName) {
-            if (!authorUid) {
-                showUmbrellaModal({ title: authorName, htmlBody: 'Perfil de usuário Umbrella.' });
-                return;
-            }
+            if (!authorUid) return;
+            activeVisitedUserUid = authorUid;
 
             let userAvatar = './aconchego.png';
             try {
@@ -1295,34 +1310,32 @@
                 }
             } catch (e) {}
 
-            const userPosts = postsFromFirebase.filter(p => p.authorUid === authorUid);
-            const postsHtml = userPosts.length > 0 
-                ? userPosts.map(p => `
-                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:10px; border:1px solid var(--gold-border);">
-                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
-                            <img src="${userAvatar}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;">
-                            <span style="font-weight:700; color:var(--gold-accent); font-size:13px;">${authorName}</span>
-                        </div>
-                        <p style="font-size:13px; margin-bottom:6px; color:var(--text-main);">${p.text || ''}</p>
-                        ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:260px; border-radius:8px;" controls playsinline webkit-playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:260px; object-fit:cover; border-radius:8px;">`) : ''}
-                    </div>
-                `).join('')
-                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Este usuário ainda não publicou nada no feed.</p>';
+            // Atualiza a barra superior para mostrar que estamos no perfil do colega
+            document.getElementById('headerUserAvatar').src = userAvatar;
+            document.getElementById('searchBalaoContainer').style.display = 'none';
+            document.getElementById('dropletBtnElement').style.display = 'none';
 
-            showUmbrellaModal({
-                title: `Feed de ${authorName}`,
-                htmlBody: `
-                    <div style="text-align:center; margin-bottom:12px;">
-                        <img src="${userAvatar}" style="width:60px; height:60px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:6px;">
-                        <h4 style="color:var(--gold-accent); font-size:15px;">${authorName}</h4>
-                    </div>
-                    <hr style="border:none; border-top:1px solid rgba(251,191,36,0.2); margin:10px 0;">
-                    <div style="max-height:320px; overflow-y:auto;">
-                        ${postsHtml}
-                    </div>
-                `,
-                buttons: [{ label: 'Fechar', primary: true, onClick: closeUmbrellaModal }]
-            });
+            // Configura a tela dedicada do perfil
+            document.getElementById('visitedProfileAvatar').src = userAvatar;
+            document.getElementById('visitedProfileTitleName').textContent = authorName;
+
+            const userPosts = postsFromFirebase.filter(p => p.authorUid === authorUid);
+            const container = document.getElementById('visitedProfileFeedList');
+            container.innerHTML = userPosts.length > 0 
+                ? userPosts.map(p => renderPostCardHTML(p)).join('')
+                : '<div class="glass-panel empty-state-box">Este usuário ainda não publicou nada no feed.</div>';
+
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-user-profile-feed').classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        window.closeVisitedUserProfile = function() {
+            activeVisitedUserUid = null;
+            document.getElementById('searchBalaoContainer').style.display = 'flex';
+            document.getElementById('dropletBtnElement').style.display = 'flex';
+            applyUserTheme();
+            switchView('feed');
         };
 
         window.openMediaActionSheet = function () {
@@ -1348,7 +1361,6 @@
             });
         };
 
-        // VÍDEOS E FOTOS USAM NATIVO (SEM PRÉ-VISUALIZAÇÃO TRAVADA)
         window.handleMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1387,13 +1399,18 @@
         };
 
         window.switchView = function (viewName) {
+            activeVisitedUserUid = null;
+            document.getElementById('searchBalaoContainer').style.display = 'flex';
+            document.getElementById('dropletBtnElement').style.display = 'flex';
+            applyUserTheme();
+
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const target = document.getElementById('view-' + viewName);
             if (target) target.classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
 
             const composerInput = document.getElementById('mainComposerInput');
-            if (viewName === 'feed') composerInput.placeholder = "Escreva no Umbrella... (use @ para marcar)";
+            if (viewName === 'feed') composerInput.placeholder = "Escreva no Umbrella...";
             else if (viewName === 'desafio') composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
             else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
             else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
@@ -1862,6 +1879,13 @@
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
         }
 
+        function formatPostDate(timestamp) {
+            if (!timestamp || !timestamp.toDate) return 'Agora mesmo';
+            const date = timestamp.toDate();
+            const options = { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' };
+            return date.toLocaleDateString('pt-BR', options);
+        }
+
         function renderPostCardHTML(post) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video'
@@ -1885,7 +1909,7 @@
                 </div>
             `).join('');
 
-            const showDelete = appState.user.loggedIn && post.authorUid === appState.user.uid;
+            const postDateStr = formatPostDate(post.createdAt);
 
             return `
                 <article class="post-card-clean">
@@ -1900,7 +1924,9 @@
                                 <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : post.fandom}</div>
                             </div>
                         </div>
-                        ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar">✕</button>` : ''}
+                        <div style="font-size:11px; color:var(--text-muted); font-weight:600;">
+                            📅 ${postDateStr}
+                        </div>
                     </div>
 
                     ${post.text ? `<p class="post-text">${post.text}</p>` : ''}
@@ -1970,6 +1996,11 @@
                 }
                 const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
                 document.getElementById('insideFandomFeedList').innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p)).join('') : `<div class="empty-state-box">Este fandom está silencioso. Compartilhe algo!</div>`;
+            }
+
+            if (activeVisitedUserUid) {
+                const userPosts = postsFromFirebase.filter(p => p.authorUid === activeVisitedUserUid);
+                document.getElementById('visitedProfileFeedList').innerHTML = userPosts.length > 0 ? userPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Este usuário ainda não publicou nada no feed.</div>`;
             }
 
             const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && (!p.fandom || p.fandom === 'Geral'));
