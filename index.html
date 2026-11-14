@@ -1,16 +1,18 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-BR" translate="no" class="notranslate">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Umbrella</title>
-    <link rel="manifest" href="manifest.json">
+    <meta name="google" content="notranslate">
+    <title translate="no">CherBluss</title>
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#060a1e">
     <link rel="icon" type="image/png" href="./logo.png">
+    <link rel="apple-touch-icon" href="./logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
         :root {
@@ -82,6 +84,7 @@
         .auth-logo {
             max-width: 110px;
             margin-bottom: 14px;
+            border-radius: 50%;
         }
 
         .unified-top-bar {
@@ -193,7 +196,7 @@
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             align-items: center;
-            max-height: 165px;
+            max-height: 170px;
             transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
         }
 
@@ -217,7 +220,7 @@
 
         .carousel-item-clean {
             flex: 0 0 auto;
-            height: 132px;
+            height: 138px;
             scroll-snap-align: start;
             display: flex;
             flex-direction: column;
@@ -226,7 +229,7 @@
             cursor: pointer;
         }
 
-        .podium-item-box { width: 96px; text-align: center; }
+        .podium-item-box { width: 102px; text-align: center; }
 
         .podium-circle-clean {
             width: 66px;
@@ -251,18 +254,21 @@
             font-weight: 700;
             color: var(--gold-accent);
             white-space: nowrap;
-            max-width: 94px;
+            max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
             display: block;
+            letter-spacing: 0.3px;
         }
 
         .podium-bias-sub {
-            font-size: 9.5px;
-            font-weight: 600;
+            font-family: 'Cormorant Garamond', Georgia, serif;
+            font-style: italic;
+            font-size: 13px;
+            font-weight: 700;
             color: var(--text-main);
             white-space: nowrap;
-            max-width: 94px;
+            max-width: 100px;
             overflow: hidden;
             text-overflow: ellipsis;
             display: block;
@@ -434,7 +440,6 @@
 
         .post-text { font-size: 14px; line-height: 1.5; margin-bottom: 8px; word-break: break-word; color: var(--text-main); }
 
-        /* CORREÇÃO DO VÍDEO VERTICAL: Suporte fluido mantendo proporção sem achatar */
         .post-media {
             width: 100%;
             max-height: 560px;
@@ -587,24 +592,24 @@
         }
 
         .photo-square-picker {
-            width: 96px;
-            height: 96px;
-            border-radius: 16px;
-            background: rgba(10, 14, 28, 0.75);
-            border: 1.5px dashed var(--gold-border);
+            width: 48px;
+            height: 44px;
+            border-radius: 13px;
+            background: rgba(10, 14, 28, 0.85);
+            border: 1.5px dashed var(--gold-accent);
             color: var(--gold-accent);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 4px;
             cursor: pointer;
             overflow: hidden;
             position: relative;
-            transition: border-color 0.2s ease, transform 0.15s ease;
+            flex-shrink: 0;
+            transition: transform 0.15s ease;
         }
 
-        .photo-square-picker:active { transform: scale(0.97); }
+        .photo-square-picker:active { transform: scale(0.95); }
 
         .photo-square-picker img {
             width: 100%;
@@ -802,13 +807,13 @@
         }
     </style>
 </head>
-<body>
+<body class="notranslate">
 
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
-            <img src="./logo.png" alt="Umbrella" class="auth-logo">
+            <img src="./logo.png" alt="CherBluss" class="auth-logo">
             <h3 style="color:var(--gold-accent); font-size:18px; margin-bottom:8px;">Faça login para interagir</h3>
-            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:20px;">Entre com sua conta para curtir, comentar e publicar no Umbrella.</p>
+            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:20px;">Entre com sua conta para curtir, comentar e publicar no <strong translate="no">CherBluss</strong>.</p>
             
             <div style="display:flex; flex-direction:column; gap:10px;">
                 <button class="btn-gold" style="background: rgba(66, 133, 244, 0.25); border-color: #4285f4; color: #8ab4f8;" onclick="loginWithGoogle()">
@@ -829,11 +834,11 @@
 
     <div class="unified-top-bar" id="unifiedTopBar">
         <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego Dedicado">
-            <img id="headerUserAvatar" src="./aconchego.png" alt="">
+            <img id="headerUserAvatar" src="./aconchego.png" alt="" onerror="this.src='./logo.png'">
         </button>
 
         <div class="search-balao-fininho" id="searchBalaoContainer">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@seu_arroba" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
+            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@seu_arroba" oninput="executeGlobalSearch()" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
             <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
         </div>
 
@@ -848,31 +853,31 @@
         <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
-                    <img id="podiumImg1" src="./guarda-chuva.png" alt="">
+                    <img id="podiumImg1" src="./logo.png" alt="">
                 </div>
-                <span class="podium-label-clean" id="podiumLabel1">1º Pódio</span>
-                <span class="podium-bias-sub" id="podiumBias1">Aguardando</span>
+                <span class="podium-label-clean notranslate" id="podiumLabel1">1º Pódio</span>
+                <span class="podium-bias-sub notranslate" id="podiumBias1">Aguardando</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(2)">
                 <div class="podium-circle-clean podium-circle-2">
-                    <img id="podiumImg2" src="./fandom.png" alt="" onerror="this.src='./guarda-chuva.png'">
+                    <img id="podiumImg2" src="./fandom.png" alt="" onerror="this.src='./logo.png'">
                 </div>
-                <span class="podium-label-clean" id="podiumLabel2">2º Pódio</span>
-                <span class="podium-bias-sub" id="podiumBias2">Aguardando</span>
+                <span class="podium-label-clean notranslate" id="podiumLabel2">2º Pódio</span>
+                <span class="podium-bias-sub notranslate" id="podiumBias2">Aguardando</span>
             </div>
 
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(3)">
                 <div class="podium-circle-clean podium-circle-3">
-                    <img id="podiumImg3" src="./amigos.png" alt="">
+                    <img id="podiumImg3" src="./amigos.png" alt="" onerror="this.src='./logo.png'">
                 </div>
-                <span class="podium-label-clean" id="podiumLabel3">3º Pódio</span>
-                <span class="podium-bias-sub" id="podiumBias3">Aguardando</span>
+                <span class="podium-label-clean notranslate" id="podiumLabel3">3º Pódio</span>
+                <span class="podium-bias-sub notranslate" id="podiumBias3">Aguardando</span>
             </div>
 
             <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
                 <div class="challenge-header">
-                    <span>☔ Desafio do Dia</span>
+                    <span>🌸 Desafio do Dia</span>
                 </div>
                 <div class="challenge-text" id="carouselChallengeText">
                     Tema: Sob o Mesmo Guarda-Chuva. Poste a foto do seu Bias!
@@ -882,14 +887,14 @@
 
             <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
                 <div class="tab-icon-free">
-                    <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./guarda-chuva.png';">
+                    <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./logo.png';">
                 </div>
                 <span class="tab-label-clean">Fandom</span>
             </div>
 
             <div class="carousel-item-clean tab-item-box" onclick="switchView('amigos')">
                 <div class="tab-icon-free">
-                    <img src="./amigos.png" alt="Amigos">
+                    <img src="./amigos.png" alt="Amigos" onerror="this.onerror=null; this.src='./logo.png';">
                 </div>
                 <span class="tab-label-clean">Amigos</span>
             </div>
@@ -902,32 +907,32 @@
         <section class="view-section" id="view-meu-perfil">
             <div class="glass-panel" style="padding:20px; margin-bottom:14px;">
                 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-                    <span class="section-title">Meu Perfil & Aconchego Dedicado</span>
+                    <span class="section-title">Meu Perfil & Aconchego</span>
                     <button class="btn-pill-gold" onclick="switchView('feed')">Voltar ao Feed</button>
                 </div>
 
                 <div style="text-align:center; margin-bottom:16px;">
-                    <img id="myProfilePageAvatar" src="./aconchego.png" style="width:80px; height:80px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px;">
+                    <img id="myProfilePageAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" style="width:82px; height:82px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px;">
                     <h4 id="myProfilePageNameDisplay" style="color:var(--gold-accent); font-size:16px;">Usuário</h4>
-                    <p id="myProfilePageHandleDisplay" style="font-size:12px; color:var(--gold-accent);">@arroba</p>
+                    <p id="myProfilePageHandleDisplay" class="notranslate" style="font-size:12px; color:var(--gold-accent);">@arroba</p>
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Meu Nome Completo</label>
+                    <label class="form-label">Meu Nome de Exibição</label>
                     <input type="text" id="profileEditName" class="glass-input" oninput="saveProfileChangesLive()">
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Meu @Arroba (Para te acharem no Umbrella)</label>
-                    <input type="text" id="profileEditHandle" class="glass-input" placeholder="@exemplo" oninput="saveProfileChangesLive()">
+                    <label class="form-label">Meu @Arroba (Para te acharem no <span translate="no">CherBluss</span>)</label>
+                    <input type="text" id="profileEditHandle" class="glass-input notranslate" placeholder="@exemplo" oninput="saveProfileChangesLive()">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Foto de Perfil</label>
-                    <label for="profileEditAvatarFile" class="custom-file-trigger" id="profileAvatarLabel">📷 Alterar foto do perfil</label>
+                    <label for="profileEditAvatarFile" class="custom-file-trigger" id="profileAvatarLabel">📷 Escolher foto do perfil na galeria</label>
                     <input type="file" id="profileEditAvatarFile" accept="image/*" style="display:none;" onchange="handleProfileAvatarSelected(event)">
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Cor do Tema (Toque na bolinha para girar e escolher)</label>
+                    <label class="form-label">Tema do Perfil (Escolha totalmente a sua cor)</label>
                     <div class="color-wheel-row">
                         <input type="color" id="profileColorWheel" class="circular-color-picker" value="#fbbf24" oninput="applyCustomAccentColor(this.value)">
                         <div>
@@ -938,10 +943,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Plano de Fundo Personalizado</label>
+                    <label class="form-label">Plano de Fundo Personalizado (Nativo: fundo.png)</label>
                     <div style="display:flex; gap:8px;">
-                        <label for="profileBgFile" class="custom-file-trigger" style="flex:1;" id="profileBgLabel">🖼️ Trocar Plano de Fundo</label>
-                        <button type="button" class="btn-pill-gold" onclick="resetDefaultBackground()" title="Restaurar Padrão">Padrão</button>
+                        <label for="profileBgFile" class="custom-file-trigger" style="flex:1;" id="profileBgLabel">🖼️ Escolher fundo na galeria</label>
+                        <button type="button" class="btn-pill-gold" onclick="resetDefaultBackground()" title="Voltar ao fundo.png">Fundo Nativo</button>
                     </div>
                     <input type="file" id="profileBgFile" accept="image/*" style="display:none;" onchange="handleProfileBackgroundSelected(event)">
                 </div>
@@ -950,7 +955,7 @@
             </div>
 
             <div class="glass-panel" style="padding:16px;">
-                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:12px;">🏠 Meu Aconchego (Gerenciar Publicações)</h4>
+                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:12px;">🏠 Meu Aconchego (Histórico de Publicações)</h4>
                 <div class="feed-list" id="myAconchegoPostsList"></div>
             </div>
         </section>
@@ -958,10 +963,10 @@
         <section class="view-section" id="view-user-profile-feed">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
-                    <img id="visitedProfileAvatar" src="./aconchego.png" style="width:36px; height:36px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                    <img id="visitedProfileAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" style="width:36px; height:36px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
                     <div>
                         <span id="visitedProfileTitleName" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Perfil</span>
-                        <span id="visitedProfileHandleSub" style="font-size:11px; color:var(--text-muted); display:block;">• @arroba</span>
+                        <span id="visitedProfileHandleSub" class="notranslate" style="font-size:11px; color:var(--text-muted); display:block;">• @arroba</span>
                     </div>
                 </div>
                 <button class="btn-pill-gold" onclick="closeVisitedUserProfile()">Voltar ao Feed</button>
@@ -980,55 +985,50 @@
                 <p id="weeklyDirectiveText" style="font-size:13.5px; margin:6px 0 12px; line-height:1.5;">
                     Tema oficial: <strong>Sob o Mesmo Guarda-Chuva</strong>. Escolha seu representante fixo para toda a semana. Votos de segunda a sexta definem o Pódio!
                 </p>
-                <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); border-top:1px solid rgba(251,191,36,0.18); padding-top:8px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted); border-top:1px solid rgba(251,191,36,0.18); padding-top:8px;">
                     <span>Votos hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
-                    <span>Reset: <strong>00:00:00</strong></span>
+                    <span>Reinicia em: <strong id="midnightCountdownTimer" style="color:var(--gold-accent); font-variant-numeric: tabular-nums;">--h --m --s</strong></span>
                 </div>
             </div>
 
             <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
-                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:4px;">Banco de Bias & Reconhecimento Facial</h4>
-                <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">Salve o nome e a foto frontal oficial no banco de dados para validação automática no pódio.</p>
+                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:4px;">Meu Representante (ID 1 a 1000)</h4>
+                <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">Cadastre ou selecione seu Bias oficial para validação de pixels no pódio.</p>
                 
-                <div style="display:flex; gap:14px; align-items:flex-start; margin-bottom:12px;">
-                    <div style="flex-shrink:0;">
-                        <label for="biasFrontalFile" class="photo-square-picker" id="biasSquarePreview">
-                            <span style="font-size:22px;">📷</span>
-                            <span style="font-size:11px; font-weight:600;">Foto</span>
-                        </label>
-                        <input type="file" id="biasFrontalFile" accept="image/*" style="display:none;" onchange="previewBiasSquarePhoto(event)">
+                <div class="form-group" style="margin-bottom:10px;">
+                    <label class="form-label">Nome do Bias (escolha uma foto de rosto)</label>
+                    <input type="text" id="biasNameInput" class="glass-input" placeholder="Ex: Park Chanyeol..." autocomplete="off" oninput="onBiasNameType(this.value)" onfocus="onBiasNameType(this.value)">
+                    <div class="bias-country-dropdown" id="biasCountryDropdown"></div>
+                </div>
+
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
+                    <div>
+                        <label class="form-label">Função</label>
+                        <select id="biasRoleInput" class="glass-select">
+                            <option value="Ator">Ator</option>
+                            <option value="Atriz">Atriz</option>
+                            <option value="K-popper">K-popper</option>
+                        </select>
                     </div>
-
-                    <div style="flex:1;">
-                        <div class="form-group" style="margin-bottom:8px;">
-                            <label class="form-label">Nome do Bias (Digite para buscar ou cadastrar)</label>
-                            <input type="text" id="biasNameInput" class="glass-input" placeholder="Ex: Cha Eun-woo..." autocomplete="off" oninput="onBiasNameType(this.value)" onfocus="onBiasNameType(this.value)">
-                            <div class="bias-country-dropdown" id="biasCountryDropdown"></div>
-                        </div>
-
-                        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px;">
-                            <div>
-                                <label class="form-label">Função</label>
-                                <select id="biasRoleInput" class="glass-select">
-                                    <option value="Ator">Ator</option>
-                                    <option value="Atriz">Atriz</option>
-                                    <option value="K-popper">K-popper</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="form-label">ID Oficial (1 - 1000)</label>
-                                <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="1 a 1000">
-                            </div>
-                        </div>
+                    <div>
+                        <label class="form-label">ID Oficial (1 - 1000)</label>
+                        <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="1 a 1000">
                     </div>
                 </div>
 
-                <button class="btn-gold" onclick="saveBiasRegistration()">Salvar no Banco de Bias</button>
+                <!-- Botão Salvar Representante + Caixinha de acesso direto à galeria ao lado -->
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn-gold" style="flex:1;" onclick="saveBiasRegistration()">Salvar Representante</button>
+                    <label for="biasFrontalFile" class="photo-square-picker" id="biasSquarePreview" title="Escolher foto de rosto na galeria">
+                        <span style="font-size:18px;">🖼️</span>
+                    </label>
+                    <input type="file" id="biasFrontalFile" accept="image/*" style="display:none;" onchange="previewBiasSquarePhoto(event)">
+                </div>
             </div>
 
             <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
                 <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:6px; text-align:center;">Participar do Desafio</h4>
-                <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; text-align:center;">Selecione seu Bias salvo na lista para vincular ao seu @arroba no pódio:</p>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; text-align:center;">Selecione seu Bias salvo na lista para vincular ao seu pódio:</p>
                 
                 <div class="form-group">
                     <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Escolha o Bias da lista..." autocomplete="off" oninput="filterChallengeBiasList(this.value)" onfocus="filterChallengeBiasList(this.value)">
@@ -1091,18 +1091,18 @@
             <input type="file" id="videoDirectInput" accept="video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Umbrella..." onkeypress="if(event.key==='Enter') submitPost()">
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no CherBluss..." onkeypress="if(event.key==='Enter') submitPost()">
             <button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
 
-    <footer class="app-footer">
-        umbrella.suporte@gmail.com
+    <footer class="app-footer notranslate" translate="no">
+        cherbluss.suporte@gmail.com
     </footer>
 
     <div class="modal-backdrop" id="customModalBackdrop">
         <div class="glass-panel modal-box">
-            <h3 class="modal-title" id="customModalTitle">Umbrella</h3>
+            <h3 class="modal-title notranslate" id="customModalTitle">CherBluss</h3>
             <div class="modal-body-text" id="customModalBody"></div>
             <div class="modal-actions" id="customModalActions"></div>
         </div>
@@ -1155,7 +1155,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v50';
+        const LOCAL_KEY = 'cherbluss_clean_state_v1';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1181,6 +1181,7 @@
 
         let postsFromFirebase = [];
         let biasesDatabase = [];
+        let usersDirectory = [];
         let currentAttachedDataUrl = null;
         let currentAttachedType = null;
         let activeFandomFilter = null;
@@ -1189,6 +1190,53 @@
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
+        }
+
+        // Função para censurar o meio do arroba no pódio (ex: @luana -> @lu**na)
+        function maskHandle(rawHandle, fallbackAuthor) {
+            let clean = (rawHandle || '').trim();
+            if (!clean) {
+                clean = '@' + (fallbackAuthor || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
+            }
+            if (!clean.startsWith('@')) clean = '@' + clean;
+            const body = clean.slice(1);
+            if (body.length <= 2) return '@' + body[0] + '**';
+            if (body.length === 3) return '@' + body[0] + '**' + body[2];
+            const start = body.slice(0, 2);
+            const end = body.slice(-2);
+            return `@${start}**${end}`;
+        }
+
+        // Contador regressivo em tempo real até a meia-noite (00:00:00)
+        function startMidnightCountdown() {
+            function updateTimer() {
+                const now = new Date();
+                const todayStr = now.toDateString();
+
+                // Zera os 3 votos automaticamente quando vira a meia-noite
+                if (appState.dailyVotes.date !== todayStr) {
+                    appState.dailyVotes = { date: todayStr, used: 0 };
+                    saveLocal();
+                    const counterEl = document.getElementById('dailyVotesCounter');
+                    if (counterEl) counterEl.textContent = '3/3';
+                }
+
+                const midnight = new Date(now);
+                midnight.setHours(24, 0, 0, 0);
+                const diffMs = midnight - now;
+
+                const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
+
+                const pad = (n) => String(n).padStart(2, '0');
+                const timerEl = document.getElementById('midnightCountdownTimer');
+                if (timerEl) {
+                    timerEl.textContent = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+                }
+            }
+            updateTimer();
+            setInterval(updateTimer, 1000);
         }
 
         function initFirebaseSync() {
@@ -1219,6 +1267,14 @@
                 });
                 renderAll();
             });
+
+            const qUsers = query(collection(db, "users"));
+            onSnapshot(qUsers, (snapshot) => {
+                usersDirectory = [];
+                snapshot.forEach((docSnap) => {
+                    usersDirectory.push({ uid: docSnap.id, ...docSnap.data() });
+                });
+            });
         }
 
         function syncFandomNotifications() {
@@ -1247,7 +1303,7 @@
             if (user) {
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuário Umbrella';
+                appState.user.name = user.displayName || 'Usuário CherBluss';
                 if (!appState.user.handle || appState.user.handle === '@usuario') {
                     appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuario');
                 }
@@ -1298,21 +1354,22 @@
                 appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuario');
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
+                await saveUserDataToFirestore();
                 saveLocal();
                 applyUserTheme();
                 closeAuthGate();
                 syncFandomNotifications();
                 renderAll();
             } catch (error) {
-                showUmbrellaModal({ title: 'Aviso de Login', htmlBody: error.message });
+                showCherBlussModal({ title: 'Aviso de Login', htmlBody: error.message });
             }
         };
 
         window.showManualRegisterForm = function () {
             const card = document.getElementById('authCardMain');
             card.innerHTML = `
-                <img src="./logo.png" alt="Umbrella" class="auth-logo" style="max-width:90px;">
-                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta no Umbrella</h3>
+                <img src="./logo.png" alt="CherBluss" class="auth-logo" style="max-width:90px;">
+                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta no <span translate="no">CherBluss</span></h3>
                 <div class="form-group"><input type="text" id="regName" class="glass-input" placeholder="Seu Nome"></div>
                 <div class="form-group"><input type="text" id="regHandle" class="glass-input" placeholder="Seu @Arroba (Ex: @luana)"></div>
                 <div class="form-group"><input type="email" id="regEmail" class="glass-input" placeholder="Seu E-mail"></div>
@@ -1322,19 +1379,20 @@
             `;
         };
 
-        window.submitManualRegister = function () {
+        window.submitManualRegister = async function () {
             const name = document.getElementById('regName').value.trim();
             const handle = document.getElementById('regHandle').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const pass = document.getElementById('regPass').value;
 
-            if (!name || !handle || !email || !pass) { showUmbrellaModal({ title: 'Atenção', htmlBody: 'Preencha todos os campos!' }); return; }
+            if (!name || !handle || !email || !pass) { showCherBlussModal({ title: 'Atenção', htmlBody: 'Preencha todos os campos!' }); return; }
 
             appState.user.uid = 'manual_' + Date.now();
             appState.user.loggedIn = true;
             appState.user.name = name;
             appState.user.handle = handle.startsWith('@') ? handle : '@' + handle;
             appState.user.email = email;
+            await saveUserDataToFirestore();
             saveLocal();
             applyUserTheme();
             closeAuthGate();
@@ -1345,7 +1403,7 @@
         window.showManualLoginForm = function () {
             const card = document.getElementById('authCardMain');
             card.innerHTML = `
-                <img src="./logo.png" alt="Umbrella" class="auth-logo" style="max-width:90px;">
+                <img src="./logo.png" alt="CherBluss" class="auth-logo" style="max-width:90px;">
                 <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Entrar na sua Conta</h3>
                 <div class="form-group"><input type="email" id="logEmail" class="glass-input" placeholder="Seu E-mail"></div>
                 <div class="form-group"><input type="password" id="logPass" class="glass-input" placeholder="Sua Senha"></div>
@@ -1354,15 +1412,16 @@
             `;
         };
 
-        window.submitManualLogin = function () {
+        window.submitManualLogin = async function () {
             const email = document.getElementById('logEmail').value.trim();
             const pass = document.getElementById('logPass').value;
-            if (!email || !pass) { showUmbrellaModal({ title: 'Atenção', htmlBody: 'Informe e-mail e senha.' }); return; }
+            if (!email || !pass) { showCherBlussModal({ title: 'Atenção', htmlBody: 'Informe e-mail e senha.' }); return; }
             appState.user.uid = 'manual_' + email.replace(/[^a-zA-Z0-9]/g, '_');
             appState.user.loggedIn = true;
             appState.user.name = email.split('@')[0];
             appState.user.handle = '@' + email.split('@')[0];
             appState.user.email = email;
+            await saveUserDataToFirestore();
             saveLocal();
             applyUserTheme();
             closeAuthGate();
@@ -1381,7 +1440,7 @@
             location.reload();
         };
 
-        window.showUmbrellaModal = function ({ title, htmlBody, buttons = [] }) {
+        window.showCherBlussModal = function ({ title, htmlBody, buttons = [] }) {
             const backdrop = document.getElementById('customModalBackdrop');
             document.getElementById('customModalTitle').textContent = title;
             document.getElementById('customModalBody').innerHTML = htmlBody;
@@ -1390,7 +1449,7 @@
             actionsEl.innerHTML = '';
 
             if (buttons.length === 0) {
-                buttons = [{ label: 'OK', primary: true, onClick: closeUmbrellaModal }];
+                buttons = [{ label: 'OK', primary: true, onClick: closeCherBlussModal }];
             }
 
             buttons.forEach(btn => {
@@ -1398,14 +1457,14 @@
                 b.textContent = btn.label;
                 b.className = btn.primary ? 'btn-gold' : 'btn-pill-gold';
                 b.style.width = 'auto';
-                b.onclick = () => btn.onClick ? btn.onClick() : closeUmbrellaModal();
+                b.onclick = () => btn.onClick ? btn.onClick() : closeCherBlussModal();
                 actionsEl.appendChild(b);
             });
 
             backdrop.classList.add('open');
         };
 
-        window.closeUmbrellaModal = function () {
+        window.closeCherBlussModal = function () {
             document.getElementById('customModalBackdrop').classList.remove('open');
         };
 
@@ -1433,7 +1492,7 @@
                 const dataUrl = e.target.result;
                 appState.user.customBgUrl = dataUrl;
                 document.documentElement.style.setProperty('--custom-bg-url', `url('${dataUrl}')`);
-                document.getElementById('profileBgLabel').textContent = '✅ Fundo Atualizado';
+                document.getElementById('profileBgLabel').textContent = '✅ Fundo Personalizado Ativo';
                 saveLocal();
             };
             reader.readAsDataURL(file);
@@ -1442,7 +1501,7 @@
         window.resetDefaultBackground = function() {
             appState.user.customBgUrl = '';
             document.documentElement.style.setProperty('--custom-bg-url', `url('./fundo.png')`);
-            document.getElementById('profileBgLabel').textContent = '🖼️ Trocar Plano de Fundo';
+            document.getElementById('profileBgLabel').textContent = '🖼️ Escolher fundo na galeria';
             saveLocal();
         };
 
@@ -1507,7 +1566,7 @@
                         <div style="flex:1; padding-right:8px;">
                             <span style="font-size:10px; color:var(--gold-accent); display:block; margin-bottom:4px;">${formatPostDate(p.createdAt)} • ${p.isChallenge ? 'Desafio' : 'Geral'}</span>
                             <p style="font-size:12px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia)'}</p>
-                            ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:220px; object-fit:contain; border-radius:8px;" controls playsinline webkit-playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;">`) : ''}
+                            ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:220px; object-fit:contain; border-radius:8px; background:#000;" controls playsinline webkit-playsinline muted preload="metadata" onloadedmetadata="this.currentTime=0.1"></video>` : `<img src="${p.media}" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;">`) : ''}
                         </div>
                         <button class="btn-danger-pill" style="font-size:10px;" onclick="confirmDeletePost('${p.id}')">Excluir</button>
                     </div>
@@ -1576,7 +1635,7 @@
             reader.onload = function(e) {
                 tempBiasPhotoPreviewUrl = e.target.result;
                 const box = document.getElementById('biasSquarePreview');
-                box.innerHTML = `<img src="${tempBiasPhotoPreviewUrl}" alt="Foto">`;
+                box.innerHTML = `<img src="${tempBiasPhotoPreviewUrl}" alt="Foto de Rosto">`;
             };
             reader.readAsDataURL(file);
         };
@@ -1598,8 +1657,8 @@
             }
 
             dropdown.innerHTML = matches.map(b => `
-                <div class="bias-dropdown-item" onclick="selectBiasFromDatabase('${b.name.replace(/'/g, "\\'")}', '${b.role}', ${b.id}, '${b.frontalUrl || './guarda-chuva.png'}')">
-                    <img src="${b.frontalUrl || './guarda-chuva.png'}" class="bias-dropdown-thumb" onerror="this.src='./guarda-chuva.png'">
+                <div class="bias-dropdown-item" onclick="selectBiasFromDatabase('${b.name.replace(/'/g, "\\'")}', '${b.role}', ${b.id}, '${b.frontalUrl || './logo.png'}')">
+                    <img src="${b.frontalUrl || './logo.png'}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
                     <div>
                         <strong style="color:var(--gold-accent); display:block;">${b.name}</strong>
                         <span style="font-size:11px; color:var(--text-muted);">${b.role} • ID #${b.id}</span>
@@ -1617,7 +1676,7 @@
             tempBiasPhotoPreviewUrl = frontalUrl;
 
             const box = document.getElementById('biasSquarePreview');
-            box.innerHTML = `<img src="${frontalUrl}" alt="Foto" onerror="this.src='./guarda-chuva.png'">`;
+            box.innerHTML = `<img src="${frontalUrl}" alt="Foto" onerror="this.src='./logo.png'">`;
 
             appState.bias = { name, role, id, frontalUrl, lastUpdated: Date.now() };
             saveLocal();
@@ -1635,8 +1694,8 @@
             }
 
             dropdown.innerHTML = matches.map(b => `
-                <div class="bias-dropdown-item" onclick="pickBiasForChallengePost('${b.name.replace(/'/g, "\\'")}', '${b.role}', ${b.id}, '${b.frontalUrl || './guarda-chuva.png'}')">
-                    <img src="${b.frontalUrl || './guarda-chuva.png'}" class="bias-dropdown-thumb" onerror="this.src='./guarda-chuva.png'">
+                <div class="bias-dropdown-item" onclick="pickBiasForChallengePost('${b.name.replace(/'/g, "\\'")}', '${b.role}', ${b.id}, '${b.frontalUrl || './logo.png'}')">
+                    <img src="${b.frontalUrl || './logo.png'}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
                     <div>
                         <strong style="color:var(--gold-accent); display:block;">${b.name}</strong>
                         <span style="font-size:11px; color:var(--text-muted);">${b.role} • ID #${b.id}</span>
@@ -1666,20 +1725,20 @@
                 const idNum = parseInt(document.getElementById('biasIdInput').value, 10);
 
                 if (!name || isNaN(idNum) || idNum < 1 || idNum > 1000) {
-                    showUmbrellaModal({ title: 'Dados Incompletos', htmlBody: 'Informe o nome e o ID oficial (1 a 1000).' });
+                    showCherBlussModal({ title: 'Dados Incompletos', htmlBody: 'Informe o nome, escolha uma foto de rosto na galeria ao lado e defina o ID oficial (1 a 1000).' });
                     return;
                 }
 
                 const alreadyExistsInDb = biasesDatabase.some(b => b.id === idNum && b.name.toLowerCase() !== name.toLowerCase());
                 if (alreadyExistsInDb) {
-                    showUmbrellaModal({
+                    showCherBlussModal({
                         title: 'ID já ocupado 🌸',
                         htmlBody: `O ID <strong>#${idNum}</strong> já pertence a outro representante no banco de dados. Escolha outro número!`
                     });
                     return;
                 }
 
-                const frontalUrl = tempBiasPhotoPreviewUrl || './guarda-chuva.png';
+                const frontalUrl = tempBiasPhotoPreviewUrl || './logo.png';
 
                 try {
                     const slugId = `bias_${idNum}_${name.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
@@ -1696,35 +1755,35 @@
                     document.getElementById('challengeSelectedBiasInput').value = `${name} (#${idNum})`;
                     saveLocal();
                     renderAll();
-                    showUmbrellaModal({
-                        title: 'Salvo no Banco de Bias! ☔',
-                        htmlBody: `<strong>${name}</strong> (#${idNum}) foi salvo com sucesso e já está disponível na lista de seleção do Desafio!`
+                    showCherBlussModal({
+                        title: 'Representante Salvo! 🌸',
+                        htmlBody: `<strong>${name}</strong> (#${idNum}) foi salvo com sucesso e já está pronto para o Desafio!`
                     });
                 } catch (e) {
-                    showUmbrellaModal({ title: 'Erro ao Salvar', htmlBody: e.message });
+                    showCherBlussModal({ title: 'Erro ao Salvar', htmlBody: e.message });
                 }
             });
         };
 
         window.openMediaActionSheet = function () {
             requireAuthForAction(() => {
-                showUmbrellaModal({
-                    title: 'Adicionar Mídia ☔',
+                showCherBlussModal({
+                    title: 'Adicionar Mídia 🌸',
                     htmlBody: `
                         <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Escolha usando os recursos nativos do seu celular:</p>
                         <div style="display:flex; flex-direction:column; gap:10px;">
-                            <button class="btn-gold" onclick="closeUmbrellaModal(); document.getElementById('cameraDirectInput').click();">
+                            <button class="btn-gold" onclick="closeCherBlussModal(); document.getElementById('cameraDirectInput').click();">
                                 📸 Câmera Nativa (Foto)
                             </button>
-                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeUmbrellaModal(); document.getElementById('videoDirectInput').click();">
+                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeCherBlussModal(); document.getElementById('videoDirectInput').click();">
                                 🎥 Câmera Nativa (Gravar Vídeo)
                             </button>
-                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeUmbrellaModal(); document.getElementById('galleryDirectInput').click();">
+                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeCherBlussModal(); document.getElementById('galleryDirectInput').click();">
                                 🖼️ Galeria Nativa (Fotos e Vídeos)
                             </button>
                         </div>
                     `,
-                    buttons: [{ label: 'Cancelar', primary: false, onClick: closeUmbrellaModal }]
+                    buttons: [{ label: 'Cancelar', primary: false, onClick: closeCherBlussModal }]
                 });
             });
         };
@@ -1732,21 +1791,23 @@
         window.handleMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
-            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp)$/i.test(file.name);
-            await submitPostDirectlyWithMedia(URL.createObjectURL(file), isVideo ? 'video' : 'image', false);
+            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp|avi)$/i.test(file.name);
+            const blobUrl = URL.createObjectURL(file);
+            await submitPostDirectlyWithMedia(blobUrl, isVideo ? 'video' : 'image', false);
         };
 
         window.handleChallengeMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
-            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp)$/i.test(file.name);
+            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp|avi)$/i.test(file.name);
             
             if (!appState.bias.id || !appState.bias.name) {
-                showUmbrellaModal({ title: 'Selecione seu Bias', htmlBody: 'Escolha seu Bias na lista acima ou cadastre um novo antes de enviar sua foto.' });
+                showCherBlussModal({ title: 'Selecione seu Bias', htmlBody: 'Escolha seu Bias na lista acima ou cadastre um novo antes de enviar sua foto.' });
                 return;
             }
 
-            await submitPostDirectlyWithMedia(URL.createObjectURL(file), isVideo ? 'video' : 'image', true);
+            const blobUrl = URL.createObjectURL(file);
+            await submitPostDirectlyWithMedia(blobUrl, isVideo ? 'video' : 'image', true);
         };
 
         async function submitPostDirectlyWithMedia(mediaUrl, mediaType, isChallenge = false) {
@@ -1786,28 +1847,73 @@
 
                 saveLocal();
                 renderAll();
-                showUmbrellaModal({ title: 'Publicado com Sucesso! ☔', htmlBody: isPrivateFandom ? `Publicado com segurança dentro de <strong>${targetFandom}</strong>.` : 'Sua mídia foi enviada perfeitamente.' });
+                showCherBlussModal({ title: 'Publicado com Sucesso! 🌸', htmlBody: isPrivateFandom ? `Publicado com segurança dentro de <strong>${targetFandom}</strong>.` : 'Sua mídia foi enviada perfeitamente.' });
             } catch (e) {
-                showUmbrellaModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
+                showCherBlussModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
             }
         }
 
+        // Busca corrigida para funcionar em tempo real com @arroba (tanto posts quanto usuários)
         window.executeGlobalSearch = function () {
             const input = document.getElementById('globalSearchInput');
-            const val = input.value.trim();
-            if (val.startsWith('@') && val.length > 1) {
-                const queryUser = val.substring(1).toLowerCase();
-                const matchedPosts = postsFromFirebase.filter(p => 
-                    !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral') &&
-                    ((p.authorHandle && p.authorHandle.toLowerCase().includes(queryUser)) || p.author.toLowerCase().includes(queryUser))
-                );
-                const container = document.getElementById('mainFeedList');
-                if (matchedPosts.length > 0) {
-                    container.innerHTML = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; color:var(--gold-accent); font-size:12.5px;">Resultados para: ${val}</div>` + matchedPosts.map(p => renderPostCardHTML(p)).join('');
-                } else {
-                    showUmbrellaModal({ title: 'Busca Umbrella', htmlBody: `Nenhuma publicação pública encontrada para <strong>${val}</strong>.` });
-                }
-            } else if (val === '') { renderAll(); }
+            const rawVal = input.value.trim().toLowerCase();
+            const container = document.getElementById('mainFeedList');
+
+            if (!rawVal) {
+                renderAll();
+                return;
+            }
+
+            // Garante que estamos vendo o feed onde os resultados aparecem
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('view-feed').classList.add('active');
+
+            const cleanQuery = rawVal.startsWith('@') ? rawVal.slice(1) : rawVal;
+            if (!cleanQuery) {
+                renderAll();
+                return;
+            }
+
+            const matchedUsers = usersDirectory.filter(u => 
+                (u.handle && u.handle.toLowerCase().replace('@', '').includes(cleanQuery)) ||
+                (u.name && u.name.toLowerCase().includes(cleanQuery))
+            );
+
+            const matchedPosts = postsFromFirebase.filter(p => 
+                !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral') &&
+                ((p.authorHandle && p.authorHandle.toLowerCase().replace('@', '').includes(cleanQuery)) ||
+                 (p.author && p.author.toLowerCase().includes(cleanQuery)))
+            );
+
+            let htmlOutput = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; color:var(--gold-accent); font-size:12.5px;">
+                <span>Buscando por: <strong>@${cleanQuery}</strong></span>
+                <button class="btn-pill-gold" style="padding:3px 10px; font-size:11px;" onclick="document.getElementById('globalSearchInput').value=''; renderAll();">Limpar</button>
+            </div>`;
+
+            if (matchedUsers.length > 0) {
+                htmlOutput += matchedUsers.map(u => `
+                    <div class="glass-panel" style="padding:12px 14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="visitUserProfile('${u.uid}', '${(u.name || 'Usuário').replace(/'/g, "\\'")}', '${u.handle || '@usuario'}')">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${u.avatar || './aconchego.png'}" onerror="this.src='./logo.png'" style="width:42px; height:42px; border-radius:50%; border:1px solid var(--gold-accent); object-fit:cover;">
+                            <div>
+                                <div style="font-size:13.5px; font-weight:700; color:var(--gold-accent);">${u.name || 'Usuário'}</div>
+                                <div class="notranslate" style="font-size:11.5px; color:var(--text-muted);">${u.handle || '@usuario'}</div>
+                            </div>
+                        </div>
+                        <span style="font-size:11.5px; color:var(--gold-accent);">Ver Perfil ➔</span>
+                    </div>
+                `).join('');
+            }
+
+            if (matchedPosts.length > 0) {
+                htmlOutput += matchedPosts.map(p => renderPostCardHTML(p)).join('');
+            }
+
+            if (matchedUsers.length === 0 && matchedPosts.length === 0) {
+                htmlOutput += `<div class="glass-panel empty-state-box">Nenhum perfil ou publicação encontrada para <strong>@${cleanQuery}</strong>.</div>`;
+            }
+
+            container.innerHTML = htmlOutput;
         };
 
         window.switchView = function (viewName) {
@@ -1829,7 +1935,7 @@
             }
 
             const composerInput = document.getElementById('mainComposerInput');
-            if (viewName === 'feed') composerInput.placeholder = "Escreva no Umbrella...";
+            if (viewName === 'feed') composerInput.placeholder = "Escreva no CherBluss...";
             else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
             else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
             else if (viewName === 'amigos') composerInput.placeholder = "Mande uma mensagem para seus amigos...";
@@ -1841,11 +1947,11 @@
             const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
             const winner = challengePosts[rank - 1];
             if (winner && winner.media) {
-                const winnerHandle = winner.authorHandle || `@${winner.author.toLowerCase().replace(/\s+/g, '')}`;
-                const winnerBias = winner.biasName ? ` • Bias: ${winner.biasName}` : '';
-                openLightbox(winner.media, winner.mediaType || 'image', `${rank}º Lugar • ${winnerHandle}${winnerBias} (${winner.likes || 0} votos)`);
+                const maskedUser = maskHandle(winner.authorHandle, winner.author);
+                const winnerBias = winner.biasName ? ` • ${winner.biasName}` : '';
+                openLightbox(winner.media, winner.mediaType || 'image', `${rank}º Lugar • ${maskedUser}${winnerBias} (${winner.likes || 0} votos)`);
             } else {
-                showUmbrellaModal({ title: `${rank}º Pódio Automático`, htmlBody: 'Ainda não há participações suficientes para este pódio nesta semana.' });
+                showCherBlussModal({ title: `${rank}º Pódio Automático`, htmlBody: 'Ainda não há participações suficientes para este pódio nesta semana.' });
             }
         };
 
@@ -1861,7 +1967,7 @@
                 if (isInsideFandomView && activeFandomFilter) {
                     const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
                     if (!fandomObj || !hasFandomAccess(fandomObj)) {
-                        showUmbrellaModal({ title: 'Acesso Negado 🔒', htmlBody: 'Você precisa ser aprovado neste Fandom para publicar aqui.' });
+                        showCherBlussModal({ title: 'Acesso Negado 🔒', htmlBody: 'Você precisa ser aprovado neste Fandom para publicar aqui.' });
                         return;
                     }
                 }
@@ -1894,28 +2000,28 @@
                     saveLocal();
                     renderAll();
                 } catch (e) {
-                    showUmbrellaModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
+                    showCherBlussModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
                 }
             });
         };
 
         window.confirmDeletePost = function (postId) {
             requireAuthForAction(() => {
-                showUmbrellaModal({
+                showCherBlussModal({
                     title: '🗑️ Excluir Publicação',
                     htmlBody: 'Você realmente deseja apagar essa publicação?',
                     buttons: [
-                        { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                        { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
                         {
                             label: 'Sim, Apagar',
                             primary: true,
                             onClick: async () => {
                                 try {
                                     await deleteDoc(doc(db, "posts", postId));
-                                    closeUmbrellaModal();
+                                    closeCherBlussModal();
                                     renderMyAconchegoPosts();
                                 } catch (e) {
-                                    showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+                                    showCherBlussModal({ title: 'Erro', htmlBody: e.message });
                                 }
                             }
                         }
@@ -1930,7 +2036,7 @@
                 if (!post) return;
                 if (post.isChallenge && !post.likedByMe) {
                     if (appState.dailyVotes.used >= 3) {
-                        showUmbrellaModal({ title: 'Limite Atingido', htmlBody: 'Você já usou seus 3 votos de hoje.' });
+                        showCherBlussModal({ title: 'Limite Atingido', htmlBody: 'Você já usou seus 3 votos de hoje.' });
                         return;
                     }
                     appState.dailyVotes.used += 1;
@@ -1961,7 +2067,7 @@
                     await updateDoc(doc(db, "posts", postId), { comments });
                     input.value = '';
                 } catch (e) {
-                    showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+                    showCherBlussModal({ title: 'Erro', htmlBody: e.message });
                 }
             });
         };
@@ -1979,11 +2085,11 @@
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
-                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação pendente nos seus Fandoms.' });
+                    showCherBlussModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação pendente nos seus Fandoms.' });
                     return;
                 }
                 const notif = appState.notifications[0];
-                showUmbrellaModal({
+                showCherBlussModal({
                     title: 'Solicitação de Fandom 🔒',
                     htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Ao aprovar, esta pessoa poderá ver e publicar dentro deste espaço particular.</p>`,
                     buttons: [
@@ -1996,7 +2102,7 @@
                                         pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
                                     });
                                 } catch (e) {}
-                                closeUmbrellaModal();
+                                closeCherBlussModal();
                             }
                         },
                         { 
@@ -2009,7 +2115,7 @@
                                         pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
                                     });
                                 } catch (e) {}
-                                closeUmbrellaModal(); 
+                                closeCherBlussModal(); 
                             } 
                         }
                     ]
@@ -2019,7 +2125,7 @@
 
         window.openCreateFandomModal = function () {
             requireAuthForAction(() => {
-                showUmbrellaModal({
+                showCherBlussModal({
                     title: 'Criar Novo Fandom Particular 🔒',
                     htmlBody: `
                         <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;">Este espaço nasce trancado e totalmente isolado do feed principal.</p>
@@ -2039,7 +2145,7 @@
                         </div>
                     `,
                     buttons: [
-                        { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                        { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
                         {
                             label: 'Criar Fandom Trancado',
                             primary: true,
@@ -2062,12 +2168,12 @@
                                                 pendingRequests: [],
                                                 createdAt: serverTimestamp()
                                             });
-                                            closeUmbrellaModal();
+                                            closeCherBlussModal();
                                         } catch (e) {
-                                            showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+                                            showCherBlussModal({ title: 'Erro', htmlBody: e.message });
                                         }
                                     } else {
-                                        showUmbrellaModal({ title: 'Aviso', htmlBody: 'Já existe um fandom com esse nome!' });
+                                        showCherBlussModal({ title: 'Aviso', htmlBody: 'Já existe um fandom com esse nome!' });
                                     }
                                 }
                             }
@@ -2097,16 +2203,16 @@
                 } else {
                     const alreadyRequested = fandomObj.pendingRequests && fandomObj.pendingRequests.some(r => r.uid === appState.user.uid);
                     if (alreadyRequested) {
-                        showUmbrellaModal({
+                        showCherBlussModal({
                             title: `Solicitação Pendente ⏳`,
                             htmlBody: `Você já enviou uma solicitação para entrar em <strong>${fandomName}</strong>. Aguarde o administrador aprovar na gotinha 💧.`
                         });
                     } else {
-                        showUmbrellaModal({
+                        showCherBlussModal({
                             title: `Fandom Particular 🔒`,
                             htmlBody: `O espaço <strong>${fandomName}</strong> é trancado. Deseja enviar uma solicitação de entrada para o administrador?`,
                             buttons: [
-                                { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                                { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
                                 {
                                     label: 'Enviar Solicitação 📩',
                                     primary: true,
@@ -2118,13 +2224,13 @@
                                                     name: appState.user.name
                                                 })
                                             });
-                                            closeUmbrellaModal();
-                                            showUmbrellaModal({
+                                            closeCherBlussModal();
+                                            showCherBlussModal({
                                                 title: 'Solicitação Enviada! ✅',
                                                 htmlBody: `Seu pedido para entrar em <strong>${fandomName}</strong> foi enviado.`
                                             });
                                         } catch (e) {
-                                            showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+                                            showCherBlussModal({ title: 'Erro', htmlBody: e.message });
                                         }
                                     }
                                 }
@@ -2139,17 +2245,17 @@
             const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
             const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
 
-            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeUmbrellaModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
-            let deleteHtml = isCreatorOrAdmin ? `<button class="btn-danger-pill" style="width:100%; padding:10px;" onclick="closeUmbrellaModal(); confirmDeleteFandom('${fandomObj.id}', '${activeFandomFilter}')">🗑️ Excluir Fandom</button>` : '';
+            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeCherBlussModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
+            let deleteHtml = isCreatorOrAdmin ? `<button class="btn-danger-pill" style="width:100%; padding:10px;" onclick="closeCherBlussModal(); confirmDeleteFandom('${fandomObj.id}', '${activeFandomFilter}')">🗑️ Excluir Fandom</button>` : '';
 
-            showUmbrellaModal({
+            showCherBlussModal({
                 title: `Opções • ${activeFandomFilter}`,
                 htmlBody: `
                     <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Gerencie as configurações deste espaço particular:</p>
                     ${adminHtml}
                     ${deleteHtml}
                 `,
-                buttons: [{ label: 'Fechar', primary: false, onClick: closeUmbrellaModal }]
+                buttons: [{ label: 'Fechar', primary: false, onClick: closeCherBlussModal }]
             });
         };
 
@@ -2189,10 +2295,10 @@
                 `;
             }
 
-            showUmbrellaModal({
+            showCherBlussModal({
                 title: `Membros & Admins • ${fandomName}`,
                 htmlBody: `<div style="max-height:220px; overflow-y:auto;">${membersHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhum membro ativo ainda.</p>'}</div>`,
-                buttons: [{ label: 'Concluir', primary: true, onClick: closeUmbrellaModal }]
+                buttons: [{ label: 'Concluir', primary: true, onClick: closeCherBlussModal }]
             });
         };
 
@@ -2217,18 +2323,18 @@
         };
 
         window.confirmDeleteFandom = function (fandomId, fandomName) {
-            showUmbrellaModal({
+            showCherBlussModal({
                 title: '🗑️ Excluir Fandom',
                 htmlBody: `Você realmente deseja apagar o fandom <strong>${fandomName}</strong>?`,
                 buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeUmbrellaModal },
+                    { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
                     {
                         label: 'Sim, Apagar',
                         primary: true,
                         onClick: async () => {
                             await deleteDoc(doc(db, "fandoms", fandomId));
                             closeCurrentFandom();
-                            closeUmbrellaModal();
+                            closeCherBlussModal();
                         }
                     }
                 ]
@@ -2241,14 +2347,14 @@
         };
 
         function openMasterAdminPanel() {
-            showUmbrellaModal({
+            showCherBlussModal({
                 title: '✨ Painel de Edição do Desafio Semanal',
                 htmlBody: `
                     <div class="form-group"><label class="form-label">Diretriz / Tema</label><input type="text" id="admDirective" class="glass-input" value="${appState.directive}"></div>
                 `,
                 buttons: [
-                    { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
-                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective'].value.trim(); saveLocal(); renderAll(); closeUmbrellaModal(); } }
+                    { label: 'Fechar', primary: false, onClick: closeCherBlussModal },
+                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective').value.trim(); saveLocal(); renderAll(); closeCherBlussModal(); } }
                 ]
             });
         }
@@ -2259,7 +2365,7 @@
             const container = document.getElementById('lightboxMediaContainer');
             document.getElementById('lightboxCaption').textContent = caption;
             container.innerHTML = type === 'video'
-                ? `<video src="${src}" class="lightbox-media" controls autoplay playsinline></video>`
+                ? `<video src="${src}" class="lightbox-media" controls autoplay playsinline webkit-playsinline></video>`
                 : `<img src="${src}" class="lightbox-media" alt="">`;
             lb.classList.add('open');
         };
@@ -2296,7 +2402,7 @@
         function renderPostCardHTML(post) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video'
-                    ? `<video src="${post.media}" class="post-media" controls playsinline webkit-playsinline preload="metadata"></video>`
+                    ? `<video src="${post.media}" class="post-media" controls playsinline webkit-playsinline preload="metadata" onloadedmetadata="this.currentTime=0.1"></video>`
                     : `<img src="${post.media}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
 
@@ -2332,7 +2438,7 @@
                                     ${post.author}
                                     ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
                                 </div>
-                                <div class="post-meta">${userHandleDisplay} • ${subLabel}</div>
+                                <div class="post-meta notranslate">${userHandleDisplay} • ${subLabel}</div>
                             </div>
                         </div>
                         <div style="font-size:11px; color:var(--text-muted); font-weight:600;">
@@ -2345,7 +2451,7 @@
 
                     <div class="post-actions-clean">
                         <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
-                            <span>☔</span>
+                            <span>🌸</span>
                             <span>${post.likes || 0}</span>
                         </button>
                     </div>
@@ -2367,6 +2473,7 @@
             document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
             updateNotifBadge();
 
+            // Pódio: @lu**na em cima e nome do Bias em fonte bonita embaixo
             const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
             for (let i = 0; i < 3; i++) {
                 const rank = i + 1;
@@ -2376,9 +2483,8 @@
                 const biasSubEl = document.getElementById(`podiumBias${rank}`);
 
                 if (winner) {
-                    if (winner.media) imgEl.src = winner.media;
-                    const handleText = winner.authorHandle || `@${winner.author.toLowerCase().replace(/\s+/g, '')}`;
-                    labelEl.textContent = handleText;
+                    if (winner.media && winner.mediaType !== 'video') imgEl.src = winner.media;
+                    labelEl.textContent = maskHandle(winner.authorHandle, winner.author);
                     biasSubEl.textContent = winner.biasName || 'Vencedor';
                 } else {
                     labelEl.textContent = `${rank}º Pódio`;
@@ -2419,22 +2525,24 @@
                 document.getElementById('visitedProfileFeedList').innerHTML = userPosts.length > 0 ? userPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Este usuário ainda não publicou nada no feed público.</div>`;
             }
 
-            const generalPosts = postsFromFirebase.filter(p => 
-                !p.isChallenge && 
-                !p.isPrivateFandom && 
-                (!p.fandom || p.fandom === 'Geral')
-            );
-            document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra abaixo para compartilhar!</div>`;
+            if (!document.getElementById('globalSearchInput').value.trim()) {
+                const generalPosts = postsFromFirebase.filter(p => 
+                    !p.isChallenge && 
+                    !p.isPrivateFandom && 
+                    (!p.fandom || p.fandom === 'Geral')
+                );
+                document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra abaixo para compartilhar!</div>`;
+            }
 
             const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
             document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
 
             document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
                 <div class="glass-panel" style="padding:14px; display:flex; align-items:center; gap:10px;">
-                    <img src="${f.avatar}" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                    <img src="${f.avatar}" onerror="this.src='./logo.png'" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
                     <div>
                         <div style="font-size:14px; font-weight:700;">${f.name}</div>
-                        <div style="font-size:11.5px; color:var(--text-muted);">${f.handle || '@amigo'} • ${f.status}</div>
+                        <div class="notranslate" style="font-size:11.5px; color:var(--text-muted);">${f.handle || '@amigo'} • ${f.status}</div>
                     </div>
                 </div>
             `).join('');
@@ -2447,6 +2555,7 @@
         }, { passive: true });
 
         applyUserTheme();
+        startMidnightCountdown();
         initFirebaseSync();
     </script>
 </body>
