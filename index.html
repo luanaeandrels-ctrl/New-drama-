@@ -1,2562 +1,1646 @@
 <!DOCTYPE html>
-<html lang="pt-BR" translate="no" class="notranslate">
+<html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="google" content="notranslate">
-    <title translate="no">CherBluss</title>
-    <link rel="manifest" href="./manifest.json">
-    <meta name="theme-color" content="#060a1e">
-    <link rel="icon" type="image/png" href="./logo.png">
-    <link rel="apple-touch-icon" href="./logo.png">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-    <style>
-        :root {
-            --glass-bg: rgba(18, 24, 46, 0.78);
-            --glass-dark: rgba(14, 18, 34, 0.45);
-            --gold-border: rgba(251, 191, 36, 0.45);
-            --gold-accent: #fbbf24;
-            --text-main: #f8fafc;
-            --text-muted: rgba(226, 232, 240, 0.7);
-            --danger: #f43f5e;
-            --theme-color-accent: #060a1e;
-            --custom-bg-url: url('./fundo.png');
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            -webkit-tap-highlight-color: transparent;
-            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-        }
-
-        html, body {
-            width: 100%;
-            min-height: 100vh;
-            background: var(--theme-color-accent) var(--custom-bg-url) no-repeat center center fixed !important;
-            background-size: cover !important;
-            color: var(--text-main);
-            overflow-x: hidden;
-            color-scheme: dark;
-        }
-
-        .glass-panel {
-            background: var(--glass-bg);
-            border: 1px solid var(--gold-border);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
-            border-radius: 20px;
-        }
-
-        .app-shell {
-            width: 100%;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 110px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .auth-gate-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 200;
-            background: rgba(4, 7, 18, 0.88);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-
-        .auth-card {
-            width: 100%;
-            max-width: 400px;
-            padding: 26px;
-            text-align: center;
-        }
-
-        .auth-logo {
-            max-width: 110px;
-            margin-bottom: 14px;
-            border-radius: 50%;
-        }
-
-        .unified-top-bar {
-            width: 100%;
-            max-width: 850px;
-            margin: 0 auto;
-            padding: 12px 20px 8px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            z-index: 45;
-            position: sticky;
-            top: 0;
-        }
-
-        .header-left-btn {
-            position: relative;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 1.5px solid var(--gold-accent);
-            background: var(--glass-dark);
-            cursor: pointer;
-            padding: 0;
-            flex-shrink: 0;
-        }
-
-        .header-left-btn img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            border-radius: 50%;
-        }
-
-        .search-balao-fininho {
-            flex: 1;
-            height: 36px;
-            background: rgba(14, 18, 34, 0.65);
-            border: 1px solid var(--gold-border);
-            border-radius: 9999px;
-            padding: 0 12px 0 16px;
-            display: flex;
-            align-items: center;
-        }
-
-        .search-input-fin {
-            width: 100%;
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 13px;
-            outline: none;
-            text-align: center;
-        }
-
-        .search-input-fin::placeholder { color: var(--text-muted); }
-
-        .search-action-btn {
-            background: transparent;
-            border: none;
-            color: var(--gold-accent);
-            font-size: 14px;
-            cursor: pointer;
-            padding: 4px 6px;
-            flex-shrink: 0;
-        }
-
-        .droplet-btn {
-            position: relative;
-            width: 36px;
-            height: 36px;
-            background: transparent;
-            border: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            cursor: pointer;
-            color: var(--text-main);
-            flex-shrink: 0;
-        }
-
-        .droplet-badge {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: var(--gold-accent);
-            color: #060a1e;
-            font-size: 9px;
-            font-weight: 800;
-            min-width: 15px;
-            height: 15px;
-            border-radius: 99px;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 0 3px;
-        }
-
-        .main-carousel-wrapper {
-            width: 100%;
-            padding: 10px 20px 14px;
-            display: flex;
-            gap: 16px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-            align-items: center;
-            max-height: 170px;
-            transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
-        }
-
-        .main-carousel-wrapper::-webkit-scrollbar { display: none; }
-
-        .main-carousel-wrapper.scrolled {
-            max-height: 0;
-            opacity: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        @media (min-width: 769px) {
-            .main-carousel-wrapper {
-                justify-content: center;
-                gap: 22px;
-                max-width: 1200px;
-                margin: 0 auto;
-            }
-        }
-
-        .carousel-item-clean {
-            flex: 0 0 auto;
-            height: 138px;
-            scroll-snap-align: start;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-        }
-
-        .podium-item-box { width: 102px; text-align: center; }
-
-        .podium-circle-clean {
-            width: 66px;
-            height: 66px;
-            border-radius: 50%;
-            overflow: hidden;
-            background: rgba(255, 255, 255, 0.08);
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .podium-circle-1 { border: 2.5px solid var(--gold-accent); }
-        .podium-circle-2 { border: 2.5px solid #cbd5e1; }
-        .podium-circle-3 { border: 2.5px solid #d97706; }
-
-        .podium-circle-clean img { width: 100%; height: 100%; object-fit: cover; }
-
-        .podium-label-clean {
-            font-size: 10.5px;
-            font-weight: 700;
-            color: var(--gold-accent);
-            white-space: nowrap;
-            max-width: 100px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-            letter-spacing: 0.3px;
-        }
-
-        .podium-bias-sub {
-            font-family: 'Cormorant Garamond', Georgia, serif;
-            font-style: italic;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--text-main);
-            white-space: nowrap;
-            max-width: 100px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: block;
-            margin-top: 1px;
-        }
-
-        .challenge-card-clean {
-            width: 245px;
-            background: var(--glass-bg);
-            border: 1.5px solid var(--gold-accent);
-            border-radius: 16px;
-            padding: 12px 14px;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .challenge-header {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--gold-accent);
-            text-transform: uppercase;
-        }
-
-        .challenge-text {
-            font-size: 12px;
-            line-height: 1.35;
-            color: var(--text-main);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        .tab-item-box { width: 86px; }
-
-        .tab-icon-free {
-            width: 70px;
-            height: 70px;
-            margin-bottom: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .tab-icon-free img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-
-        .tab-label-clean {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--text-main);
-            white-space: nowrap;
-        }
-
-        .view-section {
-            display: none;
-            width: 100%;
-            max-width: 760px;
-            margin: 0 auto;
-            padding: 0 20px;
-        }
-
-        .view-section.active { display: block; }
-
-        .section-header-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            padding: 10px 14px;
-        }
-
-        .section-title { font-size: 14.5px; font-weight: 700; color: var(--gold-accent); }
-
-        .btn-pill-gold {
-            background: rgba(251, 191, 36, 0.16);
-            border: 1px solid var(--gold-border);
-            color: var(--gold-accent);
-            font-size: 12px;
-            font-weight: 600;
-            padding: 6px 14px;
-            border-radius: 99px;
-            cursor: pointer;
-        }
-
-        .btn-danger-pill {
-            background: rgba(244, 63, 94, 0.18);
-            border: 1px solid rgba(244, 63, 94, 0.45);
-            color: #fda4af;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 99px;
-            cursor: pointer;
-        }
-
-        .fandoms-grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
-            gap: 12px;
-            margin-bottom: 14px;
-        }
-
-        .fandom-box-card {
-            padding: 14px;
-            text-align: center;
-            cursor: pointer;
-            border-radius: 16px;
-        }
-
-        .fandom-box-card h4 { font-size: 13.5px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; }
-        .fandom-box-card p { font-size: 10.5px; color: var(--text-muted); }
-
-        .fandom-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-
-        .feed-list { display: flex; flex-direction: column; gap: 14px; }
-
-        .empty-state-box {
-            padding: 26px 16px;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 13px;
-            line-height: 1.5;
-        }
-
-        .post-card-clean {
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.18);
-            margin-bottom: 8px;
-        }
-
-        .post-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 8px;
-        }
-
-        .post-author-box { display: flex; align-items: center; gap: 10px; cursor: pointer; }
-
-        .post-avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 1px solid var(--gold-border);
-            object-fit: cover;
-        }
-
-        .post-author-name { font-size: 13.5px; font-weight: 600; color: var(--gold-accent); display: flex; align-items: center; gap: 6px; }
-        .post-meta { font-size: 10.5px; color: var(--text-muted); }
-
-        .admin-badge {
-            font-size: 9px;
-            background: rgba(251, 191, 36, 0.2);
-            border: 1px solid var(--gold-border);
-            color: var(--gold-accent);
-            padding: 1px 5px;
-            border-radius: 99px;
-            font-weight: 700;
-        }
-
-        .post-text { font-size: 14px; line-height: 1.5; margin-bottom: 8px; word-break: break-word; color: var(--text-main); }
-
-        .post-media {
-            width: 100%;
-            max-height: 560px;
-            height: auto;
-            object-fit: contain;
-            border-radius: 14px;
-            border: 1px solid var(--gold-border);
-            margin-bottom: 8px;
-            display: block;
-            background: #000;
-        }
-
-        .comments-section-clean {
-            margin-top: 6px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .comment-item-clean {
-            font-size: 12.5px;
-            background: rgba(255, 255, 255, 0.05);
-            padding: 6px 10px;
-            border-radius: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .comment-input-row {
-            display: flex;
-            gap: 6px;
-            margin-top: 6px;
-        }
-
-        .comment-input-clean {
-            flex: 1;
-            background: rgba(10, 14, 28, 0.65);
-            border: 1px solid var(--gold-border);
-            border-radius: 99px;
-            padding: 6px 12px;
-            color: var(--text-main);
-            font-size: 12px;
-            outline: none;
-        }
-
-        .post-actions-clean {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding-top: 4px;
-        }
-
-        .like-umbrella-btn {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            padding: 2px 6px;
-        }
-
-        .like-umbrella-btn.liked span { color: var(--gold-accent); }
-
-        .floating-composer-wrapper {
-            position: fixed;
-            bottom: 22px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 760px;
-            padding: 0 20px;
-            z-index: 50;
-            transition: opacity 0.2s ease, transform 0.2s ease;
-        }
-
-        .floating-composer-wrapper.hidden-in-challenge {
-            display: none !important;
-        }
-
-        .gemini-composer {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 10px;
-            background: rgba(14, 18, 34, 0.88);
-            border: 1px solid var(--gold-border);
-            border-radius: 9999px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
-        }
-
-        .composer-plus-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid var(--gold-border);
-            background: transparent;
-            color: var(--gold-accent);
-            font-size: 22px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .composer-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: var(--text-main);
-            font-size: 13.5px;
-            outline: none;
-            padding: 6px 4px;
-        }
-
-        .composer-input::placeholder { color: var(--text-muted); }
-
-        .composer-send-btn {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 1px solid var(--gold-border);
-            background: rgba(251, 191, 36, 0.2);
-            color: var(--gold-accent);
-            font-size: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .form-group { margin-bottom: 12px; position: relative; }
-        .form-label { display: block; font-size: 12px; color: var(--text-muted); margin-bottom: 5px; }
-
-        .glass-input, .glass-select {
-            width: 100%;
-            padding: 10px 13px;
-            border-radius: 13px;
-            background: rgba(10, 14, 28, 0.75);
-            border: 1px solid var(--gold-border);
-            color: var(--text-main);
-            font-size: 13.5px;
-            outline: none;
-        }
-
-        .photo-square-picker {
-            width: 48px;
-            height: 44px;
-            border-radius: 13px;
-            background: rgba(10, 14, 28, 0.85);
-            border: 1.5px dashed var(--gold-accent);
-            color: var(--gold-accent);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            overflow: hidden;
-            position: relative;
-            flex-shrink: 0;
-            transition: transform 0.15s ease;
-        }
-
-        .photo-square-picker:active { transform: scale(0.95); }
-
-        .photo-square-picker img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
-
-        .bias-country-dropdown {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            max-height: 180px;
-            overflow-y: auto;
-            background: rgba(12, 16, 32, 0.96);
-            border: 1px solid var(--gold-accent);
-            border-radius: 13px;
-            margin-top: 4px;
-            z-index: 60;
-            display: none;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.65);
-        }
-
-        .bias-country-dropdown.open { display: block; }
-
-        .bias-dropdown-item {
-            padding: 10px 14px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.12);
-            font-size: 13px;
-        }
-
-        .bias-dropdown-item:hover { background: rgba(251, 191, 36, 0.15); }
-
-        .bias-dropdown-thumb {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 1px solid var(--gold-border);
-        }
-
-        .color-wheel-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            background: rgba(10, 14, 28, 0.65);
-            border: 1px solid var(--gold-border);
-            padding: 10px 14px;
-            border-radius: 14px;
-        }
-
-        .circular-color-picker {
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
-            width: 44px;
-            height: 44px;
-            background-color: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 0;
-        }
-
-        .circular-color-picker::-webkit-color-swatch {
-            border-radius: 50%;
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        }
-
-        .circular-color-picker::-moz-color-swatch {
-            border-radius: 50%;
-            border: 2px solid #ffffff;
-        }
-
-        .custom-file-trigger {
-            width: 100%;
-            padding: 10px 13px;
-            border-radius: 13px;
-            background: rgba(10, 14, 28, 0.65);
-            border: 1px dashed var(--gold-border);
-            color: var(--gold-accent);
-            font-size: 12.5px;
-            text-align: center;
-            cursor: pointer;
-            display: block;
-        }
-
-        .btn-gold {
-            width: 100%;
-            padding: 11px 16px;
-            border-radius: 14px;
-            background: rgba(251, 191, 36, 0.2);
-            border: 1px solid var(--gold-accent);
-            color: var(--gold-accent);
-            font-size: 13.5px;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .app-footer {
-            position: fixed;
-            bottom: 4px;
-            left: 0;
-            width: 100%;
-            text-align: center;
-            font-size: 10.5px;
-            color: rgba(248, 250, 252, 0.7);
-            z-index: 45;
-            pointer-events: none;
-        }
-
-        .modal-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            background: rgba(4, 7, 18, 0.82);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 18px;
-        }
-
-        .modal-backdrop.open { display: flex; }
-
-        .modal-box { 
-            width: 100%; 
-            max-width: 420px; 
-            padding: 22px; 
-            max-height: 88vh; 
-            overflow-y: auto; 
-            animation: popIn 0.18s ease-out;
-        }
-
-        @keyframes popIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-title { font-size: 16px; font-weight: 700; color: var(--gold-accent); margin-bottom: 10px; }
-        .modal-body-text { font-size: 13.5px; line-height: 1.5; color: var(--text-main); margin-bottom: 16px; }
-        .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
-
-        .lightbox-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 120;
-            background: rgba(2, 4, 12, 0.95);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .lightbox-overlay.open { display: flex; }
-
-        .lightbox-close {
-            position: absolute;
-            top: 18px;
-            right: 18px;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--glass-bg);
-            border: 1px solid var(--gold-border);
-            color: var(--gold-accent);
-            font-size: 18px;
-            cursor: pointer;
-            z-index: 125;
-        }
-
-        .lightbox-media {
-            max-width: 100%;
-            max-height: 82vh;
-            border-radius: 14px;
-            border: 1px solid var(--gold-border);
-            object-fit: contain;
-        }
-
-        .lightbox-caption { margin-top: 12px; font-size: 13px; color: var(--gold-accent); text-align: center; }
-
-        .dots-menu-btn {
-            background: transparent;
-            border: 1px solid var(--gold-border);
-            color: var(--gold-accent);
-            border-radius: 99px;
-            padding: 2px 10px;
-            font-size: 13px;
-            cursor: pointer;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SherBluss</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#060a1e">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #070b14;
+      --bg-card: rgba(14, 21, 36, 0.85);
+      --bg-card-solid: #0e1524;
+      --accent: #e5b84b;
+      --accent-soft: rgba(229, 184, 75, 0.18);
+      --text-main: #f4f6fb;
+      --text-muted: #9aa6c0;
+      --border-subtle: rgba(255, 255, 255, 0.1);
+      --danger: #ff5c77;
+      --success: #3dd598;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-deep);
+      color: var(--text-main);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .ambient-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 45%, rgba(164, 118, 178, 0.22), transparent 60%),
+        radial-gradient(ellipse 75% 45% at 75% 55%, rgba(229, 184, 75, 0.18), transparent 60%),
+        radial-gradient(ellipse 90% 60% at 50% 80%, rgba(56, 97, 168, 0.25), transparent 65%),
+        linear-gradient(160deg, #060a12 0%, #0b1221 50%, #070b14 100%);
+    }
+
+    .ambient-wave {
+      position: fixed;
+      inset: -20%;
+      z-index: 0;
+      pointer-events: none;
+      background: conic-gradient(
+        from 210deg at 50% 50%,
+        transparent 0deg,
+        rgba(229, 184, 75, 0.08) 60deg,
+        rgba(147, 112, 219, 0.12) 140deg,
+        rgba(65, 131, 215, 0.1) 220deg,
+        transparent 360deg
+      );
+      filter: blur(45px);
+      transform: rotate(-12deg);
+    }
+
+    .top-header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(7, 11, 20, 0.72);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      gap: 10px;
+      min-height: 68px;
+    }
+
+    .profile-trigger-wrap {
+      position: relative;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+
+    .header-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      object-fit: cover;
+      display: block;
+      box-shadow: 0 0 14px var(--accent-soft);
+      transition: transform 0.2s ease, border-color 0.3s ease;
+    }
+
+    .profile-trigger-wrap:active .header-avatar {
+      transform: scale(0.94);
+    }
+
+    .notif-droplet {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      filter: drop-shadow(0 2px 6px rgba(56, 189, 248, 0.85));
+      animation: dropletPulse 2s infinite ease-in-out;
+      transition: opacity 0.25s ease, transform 0.25s ease;
+      cursor: pointer;
+      z-index: 5;
+    }
+
+    .notif-droplet.hidden {
+      opacity: 0;
+      transform: scale(0);
+      pointer-events: none;
+    }
+
+    @keyframes dropletPulse {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50% { transform: translateY(-2px) scale(1.1); }
+    }
+
+    .header-center {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .app-brand-title {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 1.38rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      background: linear-gradient(135deg, #fff6d6 0%, var(--accent) 55%, #d4943a 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease, max-height 0.35s ease;
+      max-height: 40px;
+      opacity: 1;
+      transform: translateY(0);
+      user-select: none;
+    }
+
+    .top-header.scrolled .app-brand-title {
+      transform: translateY(-34px);
+      opacity: 0;
+      max-height: 0;
+      pointer-events: none;
+    }
+
+    .search-bar-box {
+      display: none;
+      align-items: center;
+      width: 100%;
+      background: rgba(16, 24, 41, 0.95);
+      border: 1px solid var(--accent);
+      border-radius: 999px;
+      padding: 6px 12px;
+      gap: 8px;
+      animation: expandSearch 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .search-bar-box.active {
+      display: flex;
+    }
+
+    @keyframes expandSearch {
+      from { opacity: 0; transform: scaleX(0.75); transform-origin: right; }
+      to { opacity: 1; transform: scaleX(1); }
+    }
+
+    .search-bar-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-family: inherit;
+    }
+
+    .search-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1rem;
+      cursor: pointer;
+      padding: 2px 4px;
+    }
+
+    .search-icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #cfe4ff;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+
+    .search-icon-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .search-icon-btn.hidden {
+      display: none;
+    }
+
+    .main-container {
+      position: relative;
+      z-index: 10;
+      max-width: 540px;
+      margin: 0 auto;
+      padding: 16px 16px 110px;
+    }
+
+    .podium-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 24px;
+      text-align: center;
+    }
+
+    .podium-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .podium-item:active {
+      transform: scale(0.96);
+    }
+
+    .podium-circle {
+      width: 78px;
+      height: 78px;
+      border-radius: 50%;
+      border: 2.5px solid var(--accent);
+      padding: 3px;
+      background: rgba(12, 18, 32, 0.8);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), 0 0 14px var(--accent-soft);
+      margin-bottom: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .podium-circle img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .podium-rank {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .podium-status {
+      font-size: 0.74rem;
+      font-style: italic;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .feed-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .post-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 14px 16px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      animation: fadeUp 0.3s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .post-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post-author img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1.5px solid var(--accent);
+      object-fit: cover;
+    }
+
+    .post-author-info h4 {
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .post-author-info span {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .post-tag {
+      font-size: 0.7rem;
+      padding: 3px 9px;
+      border-radius: 999px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(229, 184, 75, 0.3);
+      font-weight: 600;
+    }
+
+    .post-text {
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #e6ebf5;
+      white-space: pre-wrap;
+    }
+
+    .post-image {
+      width: 100%;
+      max-height: 280px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin-top: 10px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .bottom-composer-wrapper {
+      position: fixed;
+      bottom: 18px;
+      right: 16px;
+      left: 16px;
+      z-index: 60;
+      max-width: 540px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      pointer-events: none;
+    }
+
+    .collapsed-send-fab {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: rgba(14, 21, 36, 0.92);
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 16px var(--accent-soft);
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.2s ease;
+    }
+
+    .collapsed-send-fab:active {
+      transform: scale(0.92);
+    }
+
+    .collapsed-send-fab.hidden {
+      display: none;
+    }
+
+    .expanded-composer-panel {
+      width: 100%;
+      background: rgba(11, 17, 30, 0.95);
+      border: 1.5px solid var(--accent);
+      border-radius: 28px;
+      padding: 10px 12px;
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.75), 0 0 20px var(--accent-soft);
+      backdrop-filter: blur(16px);
+      pointer-events: auto;
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      animation: expandBar 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .expanded-composer-panel.active {
+      display: flex;
+    }
+
+    @keyframes expandBar {
+      from { opacity: 0; transform: scale(0.85) translateY(10px); transform-origin: bottom right; }
+      to { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    .composer-preview-strip {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 6px;
+    }
+
+    .composer-preview-strip.active {
+      display: flex;
+    }
+
+    .composer-preview-strip img {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--accent);
+    }
+
+    .remove-preview-btn {
+      background: rgba(255, 92, 119, 0.2);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+      border-radius: 999px;
+      padding: 4px 10px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .composer-input-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .plus-gallery-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 1.35rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .composer-text-input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text-main);
+      font-size: 0.94rem;
+      font-family: inherit;
+    }
+
+    .composer-text-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .composer-submit-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .composer-submit-btn:active {
+      transform: scale(0.92);
+      background: var(--accent-soft);
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(3, 6, 12, 0.82);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .sheet-modal {
+      width: 100%;
+      max-width: 540px;
+      max-height: 92vh;
+      overflow-y: auto;
+      background: var(--bg-card-solid);
+      border-top: 1.5px solid var(--accent);
+      border-radius: 24px 24px 0 0;
+      padding: 20px 18px 34px;
+      box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.8);
+      animation: slideSheet 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    @keyframes slideSheet {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .sheet-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .sheet-title {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .close-sheet-btn {
+      background: rgba(255, 255, 255, 0.07);
+      border: none;
+      color: var(--text-main);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .notif-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+
+    .notif-info p {
+      font-size: 0.86rem;
+      line-height: 1.4;
+    }
+
+    .notif-info span {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    .notif-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-accept {
+      background: var(--accent);
+      color: #070b14;
+      border: none;
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.76rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-decline {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text-muted);
+      border: none;
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.76rem;
+      cursor: pointer;
+    }
+
+    .profile-view-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      background: var(--bg-deep);
+      overflow-y: auto;
+      display: none;
+      padding-bottom: 40px;
+    }
+
+    .profile-view-overlay.active {
+      display: block;
+      animation: fadeUp 0.25s ease;
+    }
+
+    .profile-container {
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .profile-banner {
+      height: 155px;
+      background: linear-gradient(135deg, #1b2845 0%, #3b264c 50%, var(--accent) 140%);
+      position: relative;
+      background-size: cover;
+      background-position: center;
+    }
+
+    .profile-nav-bar {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .circle-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(7, 11, 20, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      font-size: 1.1rem;
+    }
+
+    .three-dots-wrapper {
+      position: relative;
+    }
+
+    .dots-dropdown {
+      position: absolute;
+      top: 44px;
+      right: 0;
+      background: #121b2e;
+      border: 1px solid var(--accent);
+      border-radius: 14px;
+      min-width: 185px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 20;
+    }
+
+    .dots-dropdown.active {
+      display: flex;
+    }
+
+    .dots-dropdown button {
+      background: none;
+      border: none;
+      color: var(--text-main);
+      padding: 12px 14px;
+      text-align: left;
+      font-size: 0.86rem;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .dots-dropdown button:last-child {
+      border-bottom: none;
+    }
+
+    .dots-dropdown button:hover {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .profile-avatar-section {
+      padding: 0 18px;
+      margin-top: -46px;
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .profile-big-avatar-wrap {
+      position: relative;
+      width: 92px;
+      height: 92px;
+    }
+
+    .profile-big-avatar {
+      width: 92px;
+      height: 92px;
+      border-radius: 50%;
+      border: 3px solid var(--accent);
+      object-fit: cover;
+      background: #0e1524;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.6);
+    }
+
+    .edit-photo-badge {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #070b14;
+      border: 2px solid #070b14;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .saved-status-pill {
+      font-size: 0.76rem;
+      padding: 5px 12px;
+      border-radius: 999px;
+      background: rgba(61, 213, 152, 0.14);
+      color: var(--success);
+      border: 1px solid rgba(61, 213, 152, 0.35);
+      font-weight: 600;
+    }
+
+    .profile-body {
+      padding: 16px 18px;
+    }
+
+    .profile-display-name {
+      font-size: 1.32rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .profile-display-handle {
+      font-size: 0.88rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    .profile-display-bio {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: #dce3f2;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 12px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    .profile-stats-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 16px 0;
+    }
+
+    .stat-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .stat-box strong {
+      display: block;
+      font-size: 1.05rem;
+      color: var(--accent);
+    }
+
+    .stat-box span {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .profile-info-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .info-card-item {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      border-radius: 14px;
+      padding: 12px 14px;
+    }
+
+    .info-card-item label {
+      display: block;
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--accent);
+      margin-bottom: 4px;
+      font-weight: 700;
+    }
+
+    .info-card-item p {
+      font-size: 0.88rem;
+      color: var(--text-main);
+    }
+
+    .profile-form {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .form-section-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--accent);
+      margin-top: 6px;
+      padding-bottom: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .form-group label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .form-control {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 12px;
+      padding: 11px 13px;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent);
+    }
+
+    textarea.form-control {
+      min-height: 78px;
+      resize: vertical;
+    }
+
+    .color-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .color-swatch {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .color-swatch.selected {
+      border-color: #ffffff;
+      transform: scale(1.14);
+      box-shadow: 0 0 12px currentColor;
+    }
+
+    .save-profile-btn {
+      margin-top: 10px;
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      background: var(--accent);
+      color: #070b14;
+      font-size: 0.96rem;
+      font-weight: 700;
+      font-family: inherit;
+      cursor: pointer;
+      box-shadow: 0 6px 20px var(--accent-soft);
+      transition: transform 0.15s ease, opacity 0.2s ease;
+    }
+
+    .save-profile-btn:active {
+      transform: scale(0.98);
+    }
+
+    .toast-banner {
+      position: fixed;
+      top: 78px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: #111a2e;
+      border: 1px solid var(--accent);
+      color: var(--text-main);
+      padding: 10px 18px;
+      border-radius: 999px;
+      font-size: 0.84rem;
+      font-weight: 600;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.65);
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.25s ease;
+      z-index: 200;
+      white-space: nowrap;
+    }
+
+    .toast-banner.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .hidden-block {
+      display: none !important;
+    }
+  </style>
 </head>
-<body class="notranslate">
+<body>
+  <div class="ambient-bg"></div>
+  <div class="ambient-wave"></div>
 
-    <div class="auth-gate-overlay" id="authGateOverlay">
-        <div class="glass-panel auth-card" id="authCardMain">
-            <img src="./logo.png" alt="CherBluss" class="auth-logo">
-            <h3 style="color:var(--gold-accent); font-size:18px; margin-bottom:8px;">Faça login para interagir</h3>
-            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:20px;">Entre com sua conta para curtir, comentar e publicar no <strong translate="no">CherBluss</strong>.</p>
-            
-            <div style="display:flex; flex-direction:column; gap:10px;">
-                <button class="btn-gold" style="background: rgba(66, 133, 244, 0.25); border-color: #4285f4; color: #8ab4f8;" onclick="loginWithGoogle()">
-                    🔑 Continuar com o Google
-                </button>
-                <button class="btn-gold" onclick="showManualRegisterForm()">
-                    📝 Criar Conta com E-mail
-                </button>
-                <button class="btn-pill-gold" style="width:100%; margin-top:4px;" onclick="showManualLoginForm()">
-                    Já tem uma conta? Entrar
-                </button>
-                <button class="btn-pill-gold" style="width:100%; background:transparent; border-color:rgba(255,255,255,0.2); color:var(--text-muted);" onclick="closeAuthGate()">
-                    Continuar navegando como visitante
-                </button>
-            </div>
-        </div>
+  <div id="toast" class="toast-banner">Salvo com sucesso!</div>
+
+  <header class="top-header" id="topHeader">
+    <div class="profile-trigger-wrap" id="avatarContainer">
+      <img
+        id="headerAvatarImg"
+        class="header-avatar"
+        src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80"
+        alt="Perfil"
+        onclick="openProfileModal()"
+      />
+      <div
+        id="notifDroplet"
+        class="notif-droplet"
+        title="Notificações pendentes"
+        onclick="event.stopPropagation(); openNotifModal();"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="url(#dropGrad)">
+          <defs>
+            <linearGradient id="dropGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#bae6fd" />
+              <stop offset="50%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#0284c7" />
+            </linearGradient>
+          </defs>
+          <path d="M12 2.2C12 2.2 5 10.1 5 15.2C5 19.1 8.1 22 12 22C15.9 22 19 19.1 19 15.2C19 10.1 12 2.2 12 2.2Z" />
+        </svg>
+      </div>
     </div>
 
-    <div class="unified-top-bar" id="unifiedTopBar">
-        <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego Dedicado">
-            <img id="headerUserAvatar" src="./aconchego.png" alt="" onerror="this.src='./logo.png'">
+    <div class="header-center">
+      <div id="brandTitle" class="app-brand-title">SherBluss</div>
+
+      <div id="searchBarBox" class="search-bar-box">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9aa6c0" stroke-width="2.2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input
+          type="text"
+          id="searchInput"
+          placeholder="Pesquisar doramas, fandoms, @arroba..."
+          oninput="filterFeed(this.value)"
+        />
+        <button class="search-close-btn" onclick="closeSearchBar()" aria-label="Fechar busca">✕</button>
+      </div>
+    </div>
+
+    <button id="searchTriggerBtn" class="search-icon-btn" onclick="openSearchBar()" aria-label="Pesquisar">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">
+        <circle cx="11" cy="11" r="7.5"></circle>
+        <line x1="20.5" y1="20.5" x2="16.35" y2="16.35"></line>
+      </svg>
+    </button>
+  </header>
+
+  <main class="main-container">
+    <section class="podium-row">
+      <div class="podium-item" onclick="showToast('1º Pódio: Aguardando votação')">
+        <div class="podium-circle">
+          <img src="https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=240&q=80" alt="1º Pódio" />
+        </div>
+        <div class="podium-rank">1º Pódio</div>
+        <div class="podium-status">Aguardando</div>
+      </div>
+
+      <div class="podium-item" onclick="showToast('2º Pódio: Aguardando votação')">
+        <div class="podium-circle">
+          <img src="https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?auto=format&fit=crop&w=240&q=80" alt="2º Pódio" />
+        </div>
+        <div class="podium-rank">2º Pódio</div>
+        <div class="podium-status">Aguardando</div>
+      </div>
+
+      <div class="podium-item" onclick="showToast('3º Pódio: Aguardando votação')">
+        <div class="podium-circle">
+          <img src="https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=240&q=80" alt="3º Pódio" />
+        </div>
+        <div class="podium-rank">3º Pódio</div>
+        <div class="podium-status">Aguardando</div>
+      </div>
+    </section>
+
+    <section id="feedList" class="feed-list"></section>
+  </main>
+
+  <div class="bottom-composer-wrapper" id="composerWrapper">
+    <button
+      id="collapsedSendFab"
+      class="collapsed-send-fab"
+      onclick="expandComposer()"
+      aria-label="Escrever no SherBluss"
+    >
+      <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+      </svg>
+    </button>
+
+    <div id="expandedComposerPanel" class="expanded-composer-panel">
+      <div id="composerPreviewStrip" class="composer-preview-strip">
+        <img id="composerPreviewImg" src="" alt="Prévia" />
+        <button class="remove-preview-btn" onclick="clearComposerImage()">Remover foto</button>
+      </div>
+
+      <div class="composer-input-row">
+        <button class="plus-gallery-btn" onclick="document.getElementById('postImageInput').click()" title="Adicionar da galeria">+</button>
+        <input type="file" id="postImageInput" accept="image/*" class="hidden-block" onchange="handlePostImageSelect(event)" />
+
+        <input
+          type="text"
+          id="composerTextInput"
+          class="composer-text-input"
+          placeholder="Escreva no SherBluss..."
+          onkeydown="if(event.key==='Enter') submitPost()"
+        />
+
+        <button class="composer-submit-btn" onclick="submitPost()" title="Enviar">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+          </svg>
         </button>
+      </div>
+    </div>
+  </div>
 
-        <div class="search-balao-fininho" id="searchBalaoContainer">
-            <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@seu_arroba" oninput="executeGlobalSearch()" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
-            <button class="search-action-btn" onclick="executeGlobalSearch()" title="Buscar">🔍</button>
+  <div id="notifModal" class="modal-overlay" onclick="if(event.target===this) closeNotifModal()">
+    <div class="sheet-modal">
+      <div class="sheet-top-bar">
+        <span class="sheet-title">Notificações</span>
+        <button class="close-sheet-btn" onclick="closeNotifModal()">✕</button>
+      </div>
+      <div id="notifListContainer"></div>
+    </div>
+  </div>
+
+  <div id="profileModal" class="profile-view-overlay">
+    <div class="profile-container">
+      <div id="profileBanner" class="profile-banner">
+        <div class="profile-nav-bar">
+          <button class="circle-icon-btn" onclick="closeProfileModal()" title="Voltar">←</button>
+
+          <div id="threeDotsContainer" class="three-dots-wrapper hidden-block">
+            <button class="circle-icon-btn" onclick="toggleDotsMenu()" aria-label="Opções do perfil">⋮</button>
+            <div id="dotsDropdown" class="dots-dropdown">
+              <button onclick="switchToEditMode()">✏️ Editar perfil</button>
+              <button onclick="document.getElementById('bannerFileInput').click(); toggleDotsMenu();">🖼️ Alterar capa</button>
+              <button onclick="closeProfileModal()">🏠 Voltar ao início</button>
+            </div>
+          </div>
+        </div>
+        <input type="file" id="bannerFileInput" accept="image/*" class="hidden-block" onchange="handleBannerUpload(event)" />
+      </div>
+
+      <div class="profile-avatar-section">
+        <div class="profile-big-avatar-wrap">
+          <img
+            id="profileBigAvatar"
+            class="profile-big-avatar"
+            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80"
+            alt="Avatar"
+          />
+          <button
+            id="editAvatarBadge"
+            class="edit-photo-badge"
+            onclick="document.getElementById('avatarFileInput').click()"
+            title="Trocar foto"
+          >📷</button>
+          <input type="file" id="avatarFileInput" accept="image/*" class="hidden-block" onchange="handleAvatarUpload(event)" />
         </div>
 
-        <button class="droplet-btn" id="dropletBtnElement" onclick="openNotificationsModal()" title="Notificações">
-            💧
-            <span class="droplet-badge" id="notifBadge">0</span>
-        </button>
-    </div>
+        <span id="savedStatusBadge" class="saved-status-pill hidden-block">✓ Perfil Salvo</span>
+      </div>
 
-    <div class="app-shell">
+      <div class="profile-body">
+        <div id="profileViewMode" class="hidden-block">
+          <div class="profile-display-name" id="viewDisplayName"></div>
+          <div class="profile-display-handle" id="viewDisplayHandle"></div>
+          <p class="profile-display-bio" id="viewDisplayBio"></p>
 
-        <nav class="main-carousel-wrapper" id="carouselWrapper">
-            <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
-                <div class="podium-circle-clean podium-circle-1">
-                    <img id="podiumImg1" src="./logo.png" alt="">
-                </div>
-                <span class="podium-label-clean notranslate" id="podiumLabel1">1º Pódio</span>
-                <span class="podium-bias-sub notranslate" id="podiumBias1">Aguardando</span>
+          <div class="profile-stats-row">
+            <div class="stat-box">
+              <strong id="statFriendsCount">0</strong>
+              <span>Amigos</span>
             </div>
-
-            <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(2)">
-                <div class="podium-circle-clean podium-circle-2">
-                    <img id="podiumImg2" src="./fandom.png" alt="" onerror="this.src='./logo.png'">
-                </div>
-                <span class="podium-label-clean notranslate" id="podiumLabel2">2º Pódio</span>
-                <span class="podium-bias-sub notranslate" id="podiumBias2">Aguardando</span>
+            <div class="stat-box">
+              <strong id="statFandomsCount">0</strong>
+              <span>Fandoms</span>
             </div>
-
-            <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(3)">
-                <div class="podium-circle-clean podium-circle-3">
-                    <img id="podiumImg3" src="./amigos.png" alt="" onerror="this.src='./logo.png'">
-                </div>
-                <span class="podium-label-clean notranslate" id="podiumLabel3">3º Pódio</span>
-                <span class="podium-bias-sub notranslate" id="podiumBias3">Aguardando</span>
+            <div class="stat-box">
+              <strong id="statPostsCount">0</strong>
+              <span>Posts</span>
             </div>
+          </div>
 
-            <div class="carousel-item-clean challenge-card-clean" onclick="switchView('desafio')">
-                <div class="challenge-header">
-                    <span>🌸 Desafio do Dia</span>
-                </div>
-                <div class="challenge-text" id="carouselChallengeText">
-                    Tema: Sob o Mesmo Guarda-Chuva. Poste a foto do seu Bias!
-                </div>
-                <span style="font-size:10px; color:var(--gold-accent);">Ver desafio ➔</span>
+          <div class="profile-info-grid">
+            <div class="info-card-item">
+              <label>Meu Fandom & Utt / Bias</label>
+              <p id="viewFandomBias">—</p>
             </div>
-
-            <div class="carousel-item-clean tab-item-box" onclick="switchView('fandom')">
-                <div class="tab-icon-free">
-                    <img src="./fandom.png" alt="Fandom" onerror="this.onerror=null; this.src='./logo.png';">
-                </div>
-                <span class="tab-label-clean">Fandom</span>
+            <div class="info-card-item">
+              <label>Dorama & Anime Favoritos</label>
+              <p id="viewDoramaAnime">—</p>
             </div>
-
-            <div class="carousel-item-clean tab-item-box" onclick="switchView('amigos')">
-                <div class="tab-icon-free">
-                    <img src="./amigos.png" alt="Amigos" onerror="this.onerror=null; this.src='./logo.png';">
-                </div>
-                <span class="tab-label-clean">Amigos</span>
+            <div class="info-card-item">
+              <label>Sobre Mim</label>
+              <p id="viewAboutInterview">—</p>
             </div>
-        </nav>
-
-        <main class="view-section active" id="view-feed">
-            <div class="feed-list" id="mainFeedList"></div>
-        </main>
-
-        <section class="view-section" id="view-meu-perfil">
-            <div class="glass-panel" style="padding:20px; margin-bottom:14px;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-                    <span class="section-title">Meu Perfil & Aconchego</span>
-                    <button class="btn-pill-gold" onclick="switchView('feed')">Voltar ao Feed</button>
-                </div>
-
-                <div style="text-align:center; margin-bottom:16px;">
-                    <img id="myProfilePageAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" style="width:82px; height:82px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px;">
-                    <h4 id="myProfilePageNameDisplay" style="color:var(--gold-accent); font-size:16px;">Usuário</h4>
-                    <p id="myProfilePageHandleDisplay" class="notranslate" style="font-size:12px; color:var(--gold-accent);">@arroba</p>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Meu Nome de Exibição</label>
-                    <input type="text" id="profileEditName" class="glass-input" oninput="saveProfileChangesLive()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Meu @Arroba (Para te acharem no <span translate="no">CherBluss</span>)</label>
-                    <input type="text" id="profileEditHandle" class="glass-input notranslate" placeholder="@exemplo" oninput="saveProfileChangesLive()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Foto de Perfil</label>
-                    <label for="profileEditAvatarFile" class="custom-file-trigger" id="profileAvatarLabel">📷 Escolher foto do perfil na galeria</label>
-                    <input type="file" id="profileEditAvatarFile" accept="image/*" style="display:none;" onchange="handleProfileAvatarSelected(event)">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Tema do Perfil (Escolha totalmente a sua cor)</label>
-                    <div class="color-wheel-row">
-                        <input type="color" id="profileColorWheel" class="circular-color-picker" value="#fbbf24" oninput="applyCustomAccentColor(this.value)">
-                        <div>
-                            <span style="font-size:13px; font-weight:600; color:var(--text-main); display:block;">Cor de Destaque & Bordas</span>
-                            <span id="profileColorHexLabel" style="font-size:11px; color:var(--gold-accent);">#FBBF24</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Plano de Fundo Personalizado (Nativo: fundo.png)</label>
-                    <div style="display:flex; gap:8px;">
-                        <label for="profileBgFile" class="custom-file-trigger" style="flex:1;" id="profileBgLabel">🖼️ Escolher fundo na galeria</label>
-                        <button type="button" class="btn-pill-gold" onclick="resetDefaultBackground()" title="Voltar ao fundo.png">Fundo Nativo</button>
-                    </div>
-                    <input type="file" id="profileBgFile" accept="image/*" style="display:none;" onchange="handleProfileBackgroundSelected(event)">
-                </div>
-
-                <button class="btn-danger-pill" style="width:100%; padding:10px; margin-top:8px;" onclick="logoutAccount()">🚪 Sair da Conta</button>
+            <div class="info-card-item">
+              <label>E-mail & Contato</label>
+              <p id="viewEmail">—</p>
             </div>
-
-            <div class="glass-panel" style="padding:16px;">
-                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:12px;">🏠 Meu Aconchego (Histórico de Publicações)</h4>
-                <div class="feed-list" id="myAconchegoPostsList"></div>
-            </div>
-        </section>
-
-        <section class="view-section" id="view-user-profile-feed">
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <img id="visitedProfileAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" style="width:36px; height:36px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
-                    <div>
-                        <span id="visitedProfileTitleName" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Perfil</span>
-                        <span id="visitedProfileHandleSub" class="notranslate" style="font-size:11px; color:var(--text-muted); display:block;">• @arroba</span>
-                    </div>
-                </div>
-                <button class="btn-pill-gold" onclick="closeVisitedUserProfile()">Voltar ao Feed</button>
-            </div>
-            <div class="feed-list" id="visitedProfileFeedList"></div>
-        </section>
-
-        <section class="view-section" id="view-desafio">
-            <div class="glass-panel section-header-bar">
-                <span class="section-title">Desafio Semanal</span>
-                <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
-            </div>
-
-            <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
-                <p style="font-size:11.5px; color:var(--gold-accent); font-weight:700;">DIRETRIZ DA SEMANA</p>
-                <p id="weeklyDirectiveText" style="font-size:13.5px; margin:6px 0 12px; line-height:1.5;">
-                    Tema oficial: <strong>Sob o Mesmo Guarda-Chuva</strong>. Escolha seu representante fixo para toda a semana. Votos de segunda a sexta definem o Pódio!
-                </p>
-                <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-muted); border-top:1px solid rgba(251,191,36,0.18); padding-top:8px;">
-                    <span>Votos hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
-                    <span>Reinicia em: <strong id="midnightCountdownTimer" style="color:var(--gold-accent); font-variant-numeric: tabular-nums;">--h --m --s</strong></span>
-                </div>
-            </div>
-
-            <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
-                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:4px;">Meu Representante (ID 1 a 1000)</h4>
-                <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:12px;">Cadastre ou selecione seu Bias oficial para validação de pixels no pódio.</p>
-                
-                <div class="form-group" style="margin-bottom:10px;">
-                    <label class="form-label">Nome do Bias (escolha uma foto de rosto)</label>
-                    <input type="text" id="biasNameInput" class="glass-input" placeholder="Ex: Park Chanyeol..." autocomplete="off" oninput="onBiasNameType(this.value)" onfocus="onBiasNameType(this.value)">
-                    <div class="bias-country-dropdown" id="biasCountryDropdown"></div>
-                </div>
-
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-bottom:12px;">
-                    <div>
-                        <label class="form-label">Função</label>
-                        <select id="biasRoleInput" class="glass-select">
-                            <option value="Ator">Ator</option>
-                            <option value="Atriz">Atriz</option>
-                            <option value="K-popper">K-popper</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="form-label">ID Oficial (1 - 1000)</label>
-                        <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="1 a 1000">
-                    </div>
-                </div>
-
-                <!-- Botão Salvar Representante + Caixinha de acesso direto à galeria ao lado -->
-                <div style="display:flex; gap:10px; align-items:center;">
-                    <button class="btn-gold" style="flex:1;" onclick="saveBiasRegistration()">Salvar Representante</button>
-                    <label for="biasFrontalFile" class="photo-square-picker" id="biasSquarePreview" title="Escolher foto de rosto na galeria">
-                        <span style="font-size:18px;">🖼️</span>
-                    </label>
-                    <input type="file" id="biasFrontalFile" accept="image/*" style="display:none;" onchange="previewBiasSquarePhoto(event)">
-                </div>
-            </div>
-
-            <div class="glass-panel" style="padding:16px; margin-bottom:14px;">
-                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:6px; text-align:center;">Participar do Desafio</h4>
-                <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px; text-align:center;">Selecione seu Bias salvo na lista para vincular ao seu pódio:</p>
-                
-                <div class="form-group">
-                    <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Escolha o Bias da lista..." autocomplete="off" oninput="filterChallengeBiasList(this.value)" onfocus="filterChallengeBiasList(this.value)">
-                    <div class="bias-country-dropdown" id="challengeBiasDropdown"></div>
-                </div>
-
-                <div style="display:flex; gap:10px;">
-                    <button class="btn-gold" style="flex:1;" onclick="document.getElementById('challengeCameraInput').click()">📸 Câmera</button>
-                    <button class="btn-pill-gold" style="flex:1;" onclick="document.getElementById('challengeGalleryInput').click()">🖼️ Foto / Vídeo</button>
-                </div>
-                <input type="file" id="challengeCameraInput" accept="image/*" capture="environment" style="display:none;" onchange="handleChallengeMediaSelected(event)">
-                <input type="file" id="challengeGalleryInput" accept="image/*,video/*" style="display:none;" onchange="handleChallengeMediaSelected(event)">
-            </div>
-
-            <div class="feed-list" id="challengeFeedList"></div>
-        </section>
-
-        <section class="view-section" id="view-fandom">
-            <div class="glass-panel section-header-bar">
-                <span class="section-title">Fandoms Particulares</span>
-                <div style="display:flex; gap:6px;">
-                    <button class="btn-pill-gold" onclick="openCreateFandomModal()">+ Criar Fandom</button>
-                    <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
-                </div>
-            </div>
-            <div class="fandoms-grid-container" id="fandomsGridContainer"></div>
-        </section>
-
-        <section class="view-section" id="view-inside-fandom">
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:16px;">🔒</span>
-                    <div>
-                        <span id="insideFandomTitle" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Fandom</span>
-                        <span id="insideFandomActiveCount" style="font-size:11px; color:var(--text-muted); display:block;">• Espaço Privado Isolado</span>
-                    </div>
-                </div>
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <button class="dots-menu-btn" onclick="openFandomOptionsMenu()" title="Opções">•••</button>
-                    <button onclick="closeCurrentFandom()" style="background:rgba(244,63,94,0.15); border:1px solid rgba(244,63,94,0.4); color:#fda4af; width:30px; height:30px; border-radius:50%; font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-weight:700;" title="Fechar Fandom">✕</button>
-                </div>
-            </div>
-            <div class="feed-list" id="insideFandomFeedList"></div>
-        </section>
-
-        <section class="view-section" id="view-amigos">
-            <div class="glass-panel section-header-bar">
-                <span class="section-title">Meus Amigos</span>
-                <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
-            </div>
-            <div class="feed-list" id="friendsListContainer"></div>
-        </section>
-
-    </div>
-
-    <div class="floating-composer-wrapper" id="floatingComposerWrapper">
-        <div class="gemini-composer">
-            <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria Nativa">+</button>
-            <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
-            <input type="file" id="videoDirectInput" accept="video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
-            <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
-
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no CherBluss..." onkeypress="if(event.key==='Enter') submitPost()">
-            <button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
+          </div>
         </div>
+
+        <form id="profileEditForm" class="profile-form" onsubmit="event.preventDefault(); saveProfileData();">
+          <div class="form-section-title">Identidade do Perfil</div>
+
+          <div class="form-group">
+            <label>Nome de Exibição</label>
+            <input type="text" id="inputName" class="form-control" placeholder="Digite seu nome" required />
+          </div>
+
+          <div class="form-group">
+            <label>Seu @arroba</label>
+            <input type="text" id="inputHandle" class="form-control" placeholder="@seu_arroba" required />
+          </div>
+
+          <div class="form-group">
+            <label>Bio curta</label>
+            <textarea id="inputBio" class="form-control" placeholder="Escreva uma bio..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>Cor de destaque do seu perfil</label>
+            <div class="color-swatches" id="colorSwatches">
+              <button type="button" class="color-swatch" data-color="#e5b84b" style="background:#e5b84b; color:#e5b84b;"></button>
+              <button type="button" class="color-swatch" data-color="#ff6b9d" style="background:#ff6b9d; color:#ff6b9d;"></button>
+              <button type="button" class="color-swatch" data-color="#a78bfa" style="background:#a78bfa; color:#a78bfa;"></button>
+              <button type="button" class="color-swatch" data-color="#38bdf8" style="background:#38bdf8; color:#38bdf8;"></button>
+              <button type="button" class="color-swatch" data-color="#34d399" style="background:#34d399; color:#34d399;"></button>
+              <button type="button" class="color-swatch" data-color="#fb7185" style="background:#fb7185; color:#fb7185;"></button>
+            </div>
+          </div>
+
+          <div class="form-section-title">Preferências & Entrevista</div>
+
+          <div class="form-group">
+            <label>Fandom principal e Bias / Utt</label>
+            <input type="text" id="inputFandomBias" class="form-control" placeholder="Ex: Seus grupos/atores favoritos" />
+          </div>
+
+          <div class="form-group">
+            <label>Dorama e Anime favoritos</label>
+            <input type="text" id="inputDoramaAnime" class="form-control" placeholder="Seus favoritos" />
+          </div>
+
+          <div class="form-group">
+            <label>Sobre você</label>
+            <textarea id="inputAboutInterview" class="form-control" placeholder="Conte um pouco sobre você..."></textarea>
+          </div>
+
+          <div class="form-section-title">Conta & Segurança</div>
+
+          <div class="form-group">
+            <label>E-mail da conta</label>
+            <input type="email" id="inputEmail" class="form-control" placeholder="voce@email.com" />
+          </div>
+
+          <div class="form-group">
+            <label>Nova Senha</label>
+            <input type="password" id="inputPassword" class="form-control" placeholder="••••••••" />
+          </div>
+
+          <button type="submit" class="save-profile-btn">Salvar Perfil</button>
+        </form>
+      </div>
     </div>
+  </div>
 
-    <footer class="app-footer notranslate" translate="no">
-        cherbluss.suporte@gmail.com
-    </footer>
+  <script>
+    const STORAGE_KEY = 'sherbluss_state_clean_v1';
 
-    <div class="modal-backdrop" id="customModalBackdrop">
-        <div class="glass-panel modal-box">
-            <h3 class="modal-title notranslate" id="customModalTitle">CherBluss</h3>
-            <div class="modal-body-text" id="customModalBody"></div>
-            <div class="modal-actions" id="customModalActions"></div>
+    const defaultState = {
+      isProfileSaved: false,
+      profile: {
+        name: '',
+        handle: '',
+        bio: '',
+        accentColor: '#e5b84b',
+        fandomBias: '',
+        doramaAnime: '',
+        aboutInterview: '',
+        email: '',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=240&q=80',
+        banner: '',
+        friendsCount: 0,
+        fandomsCount: 0
+      },
+      notifications: [],
+      posts: [
+        {
+          id: 101,
+          author: 'SherBluss Oficial',
+          handle: '@sherbluss',
+          avatar: 'https://images.unsplash.com/photo-1518837695005-2083093ee35b?auto=format&fit=crop&w=120&q=80',
+          tag: 'Destaques',
+          text: 'Bem-vindo ao SherBluss! Personalize seu perfil e compartilhe seus momentos.'
+        }
+      ]
+    };
+
+    let state = loadState();
+    let pendingPostImage = '';
+
+    function loadState() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+      return JSON.parse(JSON.stringify(defaultState));
+    }
+
+    function persistState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (e) {}
+    }
+
+    function applyAccentColor(hex) {
+      document.documentElement.style.setProperty('--accent', hex);
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      document.documentElement.style.setProperty('--accent-soft', `rgba(${r}, ${g}, ${b}, 0.2)`);
+    }
+
+    window.addEventListener('scroll', () => {
+      const header = document.getElementById('topHeader');
+      const searchActive = document.getElementById('searchBarBox').classList.contains('active');
+      if (!searchActive && window.scrollY > 28) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    });
+
+    function openSearchBar() {
+      document.getElementById('brandTitle').classList.add('hidden-block');
+      document.getElementById('searchTriggerBtn').classList.add('hidden');
+      const box = document.getElementById('searchBarBox');
+      box.classList.add('active');
+      document.getElementById('searchInput').focus();
+    }
+
+    function closeSearchBar() {
+      document.getElementById('searchBarBox').classList.remove('active');
+      document.getElementById('brandTitle').classList.remove('hidden-block');
+      document.getElementById('searchTriggerBtn').classList.remove('hidden');
+      document.getElementById('searchInput').value = '';
+      renderFeed();
+    }
+
+    function updateDropletVisibility() {
+      const droplet = document.getElementById('notifDroplet');
+      if (state.notifications.length > 0) {
+        droplet.classList.remove('hidden');
+      } else {
+        droplet.classList.add('hidden');
+      }
+    }
+
+    function openNotifModal() {
+      renderNotifications();
+      document.getElementById('notifModal').classList.add('active');
+    }
+
+    function closeNotifModal() {
+      document.getElementById('notifModal').classList.remove('active');
+    }
+
+    function renderNotifications() {
+      const container = document.getElementById('notifListContainer');
+      if (state.notifications.length === 0) {
+        container.innerHTML = '<p style="color:var(--text-muted); font-size:0.88rem; text-align:center; padding:20px 0;">Nenhuma notificação pendente.</p>';
+        return;
+      }
+      container.innerHTML = state.notifications.map(n => `
+        <div class="notif-card">
+          <div class="notif-info">
+            <p>${n.text}</p>
+            <span>${n.time}</span>
+          </div>
         </div>
-    </div>
+      `).join('');
+    }
 
-    <div class="lightbox-overlay" id="nativeMediaLightbox">
-        <button class="lightbox-close" onclick="closeLightbox()">✕</button>
-        <div id="lightboxMediaContainer" style="display:flex; justify-content:center; align-items:center; width:100%;"></div>
-        <p class="lightbox-caption" id="lightboxCaption"></p>
-    </div>
+    function expandComposer() {
+      document.getElementById('collapsedSendFab').classList.add('hidden');
+      document.getElementById('expandedComposerPanel').classList.add('active');
+      document.getElementById('composerTextInput').focus();
+    }
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import {
-            getAuth,
-            signInWithPopup,
-            GoogleAuthProvider,
-            onAuthStateChanged,
-            signOut
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import {
-            getFirestore,
-            collection,
-            addDoc,
-            deleteDoc,
-            doc,
-            onSnapshot,
-            query,
-            orderBy,
-            updateDoc,
-            serverTimestamp,
-            setDoc,
-            getDoc,
-            arrayUnion,
-            arrayRemove
-        } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    function collapseComposer() {
+      document.getElementById('expandedComposerPanel').classList.remove('active');
+      document.getElementById('collapsedSendFab').classList.remove('hidden');
+    }
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4",
-            authDomain: "new-drama-e729b.firebaseapp.com",
-            projectId: "new-drama-e729b",
-            storageBucket: "new-drama-e729b.firebasestorage.app",
-            messagingSenderId: "1038068499530",
-            appId: "1:1038068499530:web:44fd33a0a628bcad4ad2b3",
-            measurementId: "G-VXNH7S6N36"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const provider = new GoogleAuthProvider();
-
-        const LOCAL_KEY = 'cherbluss_clean_state_v1';
-
-        let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
-            user: {
-                uid: '',
-                loggedIn: false,
-                name: 'Usuário',
-                handle: '@usuario',
-                email: '',
-                avatar: './aconchego.png',
-                accentColor: '#fbbf24',
-                customBgUrl: ''
-            },
-            bias: { name: '', role: 'Ator', id: null, frontalUrl: '', lastUpdated: 0 },
-            registeredBiases: [],
-            dailyVotes: { date: new Date().toDateString(), used: 0 },
-            directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
-            fandoms: [],
-            friends: [
-                { id: 'f_1', name: 'Amiga Dorama', handle: '@amigadorama', avatar: './amigos.png', status: 'Amizade ativa' }
-            ],
-            notifications: []
-        };
-
-        let postsFromFirebase = [];
-        let biasesDatabase = [];
-        let usersDirectory = [];
-        let currentAttachedDataUrl = null;
-        let currentAttachedType = null;
-        let activeFandomFilter = null;
-        let activeVisitedUserUid = null;
-        let tempBiasPhotoPreviewUrl = '';
-
-        function saveLocal() {
-            localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
+    document.addEventListener('click', (e) => {
+      const wrapper = document.getElementById('composerWrapper');
+      const panel = document.getElementById('expandedComposerPanel');
+      if (panel.classList.contains('active') && !wrapper.contains(e.target)) {
+        const textVal = document.getElementById('composerTextInput').value.trim();
+        if (!textVal && !pendingPostImage) {
+          collapseComposer();
         }
-
-        // Função para censurar o meio do arroba no pódio (ex: @luana -> @lu**na)
-        function maskHandle(rawHandle, fallbackAuthor) {
-            let clean = (rawHandle || '').trim();
-            if (!clean) {
-                clean = '@' + (fallbackAuthor || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
-            }
-            if (!clean.startsWith('@')) clean = '@' + clean;
-            const body = clean.slice(1);
-            if (body.length <= 2) return '@' + body[0] + '**';
-            if (body.length === 3) return '@' + body[0] + '**' + body[2];
-            const start = body.slice(0, 2);
-            const end = body.slice(-2);
-            return `@${start}**${end}`;
-        }
-
-        // Contador regressivo em tempo real até a meia-noite (00:00:00)
-        function startMidnightCountdown() {
-            function updateTimer() {
-                const now = new Date();
-                const todayStr = now.toDateString();
-
-                // Zera os 3 votos automaticamente quando vira a meia-noite
-                if (appState.dailyVotes.date !== todayStr) {
-                    appState.dailyVotes = { date: todayStr, used: 0 };
-                    saveLocal();
-                    const counterEl = document.getElementById('dailyVotesCounter');
-                    if (counterEl) counterEl.textContent = '3/3';
-                }
-
-                const midnight = new Date(now);
-                midnight.setHours(24, 0, 0, 0);
-                const diffMs = midnight - now;
-
-                const hours = Math.floor(diffMs / (1000 * 60 * 60));
-                const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diffMs % (1000 * 60)) / 1000);
-
-                const pad = (n) => String(n).padStart(2, '0');
-                const timerEl = document.getElementById('midnightCountdownTimer');
-                if (timerEl) {
-                    timerEl.textContent = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
-                }
-            }
-            updateTimer();
-            setInterval(updateTimer, 1000);
-        }
-
-        function initFirebaseSync() {
-            const qPosts = query(collection(db, "posts"), orderBy("createdAt", "desc"));
-            onSnapshot(qPosts, (snapshot) => {
-                postsFromFirebase = [];
-                snapshot.forEach((docSnap) => {
-                    postsFromFirebase.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                renderAll();
-            });
-
-            const qFandoms = query(collection(db, "fandoms"));
-            onSnapshot(qFandoms, (snapshot) => {
-                appState.fandoms = [];
-                snapshot.forEach((docSnap) => {
-                    appState.fandoms.push({ id: docSnap.id, ...docSnap.data() });
-                });
-                syncFandomNotifications();
-                renderAll();
-            });
-
-            const qBiases = query(collection(db, "biases_db"), orderBy("name", "asc"));
-            onSnapshot(qBiases, (snapshot) => {
-                biasesDatabase = [];
-                snapshot.forEach((docSnap) => {
-                    biasesDatabase.push({ docId: docSnap.id, ...docSnap.data() });
-                });
-                renderAll();
-            });
-
-            const qUsers = query(collection(db, "users"));
-            onSnapshot(qUsers, (snapshot) => {
-                usersDirectory = [];
-                snapshot.forEach((docSnap) => {
-                    usersDirectory.push({ uid: docSnap.id, ...docSnap.data() });
-                });
-            });
-        }
-
-        function syncFandomNotifications() {
-            if (!appState.user.loggedIn || !appState.user.uid) return;
-            const fandomNotifs = [];
-            appState.fandoms.forEach(f => {
-                const isAdminOrCreator = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
-                if (isAdminOrCreator && f.pendingRequests && f.pendingRequests.length > 0) {
-                    f.pendingRequests.forEach(req => {
-                        fandomNotifs.push({
-                            type: 'fandom_request',
-                            fandomId: f.id,
-                            fandomName: f.name,
-                            requesterUid: req.uid,
-                            requesterName: req.name,
-                            text: `🔒 <strong>${req.name}</strong> solicitou entrada no fandom privado <strong>${f.name}</strong>.`
-                        });
-                    });
-                }
-            });
-            appState.notifications = fandomNotifs;
-            updateNotifBadge();
-        }
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                appState.user.uid = user.uid;
-                appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuário CherBluss';
-                if (!appState.user.handle || appState.user.handle === '@usuario') {
-                    appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuario');
-                }
-                appState.user.email = user.email || '';
-                if (user.photoURL) appState.user.avatar = user.photoURL;
-
-                const userRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userRef);
-                if (!userDoc.exists()) {
-                    await setDoc(userRef, {
-                        name: appState.user.name,
-                        handle: appState.user.handle,
-                        avatar: appState.user.avatar
-                    }, { merge: true });
-                } else {
-                    const data = userDoc.data();
-                    if (data.handle) appState.user.handle = data.handle;
-                    if (data.name) appState.user.name = data.name;
-                    if (data.avatar) appState.user.avatar = data.avatar;
-                }
-
-                saveLocal();
-                applyUserTheme();
-                syncFandomNotifications();
-                renderAll();
-            }
-        });
-
-        function requireAuthForAction(actionCallback) {
-            if (!appState.user.loggedIn) {
-                document.getElementById('authGateOverlay').style.display = 'flex';
-                return;
-            }
-            actionCallback();
-        }
-
-        window.closeAuthGate = function() {
-            document.getElementById('authGateOverlay').style.display = 'none';
-        };
-
-        window.loginWithGoogle = async function () {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                const user = result.user;
-                appState.user.uid = user.uid;
-                appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuário Google';
-                appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuario');
-                appState.user.email = user.email || '';
-                if (user.photoURL) appState.user.avatar = user.photoURL;
-                await saveUserDataToFirestore();
-                saveLocal();
-                applyUserTheme();
-                closeAuthGate();
-                syncFandomNotifications();
-                renderAll();
-            } catch (error) {
-                showCherBlussModal({ title: 'Aviso de Login', htmlBody: error.message });
-            }
-        };
-
-        window.showManualRegisterForm = function () {
-            const card = document.getElementById('authCardMain');
-            card.innerHTML = `
-                <img src="./logo.png" alt="CherBluss" class="auth-logo" style="max-width:90px;">
-                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta no <span translate="no">CherBluss</span></h3>
-                <div class="form-group"><input type="text" id="regName" class="glass-input" placeholder="Seu Nome"></div>
-                <div class="form-group"><input type="text" id="regHandle" class="glass-input" placeholder="Seu @Arroba (Ex: @luana)"></div>
-                <div class="form-group"><input type="email" id="regEmail" class="glass-input" placeholder="Seu E-mail"></div>
-                <div class="form-group"><input type="password" id="regPass" class="glass-input" placeholder="Crie uma Senha"></div>
-                <button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualRegister()">Cadastrar</button>
-                <button class="btn-pill-gold" style="width:100%;" onclick="location.reload()">Voltar</button>
-            `;
-        };
-
-        window.submitManualRegister = async function () {
-            const name = document.getElementById('regName').value.trim();
-            const handle = document.getElementById('regHandle').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const pass = document.getElementById('regPass').value;
-
-            if (!name || !handle || !email || !pass) { showCherBlussModal({ title: 'Atenção', htmlBody: 'Preencha todos os campos!' }); return; }
-
-            appState.user.uid = 'manual_' + Date.now();
-            appState.user.loggedIn = true;
-            appState.user.name = name;
-            appState.user.handle = handle.startsWith('@') ? handle : '@' + handle;
-            appState.user.email = email;
-            await saveUserDataToFirestore();
-            saveLocal();
-            applyUserTheme();
-            closeAuthGate();
-            syncFandomNotifications();
-            renderAll();
-        };
-
-        window.showManualLoginForm = function () {
-            const card = document.getElementById('authCardMain');
-            card.innerHTML = `
-                <img src="./logo.png" alt="CherBluss" class="auth-logo" style="max-width:90px;">
-                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Entrar na sua Conta</h3>
-                <div class="form-group"><input type="email" id="logEmail" class="glass-input" placeholder="Seu E-mail"></div>
-                <div class="form-group"><input type="password" id="logPass" class="glass-input" placeholder="Sua Senha"></div>
-                <button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualLogin()">Entrar</button>
-                <button class="btn-pill-gold" style="width:100%;" onclick="location.reload()">Voltar</button>
-            `;
-        };
-
-        window.submitManualLogin = async function () {
-            const email = document.getElementById('logEmail').value.trim();
-            const pass = document.getElementById('logPass').value;
-            if (!email || !pass) { showCherBlussModal({ title: 'Atenção', htmlBody: 'Informe e-mail e senha.' }); return; }
-            appState.user.uid = 'manual_' + email.replace(/[^a-zA-Z0-9]/g, '_');
-            appState.user.loggedIn = true;
-            appState.user.name = email.split('@')[0];
-            appState.user.handle = '@' + email.split('@')[0];
-            appState.user.email = email;
-            await saveUserDataToFirestore();
-            saveLocal();
-            applyUserTheme();
-            closeAuthGate();
-            syncFandomNotifications();
-            renderAll();
-        };
-
-        window.logoutAccount = async function () {
-            try { await signOut(auth); } catch (e) {}
-            appState.user.loggedIn = false;
-            appState.user.uid = '';
-            appState.user.name = 'Usuário';
-            appState.user.handle = '@usuario';
-            appState.user.email = '';
-            saveLocal();
-            location.reload();
-        };
-
-        window.showCherBlussModal = function ({ title, htmlBody, buttons = [] }) {
-            const backdrop = document.getElementById('customModalBackdrop');
-            document.getElementById('customModalTitle').textContent = title;
-            document.getElementById('customModalBody').innerHTML = htmlBody;
-
-            const actionsEl = document.getElementById('customModalActions');
-            actionsEl.innerHTML = '';
-
-            if (buttons.length === 0) {
-                buttons = [{ label: 'OK', primary: true, onClick: closeCherBlussModal }];
-            }
-
-            buttons.forEach(btn => {
-                const b = document.createElement('button');
-                b.textContent = btn.label;
-                b.className = btn.primary ? 'btn-gold' : 'btn-pill-gold';
-                b.style.width = 'auto';
-                b.onclick = () => btn.onClick ? btn.onClick() : closeCherBlussModal();
-                actionsEl.appendChild(b);
-            });
-
-            backdrop.classList.add('open');
-        };
-
-        window.closeCherBlussModal = function () {
-            document.getElementById('customModalBackdrop').classList.remove('open');
-        };
-
-        function hexToRgba(hex, alpha) {
-            const r = parseInt(hex.slice(1, 3), 16);
-            const g = parseInt(hex.slice(3, 5), 16);
-            const b = parseInt(hex.slice(5, 7), 16);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        }
-
-        window.applyCustomAccentColor = function(hexColor) {
-            appState.user.accentColor = hexColor;
-            document.documentElement.style.setProperty('--gold-accent', hexColor);
-            document.documentElement.style.setProperty('--gold-border', hexToRgba(hexColor, 0.45));
-            const labelEl = document.getElementById('profileColorHexLabel');
-            if (labelEl) labelEl.textContent = hexColor.toUpperCase();
-            saveLocal();
-        };
-
-        window.handleProfileBackgroundSelected = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const dataUrl = e.target.result;
-                appState.user.customBgUrl = dataUrl;
-                document.documentElement.style.setProperty('--custom-bg-url', `url('${dataUrl}')`);
-                document.getElementById('profileBgLabel').textContent = '✅ Fundo Personalizado Ativo';
-                saveLocal();
-            };
-            reader.readAsDataURL(file);
-        };
-
-        window.resetDefaultBackground = function() {
-            appState.user.customBgUrl = '';
-            document.documentElement.style.setProperty('--custom-bg-url', `url('./fundo.png')`);
-            document.getElementById('profileBgLabel').textContent = '🖼️ Escolher fundo na galeria';
-            saveLocal();
-        };
-
-        window.switchToProfileSection = function() {
-            if (!appState.user.loggedIn) {
-                document.getElementById('authGateOverlay').style.display = 'flex';
-                return;
-            }
-            activeVisitedUserUid = null;
-            document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
-            document.getElementById('searchBalaoContainer').style.display = 'flex';
-            document.getElementById('dropletBtnElement').style.display = 'flex';
-
-            document.getElementById('profileEditName').value = appState.user.name;
-            document.getElementById('profileEditHandle').value = appState.user.handle;
-            document.getElementById('myProfilePageAvatar').src = appState.user.avatar;
-            document.getElementById('myProfilePageNameDisplay').textContent = appState.user.name;
-            document.getElementById('myProfilePageHandleDisplay').textContent = appState.user.handle;
-
-            const currentHex = appState.user.accentColor || '#fbbf24';
-            document.getElementById('profileColorWheel').value = currentHex;
-            document.getElementById('profileColorHexLabel').textContent = currentHex.toUpperCase();
-
-            renderMyAconchegoPosts();
-
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-meu-perfil').classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        window.saveProfileChangesLive = async function() {
-            const nameVal = document.getElementById('profileEditName').value.trim();
-            const handleVal = document.getElementById('profileEditHandle').value.trim();
-
-            if (nameVal) appState.user.name = nameVal;
-            if (handleVal) appState.user.handle = handleVal.startsWith('@') ? handleVal : '@' + handleVal;
-
-            document.getElementById('myProfilePageNameDisplay').textContent = appState.user.name;
-            document.getElementById('myProfilePageHandleDisplay').textContent = appState.user.handle;
-
-            saveLocal();
-            await saveUserDataToFirestore();
-        };
-
-        window.handleProfileAvatarSelected = async function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            document.getElementById('profileAvatarLabel').textContent = '✅ Foto de perfil atualizada';
-            appState.user.avatar = URL.createObjectURL(file);
-            document.getElementById('myProfilePageAvatar').src = appState.user.avatar;
-            applyUserTheme();
-            saveLocal();
-            await saveUserDataToFirestore();
-        };
-
-        function renderMyAconchegoPosts() {
-            const myPosts = postsFromFirebase.filter(p => p.authorUid === appState.user.uid && (!p.fandom || p.fandom === 'Geral'));
-            const container = document.getElementById('myAconchegoPostsList');
-            container.innerHTML = myPosts.length > 0 
-                ? myPosts.map(p => `
-                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border); display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div style="flex:1; padding-right:8px;">
-                            <span style="font-size:10px; color:var(--gold-accent); display:block; margin-bottom:4px;">${formatPostDate(p.createdAt)} • ${p.isChallenge ? 'Desafio' : 'Geral'}</span>
-                            <p style="font-size:12px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia)'}</p>
-                            ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:220px; object-fit:contain; border-radius:8px; background:#000;" controls playsinline webkit-playsinline muted preload="metadata" onloadedmetadata="this.currentTime=0.1"></video>` : `<img src="${p.media}" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;">`) : ''}
-                        </div>
-                        <button class="btn-danger-pill" style="font-size:10px;" onclick="confirmDeletePost('${p.id}')">Excluir</button>
-                    </div>
-                `).join('')
-                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Seu histórico do Aconchego está vazio.</p>';
-        }
-
-        async function saveUserDataToFirestore() {
-            if (!appState.user.uid) return;
-            try {
-                await setDoc(doc(db, "users", appState.user.uid), {
-                    name: appState.user.name,
-                    handle: appState.user.handle,
-                    avatar: appState.user.avatar
-                }, { merge: true });
-            } catch (e) { console.error(e); }
-        }
-
-        window.visitUserProfile = async function(authorUid, authorName, authorHandle) {
-            if (!authorUid) return;
-            activeVisitedUserUid = authorUid;
-
-            let userAvatar = './aconchego.png';
-            let userHandle = authorHandle || '@usuario';
-            try {
-                const userDoc = await getDoc(doc(db, "users", authorUid));
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    if (data.avatar) userAvatar = data.avatar;
-                    if (data.handle) userHandle = data.handle;
-                }
-            } catch (e) {}
-
-            document.getElementById('headerUserAvatar').src = userAvatar;
-            document.getElementById('searchBalaoContainer').style.display = 'none';
-            document.getElementById('dropletBtnElement').style.display = 'none';
-            document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
-
-            document.getElementById('visitedProfileAvatar').src = userAvatar;
-            document.getElementById('visitedProfileTitleName').textContent = authorName;
-            document.getElementById('visitedProfileHandleSub').textContent = `• ${userHandle}`;
-
-            const userPosts = postsFromFirebase.filter(p => p.authorUid === authorUid && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
-            const container = document.getElementById('visitedProfileFeedList');
-            container.innerHTML = userPosts.length > 0 
-                ? userPosts.map(p => renderPostCardHTML(p)).join('')
-                : '<div class="glass-panel empty-state-box">Este usuário ainda não publicou nada no feed público.</div>';
-
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-user-profile-feed').classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        window.closeVisitedUserProfile = function() {
-            activeVisitedUserUid = null;
-            document.getElementById('searchBalaoContainer').style.display = 'flex';
-            document.getElementById('dropletBtnElement').style.display = 'flex';
-            applyUserTheme();
-            switchView('feed');
-        };
-
-        window.previewBiasSquarePhoto = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                tempBiasPhotoPreviewUrl = e.target.result;
-                const box = document.getElementById('biasSquarePreview');
-                box.innerHTML = `<img src="${tempBiasPhotoPreviewUrl}" alt="Foto de Rosto">`;
-            };
-            reader.readAsDataURL(file);
-        };
-
-        window.onBiasNameType = function(val) {
-            const clean = val.toLowerCase().replace(/\s+/g, '');
-            if (clean === 'luanaeandre' || val.toLowerCase().includes('luana e andré')) {
-                openMasterAdminPanel();
-                return;
-            }
-
-            const dropdown = document.getElementById('biasCountryDropdown');
-            const queryStr = val.trim().toLowerCase();
-
-            const matches = biasesDatabase.filter(b => b.name.toLowerCase().includes(queryStr));
-            if (matches.length === 0) {
-                dropdown.classList.remove('open');
-                return;
-            }
-
-            dropdown.innerHTML = matches.map(b => `
-                <div class="bias-dropdown-item" onclick="selectBiasFromDatabase('${b.name.replace(/'/g, "\\'")}', '${b.role}', ${b.id}, '${b.frontalUrl || './logo.png'}')">
-                    <img src="${b.frontalUrl || './logo.png'}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
-                    <div>
-                        <strong style="color:var(--gold-accent); display:block;">${b.name}</strong>
-                        <span style="font-size:11px; color:var(--text-muted);">${b.role} • ID #${b.id}</span>
-                    </div>
-                </div>
-            `).join('');
-            dropdown.classList.add('open');
-        };
-
-        window.selectBiasFromDatabase = function(name, role, id, frontalUrl) {
-            document.getElementById('biasNameInput').value = name;
-            document.getElementById('biasRoleInput').value = role;
-            document.getElementById('biasIdInput').value = id;
-            document.getElementById('challengeSelectedBiasInput').value = `${name} (#${id})`;
-            tempBiasPhotoPreviewUrl = frontalUrl;
-
-            const box = document.getElementById('biasSquarePreview');
-            box.innerHTML = `<img src="${frontalUrl}" alt="Foto" onerror="this.src='./logo.png'">`;
-
-            appState.bias = { name, role, id, frontalUrl, lastUpdated: Date.now() };
-            saveLocal();
-            document.getElementById('biasCountryDropdown').classList.remove('open');
-        };
-
-        window.filterChallengeBiasList = function(val) {
-            const dropdown = document.getElementById('challengeBiasDropdown');
-            const queryStr = val.trim().toLowerCase();
-            const matches = biasesDatabase.filter(b => b.name.toLowerCase().includes(queryStr));
-
-            if (matches.length === 0) {
-                dropdown.classList.remove('open');
-                return;
-            }
-
-            dropdown.innerHTML = matches.map(b => `
-                <div class="bias-dropdown-item" onclick="pickBiasForChallengePost('${b.name.replace(/'/g, "\\'")}', '${b.role}', ${b.id}, '${b.frontalUrl || './logo.png'}')">
-                    <img src="${b.frontalUrl || './logo.png'}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
-                    <div>
-                        <strong style="color:var(--gold-accent); display:block;">${b.name}</strong>
-                        <span style="font-size:11px; color:var(--text-muted);">${b.role} • ID #${b.id}</span>
-                    </div>
-                </div>
-            `).join('');
-            dropdown.classList.add('open');
-        };
-
-        window.pickBiasForChallengePost = function(name, role, id, frontalUrl) {
-            document.getElementById('challengeSelectedBiasInput').value = `${name} (#${id})`;
-            appState.bias = { name, role, id, frontalUrl, lastUpdated: Date.now() };
-            saveLocal();
-            document.getElementById('challengeBiasDropdown').classList.remove('open');
-        };
-
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.form-group')) {
-                document.querySelectorAll('.bias-country-dropdown').forEach(el => el.classList.remove('open'));
-            }
-        });
-
-        window.saveBiasRegistration = async function () {
-            requireAuthForAction(async () => {
-                const name = document.getElementById('biasNameInput').value.trim();
-                const role = document.getElementById('biasRoleInput').value;
-                const idNum = parseInt(document.getElementById('biasIdInput').value, 10);
-
-                if (!name || isNaN(idNum) || idNum < 1 || idNum > 1000) {
-                    showCherBlussModal({ title: 'Dados Incompletos', htmlBody: 'Informe o nome, escolha uma foto de rosto na galeria ao lado e defina o ID oficial (1 a 1000).' });
-                    return;
-                }
-
-                const alreadyExistsInDb = biasesDatabase.some(b => b.id === idNum && b.name.toLowerCase() !== name.toLowerCase());
-                if (alreadyExistsInDb) {
-                    showCherBlussModal({
-                        title: 'ID já ocupado 🌸',
-                        htmlBody: `O ID <strong>#${idNum}</strong> já pertence a outro representante no banco de dados. Escolha outro número!`
-                    });
-                    return;
-                }
-
-                const frontalUrl = tempBiasPhotoPreviewUrl || './logo.png';
-
-                try {
-                    const slugId = `bias_${idNum}_${name.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
-                    await setDoc(doc(db, "biases_db", slugId), {
-                        name,
-                        role,
-                        id: idNum,
-                        frontalUrl,
-                        registeredByUid: appState.user.uid,
-                        updatedAt: serverTimestamp()
-                    }, { merge: true });
-
-                    appState.bias = { name, role, id: idNum, frontalUrl, lastUpdated: Date.now() };
-                    document.getElementById('challengeSelectedBiasInput').value = `${name} (#${idNum})`;
-                    saveLocal();
-                    renderAll();
-                    showCherBlussModal({
-                        title: 'Representante Salvo! 🌸',
-                        htmlBody: `<strong>${name}</strong> (#${idNum}) foi salvo com sucesso e já está pronto para o Desafio!`
-                    });
-                } catch (e) {
-                    showCherBlussModal({ title: 'Erro ao Salvar', htmlBody: e.message });
-                }
-            });
-        };
-
-        window.openMediaActionSheet = function () {
-            requireAuthForAction(() => {
-                showCherBlussModal({
-                    title: 'Adicionar Mídia 🌸',
-                    htmlBody: `
-                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Escolha usando os recursos nativos do seu celular:</p>
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            <button class="btn-gold" onclick="closeCherBlussModal(); document.getElementById('cameraDirectInput').click();">
-                                📸 Câmera Nativa (Foto)
-                            </button>
-                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeCherBlussModal(); document.getElementById('videoDirectInput').click();">
-                                🎥 Câmera Nativa (Gravar Vídeo)
-                            </button>
-                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeCherBlussModal(); document.getElementById('galleryDirectInput').click();">
-                                🖼️ Galeria Nativa (Fotos e Vídeos)
-                            </button>
-                        </div>
-                    `,
-                    buttons: [{ label: 'Cancelar', primary: false, onClick: closeCherBlussModal }]
-                });
-            });
-        };
-
-        window.handleMediaSelected = async function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp|avi)$/i.test(file.name);
-            const blobUrl = URL.createObjectURL(file);
-            await submitPostDirectlyWithMedia(blobUrl, isVideo ? 'video' : 'image', false);
-        };
-
-        window.handleChallengeMediaSelected = async function (event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp|avi)$/i.test(file.name);
-            
-            if (!appState.bias.id || !appState.bias.name) {
-                showCherBlussModal({ title: 'Selecione seu Bias', htmlBody: 'Escolha seu Bias na lista acima ou cadastre um novo antes de enviar sua foto.' });
-                return;
-            }
-
-            const blobUrl = URL.createObjectURL(file);
-            await submitPostDirectlyWithMedia(blobUrl, isVideo ? 'video' : 'image', true);
-        };
-
-        async function submitPostDirectlyWithMedia(mediaUrl, mediaType, isChallenge = false) {
-            const input = document.getElementById('mainComposerInput');
-            const text = input ? input.value.trim() : '';
-            const isInsideFandomView = document.getElementById('view-inside-fandom').classList.contains('active');
-
-            const targetFandom = (!isChallenge && isInsideFandomView && activeFandomFilter) ? activeFandomFilter : 'Geral';
-            const isPrivateFandom = targetFandom !== 'Geral';
-
-            try {
-                await addDoc(collection(db, "posts"), {
-                    author: appState.user.name,
-                    authorUid: appState.user.uid,
-                    authorHandle: appState.user.handle,
-                    avatar: appState.user.avatar,
-                    text: text || (isChallenge ? `Representando ${appState.bias.name} (#${appState.bias.id}) no Desafio!` : ''),
-                    media: mediaUrl || '',
-                    mediaType: mediaType || '',
-                    likes: 0,
-                    likedByMe: false,
-                    fandom: targetFandom,
-                    isPrivateFandom: isPrivateFandom,
-                    isChallenge: isChallenge,
-                    biasName: isChallenge ? appState.bias.name : '',
-                    biasId: isChallenge ? appState.bias.id : null,
-                    createdAt: serverTimestamp(),
-                    comments: []
-                });
-
-                if (input) input.value = '';
-                document.getElementById('cameraDirectInput').value = '';
-                document.getElementById('videoDirectInput').value = '';
-                document.getElementById('galleryDirectInput').value = '';
-                document.getElementById('challengeCameraInput').value = '';
-                document.getElementById('challengeGalleryInput').value = '';
-
-                saveLocal();
-                renderAll();
-                showCherBlussModal({ title: 'Publicado com Sucesso! 🌸', htmlBody: isPrivateFandom ? `Publicado com segurança dentro de <strong>${targetFandom}</strong>.` : 'Sua mídia foi enviada perfeitamente.' });
-            } catch (e) {
-                showCherBlussModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
-            }
-        }
-
-        // Busca corrigida para funcionar em tempo real com @arroba (tanto posts quanto usuários)
-        window.executeGlobalSearch = function () {
-            const input = document.getElementById('globalSearchInput');
-            const rawVal = input.value.trim().toLowerCase();
-            const container = document.getElementById('mainFeedList');
-
-            if (!rawVal) {
-                renderAll();
-                return;
-            }
-
-            // Garante que estamos vendo o feed onde os resultados aparecem
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            document.getElementById('view-feed').classList.add('active');
-
-            const cleanQuery = rawVal.startsWith('@') ? rawVal.slice(1) : rawVal;
-            if (!cleanQuery) {
-                renderAll();
-                return;
-            }
-
-            const matchedUsers = usersDirectory.filter(u => 
-                (u.handle && u.handle.toLowerCase().replace('@', '').includes(cleanQuery)) ||
-                (u.name && u.name.toLowerCase().includes(cleanQuery))
-            );
-
-            const matchedPosts = postsFromFirebase.filter(p => 
-                !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral') &&
-                ((p.authorHandle && p.authorHandle.toLowerCase().replace('@', '').includes(cleanQuery)) ||
-                 (p.author && p.author.toLowerCase().includes(cleanQuery)))
-            );
-
-            let htmlOutput = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; color:var(--gold-accent); font-size:12.5px;">
-                <span>Buscando por: <strong>@${cleanQuery}</strong></span>
-                <button class="btn-pill-gold" style="padding:3px 10px; font-size:11px;" onclick="document.getElementById('globalSearchInput').value=''; renderAll();">Limpar</button>
-            </div>`;
-
-            if (matchedUsers.length > 0) {
-                htmlOutput += matchedUsers.map(u => `
-                    <div class="glass-panel" style="padding:12px 14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="visitUserProfile('${u.uid}', '${(u.name || 'Usuário').replace(/'/g, "\\'")}', '${u.handle || '@usuario'}')">
-                        <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${u.avatar || './aconchego.png'}" onerror="this.src='./logo.png'" style="width:42px; height:42px; border-radius:50%; border:1px solid var(--gold-accent); object-fit:cover;">
-                            <div>
-                                <div style="font-size:13.5px; font-weight:700; color:var(--gold-accent);">${u.name || 'Usuário'}</div>
-                                <div class="notranslate" style="font-size:11.5px; color:var(--text-muted);">${u.handle || '@usuario'}</div>
-                            </div>
-                        </div>
-                        <span style="font-size:11.5px; color:var(--gold-accent);">Ver Perfil ➔</span>
-                    </div>
-                `).join('');
-            }
-
-            if (matchedPosts.length > 0) {
-                htmlOutput += matchedPosts.map(p => renderPostCardHTML(p)).join('');
-            }
-
-            if (matchedUsers.length === 0 && matchedPosts.length === 0) {
-                htmlOutput += `<div class="glass-panel empty-state-box">Nenhum perfil ou publicação encontrada para <strong>@${cleanQuery}</strong>.</div>`;
-            }
-
-            container.innerHTML = htmlOutput;
-        };
-
-        window.switchView = function (viewName) {
-            activeVisitedUserUid = null;
-            document.getElementById('searchBalaoContainer').style.display = 'flex';
-            document.getElementById('dropletBtnElement').style.display = 'flex';
-            applyUserTheme();
-
-            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-            const target = document.getElementById('view-' + viewName);
-            if (target) target.classList.add('active');
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-
-            const composerWrapper = document.getElementById('floatingComposerWrapper');
-            if (viewName === 'desafio') {
-                composerWrapper.classList.add('hidden-in-challenge');
-            } else {
-                composerWrapper.classList.remove('hidden-in-challenge');
-            }
-
-            const composerInput = document.getElementById('mainComposerInput');
-            if (viewName === 'feed') composerInput.placeholder = "Escreva no CherBluss...";
-            else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
-            else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
-            else if (viewName === 'amigos') composerInput.placeholder = "Mande uma mensagem para seus amigos...";
-
-            renderAll();
-        };
-
-        window.openPodiumFullscreen = function (rank) {
-            const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
-            const winner = challengePosts[rank - 1];
-            if (winner && winner.media) {
-                const maskedUser = maskHandle(winner.authorHandle, winner.author);
-                const winnerBias = winner.biasName ? ` • ${winner.biasName}` : '';
-                openLightbox(winner.media, winner.mediaType || 'image', `${rank}º Lugar • ${maskedUser}${winnerBias} (${winner.likes || 0} votos)`);
-            } else {
-                showCherBlussModal({ title: `${rank}º Pódio Automático`, htmlBody: 'Ainda não há participações suficientes para este pódio nesta semana.' });
-            }
-        };
-
-        window.submitPost = async function () {
-            requireAuthForAction(async () => {
-                const input = document.getElementById('mainComposerInput');
-                const text = input.value.trim();
-                if (!text && !currentAttachedDataUrl) return;
-
-                const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
-                const isInsideFandomView = document.getElementById('view-inside-fandom').classList.contains('active');
-
-                if (isInsideFandomView && activeFandomFilter) {
-                    const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
-                    if (!fandomObj || !hasFandomAccess(fandomObj)) {
-                        showCherBlussModal({ title: 'Acesso Negado 🔒', htmlBody: 'Você precisa ser aprovado neste Fandom para publicar aqui.' });
-                        return;
-                    }
-                }
-
-                try {
-                    const targetFandom = isInsideFandomView && activeFandomFilter ? activeFandomFilter : 'Geral';
-                    const isPrivateFandom = targetFandom !== 'Geral';
-
-                    await addDoc(collection(db, "posts"), {
-                        author: appState.user.name,
-                        authorUid: appState.user.uid,
-                        authorHandle: appState.user.handle,
-                        avatar: appState.user.avatar,
-                        text: text,
-                        media: currentAttachedDataUrl || '',
-                        mediaType: currentAttachedType || '',
-                        likes: 0,
-                        likedByMe: false,
-                        fandom: targetFandom,
-                        isPrivateFandom: isPrivateFandom,
-                        isChallenge: isChallengeView,
-                        biasName: isChallengeView ? (appState.bias.name || '') : '',
-                        createdAt: serverTimestamp(),
-                        comments: []
-                    });
-
-                    input.value = '';
-                    currentAttachedDataUrl = null;
-                    currentAttachedType = null;
-                    saveLocal();
-                    renderAll();
-                } catch (e) {
-                    showCherBlussModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
-                }
-            });
-        };
-
-        window.confirmDeletePost = function (postId) {
-            requireAuthForAction(() => {
-                showCherBlussModal({
-                    title: '🗑️ Excluir Publicação',
-                    htmlBody: 'Você realmente deseja apagar essa publicação?',
-                    buttons: [
-                        { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
-                        {
-                            label: 'Sim, Apagar',
-                            primary: true,
-                            onClick: async () => {
-                                try {
-                                    await deleteDoc(doc(db, "posts", postId));
-                                    closeCherBlussModal();
-                                    renderMyAconchegoPosts();
-                                } catch (e) {
-                                    showCherBlussModal({ title: 'Erro', htmlBody: e.message });
-                                }
-                            }
-                        }
-                    ]
-                });
-            });
-        };
-
-        window.toggleLikeUmbrella = async function (postId) {
-            requireAuthForAction(async () => {
-                const post = postsFromFirebase.find(p => p.id === postId);
-                if (!post) return;
-                if (post.isChallenge && !post.likedByMe) {
-                    if (appState.dailyVotes.used >= 3) {
-                        showCherBlussModal({ title: 'Limite Atingido', htmlBody: 'Você já usou seus 3 votos de hoje.' });
-                        return;
-                    }
-                    appState.dailyVotes.used += 1;
-                } else if (post.isChallenge && post.likedByMe) {
-                    appState.dailyVotes.used = Math.max(0, appState.dailyVotes.used - 1);
-                }
-
-                const newLiked = !post.likedByMe;
-                const newLikes = (post.likes || 0) + (newLiked ? 1 : -1);
-
-                try {
-                    await updateDoc(doc(db, "posts", postId), { likes: newLikes, likedByMe: newLiked });
-                    saveLocal();
-                } catch (e) { console.error(e); }
-            });
-        };
-
-        window.submitInlineComment = async function (postId) {
-            requireAuthForAction(async () => {
-                const input = document.getElementById(`inlineCommentInput_${postId}`);
-                const val = input.value.trim();
-                if (!val) return;
-                const post = postsFromFirebase.find(p => p.id === postId);
-                if (!post) return;
-                const comments = post.comments || [];
-                comments.push(`<strong>${appState.user.name}</strong>: ${val}`);
-                try {
-                    await updateDoc(doc(db, "posts", postId), { comments });
-                    input.value = '';
-                } catch (e) {
-                    showCherBlussModal({ title: 'Erro', htmlBody: e.message });
-                }
-            });
-        };
-
-        window.confirmDeleteComment = async function (postId, commentIndex) {
-            const post = postsFromFirebase.find(p => p.id === postId);
-            if (!post) return;
-            const comments = post.comments || [];
-            comments.splice(commentIndex, 1);
-            try {
-                await updateDoc(doc(db, "posts", postId), { comments });
-            } catch (e) { console.error(e); }
-        };
-
-        window.openNotificationsModal = function () {
-            requireAuthForAction(() => {
-                if (appState.notifications.length === 0) {
-                    showCherBlussModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação pendente nos seus Fandoms.' });
-                    return;
-                }
-                const notif = appState.notifications[0];
-                showCherBlussModal({
-                    title: 'Solicitação de Fandom 🔒',
-                    htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Ao aprovar, esta pessoa poderá ver e publicar dentro deste espaço particular.</p>`,
-                    buttons: [
-                        {
-                            label: 'Recusar',
-                            primary: false,
-                            onClick: async () => {
-                                try {
-                                    await updateDoc(doc(db, "fandoms", notif.fandomId), {
-                                        pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
-                                    });
-                                } catch (e) {}
-                                closeCherBlussModal();
-                            }
-                        },
-                        { 
-                            label: 'Aprovar Entrada ✅', 
-                            primary: true, 
-                            onClick: async () => { 
-                                try {
-                                    await updateDoc(doc(db, "fandoms", notif.fandomId), {
-                                        members: arrayUnion(notif.requesterUid),
-                                        pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
-                                    });
-                                } catch (e) {}
-                                closeCherBlussModal(); 
-                            } 
-                        }
-                    ]
-                });
-            });
-        };
-
-        window.openCreateFandomModal = function () {
-            requireAuthForAction(() => {
-                showCherBlussModal({
-                    title: 'Criar Novo Fandom Particular 🔒',
-                    htmlBody: `
-                        <p style="font-size:11.5px; color:var(--text-muted); margin-bottom:10px;">Este espaço nasce trancado e totalmente isolado do feed principal.</p>
-                        <div class="form-group">
-                            <label class="form-label">Nome do Fandom</label>
-                            <input type="text" id="newFandomNameInput" class="glass-input" placeholder="Ex: MeuFandomPrivado...">
-                        </div>
-                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-                            <div class="form-group">
-                                <label class="form-label">Cor da Bordinha</label>
-                                <input type="color" id="newFandomBorderColor" value="#fbbf24" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Cor da Bolinha</label>
-                                <input type="color" id="newFandomDotColor" value="#fbbf24" style="width:100%; height:38px; border:none; background:transparent; cursor:pointer; border-radius:8px;">
-                            </div>
-                        </div>
-                    `,
-                    buttons: [
-                        { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
-                        {
-                            label: 'Criar Fandom Trancado',
-                            primary: true,
-                            onClick: async () => {
-                                const name = document.getElementById('newFandomNameInput').value.trim();
-                                const borderColor = document.getElementById('newFandomBorderColor').value;
-                                const dotColor = document.getElementById('newFandomDotColor').value;
-
-                                if (name) {
-                                    const exists = appState.fandoms.find(f => f.name.toLowerCase() === name.toLowerCase());
-                                    if (!exists) {
-                                        try {
-                                            await addDoc(collection(db, "fandoms"), {
-                                                name,
-                                                borderColor,
-                                                dotColor,
-                                                creatorUid: appState.user.uid,
-                                                admins: [appState.user.uid],
-                                                members: [appState.user.uid],
-                                                pendingRequests: [],
-                                                createdAt: serverTimestamp()
-                                            });
-                                            closeCherBlussModal();
-                                        } catch (e) {
-                                            showCherBlussModal({ title: 'Erro', htmlBody: e.message });
-                                        }
-                                    } else {
-                                        showCherBlussModal({ title: 'Aviso', htmlBody: 'Já existe um fandom com esse nome!' });
-                                    }
-                                }
-                            }
-                        }
-                    ]
-                });
-            });
-        };
-
-        function hasFandomAccess(fandomObj) {
-            if (!appState.user.loggedIn || !appState.user.uid) return false;
-            if (fandomObj.creatorUid === appState.user.uid) return true;
-            if (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)) return true;
-            if (fandomObj.members && fandomObj.members.includes(appState.user.uid)) return true;
-            return false;
-        }
-
-        window.selectFandom = function (fandomName) {
-            requireAuthForAction(() => {
-                const fandomObj = appState.fandoms.find(f => f.name === fandomName);
-                if (!fandomObj) return;
-
-                if (hasFandomAccess(fandomObj)) {
-                    activeFandomFilter = fandomName;
-                    document.getElementById('insideFandomTitle').textContent = fandomName;
-                    switchView('inside-fandom');
-                } else {
-                    const alreadyRequested = fandomObj.pendingRequests && fandomObj.pendingRequests.some(r => r.uid === appState.user.uid);
-                    if (alreadyRequested) {
-                        showCherBlussModal({
-                            title: `Solicitação Pendente ⏳`,
-                            htmlBody: `Você já enviou uma solicitação para entrar em <strong>${fandomName}</strong>. Aguarde o administrador aprovar na gotinha 💧.`
-                        });
-                    } else {
-                        showCherBlussModal({
-                            title: `Fandom Particular 🔒`,
-                            htmlBody: `O espaço <strong>${fandomName}</strong> é trancado. Deseja enviar uma solicitação de entrada para o administrador?`,
-                            buttons: [
-                                { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
-                                {
-                                    label: 'Enviar Solicitação 📩',
-                                    primary: true,
-                                    onClick: async () => {
-                                        try {
-                                            await updateDoc(doc(db, "fandoms", fandomObj.id), {
-                                                pendingRequests: arrayUnion({
-                                                    uid: appState.user.uid,
-                                                    name: appState.user.name
-                                                })
-                                            });
-                                            closeCherBlussModal();
-                                            showCherBlussModal({
-                                                title: 'Solicitação Enviada! ✅',
-                                                htmlBody: `Seu pedido para entrar em <strong>${fandomName}</strong> foi enviado.`
-                                            });
-                                        } catch (e) {
-                                            showCherBlussModal({ title: 'Erro', htmlBody: e.message });
-                                        }
-                                    }
-                                }
-                            ]
-                        });
-                    }
-                }
-            });
-        };
-
-        window.openFandomOptionsMenu = function () {
-            const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
-            const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
-
-            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeCherBlussModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
-            let deleteHtml = isCreatorOrAdmin ? `<button class="btn-danger-pill" style="width:100%; padding:10px;" onclick="closeCherBlussModal(); confirmDeleteFandom('${fandomObj.id}', '${activeFandomFilter}')">🗑️ Excluir Fandom</button>` : '';
-
-            showCherBlussModal({
-                title: `Opções • ${activeFandomFilter}`,
-                htmlBody: `
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Gerencie as configurações deste espaço particular:</p>
-                    ${adminHtml}
-                    ${deleteHtml}
-                `,
-                buttons: [{ label: 'Fechar', primary: false, onClick: closeCherBlussModal }]
-            });
-        };
-
-        window.openManageAdminsModal = function (fandomName) {
-            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
-            if (!fandomObj) return;
-
-            const membersMap = {};
-            postsFromFirebase.filter(p => p.fandom === fandomName).forEach(p => {
-                if (p.authorUid && p.author) membersMap[p.authorUid] = p.author;
-            });
-            if (fandomObj.members) {
-                fandomObj.members.forEach(mUid => {
-                    if (!membersMap[mUid]) membersMap[mUid] = mUid === appState.user.uid ? appState.user.name : `Membro (${mUid.slice(0,5)})`;
-                });
-            }
-            if (appState.user.uid) membersMap[appState.user.uid] = appState.user.name;
-
-            let membersHtml = '';
-            for (const [uid, uname] of Object.entries(membersMap)) {
-                const isAdmin = fandomObj.admins && fandomObj.admins.includes(uid);
-                const isCreator = fandomObj.creatorUid === uid;
-                membersHtml += `
-                    <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 12px; border-radius:10px; margin-bottom:6px;">
-                        <div>
-                            <span style="font-size:13px; color:var(--text-main); font-weight:600;">${uname}</span>
-                            ${isAdmin ? '<span class="admin-badge" style="margin-left:6px;">Admin</span>' : ''}
-                        </div>
-                        <div style="display:flex; gap:4px;">
-                            ${isAdmin ? 
-                                `<button class="btn-danger-pill" style="font-size:10px;" onclick="demoteAdmin('${fandomObj.id}', '${fandomName}', '${uid}')">Tirar Admin</button>` : 
-                                `<button class="btn-pill-gold" style="font-size:10px;" onclick="promoteAdmin('${fandomObj.id}', '${fandomName}', '${uid}')">Promover</button>`
-                            }
-                            ${!isCreator ? `<button class="btn-danger-pill" style="font-size:10px;" onclick="kickMember('${fandomObj.id}', '${fandomName}', '${uid}')">Expulsar</button>` : ''}
-                        </div>
-                    </div>
-                `;
-            }
-
-            showCherBlussModal({
-                title: `Membros & Admins • ${fandomName}`,
-                htmlBody: `<div style="max-height:220px; overflow-y:auto;">${membersHtml || '<p style="font-size:12px; color:var(--text-muted);">Nenhum membro ativo ainda.</p>'}</div>`,
-                buttons: [{ label: 'Concluir', primary: true, onClick: closeCherBlussModal }]
-            });
-        };
-
-        window.kickMember = async function(fandomId, fandomName, uid) {
-            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
-            if (!fandomObj || fandomObj.creatorUid === uid) return;
-            await updateDoc(doc(db, "fandoms", fandomId), { members: arrayRemove(uid), admins: arrayRemove(uid) });
-            openManageAdminsModal(fandomName);
-        };
-
-        window.promoteAdmin = async function(fandomId, fandomName, uid) {
-            await updateDoc(doc(db, "fandoms", fandomId), { admins: arrayUnion(uid), members: arrayUnion(uid) });
-            openManageAdminsModal(fandomName);
-        };
-
-        window.demoteAdmin = async function(fandomId, fandomName, uid) {
-            const fandomObj = appState.fandoms.find(f => f.name === fandomName);
-            if (fandomObj && fandomObj.creatorUid !== uid) {
-                await updateDoc(doc(db, "fandoms", fandomId), { admins: arrayRemove(uid) });
-                openManageAdminsModal(fandomName);
-            }
-        };
-
-        window.confirmDeleteFandom = function (fandomId, fandomName) {
-            showCherBlussModal({
-                title: '🗑️ Excluir Fandom',
-                htmlBody: `Você realmente deseja apagar o fandom <strong>${fandomName}</strong>?`,
-                buttons: [
-                    { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
-                    {
-                        label: 'Sim, Apagar',
-                        primary: true,
-                        onClick: async () => {
-                            await deleteDoc(doc(db, "fandoms", fandomId));
-                            closeCurrentFandom();
-                            closeCherBlussModal();
-                        }
-                    }
-                ]
-            });
-        };
-
-        window.closeCurrentFandom = function () {
-            activeFandomFilter = null;
-            switchView('fandom');
-        };
-
-        function openMasterAdminPanel() {
-            showCherBlussModal({
-                title: '✨ Painel de Edição do Desafio Semanal',
-                htmlBody: `
-                    <div class="form-group"><label class="form-label">Diretriz / Tema</label><input type="text" id="admDirective" class="glass-input" value="${appState.directive}"></div>
-                `,
-                buttons: [
-                    { label: 'Fechar', primary: false, onClick: closeCherBlussModal },
-                    { label: 'Salvar Diretriz', primary: true, onClick: () => { appState.directive = document.getElementById('admDirective').value.trim(); saveLocal(); renderAll(); closeCherBlussModal(); } }
-                ]
-            });
-        }
-
-        window.openLightbox = function (src, type, caption = '') {
-            if (!src) return;
-            const lb = document.getElementById('nativeMediaLightbox');
-            const container = document.getElementById('lightboxMediaContainer');
-            document.getElementById('lightboxCaption').textContent = caption;
-            container.innerHTML = type === 'video'
-                ? `<video src="${src}" class="lightbox-media" controls autoplay playsinline webkit-playsinline></video>`
-                : `<img src="${src}" class="lightbox-media" alt="">`;
-            lb.classList.add('open');
-        };
-
-        window.closeLightbox = function () {
-            document.getElementById('nativeMediaLightbox').classList.remove('open');
-            document.getElementById('lightboxMediaContainer').innerHTML = '';
-        };
-
-        function updateNotifBadge() {
-            const badge = document.getElementById('notifBadge');
-            badge.textContent = appState.notifications.length;
-            badge.style.display = appState.notifications.length > 0 ? 'flex' : 'none';
-        }
-
-        function applyUserTheme() {
-            document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
-            if (appState.user.accentColor) {
-                document.documentElement.style.setProperty('--gold-accent', appState.user.accentColor);
-                document.documentElement.style.setProperty('--gold-border', hexToRgba(appState.user.accentColor, 0.45));
-            }
-            if (appState.user.customBgUrl) {
-                document.documentElement.style.setProperty('--custom-bg-url', `url('${appState.user.customBgUrl}')`);
-            }
-        }
-
-        function formatPostDate(timestamp) {
-            if (!timestamp || !timestamp.toDate) return 'Agora mesmo';
-            const date = timestamp.toDate();
-            const options = { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' };
-            return date.toLocaleDateString('pt-BR', options);
-        }
-
-        function renderPostCardHTML(post) {
-            const mediaHtml = post.media
-                ? (post.mediaType === 'video'
-                    ? `<video src="${post.media}" class="post-media" controls playsinline webkit-playsinline preload="metadata" onloadedmetadata="this.currentTime=0.1"></video>`
-                    : `<img src="${post.media}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
-                : '';
-
-            let isAdmin = false;
-            if (post.fandom && post.fandom !== 'Geral') {
-                const fandomObj = appState.fandoms.find(f => f.name === post.fandom);
-                if (fandomObj && ((fandomObj.creatorUid === post.authorUid) || (fandomObj.admins && fandomObj.admins.includes(post.authorUid)))) {
-                    isAdmin = true;
-                }
-            }
-
-            const comments = post.comments || [];
-            const commentsHtml = comments.map((c, idx) => `
-                <div class="comment-item-clean">
-                    <span style="flex:1;">${c}</span>
-                    <button class="btn-danger-pill" style="font-size:8px; padding:1px 4px;" onclick="confirmDeleteComment('${post.id}', ${idx})">✕</button>
-                </div>
-            `).join('');
-
-            const postDateStr = formatPostDate(post.createdAt);
-            const userHandleDisplay = post.authorHandle || '@usuario';
-            const subLabel = post.isChallenge 
-                ? `Desafio Semanal${post.biasName ? ' • ' + post.biasName : ''}` 
-                : (post.fandom || 'Geral');
-
-            return `
-                <article class="post-card-clean">
-                    <div class="post-header">
-                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}', '${userHandleDisplay}')">
-                            <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
-                            <div>
-                                <div class="post-author-name">
-                                    ${post.author}
-                                    ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
-                                </div>
-                                <div class="post-meta notranslate">${userHandleDisplay} • ${subLabel}</div>
-                            </div>
-                        </div>
-                        <div style="font-size:11px; color:var(--text-muted); font-weight:600;">
-                            📅 ${postDateStr}
-                        </div>
-                    </div>
-
-                    ${post.text ? `<p class="post-text">${post.text}</p>` : ''}
-                    ${mediaHtml}
-
-                    <div class="post-actions-clean">
-                        <button class="like-umbrella-btn ${post.likedByMe ? 'liked' : ''}" onclick="toggleLikeUmbrella('${post.id}')">
-                            <span>🌸</span>
-                            <span>${post.likes || 0}</span>
-                        </button>
-                    </div>
-
-                    <div class="comments-section-clean">
-                        ${commentsHtml}
-                        <div class="comment-input-row">
-                            <input type="text" id="inlineCommentInput_${post.id}" class="comment-input-clean" placeholder="Responder..." onkeypress="if(event.key==='Enter') submitInlineComment('${post.id}')">
-                            <button class="btn-pill-gold" style="padding:3px 10px; font-size:11px;" onclick="submitInlineComment('${post.id}')">Enviar</button>
-                        </div>
-                    </div>
-                </article>
-            `;
-        }
-
-        function renderAll() {
-            document.getElementById('weeklyDirectiveText').textContent = appState.directive;
-            document.getElementById('carouselChallengeText').textContent = appState.directive;
-            document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
-            updateNotifBadge();
-
-            // Pódio: @lu**na em cima e nome do Bias em fonte bonita embaixo
-            const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
-            for (let i = 0; i < 3; i++) {
-                const rank = i + 1;
-                const winner = challengePosts[i];
-                const imgEl = document.getElementById(`podiumImg${rank}`);
-                const labelEl = document.getElementById(`podiumLabel${rank}`);
-                const biasSubEl = document.getElementById(`podiumBias${rank}`);
-
-                if (winner) {
-                    if (winner.media && winner.mediaType !== 'video') imgEl.src = winner.media;
-                    labelEl.textContent = maskHandle(winner.authorHandle, winner.author);
-                    biasSubEl.textContent = winner.biasName || 'Vencedor';
-                } else {
-                    labelEl.textContent = `${rank}º Pódio`;
-                    biasSubEl.textContent = 'Aguardando';
-                }
-            }
-
-            const fandomsGrid = document.getElementById('fandomsGridContainer');
-            if (appState.fandoms.length === 0) {
-                fandomsGrid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column: 1 / -1;">Nenhum Fandom particular criado ainda. Clique em "+ Criar Fandom" para começar!</div>`;
-            } else {
-                fandomsGrid.innerHTML = appState.fandoms.map(f => {
-                    const unlocked = hasFandomAccess(f);
-                    return `
-                        <div class="glass-panel fandom-box-card" style="border-color: ${f.borderColor || '#fbbf24'};" onclick="selectFandom('${f.name}')">
-                            <h4 style="color: var(--gold-accent);">
-                                <span class="fandom-dot" style="background-color: ${f.dotColor || '#fbbf24'};"></span>
-                                ${f.name}
-                            </h4>
-                            <p>${unlocked ? '🔓 Acesso Liberado' : '🔒 Solicitar Entrada'}</p>
-                        </div>
-                    `;
-                }).join('');
-            }
-
-            if (activeFandomFilter) {
-                const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
-                if (!fandomObj || !hasFandomAccess(fandomObj)) {
-                    closeCurrentFandom();
-                    return;
-                }
-                const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
-                document.getElementById('insideFandomFeedList').innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p)).join('') : `<div class="empty-state-box">Este fandom está silencioso. Compartilhe algo aqui dentro!</div>`;
-            }
-
-            if (activeVisitedUserUid) {
-                const userPosts = postsFromFirebase.filter(p => p.authorUid === activeVisitedUserUid && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
-                document.getElementById('visitedProfileFeedList').innerHTML = userPosts.length > 0 ? userPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Este usuário ainda não publicou nada no feed público.</div>`;
-            }
-
-            if (!document.getElementById('globalSearchInput').value.trim()) {
-                const generalPosts = postsFromFirebase.filter(p => 
-                    !p.isChallenge && 
-                    !p.isPrivateFandom && 
-                    (!p.fandom || p.fandom === 'Geral')
-                );
-                document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra abaixo para compartilhar!</div>`;
-            }
-
-            const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
-            document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
-
-            document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
-                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; gap:10px;">
-                    <img src="${f.avatar}" onerror="this.src='./logo.png'" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
-                    <div>
-                        <div style="font-size:14px; font-weight:700;">${f.name}</div>
-                        <div class="notranslate" style="font-size:11.5px; color:var(--text-muted);">${f.handle || '@amigo'} • ${f.status}</div>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        window.addEventListener('scroll', () => {
-            const carouselSec = document.getElementById('carouselWrapper');
-            if (window.scrollY > 25) carouselSec.classList.add('scrolled');
-            else carouselSec.classList.remove('scrolled');
-        }, { passive: true });
-
-        applyUserTheme();
-        startMidnightCountdown();
-        initFirebaseSync();
-    </script>
+      }
+    });
+
+    function handlePostImageSelect(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        pendingPostImage = e.target.result;
+        document.getElementById('composerPreviewImg').src = pendingPostImage;
+        document.getElementById('composerPreviewStrip').classList.add('active');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function clearComposerImage() {
+      pendingPostImage = '';
+      document.getElementById('postImageInput').value = '';
+      document.getElementById('composerPreviewStrip').classList.remove('active');
+    }
+
+    function submitPost() {
+      const input = document.getElementById('composerTextInput');
+      const text = input.value.trim();
+      if (!text && !pendingPostImage) {
+        collapseComposer();
+        return;
+      }
+
+      const newPost = {
+        id: Date.now(),
+        author: state.profile.name || 'Anônimo',
+        handle: state.profile.handle || '@usuario',
+        avatar: state.profile.avatar,
+        tag: 'SherBluss',
+        text: text,
+        image: pendingPostImage || null
+      };
+
+      state.posts.unshift(newPost);
+      persistState();
+
+      input.value = '';
+      clearComposerImage();
+      renderFeed();
+      collapseComposer();
+      showToast('Publicado com sucesso!');
+    }
+
+    function renderFeed(query = '') {
+      const list = document.getElementById('feedList');
+      const q = query.toLowerCase().trim();
+      const filtered = q
+        ? state.posts.filter(p =>
+            p.text.toLowerCase().includes(q) ||
+            p.author.toLowerCase().includes(q) ||
+            p.handle.toLowerCase().includes(q) ||
+            p.tag.toLowerCase().includes(q)
+          )
+        : state.posts;
+
+      if (filtered.length === 0) {
+        list.innerHTML = '<div class="post-card" style="text-align:center; color:var(--text-muted);">Nenhuma publicação encontrada.</div>';
+        return;
+      }
+
+      list.innerHTML = filtered.map(post => `
+        <article class="post-card">
+          <div class="post-header">
+            <div class="post-author">
+              <img src="${post.avatar}" alt="${post.author}" />
+              <div class="post-author-info">
+                <h4>${post.author}</h4>
+                <span>${post.handle}</span>
+              </div>
+            </div>
+            <span class="post-tag">${post.tag}</span>
+          </div>
+          ${post.text ? `<p class="post-text">${escapeHtml(post.text)}</p>` : ''}
+          ${post.image ? `<img class="post-image" src="${post.image}" alt="Imagem do post" />` : ''}
+        </article>
+      `).join('');
+    }
+
+    function filterFeed(val) {
+      renderFeed(val);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, m => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[m]));
+    }
+
+    function openProfileModal() {
+      syncProfileUI();
+      if (state.isProfileSaved) {
+        switchToViewMode();
+      } else {
+        switchToEditMode();
+      }
+      document.getElementById('profileModal').classList.add('active');
+    }
+
+    function closeProfileModal() {
+      document.getElementById('dotsDropdown').classList.remove('active');
+      document.getElementById('profileModal').classList.remove('active');
+    }
+
+    function toggleDotsMenu() {
+      document.getElementById('dotsDropdown').classList.toggle('active');
+    }
+
+    function switchToViewMode() {
+      document.getElementById('dotsDropdown').classList.remove('active');
+      document.getElementById('profileEditForm').classList.add('hidden-block');
+      document.getElementById('editAvatarBadge').classList.add('hidden-block');
+
+      document.getElementById('profileViewMode').classList.remove('hidden-block');
+      document.getElementById('threeDotsContainer').classList.remove('hidden-block');
+      document.getElementById('savedStatusBadge').classList.remove('hidden-block');
+      syncProfileUI();
+    }
+
+    function switchToEditMode() {
+      document.getElementById('dotsDropdown').classList.remove('active');
+      document.getElementById('profileViewMode').classList.add('hidden-block');
+      document.getElementById('threeDotsContainer').classList.add('hidden-block');
+      document.getElementById('savedStatusBadge').classList.add('hidden-block');
+
+      document.getElementById('profileEditForm').classList.remove('hidden-block');
+      document.getElementById('editAvatarBadge').classList.remove('hidden-block');
+      populateEditForm();
+    }
+
+    function populateEditForm() {
+      const p = state.profile;
+      document.getElementById('inputName').value = p.name;
+      document.getElementById('inputHandle').value = p.handle;
+      document.getElementById('inputBio').value = p.bio;
+      document.getElementById('inputFandomBias').value = p.fandomBias;
+      document.getElementById('inputDoramaAnime').value = p.doramaAnime;
+      document.getElementById('inputAboutInterview').value = p.aboutInterview;
+      document.getElementById('inputEmail').value = p.email;
+      document.getElementById('inputPassword').value = '';
+
+      document.querySelectorAll('.color-swatch').forEach(btn => {
+        btn.classList.toggle('selected', btn.dataset.color.toLowerCase() === p.accentColor.toLowerCase());
+      });
+    }
+
+    document.querySelectorAll('.color-swatch').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = btn.dataset.color;
+        state.profile.accentColor = chosen;
+        applyAccentColor(chosen);
+        document.querySelectorAll('.color-swatch').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+      });
+    });
+
+    function handleAvatarUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.profile.avatar = e.target.result;
+        document.getElementById('profileBigAvatar').src = e.target.result;
+        document.getElementById('headerAvatarImg').src = e.target.result;
+        persistState();
+        showToast('Foto atualizada!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleBannerUpload(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        state.profile.banner = e.target.result;
+        document.getElementById('profileBanner').style.backgroundImage = `url(${e.target.result})`;
+        persistState();
+        showToast('Capa atualizada!');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function saveProfileData() {
+      let rawHandle = document.getElementById('inputHandle').value.trim();
+      if (rawHandle && !rawHandle.startsWith('@')) rawHandle = '@' + rawHandle;
+      rawHandle = rawHandle.replace(/\s+/g, '_');
+
+      state.profile.name = document.getElementById('inputName').value.trim();
+      state.profile.handle = rawHandle;
+      state.profile.bio = document.getElementById('inputBio').value.trim();
+      state.profile.fandomBias = document.getElementById('inputFandomBias').value.trim();
+      state.profile.doramaAnime = document.getElementById('inputDoramaAnime').value.trim();
+      state.profile.aboutInterview = document.getElementById('inputAboutInterview').value.trim();
+      state.profile.email = document.getElementById('inputEmail').value.trim();
+
+      state.isProfileSaved = true;
+      persistState();
+      syncProfileUI();
+      switchToViewMode();
+      showToast('Perfil salvo com sucesso!');
+    }
+
+    function syncProfileUI() {
+      const p = state.profile;
+      applyAccentColor(p.accentColor);
+
+      document.getElementById('headerAvatarImg').src = p.avatar;
+      document.getElementById('profileBigAvatar').src = p.avatar;
+      if (p.banner) {
+        document.getElementById('profileBanner').style.backgroundImage = `url(${p.banner})`;
+      }
+
+      document.getElementById('viewDisplayName').textContent = p.name || 'Sem nome';
+      document.getElementById('viewDisplayHandle').textContent = p.handle || '@usuario';
+      document.getElementById('viewDisplayBio').textContent = p.bio || 'Sem bio definida.';
+      document.getElementById('viewFandomBias').textContent = p.fandomBias || '—';
+      document.getElementById('viewDoramaAnime').textContent = p.doramaAnime || '—';
+      document.getElementById('viewAboutInterview').textContent = p.aboutInterview || '—';
+      document.getElementById('viewEmail').textContent = p.email || '—';
+
+      document.getElementById('statFriendsCount').textContent = p.friendsCount;
+      document.getElementById('statFandomsCount').textContent = p.fandomsCount;
+      document.getElementById('statPostsCount').textContent = state.posts.length;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
+
+    syncProfileUI();
+    updateDropletVisibility();
+    renderFeed();
+  </script>
 </body>
 </html>
