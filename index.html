@@ -96,6 +96,9 @@
             z-index: 45;
             position: sticky;
             top: 0;
+            background: rgba(6, 10, 30, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(251, 191, 36, 0.15);
         }
 
         .header-left-btn {
@@ -113,7 +116,6 @@
             justify-content: center;
         }
 
-        /* Aro girando estilo download da Play Store ao redor da bolinha do perfil */
         .header-left-btn.playing::after {
             content: '';
             position: absolute;
@@ -204,33 +206,10 @@
             padding: 0 3px;
         }
 
-        .logo-section {
-            width: 100%;
-            padding: 4px 20px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            max-height: 170px;
-            transition: max-height 0.25s ease, opacity 0.2s ease;
-        }
-
-        .logo-section.scrolled {
-            max-height: 0;
-            opacity: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .brand-logo {
-            max-height: 140px;
-            max-width: 85%;
-            object-fit: contain;
-            display: block;
-        }
-
+        /* Carrossel fluido e limpo logo abaixo do topo */
         .main-carousel-wrapper {
             width: 100%;
-            padding: 6px 20px 18px;
+            padding: 12px 20px 16px;
             display: flex;
             gap: 16px;
             overflow-x: auto;
@@ -728,7 +707,6 @@
             cursor: pointer;
         }
 
-        /* Abas internas do Perfil */
         .profile-tabs-row {
             display: flex;
             gap: 8px;
@@ -756,15 +734,9 @@
             border-color: var(--gold-accent);
         }
 
-        .profile-tab-pane {
-            display: none;
-        }
+        .profile-tab-pane { display: none; }
+        .profile-tab-pane.active { display: block; }
 
-        .profile-tab-pane.active {
-            display: block;
-        }
-
-        /* Container restrito ao perfil para player embutido (Spotify / Deezer / YouTube) */
         .restricted-embed-box {
             width: 100%;
             max-height: 152px;
@@ -802,7 +774,7 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR -->
+    <!-- BARRA SUPERIOR (LIMPA E MODERNA) -->
     <div class="unified-top-bar">
         <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
@@ -821,14 +793,7 @@
 
     <div class="app-shell">
 
-        <!-- LOGO CENTRAL -->
-        <div class="logo-section" id="logoSection">
-            <div class="logo-container" onclick="switchView('feed')">
-                <img src="./logo.png" alt="Umbrella" class="brand-logo" id="brandLogo">
-            </div>
-        </div>
-
-        <!-- CARROSSEL / NAVEGAÇÃO -->
+        <!-- CARROSSEL / NAVEGAÇÃO SUPERIOR (SEM LOGO ESTÁTICO PESADO) -->
         <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
@@ -962,12 +927,13 @@
             <div class="feed-list" id="insideFandomFeedList"></div>
         </section>
 
-        <!-- TELA 4: AMIGOS -->
+        <!-- TELA 4: AMIGOS & CHAT DIRETÃO -->
         <section class="view-section" id="view-amigos">
             <div class="glass-panel section-header-bar">
-                <span class="section-title">Meus Amigos</span>
+                <span class="section-title">Amigos & Bate-Papo</span>
                 <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Visite o perfil de outros dorameiros nos posts para enviar o convite de amizade: <em>"Quer ver um dorama?"</em></p>
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
@@ -1065,7 +1031,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v43';
+        const LOCAL_KEY = 'umbrella_clean_state_v44';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1077,16 +1043,16 @@
                 musicEmbed: '',
                 musicTitle: '',
                 themeAccent: '#060a1e',
-                bgImage: ''
+                bgImage: '',
+                friends: [],
+                friendRequests: [],
+                sentRequests: []
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             fandoms: [],
-            subgroups: {},
-            friends: [
-                { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
-            ],
+            chats: {},
             notifications: []
         };
 
@@ -1117,30 +1083,73 @@
                 snapshot.forEach((docSnap) => {
                     appState.fandoms.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                syncFandomNotifications();
+                syncNotifications();
                 renderAll();
             });
         }
 
-        function syncFandomNotifications() {
+        async function syncUserDataFromCloud(uid) {
+            try {
+                const userRef = doc(db, "users", uid);
+                const userDoc = await getDoc(userRef);
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    if (data.musicEmbed !== undefined) appState.user.musicEmbed = data.musicEmbed;
+                    if (data.themeAccent) appState.user.themeAccent = data.themeAccent;
+                    if (data.bgImage !== undefined) appState.user.bgImage = data.bgImage;
+                    if (data.friends) appState.user.friends = data.friends;
+                    if (data.friendRequests) appState.user.friendRequests = data.friendRequests;
+                    if (data.sentRequests) appState.user.sentRequests = data.sentRequests;
+                } else {
+                    await setDoc(userRef, {
+                        name: appState.user.name,
+                        avatar: appState.user.avatar,
+                        musicEmbed: '',
+                        themeAccent: '#060a1e',
+                        bgImage: '',
+                        friends: [],
+                        friendRequests: [],
+                        sentRequests: []
+                    }, { merge: true });
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        function syncNotifications() {
             if (!appState.user.loggedIn || !appState.user.uid) return;
-            const fandomNotifs = [];
+            const notifs = [];
+
+            // Notificações de Fandoms
             appState.fandoms.forEach(f => {
                 const isAdminOrCreator = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
                 if (isAdminOrCreator && f.pendingRequests && f.pendingRequests.length > 0) {
                     f.pendingRequests.forEach(req => {
-                        fandomNotifs.push({
+                        notifs.push({
                             type: 'fandom_request',
                             fandomId: f.id,
                             fandomName: f.name,
                             requesterUid: req.uid,
                             requesterName: req.name,
-                            text: `🔒 <strong>${req.name}</strong> solicitou entrada no fandom privado <strong>${f.name}</strong>.`
+                            text: `🔒 <strong>${req.name}</strong> solicitou entrada no fandom <strong>${f.name}</strong>.`
                         });
                     });
                 }
             });
-            appState.notifications = fandomNotifs;
+
+            // Notificações de Amizade ("Quer ver um dorama?")
+            if (appState.user.friendRequests && appState.user.friendRequests.length > 0) {
+                appState.user.friendRequests.forEach(req => {
+                    notifs.push({
+                        type: 'friend_request',
+                        requesterUid: req.uid,
+                        requesterName: req.name,
+                        requesterAvatar: req.avatar || './aconchego.png',
+                        text: `💖 <strong>${req.name}</strong> te mandou o convite: <em>"Quer ver um dorama?"</em>`
+                    });
+                });
+            }
+
+            appState.notifications = notifs;
             updateNotifBadge();
         }
 
@@ -1152,28 +1161,10 @@
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
 
-                const userRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userRef);
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    if (data.musicEmbed !== undefined) appState.user.musicEmbed = data.musicEmbed;
-                    if (data.musicTitle !== undefined) appState.user.musicTitle = data.musicTitle;
-                    if (data.themeAccent) appState.user.themeAccent = data.themeAccent;
-                    if (data.bgImage !== undefined) appState.user.bgImage = data.bgImage;
-                } else {
-                    await setDoc(userRef, {
-                        name: appState.user.name,
-                        avatar: appState.user.avatar,
-                        musicEmbed: appState.user.musicEmbed || '',
-                        musicTitle: appState.user.musicTitle || '',
-                        themeAccent: appState.user.themeAccent || '#060a1e',
-                        bgImage: appState.user.bgImage || ''
-                    }, { merge: true });
-                }
-
+                await syncUserDataFromCloud(user.uid);
                 saveLocal();
                 applyUserTheme();
-                syncFandomNotifications();
+                syncNotifications();
                 renderAll();
             }
         });
@@ -1199,10 +1190,11 @@
                 appState.user.name = user.displayName || 'Usuário Google';
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
+                await syncUserDataFromCloud(user.uid);
                 saveLocal();
                 applyUserTheme();
                 closeAuthGate();
-                syncFandomNotifications();
+                syncNotifications();
                 renderAll();
             } catch (error) {
                 showUmbrellaModal({ title: 'Aviso de Login', htmlBody: error.message });
@@ -1239,7 +1231,7 @@
             saveLocal();
             applyUserTheme();
             closeAuthGate();
-            syncFandomNotifications();
+            syncNotifications();
             renderAll();
         };
 
@@ -1265,8 +1257,7 @@
             appState.user.email = email;
             saveLocal();
             applyUserTheme();
-            closeAuthGate();
-            syncFandomNotifications();
+            syncNotifications();
             renderAll();
         };
 
@@ -1281,7 +1272,6 @@
             location.reload();
         };
 
-        /* POP-UP ESTILIZADO */
         window.showUmbrellaModal = function ({ title, htmlBody, buttons = [] }) {
             const backdrop = document.getElementById('customModalBackdrop');
             document.getElementById('customModalTitle').textContent = title;
@@ -1317,20 +1307,15 @@
             }
         };
 
-        /* PARSER UNIVERSAL DE CÓDIGO / LINK (SPOTIFY, DEEZER E YOUTUBE) */
         function parseMusicEmbedHtml(rawInput) {
             if (!rawInput) return '';
             const val = rawInput.trim();
-
-            // Se o usuário colou código <iframe> direto
             if (val.toLowerCase().includes('<iframe')) {
                 const srcMatch = val.match(/src=["']([^"']+)["']/i);
                 if (srcMatch && srcMatch[1]) {
                     return `<iframe src="${srcMatch[1]}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px; display:block;"></iframe>`;
                 }
             }
-
-            // Spotify URL
             if (val.includes('open.spotify.com')) {
                 let cleanUrl = val.split('?')[0];
                 if (!cleanUrl.includes('/embed/')) {
@@ -1338,8 +1323,6 @@
                 }
                 return `<iframe src="${cleanUrl}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px; display:block;"></iframe>`;
             }
-
-            // Deezer URL
             if (val.includes('deezer.com')) {
                 const dzMatch = val.match(/deezer\.com\/(?:[a-z]{2}\/)?(track|album|playlist)\/(\d+)/i);
                 if (dzMatch) {
@@ -1348,8 +1331,6 @@
                     return `<iframe title="deezer-widget" src="https://widget.deezer.com/widget/dark/${type}/${id}" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media; clipboard-write" style="border-radius:12px; display:block;"></iframe>`;
                 }
             }
-
-            // YouTube URL (watch?v=, youtu.be/, shorts/, embed/)
             if (val.includes('youtube.com') || val.includes('youtu.be')) {
                 let videoId = '';
                 const ytRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -1359,7 +1340,6 @@
                     return `<iframe width="100%" height="152" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:12px; display:block;"></iframe>`;
                 }
             }
-
             return '';
         }
 
@@ -1389,7 +1369,6 @@
                         <button type="button" id="profTabBtn_tema" class="profile-tab-btn ${defaultTab === 'tema' ? 'active' : ''}" onclick="switchProfileModalTab('tema')">🎨 Tema & Fundo</button>
                     </div>
 
-                    <!-- ABA 1: PERFIL E PLAYER RESTRITO -->
                     <div id="profTabPane_perfil" class="profile-tab-pane ${defaultTab === 'perfil' ? 'active' : ''}">
                         <div style="text-align:center; margin-bottom:12px;">
                             <img src="${appState.user.avatar}" style="width:68px; height:68px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:6px;">
@@ -1434,7 +1413,6 @@
                         </div>
                     </div>
 
-                    <!-- ABA 2: TEMA & PLANO DE FUNDO (OPCIONAL, NÃO ALTERA O ATUAL SOZINHO) -->
                     <div id="profTabPane_tema" class="profile-tab-pane ${defaultTab === 'tema' ? 'active' : ''}">
                         <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Personalize o visual se desejar. O plano de fundo atual permanece intacto até que você escolha alterar.</p>
 
@@ -1472,7 +1450,7 @@
                                 const compressedAvatar = await compressImageNative(avatarInput.files[0], 250, 0.75);
                                 appState.user.avatar = compressedAvatar;
                             }
-                            await saveUserDataToFirestore();
+                            await saveUserDataToCloud(appState.user.uid);
                             saveLocal();
                             applyUserTheme();
                             renderAll();
@@ -1486,7 +1464,6 @@
         window.loadProfileMusic = async function() {
             const rawVal = document.getElementById('profileMusicCodeInput').value.trim();
             if (!rawVal) return;
-
             const parsed = parseMusicEmbedHtml(rawVal);
             if (!parsed) {
                 showUmbrellaModal({
@@ -1496,9 +1473,8 @@
                 });
                 return;
             }
-
             appState.user.musicEmbed = rawVal;
-            await saveUserDataToFirestore();
+            await saveUserDataToCloud(appState.user.uid);
             saveLocal();
             applyUserTheme();
             openProfileModal('perfil');
@@ -1506,8 +1482,7 @@
 
         window.clearProfileMusic = async function() {
             appState.user.musicEmbed = '';
-            appState.user.musicTitle = '';
-            await saveUserDataToFirestore();
+            await saveUserDataToCloud(appState.user.uid);
             saveLocal();
             applyUserTheme();
             openProfileModal('perfil');
@@ -1516,14 +1491,12 @@
         window.applyNewThemeFromModal = async function() {
             const colorVal = document.getElementById('themeColorPicker').value;
             appState.user.themeAccent = colorVal;
-
             const bgInput = document.getElementById('bgImageFileInput');
             if (bgInput && bgInput.files && bgInput.files[0]) {
                 const compressedBg = await compressImageNative(bgInput.files[0], 1080, 0.78);
                 appState.user.bgImage = compressedBg;
             }
-
-            await saveUserDataToFirestore();
+            await saveUserDataToCloud(appState.user.uid);
             saveLocal();
             applyUserTheme();
             openProfileModal('tema');
@@ -1532,35 +1505,56 @@
         window.resetUserThemeToDefault = async function() {
             appState.user.themeAccent = '#060a1e';
             appState.user.bgImage = '';
-            await saveUserDataToFirestore();
+            await saveUserDataToCloud(appState.user.uid);
             saveLocal();
             applyUserTheme();
             openProfileModal('tema');
         };
 
-        async function saveUserDataToFirestore() {
-            if (!appState.user.uid) return;
+        async function saveUserDataToCloud(uid) {
+            if (!uid) return;
             try {
-                await setDoc(doc(db, "users", appState.user.uid), {
+                await setDoc(doc(db, "users", uid), {
                     name: appState.user.name,
                     avatar: appState.user.avatar,
                     musicEmbed: appState.user.musicEmbed || '',
                     themeAccent: appState.user.themeAccent || '#060a1e',
-                    bgImage: appState.user.bgImage || ''
+                    bgImage: appState.user.bgImage || '',
+                    friends: appState.user.friends || [],
+                    friendRequests: appState.user.friendRequests || [],
+                    sentRequests: appState.user.sentRequests || []
                 }, { merge: true });
             } catch (e) { console.error(e); }
         }
 
+        // VISITANTE CLICA NO PERFIL DE OUTRO USUÁRIO ( COM A FRASE FOFA "QUER VER UM DORAMA?" )
         window.visitUserProfile = async function(authorUid, authorName) {
             if (!authorUid) {
                 showUmbrellaModal({ title: authorName, htmlBody: 'Perfil de usuário Umbrella.' });
                 return;
             }
+            if (authorUid === appState.user.uid) {
+                openProfileModal('perfil');
+                return;
+            }
+
             try {
                 const userDoc = await getDoc(doc(db, "users", authorUid));
                 const data = userDoc.exists() ? userDoc.data() : {};
                 const embedHtml = parseMusicEmbedHtml(data.musicEmbed || '');
                 const avatarSrc = data.avatar || './aconchego.png';
+
+                const isAlreadyFriend = appState.user.friends && appState.user.friends.some(f => f.uid === authorUid);
+                const hasSentReq = appState.user.sentRequests && appState.user.sentRequests.includes(authorUid);
+
+                let friendshipActionHtml = '';
+                if (isAlreadyFriend) {
+                    friendshipActionHtml = `<button class="btn-gold" style="margin-top:10px;" onclick="closeUmbrellaModal(); openChatWithFriend('${authorUid}', '${authorName}', '${avatarSrc}')">💬 Abrir Bate-Papo</button>`;
+                } else if (hasSentReq) {
+                    friendshipActionHtml = `<p style="font-size:12px; color:var(--gold-accent); margin-top:10px;">⏳ Convite <em>"Quer ver um dorama?"</em> enviado!</p>`;
+                } else {
+                    friendshipActionHtml = `<button class="btn-gold" style="margin-top:10px;" onclick="sendDoramaFriendRequest('${authorUid}', '${authorName}', '${avatarSrc}')">💖 Enviar: "Quer ver um dorama?"</button>`;
+                }
 
                 showUmbrellaModal({
                     title: `Perfil de ${authorName}`,
@@ -1575,8 +1569,9 @@
                                 ${embedHtml}
                             </div>
                         ` : `
-                            <p style="font-size:12px; color:var(--text-muted); text-align:center;">Este usuário não carregou nenhuma música no perfil.</p>
+                            <p style="font-size:12px; color:var(--text-muted); text-align:center; margin-bottom:10px;">Este usuário não carregou nenhuma música no perfil.</p>
                         `}
+                        ${friendshipActionHtml}
                     `
                 });
             } catch (e) {
@@ -1584,7 +1579,145 @@
             }
         };
 
-        /* SELETOR NATIVO DO CELULAR */
+        window.sendDoramaFriendRequest = async function(targetUid, targetName, targetAvatar) {
+            if (!appState.user.loggedIn) {
+                document.getElementById('authGateOverlay').style.display = 'flex';
+                return;
+            }
+            try {
+                const targetRef = doc(db, "users", targetUid);
+                const targetDoc = await getDoc(targetRef);
+                const targetData = targetDoc.exists() ? targetDoc.data() : {};
+                const requests = targetData.friendRequests || [];
+
+                // Evita duplicata
+                if (!requests.some(r => r.uid === appState.user.uid)) {
+                    requests.push({
+                        uid: appState.user.uid,
+                        name: appState.user.name,
+                        avatar: appState.user.avatar
+                    });
+                    await updateDoc(targetRef, { friendRequests: requests });
+                }
+
+                if (!appState.user.sentRequests) appState.user.sentRequests = [];
+                appState.user.sentRequests.push(targetUid);
+                await saveUserDataToCloud(appState.user.uid);
+                saveLocal();
+
+                closeUmbrellaModal();
+                showUmbrellaModal({
+                    title: 'Convite Enviado! 💖',
+                    htmlBody: `Você perguntou para <strong>${targetName}</strong>: <em>"Quer ver um dorama?"</em>. Assim que ela responder "Vamos ver juntos", a amizade será selada!`
+                });
+            } catch (e) {
+                showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+            }
+        };
+
+        window.acceptFriendRequest = async function(requesterUid, requesterName, requesterAvatar) {
+            try {
+                // Adiciona o amigo na lista do usuário atual
+                if (!appState.user.friends) appState.user.friends = [];
+                appState.user.friends.push({ uid: requesterUid, name: requesterName, avatar: requesterAvatar });
+
+                // Remove da lista de solicitações pendentes
+                appState.user.friendRequests = (appState.user.friendRequests || []).filter(r => r.uid !== requesterUid);
+
+                await saveUserDataToCloud(appState.user.uid);
+
+                // Adiciona o usuário atual na lista de amigos do solicitante também
+                const requesterRef = doc(db, "users", requesterUid);
+                const reqDoc = await getDoc(requesterRef);
+                if (reqDoc.exists()) {
+                    const reqData = reqDoc.data();
+                    const reqFriends = reqData.friends || [];
+                    if (!reqFriends.some(f => f.uid === appState.user.uid)) {
+                        reqFriends.push({
+                            uid: appState.user.uid,
+                            name: appState.user.name,
+                            avatar: appState.user.avatar
+                        });
+                        await updateDoc(requesterRef, { friends: reqFriends });
+                    }
+                }
+
+                saveLocal();
+                syncNotifications();
+                renderAll();
+                closeUmbrellaModal();
+
+                showUmbrellaModal({
+                    title: 'Amizade Selada! 🎉',
+                    htmlBody: `Agora você e <strong>${requesterName}</strong> responderam <em>"Vamos ver juntos"</em>! O bate-papo foi liberado.`
+                });
+            } catch (e) {
+                showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
+            }
+        };
+
+        window.openChatWithFriend = function(friendUid, friendName, friendAvatar) {
+            const chatId = [appState.user.uid, friendUid].sort().join('_');
+            const chatRef = collection(db, "chats", chatId, "messages");
+
+            // Abre modal de chat em tempo real
+            showUmbrellaModal({
+                title: `💬 Bate-Papo com ${friendName}`,
+                htmlBody: `
+                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; border-bottom:1px solid rgba(251,191,36,0.2); padding-bottom:8px;">
+                        <img src="${friendAvatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-border);">
+                        <span style="font-size:13.5px; font-weight:700; color:var(--gold-accent);">${friendName}</span>
+                    </div>
+                    <div id="chatMessagesContainer" style="height:220px; overflow-y:auto; background:rgba(10,14,28,0.7); border:1px solid var(--gold-border); border-radius:12px; padding:10px; margin-bottom:10px; display:flex; flex-direction:column; gap:8px;">
+                        <p style="font-size:11.5px; color:var(--text-muted); text-align:center;">Carregando mensagens...</p>
+                    </div>
+                    <div style="display:flex; gap:6px;">
+                        <input type="text" id="chatInputMessage" class="glass-input" placeholder="Digite sobre o dorama..." onkeypress="if(event.key==='Enter') sendChatMessage('${chatId}', '${friendUid}')">
+                        <button class="btn-gold" style="width:auto; padding:0 14px;" onclick="sendChatMessage('${chatId}', '${friendUid}')">➤</button>
+                    </div>
+                `,
+                buttons: [{ label: 'Fechar', primary: false, onClick: closeUmbrellaModal }]
+            });
+
+            // Ouve mensagens em tempo real
+            const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
+            onSnapshot(q, (snapshot) => {
+                const container = document.getElementById('chatMessagesContainer');
+                if (!container) return;
+                let html = '';
+                snapshot.forEach(docSnap => {
+                    const msg = docSnap.data();
+                    const isMe = msg.senderUid === appState.user.uid;
+                    html += `
+                        <div style="align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'rgba(251,191,36,0.2)' : 'rgba(255,255,255,0.08)'}; border:1px solid var(--gold-border); padding:6px 10px; border-radius:10px; max-width:80%; font-size:12.5px;">
+                            <strong style="font-size:10.5px; color:var(--gold-accent); display:block;">${msg.senderName}</strong>
+                            ${msg.text}
+                        </div>
+                    `;
+                });
+                container.innerHTML = html || '<p style="font-size:11.5px; color:var(--text-muted); text-align:center;">Nenhuma mensagem ainda. Digite algo!</p>';
+                container.scrollTop = container.scrollHeight;
+            });
+        };
+
+        window.sendChatMessage = async function(chatId, friendUid) {
+            const input = document.getElementById('chatInputMessage');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+
+            try {
+                await addDoc(collection(db, "chats", chatId, "messages"), {
+                    senderUid: appState.user.uid,
+                    senderName: appState.user.name,
+                    text: text,
+                    createdAt: serverTimestamp()
+                });
+            } catch (e) {
+                console.error(e);
+            }
+        };
+
         window.openMediaActionSheet = function () {
             requireAuthForAction(() => {
                 showUmbrellaModal({
@@ -1718,7 +1851,7 @@
             else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
             else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
             else if (viewName === 'aconchego') composerInput.placeholder = "Escreva no seu Aconchego pessoal...";
-            else if (viewName === 'amigos') composerInput.placeholder = "Mande uma mensagem para seus amigos...";
+            else if (viewName === 'amigos') composerInput.placeholder = "Converse com seus amigos...";
 
             renderAll();
         };
@@ -1763,11 +1896,6 @@
 
                 if (isChallengeView && !appState.bias.id) {
                     showUmbrellaModal({ title: 'Bias Obrigatório', htmlBody: 'Cadastre seu Bias representante antes de postar no Desafio.' });
-                    return;
-                }
-
-                if (isInsideFandomView && !activeFandomFilter) {
-                    showUmbrellaModal({ title: 'Fandom não selecionado', htmlBody: 'Abra um Fandom primeiro.' });
                     return;
                 }
 
@@ -1895,30 +2023,45 @@
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
-                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação pendente nos seus Fandoms.' });
+                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova notificação ou solicitação pendente.' });
                     return;
                 }
+
                 const notif = appState.notifications[0];
-                showUmbrellaModal({
-                    title: 'Solicitação de Fandom 🔒',
-                    htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Ao aprovar, esta pessoa poderá ver e publicar dentro deste espaço particular.</p>`,
-                    buttons: [
-                        {
-                            label: 'Recusar',
-                            primary: false,
-                            onClick: async () => {
+                if (notif.type === 'friend_request') {
+                    showUmbrellaModal({
+                        title: 'Convite de Amizade 💖',
+                        htmlBody: `
+                            <div style="text-align:center; margin-bottom:10px;">
+                                <img src="${notif.requesterAvatar}" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid var(--gold-border); margin-bottom:6px;">
+                                <p>${notif.text}</p>
+                            </div>
+                            <p style="font-size:11.5px; color:var(--text-muted); text-align:center;">Responda "Vamos ver juntos" para aceitar e liberar o bate-papo!</p>
+                        `,
+                        buttons: [
+                            { label: 'Recusar', primary: false, onClick: async () => {
+                                appState.user.friendRequests = (appState.user.friendRequests || []).filter(r => r.uid !== notif.requesterUid);
+                                await saveUserDataToCloud(appState.user.uid);
+                                syncNotifications();
+                                closeUmbrellaModal();
+                            }},
+                            { label: 'Vamos ver juntos! ✅', primary: true, onClick: () => acceptFriendRequest(notif.requesterUid, notif.requesterName, notif.requesterAvatar) }
+                        ]
+                    });
+                } else {
+                    showUmbrellaModal({
+                        title: 'Solicitação de Fandom 🔒',
+                        htmlBody: `<p>${notif.text}</p>`,
+                        buttons: [
+                            { label: 'Recusar', primary: false, onClick: async () => {
                                 try {
                                     await updateDoc(doc(db, "fandoms", notif.fandomId), {
                                         pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
                                     });
                                 } catch (e) {}
                                 closeUmbrellaModal();
-                            }
-                        },
-                        { 
-                            label: 'Aprovar Entrada ✅', 
-                            primary: true, 
-                            onClick: async () => { 
+                            }},
+                            { label: 'Aprovar Entrada ✅', primary: true, onClick: async () => { 
                                 try {
                                     await updateDoc(doc(db, "fandoms", notif.fandomId), {
                                         members: arrayUnion(notif.requesterUid),
@@ -1926,10 +2069,10 @@
                                     });
                                 } catch (e) {}
                                 closeUmbrellaModal(); 
-                            } 
-                        }
-                    ]
-                });
+                            }}
+                        ]
+                    });
+                }
             });
         };
 
@@ -2187,14 +2330,14 @@
 
         function updateNotifBadge() {
             const badge = document.getElementById('notifBadge');
-            badge.textContent = appState.notifications.length;
-            badge.style.display = appState.notifications.length > 0 ? 'flex' : 'none';
+            const totalCount = appState.notifications.length;
+            badge.textContent = totalCount;
+            badge.style.display = totalCount > 0 ? 'flex' : 'none';
         }
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
 
-            // Bolinha do perfil girando igual download na Play Store se tiver música carregada no perfil
             const profileBtn = document.getElementById('headerProfileBtn');
             if (appState.user.musicEmbed && parseMusicEmbedHtml(appState.user.musicEmbed)) {
                 profileBtn.classList.add('playing');
@@ -2202,7 +2345,6 @@
                 profileBtn.classList.remove('playing');
             }
 
-            // Aplica tema/fundo apenas se o usuário tiver escolhido algo na abinha de tema
             const root = document.documentElement;
             root.style.setProperty('--theme-color-accent', appState.user.themeAccent || '#060a1e');
             if (appState.user.bgImage) {
@@ -2278,7 +2420,7 @@
             document.getElementById('weeklyDirectiveText').textContent = appState.directive;
             document.getElementById('carouselChallengeText').textContent = appState.directive;
             document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
-            updateNotifBadge();
+            syncNotifications();
 
             const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
             if (challengePosts[0] && challengePosts[0].media) {
@@ -2331,22 +2473,26 @@
             const aconchegoPosts = postsFromFirebase.filter(p => p.isAconchego && p.author === appState.user.name);
             document.getElementById('aconchegoHistoryList').innerHTML = aconchegoPosts.length > 0 ? aconchegoPosts.map(p => renderPostCardHTML(p, true)).join('') : `<div class="glass-panel empty-state-box">Seu espaço Aconchego está vazio.</div>`;
 
-            document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
-                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; gap:10px;">
-                    <img src="${f.avatar}" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
-                    <div>
-                        <div style="font-size:14px; font-weight:700;">${f.name}</div>
-                        <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
+            // Renderiza lista de amigos no painel de Amigos com botão direto para o chat
+            const friends = appState.user.friends || [];
+            const friendsContainer = document.getElementById('friendsListContainer');
+            if (friends.length === 0) {
+                friendsContainer.innerHTML = `<div class="glass-panel empty-state-box">Você ainda não tem amigos adicionados.<br>Visite o perfil de outros dorameiros e envie <em>"Quer ver um dorama?"</em>!</div>`;
+            } else {
+                friendsContainer.innerHTML = friends.map(f => `
+                    <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
+                        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="visitUserProfile('${f.uid}', '${f.name}')">
+                            <img src="${f.avatar || './aconchego.png'}" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                            <div>
+                                <div style="font-size:14px; font-weight:700; color:var(--gold-accent);">${f.name}</div>
+                                <div style="font-size:11.5px; color:var(--text-muted);">Amizade ativa 💖</div>
+                            </div>
+                        </div>
+                        <button class="btn-gold" style="width:auto; padding:6px 14px; font-size:12px;" onclick="openChatWithFriend('${f.uid}', '${f.name}', '${f.avatar || './aconchego.png'}')">💬 Chat</button>
                     </div>
-                </div>
-            `).join('');
+                `).join('');
+            }
         }
-
-        window.addEventListener('scroll', () => {
-            const logoSec = document.getElementById('logoSection');
-            if (window.scrollY > 25) logoSec.classList.add('scrolled');
-            else logoSec.classList.remove('scrolled');
-        }, { passive: true });
 
         applyUserTheme();
         initFirebaseSync();
