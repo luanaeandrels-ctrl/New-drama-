@@ -118,6 +118,10 @@
             transition: all 0.25s ease;
         }
 
+        .header-left-btn.hidden-in-profile-view {
+            display: none !important;
+        }
+
         .header-left-btn img {
             width: 100%;
             height: 100%;
@@ -770,6 +774,7 @@
 
         .like-umbrella-btn.liked span { color: var(--gold-accent); }
 
+        /* Barra Inferior Inteligente - Sólida sem Glassmorphism nos botões de envio */
         .floating-composer-wrapper {
             position: fixed;
             bottom: 22px;
@@ -815,7 +820,7 @@
             gap: 8px;
             padding: 6px 10px;
             background: #0e1222;
-            border: 1px solid var(--gold-border);
+            border: 1.5px solid var(--gold-accent);
             border-radius: 9999px;
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
             width: 100%;
@@ -834,8 +839,8 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            border: 1px solid var(--gold-border);
-            background: transparent;
+            border: 1.5px solid var(--gold-accent);
+            background: #060a1e;
             color: var(--gold-accent);
             font-size: 22px;
             display: flex;
@@ -843,6 +848,7 @@
             justify-content: center;
             cursor: pointer;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .composer-input {
@@ -861,8 +867,8 @@
             width: 36px;
             height: 36px;
             border-radius: 50%;
-            border: 1px solid var(--gold-border);
-            background: transparent;
+            border: 1.5px solid var(--gold-accent);
+            background: #060a1e;
             color: var(--gold-accent);
             font-size: 15px;
             display: flex;
@@ -870,6 +876,7 @@
             justify-content: center;
             cursor: pointer;
             flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
 
         .form-group { margin-bottom: 12px; position: relative; }
@@ -1434,14 +1441,14 @@
 
     </div>
 
-    <!-- Barra Inferior de Envio Inteligente -->
+    <!-- Barra Inferior de Envio Inteligente (Com botão mais e de envio sólidos) -->
     <div class="floating-composer-wrapper" id="floatingComposerWrapper">
         <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button>
         <div class="gemini-composer">
             <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria">+</button>
-            <input type="file" id="cameraDirectInput" accept="image/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
-            <input type="file" id="videoDirectInput" accept="video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
-            <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
+            
+            <!-- Inputs universais robustos para o botão mais (+) funcionar perfeitamente em qualquer dispositivo -->
+            <input type="file" id="universalMediaInput" accept="image/*,video/*" style="display:none;" onchange="handleUniversalMediaSelected(event)">
 
             <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Sher Bluss..." onkeydown="if(event.key==='Enter'){ event.preventDefault(); submitPost(); }">
             <button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
@@ -2008,7 +2015,6 @@
             saveLocal();
         };
 
-        // Botão Editar isolado (abre/fecha o painel)
         window.toggleProfileEditMode = function() {
             isProfileEditable = !isProfileEditable;
             const panel = document.getElementById('profileEditPanel');
@@ -2022,7 +2028,6 @@
             }
         };
 
-        // Menu de três pontinhos (⋮) do perfil isolado
         window.openProfileQuickMenu = function() {
             showSherBlussModal({
                 title: 'Opções Rápidas do Perfil',
@@ -2159,7 +2164,6 @@
             row.innerHTML = html;
         }
 
-        // Opções e gerenciamento de posts e itens salvos no Aconchego (excluir ou remover dos salvos)
         window.openPostThreeDotsMenu = function(postId) {
             const post = postsFromFirebase.find(p => p.id === postId);
             if (!post) return;
@@ -2308,6 +2312,8 @@
             isProfileEditable = false;
             selectedAconchegoFilterId = null;
 
+            // Oculta a foto da barra superior ao entrar no perfil
+            document.getElementById('headerProfileBtn').classList.add('hidden-in-profile-view');
             document.getElementById('carouselWrapper').classList.add('hidden-in-profile');
             document.getElementById('profileEditPanel').style.display = 'none';
             document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
@@ -2446,6 +2452,8 @@
 
             activeVisitedUserUid = authorUid;
 
+            // Oculta a foto da barra superior ao visitar outro perfil
+            document.getElementById('headerProfileBtn').classList.add('hidden-in-profile-view');
             document.getElementById('carouselWrapper').classList.add('hidden-in-profile');
             document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
 
@@ -2567,7 +2575,6 @@
             switchView('feed');
         };
 
-        // Pop-up funcional de Notificações ativado pela gotinha no topo
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
@@ -2820,34 +2827,19 @@
             });
         };
 
+        // Botão mais (+) universal para garantir funcionamento em celular e PC
         window.openMediaActionSheet = function () {
             requireAuthForAction(() => {
-                showSherBlussModal({
-                    title: 'Adicionar Mídia 🌸',
-                    htmlBody: `
-                        <p style="font-size:13px; color:var(--text-muted); margin-bottom:14px;">Escolha usando os recursos nativos:</p>
-                        <div style="display:flex; flex-direction:column; gap:10px;">
-                            <button class="btn-gold" onclick="closeCherBlussModal(); document.getElementById('cameraDirectInput').click();">
-                                📸 Câmera Nativa (Foto)
-                            </button>
-                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeCherBlussModal(); document.getElementById('videoDirectInput').click();">
-                                🎥 Câmera Nativa (Gravar Vídeo)
-                            </button>
-                            <button class="btn-gold" style="background:rgba(255,255,255,0.06);" onclick="closeCherBlussModal(); document.getElementById('galleryDirectInput').click();">
-                                🖼️ Galeria Nativa (Fotos e Vídeos)
-                            </button>
-                        </div>
-                    `,
-                    buttons: [{ label: 'Cancelar', primary: false, onClick: closeSherBlussModal }]
-                });
+                document.getElementById('universalMediaInput').click();
             });
         };
 
-        window.handleMediaSelected = async function (event) {
+        window.handleUniversalMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
             const uploaded = await uploadMediaToCloudinary(file);
             await submitPostDirectlyWithMedia(uploaded.url, uploaded.type, false);
+            event.target.value = '';
         };
 
         window.handleChallengeMediaSelected = async function (event) {
@@ -2861,6 +2853,7 @@
 
             const uploaded = await uploadMediaToCloudinary(file);
             await submitPostDirectlyWithMedia(uploaded.url, uploaded.type, true);
+            event.target.value = '';
         };
 
         async function submitPostDirectlyWithMedia(mediaUrl, mediaType, isChallenge = false) {
@@ -2892,9 +2885,6 @@
                 });
 
                 if (input) input.value = '';
-                document.getElementById('cameraDirectInput').value = '';
-                document.getElementById('videoDirectInput').value = '';
-                document.getElementById('galleryDirectInput').value = '';
                 document.getElementById('challengeCameraInput').value = '';
                 document.getElementById('challengeGalleryInput').value = '';
 
@@ -2995,6 +2985,8 @@
             activeVisitedUserUid = null;
             applyUserTheme();
 
+            // Restaura a visibilidade da foto da barra superior ao sair do perfil
+            document.getElementById('headerProfileBtn').classList.remove('hidden-in-profile-view');
             document.getElementById('carouselWrapper').classList.remove('hidden-in-profile');
 
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -3252,7 +3244,7 @@
             const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
             const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
 
-            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeCherBlussModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
+            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeSherBlussModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
 
             showSherBlussModal({
                 title: `Opções • ${activeFandomFilter}`,
