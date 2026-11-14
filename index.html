@@ -22,7 +22,6 @@
             --text-muted: rgba(226, 232, 240, 0.7);
             --danger: #f43f5e;
             --theme-color-accent: #060a1e;
-            --custom-bg-image: url('./fundo.png');
         }
 
         * {
@@ -36,7 +35,7 @@
         html, body {
             width: 100%;
             min-height: 100vh;
-            background: var(--theme-color-accent) var(--custom-bg-image) no-repeat center center fixed !important;
+            background: var(--theme-color-accent) url('./fundo.png') no-repeat center center fixed !important;
             background-size: cover !important;
             color: var(--text-main);
             overflow-x: hidden;
@@ -96,41 +95,33 @@
             z-index: 45;
             position: sticky;
             top: 0;
-            background: rgba(6, 10, 30, 0.85);
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(251, 191, 36, 0.15);
         }
 
         .header-left-btn {
             position: relative;
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             border: 1.5px solid var(--gold-accent);
             background: var(--glass-dark);
             cursor: pointer;
             padding: 0;
             flex-shrink: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .header-left-btn.playing::after {
             content: '';
             position: absolute;
-            inset: -5px;
+            inset: -4px;
             border-radius: 50%;
-            border: 2.5px solid transparent;
-            border-top-color: var(--gold-accent);
-            border-right-color: var(--gold-accent);
-            animation: playStoreSpin 1.1s linear infinite;
+            border: 2px solid var(--gold-accent);
+            animation: spotifyPulse 1.6s infinite ease-out;
             pointer-events: none;
         }
 
-        @keyframes playStoreSpin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes spotifyPulse {
+            0% { transform: scale(1); opacity: 0.9; }
+            100% { transform: scale(1.35); opacity: 0; }
         }
 
         .header-left-btn img {
@@ -206,10 +197,33 @@
             padding: 0 3px;
         }
 
-        /* Carrossel fluido e limpo logo abaixo do topo */
+        .logo-section {
+            width: 100%;
+            padding: 4px 20px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-height: 170px;
+            transition: max-height 0.25s ease, opacity 0.2s ease;
+        }
+
+        .logo-section.scrolled {
+            max-height: 0;
+            opacity: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .brand-logo {
+            max-height: 140px;
+            max-width: 85%;
+            object-fit: contain;
+            display: block;
+        }
+
         .main-carousel-wrapper {
             width: 100%;
-            padding: 12px 20px 16px;
+            padding: 6px 20px 18px;
             display: flex;
             gap: 16px;
             overflow-x: auto;
@@ -706,51 +720,12 @@
             font-size: 13px;
             cursor: pointer;
         }
-
-        .profile-tabs-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 14px;
-            border-bottom: 1px solid rgba(251, 191, 36, 0.2);
-            padding-bottom: 10px;
-        }
-
-        .profile-tab-btn {
-            flex: 1;
-            padding: 8px 6px;
-            border-radius: 12px;
-            border: 1px solid var(--gold-border);
-            background: rgba(255, 255, 255, 0.04);
-            color: var(--text-muted);
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .profile-tab-btn.active {
-            background: rgba(251, 191, 36, 0.2);
-            color: var(--gold-accent);
-            border-color: var(--gold-accent);
-        }
-
-        .profile-tab-pane { display: none; }
-        .profile-tab-pane.active { display: block; }
-
-        .restricted-embed-box {
-            width: 100%;
-            max-height: 152px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid var(--gold-border);
-            background: rgba(0, 0, 0, 0.45);
-            margin-top: 8px;
-        }
     </style>
 </head>
 <body>
 
-    <!-- TELA DE LOGIN -->
+    <audio id="globalActiveAudio" preload="auto"></audio>
+
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
             <img src="./logo.png" alt="Umbrella" class="auth-logo">
@@ -774,9 +749,8 @@
         </div>
     </div>
 
-    <!-- BARRA SUPERIOR (LIMPA E MODERNA) -->
     <div class="unified-top-bar">
-        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil">
+        <button class="header-left-btn" id="headerProfileBtn" onclick="openProfileModal()" title="Meu Perfil & Muka">
             <img id="headerUserAvatar" src="./aconchego.png" alt="">
         </button>
 
@@ -793,7 +767,12 @@
 
     <div class="app-shell">
 
-        <!-- CARROSSEL / NAVEGAÇÃO SUPERIOR (SEM LOGO ESTÁTICO PESADO) -->
+        <div class="logo-section" id="logoSection">
+            <div class="logo-container" onclick="switchView('feed')">
+                <img src="./logo.png" alt="Umbrella" class="brand-logo" id="brandLogo">
+            </div>
+        </div>
+
         <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
@@ -848,12 +827,10 @@
             </div>
         </nav>
 
-        <!-- TELA 1: FEED PRINCIPAL -->
         <main class="view-section active" id="view-feed">
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
-        <!-- TELA 2: DESAFIO SEMANAL -->
         <section class="view-section" id="view-desafio">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Desafio Semanal</span>
@@ -897,7 +874,6 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
-        <!-- TELA 3: FANDOMS -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms Particulares</span>
@@ -909,7 +885,6 @@
             <div class="fandoms-grid-container" id="fandomsGridContainer"></div>
         </section>
 
-        <!-- TELA 3.1: DENTRO DO FANDOM -->
         <section class="view-section" id="view-inside-fandom">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -927,17 +902,14 @@
             <div class="feed-list" id="insideFandomFeedList"></div>
         </section>
 
-        <!-- TELA 4: AMIGOS & CHAT DIRETÃO -->
         <section class="view-section" id="view-amigos">
             <div class="glass-panel section-header-bar">
-                <span class="section-title">Amigos & Bate-Papo</span>
+                <span class="section-title">Meus Amigos</span>
                 <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
             </div>
-            <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Visite o perfil de outros dorameiros nos posts para enviar o convite de amizade: <em>"Quer ver um dorama?"</em></p>
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
-        <!-- TELA 5: ACONCHEGO -->
         <section class="view-section" id="view-aconchego">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meu Aconchego</span>
@@ -948,7 +920,6 @@
 
     </div>
 
-    <!-- BARRA DE POSTAGEM FLUTUANTE -->
     <div class="floating-composer-wrapper">
         <div class="media-preview-strip" id="mediaPreviewStrip">
             <span id="mediaPreviewName">Mídia anexada</span>
@@ -973,7 +944,6 @@
         umbrella.suporte@gmail.com
     </footer>
 
-    <!-- POP-UP ESTILIZADO -->
     <div class="modal-backdrop" id="customModalBackdrop">
         <div class="glass-panel modal-box">
             <h3 class="modal-title" id="customModalTitle">Umbrella</h3>
@@ -982,14 +952,12 @@
         </div>
     </div>
 
-    <!-- VISUALIZADOR NATIVO FULLSCREEN -->
     <div class="lightbox-overlay" id="nativeMediaLightbox">
         <button class="lightbox-close" onclick="closeLightbox()">✕</button>
         <div id="lightboxMediaContainer" style="display:flex; justify-content:center; align-items:center; width:100%;"></div>
         <p class="lightbox-caption" id="lightboxCaption"></p>
     </div>
 
-    <!-- SCRIPT FIREBASE E SISTEMA -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import {
@@ -1031,7 +999,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v44';
+        const LOCAL_KEY = 'umbrella_clean_state_v43';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1040,19 +1008,17 @@
                 name: 'Visitante',
                 email: '',
                 avatar: './aconchego.png',
-                musicEmbed: '',
-                musicTitle: '',
-                themeAccent: '#060a1e',
-                bgImage: '',
-                friends: [],
-                friendRequests: [],
-                sentRequests: []
+                audioUrl: '',
+                audioTitle: ''
             },
             bias: { name: '', role: 'Ator', id: null, lastUpdated: 0 },
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directive: 'Tema oficial: Sob o Mesmo Guarda-Chuva. Poste uma foto do seu Bias representando o tema!',
             fandoms: [],
-            chats: {},
+            subgroups: {},
+            friends: [
+                { id: 'f_1', name: 'Amiga Dorama', avatar: './amigos.png', status: 'Amizade ativa' }
+            ],
             notifications: []
         };
 
@@ -1061,7 +1027,6 @@
         let currentAttachedType = null;
         let currentFileName = '';
         let activeFandomFilter = null;
-        let isUploadingPost = false;
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -1083,73 +1048,30 @@
                 snapshot.forEach((docSnap) => {
                     appState.fandoms.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                syncNotifications();
+                syncFandomNotifications();
                 renderAll();
             });
         }
 
-        async function syncUserDataFromCloud(uid) {
-            try {
-                const userRef = doc(db, "users", uid);
-                const userDoc = await getDoc(userRef);
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    if (data.musicEmbed !== undefined) appState.user.musicEmbed = data.musicEmbed;
-                    if (data.themeAccent) appState.user.themeAccent = data.themeAccent;
-                    if (data.bgImage !== undefined) appState.user.bgImage = data.bgImage;
-                    if (data.friends) appState.user.friends = data.friends;
-                    if (data.friendRequests) appState.user.friendRequests = data.friendRequests;
-                    if (data.sentRequests) appState.user.sentRequests = data.sentRequests;
-                } else {
-                    await setDoc(userRef, {
-                        name: appState.user.name,
-                        avatar: appState.user.avatar,
-                        musicEmbed: '',
-                        themeAccent: '#060a1e',
-                        bgImage: '',
-                        friends: [],
-                        friendRequests: [],
-                        sentRequests: []
-                    }, { merge: true });
-                }
-            } catch (e) { console.error(e); }
-        }
-
-        function syncNotifications() {
+        function syncFandomNotifications() {
             if (!appState.user.loggedIn || !appState.user.uid) return;
-            const notifs = [];
-
-            // Notificações de Fandoms
+            const fandomNotifs = [];
             appState.fandoms.forEach(f => {
                 const isAdminOrCreator = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
                 if (isAdminOrCreator && f.pendingRequests && f.pendingRequests.length > 0) {
                     f.pendingRequests.forEach(req => {
-                        notifs.push({
+                        fandomNotifs.push({
                             type: 'fandom_request',
                             fandomId: f.id,
                             fandomName: f.name,
                             requesterUid: req.uid,
                             requesterName: req.name,
-                            text: `🔒 <strong>${req.name}</strong> solicitou entrada no fandom <strong>${f.name}</strong>.`
+                            text: `🔒 <strong>${req.name}</strong> solicitou entrada no fandom privado <strong>${f.name}</strong>.`
                         });
                     });
                 }
             });
-
-            // Notificações de Amizade ("Quer ver um dorama?")
-            if (appState.user.friendRequests && appState.user.friendRequests.length > 0) {
-                appState.user.friendRequests.forEach(req => {
-                    notifs.push({
-                        type: 'friend_request',
-                        requesterUid: req.uid,
-                        requesterName: req.name,
-                        requesterAvatar: req.avatar || './aconchego.png',
-                        text: `💖 <strong>${req.name}</strong> te mandou o convite: <em>"Quer ver um dorama?"</em>`
-                    });
-                });
-            }
-
-            appState.notifications = notifs;
+            appState.notifications = fandomNotifs;
             updateNotifBadge();
         }
 
@@ -1161,10 +1083,24 @@
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
 
-                await syncUserDataFromCloud(user.uid);
+                const userRef = doc(db, "users", user.uid);
+                const userDoc = await getDoc(userRef);
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    if (data.audioUrl) appState.user.audioUrl = data.audioUrl;
+                    if (data.audioTitle) appState.user.audioTitle = data.audioTitle;
+                } else {
+                    await setDoc(userRef, {
+                        name: appState.user.name,
+                        avatar: appState.user.avatar,
+                        audioUrl: appState.user.audioUrl,
+                        audioTitle: appState.user.audioTitle
+                    }, { merge: true });
+                }
+
                 saveLocal();
                 applyUserTheme();
-                syncNotifications();
+                syncFandomNotifications();
                 renderAll();
             }
         });
@@ -1190,11 +1126,10 @@
                 appState.user.name = user.displayName || 'Usuário Google';
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
-                await syncUserDataFromCloud(user.uid);
                 saveLocal();
                 applyUserTheme();
                 closeAuthGate();
-                syncNotifications();
+                syncFandomNotifications();
                 renderAll();
             } catch (error) {
                 showUmbrellaModal({ title: 'Aviso de Login', htmlBody: error.message });
@@ -1231,7 +1166,7 @@
             saveLocal();
             applyUserTheme();
             closeAuthGate();
-            syncNotifications();
+            syncFandomNotifications();
             renderAll();
         };
 
@@ -1257,7 +1192,8 @@
             appState.user.email = email;
             saveLocal();
             applyUserTheme();
-            syncNotifications();
+            closeAuthGate();
+            syncFandomNotifications();
             renderAll();
         };
 
@@ -1307,150 +1243,68 @@
             }
         };
 
-        function parseMusicEmbedHtml(rawInput) {
-            if (!rawInput) return '';
-            const val = rawInput.trim();
-            if (val.toLowerCase().includes('<iframe')) {
-                const srcMatch = val.match(/src=["']([^"']+)["']/i);
-                if (srcMatch && srcMatch[1]) {
-                    return `<iframe src="${srcMatch[1]}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px; display:block;"></iframe>`;
-                }
-            }
-            if (val.includes('open.spotify.com')) {
-                let cleanUrl = val.split('?')[0];
-                if (!cleanUrl.includes('/embed/')) {
-                    cleanUrl = cleanUrl.replace('open.spotify.com/', 'open.spotify.com/embed/');
-                }
-                return `<iframe src="${cleanUrl}" width="100%" height="152" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style="border-radius:12px; display:block;"></iframe>`;
-            }
-            if (val.includes('deezer.com')) {
-                const dzMatch = val.match(/deezer\.com\/(?:[a-z]{2}\/)?(track|album|playlist)\/(\d+)/i);
-                if (dzMatch) {
-                    const type = dzMatch[1];
-                    const id = dzMatch[2];
-                    return `<iframe title="deezer-widget" src="https://widget.deezer.com/widget/dark/${type}/${id}" width="100%" height="152" frameborder="0" allowtransparency="true" allow="encrypted-media; clipboard-write" style="border-radius:12px; display:block;"></iframe>`;
-                }
-            }
-            if (val.includes('youtube.com') || val.includes('youtu.be')) {
-                let videoId = '';
-                const ytRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-                const match = val.match(ytRegex);
-                if (match && match[1]) {
-                    videoId = match[1];
-                    return `<iframe width="100%" height="152" src="https://www.youtube.com/embed/${videoId}?autoplay=1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="border-radius:12px; display:block;"></iframe>`;
-                }
-            }
-            return '';
-        }
-
-        window.switchProfileModalTab = function(tabName) {
-            document.querySelectorAll('.profile-tab-btn').forEach(b => b.classList.remove('active'));
-            document.querySelectorAll('.profile-tab-pane').forEach(p => p.classList.remove('active'));
-            const activeBtn = document.getElementById(`profTabBtn_${tabName}`);
-            const activePane = document.getElementById(`profTabPane_${tabName}`);
-            if (activeBtn) activeBtn.classList.add('active');
-            if (activePane) activePane.classList.add('active');
-        };
-
-        window.openProfileModal = function (defaultTab = 'perfil') {
+        window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
                 return;
             }
 
-            const embedHtml = parseMusicEmbedHtml(appState.user.musicEmbed);
-            const hasMusic = Boolean(embedHtml);
+            const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
 
             showUmbrellaModal({
-                title: `Meu Perfil Umbrella`,
+                title: `Perfil & Player do Muka`,
                 htmlBody: `
-                    <div class="profile-tabs-row">
-                        <button type="button" id="profTabBtn_perfil" class="profile-tab-btn ${defaultTab === 'perfil' ? 'active' : ''}" onclick="switchProfileModalTab('perfil')">👤 Perfil & Música</button>
-                        <button type="button" id="profTabBtn_tema" class="profile-tab-btn ${defaultTab === 'tema' ? 'active' : ''}" onclick="switchProfileModalTab('tema')">🎨 Tema & Fundo</button>
+                    <div style="text-align:center; margin-bottom:14px;">
+                        <img src="${appState.user.avatar}" style="width:72px; height:72px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px;">
+                        <h4 style="color:var(--gold-accent); font-size:16px;">${appState.user.name}</h4>
+                        <p style="font-size:11.5px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
                     </div>
 
-                    <div id="profTabPane_perfil" class="profile-tab-pane ${defaultTab === 'perfil' ? 'active' : ''}">
-                        <div style="text-align:center; margin-bottom:12px;">
-                            <img src="${appState.user.avatar}" style="width:68px; height:68px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:6px;">
-                            <h4 style="color:var(--gold-accent); font-size:15px;">${appState.user.name}</h4>
-                            <p style="font-size:11px; color:var(--text-muted);">${appState.user.email || 'Conta Conectada'}</p>
+                    <div class="form-group">
+                        <label class="form-label">Nome Completo</label>
+                        <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Escolher Foto de Perfil (Galeria Nativa)</label>
+                        <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto de perfil</label>
+                        <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
+                    </div>
+
+                    <div class="form-group" style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
+                        <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🔗 Link do Muka (Áudio)</label>
+                        <div style="display:flex; gap:6px; margin-bottom:10px;">
+                            <input type="text" id="customAudioLinkInput" class="glass-input" placeholder="https://... (link do Muka)" value="${appState.user.audioUrl || ''}">
+                            <button class="btn-pill-gold" style="padding:0 12px;" onclick="applyCustomAudioLink()">Salvar</button>
                         </div>
 
-                        <div class="form-group">
-                            <label class="form-label">Nome de Exibição</label>
-                            <input type="text" id="obName" class="glass-input" value="${appState.user.name}">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label">Trocar Foto de Perfil</label>
-                            <label for="obAvatarFile" class="custom-file-trigger" id="obAvatarLabel">Selecionar foto da galeria</label>
-                            <input type="file" id="obAvatarFile" accept="image/*" style="display:none;" onchange="document.getElementById('obAvatarLabel').textContent = this.files[0]?.name || 'Foto selecionada'">
-                        </div>
-
-                        <div class="form-group" style="margin-top:12px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
-                            <label class="form-label" style="font-weight:700; color:var(--gold-accent);">🎵 Música do Perfil (Spotify, Deezer ou YouTube)</label>
-                            <p style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Cole o link ou código de incorporação:</p>
-                            <div style="display:flex; gap:6px; margin-bottom:8px;">
-                                <input type="text" id="profileMusicCodeInput" class="glass-input" placeholder="Link ou código Spotify / Deezer / YouTube..." value="${(appState.user.musicEmbed || '').replace(/"/g, '&quot;')}">
-                                <button type="button" class="btn-pill-gold" style="padding:0 12px; white-space:nowrap;" onclick="loadProfileMusic()">Carregar</button>
+                        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:12px; border:1px solid var(--gold-border); text-align:center;">
+                            <p style="font-size:12px; color:var(--gold-accent); margin-bottom:8px;">${appState.user.audioTitle || 'Nenhuma mídia carregada'}</p>
+                            <div style="display:flex; justify-content:center; gap:8px;">
+                                <button class="btn-pill-gold" style="padding:6px 14px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
+                                <button class="btn-danger-pill" style="padding:6px 14px;" onclick="stopGlobalAudio()">⏹️ Parar</button>
                             </div>
-
-                            ${hasMusic ? `
-                                <div class="restricted-embed-box">
-                                    ${embedHtml}
-                                </div>
-                                <div style="text-align:right; margin-top:6px;">
-                                    <button type="button" class="btn-danger-pill" onclick="clearProfileMusic()">🗑️ Remover Música</button>
-                                </div>
-                            ` : `
-                                <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; border:1px dashed var(--gold-border); text-align:center; font-size:11.5px; color:var(--text-muted);">
-                                    Nenhuma música carregada no perfil.
-                                </div>
-                            `}
-                        </div>
-
-                        <div style="margin-top:14px; text-align:center;">
-                            <button type="button" class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
                         </div>
                     </div>
 
-                    <div id="profTabPane_tema" class="profile-tab-pane ${defaultTab === 'tema' ? 'active' : ''}">
-                        <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Personalize o visual se desejar. O plano de fundo atual permanece intacto até que você escolha alterar.</p>
-
-                        <div class="form-group">
-                            <label class="form-label">Cor de Fundo / Tema</label>
-                            <div style="display:flex; align-items:center; gap:10px;">
-                                <input type="color" id="themeColorPicker" value="${appState.user.themeAccent || '#060a1e'}" style="width:48px; height:40px; border:1px solid var(--gold-border); background:transparent; border-radius:10px; cursor:pointer;">
-                                <span style="font-size:12px; color:var(--text-muted);">Toque para escolher uma cor</span>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="form-label">Plano de Fundo Personalizado (Opcional)</label>
-                            <label for="bgImageFileInput" class="custom-file-trigger" id="bgImageLabel">🖼️ Escolher imagem da galeria</label>
-                            <input type="file" id="bgImageFileInput" accept="image/*" style="display:none;" onchange="document.getElementById('bgImageLabel').textContent = this.files[0]?.name || 'Imagem selecionada'">
-                        </div>
-
-                        <div style="display:flex; gap:8px; margin-top:12px;">
-                            <button type="button" class="btn-pill-gold" style="flex:1;" onclick="resetUserThemeToDefault()">Restaurar Padrão</button>
-                            <button type="button" class="btn-gold" style="flex:1;" onclick="applyNewThemeFromModal()">Aplicar Tema</button>
-                        </div>
+                    <div style="margin-top:14px; text-align:center;">
+                        <button class="btn-danger-pill" style="padding: 8px 16px; font-size: 12px; width: 100%;" onclick="logoutAccount()">🚪 Sair da Conta</button>
                     </div>
                 `,
                 buttons: [
                     { label: 'Fechar', primary: false, onClick: closeUmbrellaModal },
                     {
-                        label: 'Salvar Perfil',
+                        label: 'Salvar',
                         primary: true,
                         onClick: async () => {
-                            const nameEl = document.getElementById('obName');
-                            if (nameEl && nameEl.value.trim()) appState.user.name = nameEl.value.trim();
+                            const name = document.getElementById('obName').value.trim();
+                            if (name) appState.user.name = name;
 
                             const avatarInput = document.getElementById('obAvatarFile');
-                            if (avatarInput && avatarInput.files && avatarInput.files[0]) {
-                                const compressedAvatar = await compressImageNative(avatarInput.files[0], 250, 0.75);
-                                appState.user.avatar = compressedAvatar;
+                            if (avatarInput.files && avatarInput.files[0]) {
+                                const file = avatarInput.files[0];
+                                appState.user.avatar = URL.createObjectURL(file);
                             }
-                            await saveUserDataToCloud(appState.user.uid);
+                            await saveUserDataToFirestore();
                             saveLocal();
                             applyUserTheme();
                             renderAll();
@@ -1461,261 +1315,114 @@
             });
         };
 
-        window.loadProfileMusic = async function() {
-            const rawVal = document.getElementById('profileMusicCodeInput').value.trim();
-            if (!rawVal) return;
-            const parsed = parseMusicEmbedHtml(rawVal);
-            if (!parsed) {
-                showUmbrellaModal({
-                    title: 'Link ou Código Inválido',
-                    htmlBody: 'Cole um link válido ou código de incorporação do Spotify, Deezer ou YouTube.',
-                    buttons: [{ label: 'Voltar', primary: true, onClick: () => openProfileModal('perfil') }]
-                });
-                return;
-            }
-            appState.user.musicEmbed = rawVal;
-            await saveUserDataToCloud(appState.user.uid);
-            saveLocal();
-            applyUserTheme();
-            openProfileModal('perfil');
-        };
-
-        window.clearProfileMusic = async function() {
-            appState.user.musicEmbed = '';
-            await saveUserDataToCloud(appState.user.uid);
-            saveLocal();
-            applyUserTheme();
-            openProfileModal('perfil');
-        };
-
-        window.applyNewThemeFromModal = async function() {
-            const colorVal = document.getElementById('themeColorPicker').value;
-            appState.user.themeAccent = colorVal;
-            const bgInput = document.getElementById('bgImageFileInput');
-            if (bgInput && bgInput.files && bgInput.files[0]) {
-                const compressedBg = await compressImageNative(bgInput.files[0], 1080, 0.78);
-                appState.user.bgImage = compressedBg;
-            }
-            await saveUserDataToCloud(appState.user.uid);
-            saveLocal();
-            applyUserTheme();
-            openProfileModal('tema');
-        };
-
-        window.resetUserThemeToDefault = async function() {
-            appState.user.themeAccent = '#060a1e';
-            appState.user.bgImage = '';
-            await saveUserDataToCloud(appState.user.uid);
-            saveLocal();
-            applyUserTheme();
-            openProfileModal('tema');
-        };
-
-        async function saveUserDataToCloud(uid) {
-            if (!uid) return;
+        async function saveUserDataToFirestore() {
+            if (!appState.user.uid) return;
             try {
-                await setDoc(doc(db, "users", uid), {
+                await setDoc(doc(db, "users", appState.user.uid), {
                     name: appState.user.name,
                     avatar: appState.user.avatar,
-                    musicEmbed: appState.user.musicEmbed || '',
-                    themeAccent: appState.user.themeAccent || '#060a1e',
-                    bgImage: appState.user.bgImage || '',
-                    friends: appState.user.friends || [],
-                    friendRequests: appState.user.friendRequests || [],
-                    sentRequests: appState.user.sentRequests || []
+                    audioUrl: appState.user.audioUrl,
+                    audioTitle: appState.user.audioTitle
                 }, { merge: true });
             } catch (e) { console.error(e); }
         }
 
-        // VISITANTE CLICA NO PERFIL DE OUTRO USUÁRIO ( COM A FRASE FOFA "QUER VER UM DORAMA?" )
+        window.applyCustomAudioLink = async function() {
+            const url = document.getElementById('customAudioLinkInput').value.trim();
+            if (!url) return;
+            appState.user.audioUrl = url;
+            appState.user.audioTitle = 'Mídia do Muka Ativa';
+            await saveUserDataToFirestore();
+            saveLocal();
+            playAudioUrl(url);
+            openProfileModal();
+        };
+
+        function playAudioUrl(url) {
+            const audioEl = document.getElementById('globalActiveAudio');
+            const profileBtn = document.getElementById('headerProfileBtn');
+            if (!url) return;
+            audioEl.src = url;
+            audioEl.loop = true;
+            audioEl.play().then(() => {
+                profileBtn.classList.add('playing');
+            }).catch(() => {});
+        }
+
+        window.toggleGlobalAudioPlay = function() {
+            const audioEl = document.getElementById('globalActiveAudio');
+            const profileBtn = document.getElementById('headerProfileBtn');
+            if (audioEl.paused) {
+                if (audioEl.src) {
+                    audioEl.play();
+                    profileBtn.classList.add('playing');
+                } else if (appState.user.audioUrl) {
+                    playAudioUrl(appState.user.audioUrl);
+                }
+            } else {
+                audioEl.pause();
+                profileBtn.classList.remove('playing');
+            }
+            openProfileModal();
+        };
+
+        window.stopGlobalAudio = function() {
+            const audioEl = document.getElementById('globalActiveAudio');
+            const profileBtn = document.getElementById('headerProfileBtn');
+            audioEl.pause();
+            audioEl.currentTime = 0;
+            profileBtn.classList.remove('playing');
+            appState.user.audioUrl = '';
+            appState.user.audioTitle = '';
+            saveUserDataToFirestore();
+            saveLocal();
+            openProfileModal();
+        };
+
+        // PERFIL DE OUTRA PESSOA LIBERADO
         window.visitUserProfile = async function(authorUid, authorName) {
             if (!authorUid) {
                 showUmbrellaModal({ title: authorName, htmlBody: 'Perfil de usuário Umbrella.' });
                 return;
             }
-            if (authorUid === appState.user.uid) {
-                openProfileModal('perfil');
-                return;
-            }
 
+            let userAudio = '';
+            let userAvatar = './aconchego.png';
             try {
                 const userDoc = await getDoc(doc(db, "users", authorUid));
-                const data = userDoc.exists() ? userDoc.data() : {};
-                const embedHtml = parseMusicEmbedHtml(data.musicEmbed || '');
-                const avatarSrc = data.avatar || './aconchego.png';
-
-                const isAlreadyFriend = appState.user.friends && appState.user.friends.some(f => f.uid === authorUid);
-                const hasSentReq = appState.user.sentRequests && appState.user.sentRequests.includes(authorUid);
-
-                let friendshipActionHtml = '';
-                if (isAlreadyFriend) {
-                    friendshipActionHtml = `<button class="btn-gold" style="margin-top:10px;" onclick="closeUmbrellaModal(); openChatWithFriend('${authorUid}', '${authorName}', '${avatarSrc}')">💬 Abrir Bate-Papo</button>`;
-                } else if (hasSentReq) {
-                    friendshipActionHtml = `<p style="font-size:12px; color:var(--gold-accent); margin-top:10px;">⏳ Convite <em>"Quer ver um dorama?"</em> enviado!</p>`;
-                } else {
-                    friendshipActionHtml = `<button class="btn-gold" style="margin-top:10px;" onclick="sendDoramaFriendRequest('${authorUid}', '${authorName}', '${avatarSrc}')">💖 Enviar: "Quer ver um dorama?"</button>`;
+                if (userDoc.exists()) {
+                    const data = userDoc.data();
+                    if (data.audioUrl) userAudio = data.audioUrl;
+                    if (data.avatar) userAvatar = data.avatar;
                 }
+            } catch (e) {}
 
-                showUmbrellaModal({
-                    title: `Perfil de ${authorName}`,
-                    htmlBody: `
-                        <div style="text-align:center; margin-bottom:12px;">
-                            <img src="${avatarSrc}" style="width:68px; height:68px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:6px;">
-                            <h4 style="color:var(--gold-accent); font-size:15px;">${authorName}</h4>
-                        </div>
-                        ${embedHtml ? `
-                            <p style="font-size:11.5px; color:var(--gold-accent); margin-bottom:6px; text-align:center;">🎵 Player do Perfil</p>
-                            <div class="restricted-embed-box">
-                                ${embedHtml}
-                            </div>
-                        ` : `
-                            <p style="font-size:12px; color:var(--text-muted); text-align:center; margin-bottom:10px;">Este usuário não carregou nenhuma música no perfil.</p>
-                        `}
-                        ${friendshipActionHtml}
-                    `
-                });
-            } catch (e) {
-                showUmbrellaModal({ title: authorName, htmlBody: 'Perfil visitado.' });
-            }
-        };
+            const userPosts = postsFromFirebase.filter(p => p.authorUid === authorUid);
+            const postsHtml = userPosts.length > 0 
+                ? userPosts.map(p => `
+                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border);">
+                        <p style="font-size:12.5px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia publicada)'}</p>
+                        ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:180px; border-radius:8px;" controls playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px;">`) : ''}
+                    </div>
+                `).join('')
+                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Este usuário ainda não publicou nada no feed.</p>';
 
-        window.sendDoramaFriendRequest = async function(targetUid, targetName, targetAvatar) {
-            if (!appState.user.loggedIn) {
-                document.getElementById('authGateOverlay').style.display = 'flex';
-                return;
-            }
-            try {
-                const targetRef = doc(db, "users", targetUid);
-                const targetDoc = await getDoc(targetRef);
-                const targetData = targetDoc.exists() ? targetDoc.data() : {};
-                const requests = targetData.friendRequests || [];
-
-                // Evita duplicata
-                if (!requests.some(r => r.uid === appState.user.uid)) {
-                    requests.push({
-                        uid: appState.user.uid,
-                        name: appState.user.name,
-                        avatar: appState.user.avatar
-                    });
-                    await updateDoc(targetRef, { friendRequests: requests });
-                }
-
-                if (!appState.user.sentRequests) appState.user.sentRequests = [];
-                appState.user.sentRequests.push(targetUid);
-                await saveUserDataToCloud(appState.user.uid);
-                saveLocal();
-
-                closeUmbrellaModal();
-                showUmbrellaModal({
-                    title: 'Convite Enviado! 💖',
-                    htmlBody: `Você perguntou para <strong>${targetName}</strong>: <em>"Quer ver um dorama?"</em>. Assim que ela responder "Vamos ver juntos", a amizade será selada!`
-                });
-            } catch (e) {
-                showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
-            }
-        };
-
-        window.acceptFriendRequest = async function(requesterUid, requesterName, requesterAvatar) {
-            try {
-                // Adiciona o amigo na lista do usuário atual
-                if (!appState.user.friends) appState.user.friends = [];
-                appState.user.friends.push({ uid: requesterUid, name: requesterName, avatar: requesterAvatar });
-
-                // Remove da lista de solicitações pendentes
-                appState.user.friendRequests = (appState.user.friendRequests || []).filter(r => r.uid !== requesterUid);
-
-                await saveUserDataToCloud(appState.user.uid);
-
-                // Adiciona o usuário atual na lista de amigos do solicitante também
-                const requesterRef = doc(db, "users", requesterUid);
-                const reqDoc = await getDoc(requesterRef);
-                if (reqDoc.exists()) {
-                    const reqData = reqDoc.data();
-                    const reqFriends = reqData.friends || [];
-                    if (!reqFriends.some(f => f.uid === appState.user.uid)) {
-                        reqFriends.push({
-                            uid: appState.user.uid,
-                            name: appState.user.name,
-                            avatar: appState.user.avatar
-                        });
-                        await updateDoc(requesterRef, { friends: reqFriends });
-                    }
-                }
-
-                saveLocal();
-                syncNotifications();
-                renderAll();
-                closeUmbrellaModal();
-
-                showUmbrellaModal({
-                    title: 'Amizade Selada! 🎉',
-                    htmlBody: `Agora você e <strong>${requesterName}</strong> responderam <em>"Vamos ver juntos"</em>! O bate-papo foi liberado.`
-                });
-            } catch (e) {
-                showUmbrellaModal({ title: 'Erro', htmlBody: e.message });
-            }
-        };
-
-        window.openChatWithFriend = function(friendUid, friendName, friendAvatar) {
-            const chatId = [appState.user.uid, friendUid].sort().join('_');
-            const chatRef = collection(db, "chats", chatId, "messages");
-
-            // Abre modal de chat em tempo real
             showUmbrellaModal({
-                title: `💬 Bate-Papo com ${friendName}`,
+                title: `Perfil de ${authorName}`,
                 htmlBody: `
-                    <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px; border-bottom:1px solid rgba(251,191,36,0.2); padding-bottom:8px;">
-                        <img src="${friendAvatar}" style="width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--gold-border);">
-                        <span style="font-size:13.5px; font-weight:700; color:var(--gold-accent);">${friendName}</span>
+                    <div style="text-align:center; margin-bottom:12px;">
+                        <img src="${userAvatar}" style="width:64px; height:64px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:6px;">
+                        <h4 style="color:var(--gold-accent); font-size:15px;">${authorName}</h4>
+                        ${userAudio ? `<button class="btn-pill-gold" style="margin-top:6px; font-size:11px;" onclick="playAudioUrl('${userAudio}')">▶️ Ouvir Trilha Sonora (Muka)</button>` : ''}
                     </div>
-                    <div id="chatMessagesContainer" style="height:220px; overflow-y:auto; background:rgba(10,14,28,0.7); border:1px solid var(--gold-border); border-radius:12px; padding:10px; margin-bottom:10px; display:flex; flex-direction:column; gap:8px;">
-                        <p style="font-size:11.5px; color:var(--text-muted); text-align:center;">Carregando mensagens...</p>
-                    </div>
-                    <div style="display:flex; gap:6px;">
-                        <input type="text" id="chatInputMessage" class="glass-input" placeholder="Digite sobre o dorama..." onkeypress="if(event.key==='Enter') sendChatMessage('${chatId}', '${friendUid}')">
-                        <button class="btn-gold" style="width:auto; padding:0 14px;" onclick="sendChatMessage('${chatId}', '${friendUid}')">➤</button>
+                    <hr style="border:none; border-top:1px solid rgba(251,191,36,0.2); margin:12px 0;">
+                    <h5 style="color:var(--gold-accent); font-size:13px; margin-bottom:8px;">Publicações no Feed:</h5>
+                    <div style="max-height:240px; overflow-y:auto;">
+                        ${postsHtml}
                     </div>
                 `,
-                buttons: [{ label: 'Fechar', primary: false, onClick: closeUmbrellaModal }]
+                buttons: [{ label: 'Fechar', primary: true, onClick: closeUmbrellaModal }]
             });
-
-            // Ouve mensagens em tempo real
-            const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
-            onSnapshot(q, (snapshot) => {
-                const container = document.getElementById('chatMessagesContainer');
-                if (!container) return;
-                let html = '';
-                snapshot.forEach(docSnap => {
-                    const msg = docSnap.data();
-                    const isMe = msg.senderUid === appState.user.uid;
-                    html += `
-                        <div style="align-self: ${isMe ? 'flex-end' : 'flex-start'}; background: ${isMe ? 'rgba(251,191,36,0.2)' : 'rgba(255,255,255,0.08)'}; border:1px solid var(--gold-border); padding:6px 10px; border-radius:10px; max-width:80%; font-size:12.5px;">
-                            <strong style="font-size:10.5px; color:var(--gold-accent); display:block;">${msg.senderName}</strong>
-                            ${msg.text}
-                        </div>
-                    `;
-                });
-                container.innerHTML = html || '<p style="font-size:11.5px; color:var(--text-muted); text-align:center;">Nenhuma mensagem ainda. Digite algo!</p>';
-                container.scrollTop = container.scrollHeight;
-            });
-        };
-
-        window.sendChatMessage = async function(chatId, friendUid) {
-            const input = document.getElementById('chatInputMessage');
-            const text = input.value.trim();
-            if (!text) return;
-            input.value = '';
-
-            try {
-                await addDoc(collection(db, "chats", chatId, "messages"), {
-                    senderUid: appState.user.uid,
-                    senderName: appState.user.name,
-                    text: text,
-                    createdAt: serverTimestamp()
-                });
-            } catch (e) {
-                console.error(e);
-            }
         };
 
         window.openMediaActionSheet = function () {
@@ -1741,59 +1448,19 @@
             });
         };
 
-        function compressImageNative(file, maxWidth = 800, quality = 0.72) {
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        const canvas = document.createElement('canvas');
-                        let w = img.width;
-                        let h = img.height;
-                        if (w > maxWidth) {
-                            h = Math.round((h * maxWidth) / w);
-                            w = maxWidth;
-                        }
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, w, h);
-                        resolve(canvas.toDataURL('image/jpeg', quality));
-                    };
-                    img.src = e.target.result;
-                };
-                reader.readAsDataURL(file);
-            });
-        }
-
+        // VÍDEOS E FOTOS USAM OBJECT URL (SEM LIMITE DE TAMANHO)
         window.handleMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
             currentFileName = file.name || `midia_${Date.now()}`;
             const isVideo = file.type.startsWith('video/') || /\.(mp4|mov|webm|mkv|3gp)$/i.test(currentFileName);
 
-            if (isVideo) {
-                if (file.size > 12 * 1024 * 1024) {
-                    showUmbrellaModal({ title: 'Vídeo Muito Grande', htmlBody: 'Escolha um vídeo mais curto (até 12MB) para enviar rápido pelo celular.' });
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    currentAttachedDataUrl = e.target.result;
-                    currentAttachedType = 'video';
-                    document.getElementById('mediaPreviewName').textContent = `🎬 Vídeo pronto`;
-                    document.getElementById('mediaPreviewStrip').style.display = 'flex';
-                    previewAttachedMediaNative();
-                };
-                reader.readAsDataURL(file);
-            } else {
-                const compressedDataUrl = await compressImageNative(file, 800, 0.72);
-                currentAttachedDataUrl = compressedDataUrl;
-                currentAttachedType = 'image';
-                document.getElementById('mediaPreviewName').textContent = `📷 Foto pronta`;
-                document.getElementById('mediaPreviewStrip').style.display = 'flex';
-                previewAttachedMediaNative();
-            }
+            currentAttachedDataUrl = URL.createObjectURL(file);
+            currentAttachedType = isVideo ? 'video' : 'image';
+
+            document.getElementById('mediaPreviewName').textContent = isVideo ? '🎬 Vídeo pronto' : '📷 Foto pronta';
+            document.getElementById('mediaPreviewStrip').style.display = 'flex';
+            previewAttachedMediaNative();
         };
 
         window.previewAttachedMediaNative = function () {
@@ -1851,7 +1518,7 @@
             else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
             else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
             else if (viewName === 'aconchego') composerInput.placeholder = "Escreva no seu Aconchego pessoal...";
-            else if (viewName === 'amigos') composerInput.placeholder = "Converse com seus amigos...";
+            else if (viewName === 'amigos') composerInput.placeholder = "Mande uma mensagem para seus amigos...";
 
             renderAll();
         };
@@ -1882,11 +1549,10 @@
             });
         };
 
+        // SEM AMPULHETA: ENVIO INSTANTÂNEO
         window.submitPost = async function () {
-            if (isUploadingPost) return;
             requireAuthForAction(async () => {
                 const input = document.getElementById('mainComposerInput');
-                const sendBtn = document.getElementById('mainSendBtn');
                 const text = input.value.trim();
                 if (!text && !currentAttachedDataUrl) return;
 
@@ -1899,6 +1565,11 @@
                     return;
                 }
 
+                if (isInsideFandomView && !activeFandomFilter) {
+                    showUmbrellaModal({ title: 'Fandom não selecionado', htmlBody: 'Abra um Fandom primeiro.' });
+                    return;
+                }
+
                 if (isInsideFandomView && activeFandomFilter) {
                     const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
                     if (!fandomObj || !hasFandomAccess(fandomObj)) {
@@ -1906,10 +1577,6 @@
                         return;
                     }
                 }
-
-                isUploadingPost = true;
-                sendBtn.disabled = true;
-                sendBtn.textContent = '⏳';
 
                 try {
                     const targetFandom = isInsideFandomView ? activeFandomFilter : 'Geral';
@@ -1936,10 +1603,6 @@
                     renderAll();
                 } catch (e) {
                     showUmbrellaModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
-                } finally {
-                    isUploadingPost = false;
-                    sendBtn.disabled = false;
-                    sendBtn.textContent = '➤';
                 }
             });
         };
@@ -2023,45 +1686,30 @@
         window.openNotificationsModal = function () {
             requireAuthForAction(() => {
                 if (appState.notifications.length === 0) {
-                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova notificação ou solicitação pendente.' });
+                    showUmbrellaModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação pendente nos seus Fandoms.' });
                     return;
                 }
-
                 const notif = appState.notifications[0];
-                if (notif.type === 'friend_request') {
-                    showUmbrellaModal({
-                        title: 'Convite de Amizade 💖',
-                        htmlBody: `
-                            <div style="text-align:center; margin-bottom:10px;">
-                                <img src="${notif.requesterAvatar}" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid var(--gold-border); margin-bottom:6px;">
-                                <p>${notif.text}</p>
-                            </div>
-                            <p style="font-size:11.5px; color:var(--text-muted); text-align:center;">Responda "Vamos ver juntos" para aceitar e liberar o bate-papo!</p>
-                        `,
-                        buttons: [
-                            { label: 'Recusar', primary: false, onClick: async () => {
-                                appState.user.friendRequests = (appState.user.friendRequests || []).filter(r => r.uid !== notif.requesterUid);
-                                await saveUserDataToCloud(appState.user.uid);
-                                syncNotifications();
-                                closeUmbrellaModal();
-                            }},
-                            { label: 'Vamos ver juntos! ✅', primary: true, onClick: () => acceptFriendRequest(notif.requesterUid, notif.requesterName, notif.requesterAvatar) }
-                        ]
-                    });
-                } else {
-                    showUmbrellaModal({
-                        title: 'Solicitação de Fandom 🔒',
-                        htmlBody: `<p>${notif.text}</p>`,
-                        buttons: [
-                            { label: 'Recusar', primary: false, onClick: async () => {
+                showUmbrellaModal({
+                    title: 'Solicitação de Fandom 🔒',
+                    htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Ao aprovar, esta pessoa poderá ver e publicar dentro deste espaço particular.</p>`,
+                    buttons: [
+                        {
+                            label: 'Recusar',
+                            primary: false,
+                            onClick: async () => {
                                 try {
                                     await updateDoc(doc(db, "fandoms", notif.fandomId), {
                                         pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
                                     });
                                 } catch (e) {}
                                 closeUmbrellaModal();
-                            }},
-                            { label: 'Aprovar Entrada ✅', primary: true, onClick: async () => { 
+                            }
+                        },
+                        { 
+                            label: 'Aprovar Entrada ✅', 
+                            primary: true, 
+                            onClick: async () => { 
                                 try {
                                     await updateDoc(doc(db, "fandoms", notif.fandomId), {
                                         members: arrayUnion(notif.requesterUid),
@@ -2069,10 +1717,10 @@
                                     });
                                 } catch (e) {}
                                 closeUmbrellaModal(); 
-                            }}
-                        ]
-                    });
-                }
+                            } 
+                        }
+                    ]
+                });
             });
         };
 
@@ -2330,28 +1978,13 @@
 
         function updateNotifBadge() {
             const badge = document.getElementById('notifBadge');
-            const totalCount = appState.notifications.length;
-            badge.textContent = totalCount;
-            badge.style.display = totalCount > 0 ? 'flex' : 'none';
+            badge.textContent = appState.notifications.length;
+            badge.style.display = appState.notifications.length > 0 ? 'flex' : 'none';
         }
 
         function applyUserTheme() {
             document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
-
-            const profileBtn = document.getElementById('headerProfileBtn');
-            if (appState.user.musicEmbed && parseMusicEmbedHtml(appState.user.musicEmbed)) {
-                profileBtn.classList.add('playing');
-            } else {
-                profileBtn.classList.remove('playing');
-            }
-
-            const root = document.documentElement;
-            root.style.setProperty('--theme-color-accent', appState.user.themeAccent || '#060a1e');
-            if (appState.user.bgImage) {
-                root.style.setProperty('--custom-bg-image', `url('${appState.user.bgImage}')`);
-            } else {
-                root.style.setProperty('--custom-bg-image', `url('./fundo.png')`);
-            }
+            if (appState.user.audioUrl) playAudioUrl(appState.user.audioUrl);
         }
 
         function renderPostCardHTML(post, isAconchegoTab = false) {
@@ -2420,7 +2053,7 @@
             document.getElementById('weeklyDirectiveText').textContent = appState.directive;
             document.getElementById('carouselChallengeText').textContent = appState.directive;
             document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
-            syncNotifications();
+            updateNotifBadge();
 
             const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
             if (challengePosts[0] && challengePosts[0].media) {
@@ -2473,26 +2106,22 @@
             const aconchegoPosts = postsFromFirebase.filter(p => p.isAconchego && p.author === appState.user.name);
             document.getElementById('aconchegoHistoryList').innerHTML = aconchegoPosts.length > 0 ? aconchegoPosts.map(p => renderPostCardHTML(p, true)).join('') : `<div class="glass-panel empty-state-box">Seu espaço Aconchego está vazio.</div>`;
 
-            // Renderiza lista de amigos no painel de Amigos com botão direto para o chat
-            const friends = appState.user.friends || [];
-            const friendsContainer = document.getElementById('friendsListContainer');
-            if (friends.length === 0) {
-                friendsContainer.innerHTML = `<div class="glass-panel empty-state-box">Você ainda não tem amigos adicionados.<br>Visite o perfil de outros dorameiros e envie <em>"Quer ver um dorama?"</em>!</div>`;
-            } else {
-                friendsContainer.innerHTML = friends.map(f => `
-                    <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between; gap:10px;">
-                        <div style="display:flex; align-items:center; gap:10px; cursor:pointer;" onclick="visitUserProfile('${f.uid}', '${f.name}')">
-                            <img src="${f.avatar || './aconchego.png'}" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
-                            <div>
-                                <div style="font-size:14px; font-weight:700; color:var(--gold-accent);">${f.name}</div>
-                                <div style="font-size:11.5px; color:var(--text-muted);">Amizade ativa 💖</div>
-                            </div>
-                        </div>
-                        <button class="btn-gold" style="width:auto; padding:6px 14px; font-size:12px;" onclick="openChatWithFriend('${f.uid}', '${f.name}', '${f.avatar || './aconchego.png'}')">💬 Chat</button>
+            document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
+                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; gap:10px;">
+                    <img src="${f.avatar}" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                    <div>
+                        <div style="font-size:14px; font-weight:700;">${f.name}</div>
+                        <div style="font-size:11.5px; color:var(--text-muted);">${f.status}</div>
                     </div>
-                `).join('');
-            }
+                </div>
+            `).join('');
         }
+
+        window.addEventListener('scroll', () => {
+            const logoSec = document.getElementById('logoSection');
+            if (window.scrollY > 25) logoSec.classList.add('scrolled');
+            else logoSec.classList.remove('scrolled');
+        }, { passive: true });
 
         applyUserTheme();
         initFirebaseSync();
