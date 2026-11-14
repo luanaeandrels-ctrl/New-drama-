@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="google" content="notranslate">
-    <title translate="no">CherBluss</title>
+    <title translate="no">Sher Bluss</title>
     <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#060a1e">
     <link rel="icon" type="image/png" href="./logo.png">
@@ -87,6 +87,7 @@
             border-radius: 50%;
         }
 
+        /* Cabeçalho Superior */
         .unified-top-bar {
             width: 100%;
             max-width: 850px;
@@ -114,6 +115,7 @@
             cursor: pointer;
             padding: 0;
             flex-shrink: 0;
+            transition: all 0.25s ease;
         }
 
         .header-left-btn img {
@@ -124,38 +126,46 @@
             border-radius: 50%;
         }
 
+        /* Gotinha discreta em cima da bolinha de perfil */
         .droplet-badge-overlay {
             position: absolute;
-            top: -2px;
-            right: -2px;
+            top: -5px;
+            right: -3px;
             background: var(--gold-accent);
             color: #060a1e;
-            font-size: 8px;
+            font-size: 9px;
             font-weight: 800;
-            min-width: 14px;
-            height: 14px;
-            border-radius: 99px;
+            width: 16px;
+            height: 16px;
+            border-radius: 0 50% 50% 50%;
+            transform: rotate(45deg);
             display: none;
             align-items: center;
             justify-content: center;
-            padding: 0 2px;
-            border: 1px solid #060a1e;
-            z-index: 5;
+            border: 1.5px solid #060a1e;
+            z-index: 6;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+        }
+
+        .droplet-badge-overlay span {
+            transform: rotate(-45deg);
+            display: block;
+            line-height: 1;
         }
 
         .top-bar-title-center {
             font-family: 'Cormorant Garamond', Georgia, serif;
-            font-size: 20px;
+            font-size: 21px;
             font-weight: 700;
             color: var(--gold-accent);
             text-align: center;
             letter-spacing: 0.5px;
-            transition: opacity 0.2s ease, transform 0.2s ease;
+            transition: opacity 0.25s ease, transform 0.25s ease;
         }
 
         .top-bar-title-center.hidden-title {
             opacity: 0;
-            transform: translateY(-10px);
+            transform: translateY(-12px);
             pointer-events: none;
         }
 
@@ -212,6 +222,7 @@
             flex-shrink: 0;
         }
 
+        /* Carrossel Superior */
         .main-carousel-wrapper {
             width: 100%;
             padding: 10px 20px 14px;
@@ -228,11 +239,13 @@
 
         .main-carousel-wrapper::-webkit-scrollbar { display: none; }
 
-        .main-carousel-wrapper.scrolled {
+        .main-carousel-wrapper.scrolled,
+        .main-carousel-wrapper.hidden-in-profile {
             max-height: 0;
             opacity: 0;
             padding: 0;
             overflow: hidden;
+            pointer-events: none;
         }
 
         @media (min-width: 769px) {
@@ -394,6 +407,220 @@
             cursor: pointer;
         }
 
+        /* Estilos Exclusivos do Perfil (Dona da Conta & Visita) */
+        .profile-hero-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .profile-avatar-130-box {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .profile-avatar-130 {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 2.5px solid var(--gold-accent);
+            object-fit: cover;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .profile-name-under-130 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--gold-accent);
+            margin-top: 10px;
+            line-height: 1.2;
+        }
+
+        .profile-handle-under-130 {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .edit-trigger-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .discrete-edit-btn {
+            background: rgba(251, 191, 36, 0.12);
+            border: 1px solid var(--gold-border);
+            color: var(--gold-accent);
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 99px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .bio-universe-box {
+            background: rgba(10, 14, 28, 0.55);
+            border: 1px solid var(--gold-border);
+            border-radius: 14px;
+            padding: 10px 13px;
+            margin: 12px 0 16px;
+        }
+
+        .bio-universe-label {
+            font-size: 11px;
+            color: var(--gold-accent);
+            font-weight: 700;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .bio-universe-input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 13px;
+            line-height: 1.4;
+            outline: none;
+            resize: none;
+        }
+
+        /* Meu Aconchego & Destaques (Bolinha de 100px + Subgrupos + Animação) */
+        .aconchego-showcase-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 6px 2px 14px;
+            scrollbar-width: none;
+            transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .aconchego-showcase-row::-webkit-scrollbar { display: none; }
+
+        .aconchego-showcase-row.aligned-left-mode {
+            justify-content: flex-start;
+            padding-left: 15px;
+            border-left: 2px solid var(--gold-accent);
+        }
+
+        .aconchego-bubble-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            cursor: pointer;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+        }
+
+        .aconchego-bubble-wrapper.inactive-bubble {
+            opacity: 0.45;
+            transform: scale(0.86);
+        }
+
+        .aconchego-bubble-wrapper.active-bubble {
+            transform: scale(1.03);
+        }
+
+        .aconchego-circle-100 {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 2.5px solid var(--gold-accent);
+            padding: 3px;
+            background: rgba(10, 14, 28, 0.7);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+        }
+
+        .aconchego-circle-100 img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* Pontinho discreto colado na bolinha de 100px para trocar capa */
+        .cover-edit-dot {
+            position: absolute;
+            bottom: 3px;
+            right: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--gold-accent);
+            color: #060a1e;
+            border: 2px solid #060a1e;
+            font-size: 11px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.6);
+            z-index: 4;
+        }
+
+        .aconchego-bubble-label {
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-top: 6px;
+            max-width: 104px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .add-subgroup-btn {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: rgba(251, 191, 36, 0.14);
+            border: 1.5px dashed var(--gold-accent);
+            color: var(--gold-accent);
+            font-size: 26px;
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-bottom: 18px;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .add-subgroup-btn:hover {
+            background: rgba(251, 191, 36, 0.25);
+            transform: scale(1.06);
+        }
+
+        /* Botão Quero assistir um dorama */
+        .dorama-friend-btn {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25), rgba(251, 191, 36, 0.12));
+            border: 1.5px solid var(--gold-accent);
+            color: var(--gold-accent);
+            padding: 9px 16px;
+            border-radius: 99px;
+            font-size: 12.5px;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+            transition: transform 0.15s ease;
+        }
+
+        .dorama-friend-btn:active { transform: scale(0.96); }
+
         .fandoms-grid-container {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
@@ -462,6 +689,17 @@
             padding: 1px 5px;
             border-radius: 99px;
             font-weight: 700;
+        }
+
+        .post-dots-btn {
+            background: transparent;
+            border: none;
+            color: var(--gold-accent);
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            padding: 2px 8px;
+            line-height: 1;
         }
 
         .post-text { font-size: 14px; line-height: 1.5; margin-bottom: 8px; word-break: break-word; color: var(--text-main); }
@@ -534,7 +772,7 @@
 
         .like-umbrella-btn.liked span { color: var(--gold-accent); }
 
-        /* Barra Inferior Recolhível com a Setinha Original Bonitinha */
+        /* Barra Inferior de Envio Inteligente (Apenas setinha flutuante à direita) */
         .floating-composer-wrapper {
             position: fixed;
             bottom: 22px;
@@ -547,6 +785,7 @@
             transition: opacity 0.2s ease, transform 0.2s ease;
             display: flex;
             justify-content: flex-end;
+            pointer-events: none;
         }
 
         .floating-composer-wrapper.hidden-in-challenge {
@@ -554,32 +793,34 @@
         }
 
         .composer-toggle-fab {
-            width: 42px;
-            height: 42px;
+            pointer-events: auto;
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
-            background: rgba(251, 191, 36, 0.2);
+            background: rgba(14, 18, 34, 0.92);
             border: 1.5px solid var(--gold-accent);
             color: var(--gold-accent);
-            font-size: 16px;
+            font-size: 17px;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.55);
             transition: transform 0.2s ease;
         }
 
         .composer-toggle-fab:active { transform: scale(0.92); }
 
         .gemini-composer {
+            pointer-events: auto;
             display: none;
             align-items: center;
             gap: 8px;
             padding: 6px 10px;
-            background: rgba(14, 18, 34, 0.95);
+            background: rgba(14, 18, 34, 0.96);
             border: 1px solid var(--gold-border);
             border-radius: 9999px;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
             width: 100%;
             animation: popIn 0.18s ease-out;
         }
@@ -646,12 +887,6 @@
             color: var(--text-main);
             font-size: 13.5px;
             outline: none;
-        }
-
-        .glass-input:disabled, .glass-select:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            background: rgba(10, 14, 28, 0.4);
         }
 
         .photo-square-picker {
@@ -873,11 +1108,14 @@
 </head>
 <body class="notranslate">
 
+    <!-- Inputs ocultos para troca de capa do Meu Aconchego / Subgrupos -->
+    <input type="file" id="aconchegoCoverInput" accept="image/*" style="display:none;" onchange="handleAconchegoCoverSelected(event)">
+
     <div class="auth-gate-overlay" id="authGateOverlay">
         <div class="glass-panel auth-card" id="authCardMain">
-            <img src="./logo.png" alt="CherBluss" class="auth-logo">
+            <img src="./logo.png" alt="Sher Bluss" class="auth-logo">
             <h3 style="color:var(--gold-accent); font-size:18px; margin-bottom:8px;">Faça login para interagir</h3>
-            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:20px;">Entre com sua conta para curtir, comentar e publicar no <strong translate="no">CherBluss</strong>.</p>
+            <p style="font-size:12.5px; color:var(--text-muted); margin-bottom:20px;">Entre com sua conta para curtir, comentar e publicar no <strong translate="no">Sher Bluss</strong>.</p>
             
             <div style="display:flex; flex-direction:column; gap:10px;">
                 <button class="btn-gold" style="background: rgba(66, 133, 244, 0.25); border-color: #4285f4; color: #8ab4f8;" onclick="loginWithGoogle()">
@@ -896,14 +1134,14 @@
         </div>
     </div>
 
-    <!-- Top Bar: Foto e gotinha na esq, CherBluss no centro, Lupinha expansível na dir -->
+    <!-- Cabeçalho Superior -->
     <div class="unified-top-bar" id="unifiedTopBar">
-        <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego Dedicado">
+        <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego">
             <img id="headerUserAvatar" src="./aconchego.png" alt="" onerror="this.src='./logo.png'">
-            <span class="droplet-badge-overlay" id="notifBadge" onclick="event.stopPropagation(); openNotificationsModal()">0</span>
+            <span class="droplet-badge-overlay" id="notifBadge" onclick="event.stopPropagation(); openNotificationsModal()"><span id="notifBadgeCount">0</span></span>
         </button>
 
-        <div class="top-bar-title-center notranslate" id="topBarCenterTitle" translate="no">CherBluss</div>
+        <div class="top-bar-title-center notranslate" id="topBarCenterTitle" translate="no">Sher Bluss</div>
 
         <div class="search-balao-fininho" id="searchBalaoContainer">
             <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@seu_arroba" oninput="executeGlobalSearch()" onkeyup="if(event.key==='Enter') executeGlobalSearch()">
@@ -913,6 +1151,7 @@
 
     <div class="app-shell">
 
+        <!-- Carrossel Superior (Pódio + Desafio + Fandom + Amigos) -->
         <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
@@ -963,85 +1202,149 @@
             </div>
         </nav>
 
+        <!-- Feed Geral -->
         <main class="view-section active" id="view-feed">
             <div class="feed-list" id="mainFeedList"></div>
         </main>
 
-        <!-- Perfil Dedicado com Edição Controlada por 3 Pontinhos (⋮) -->
+        <!-- Tela de Próprio Perfil (Dona da Conta) -->
         <section class="view-section" id="view-meu-perfil">
             <div class="glass-panel" style="padding:20px; margin-bottom:14px;">
-                <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
-                    <span class="section-title">Meu Perfil & Aconchego</span>
-                    <div style="display:flex; gap:8px;">
-                        <button class="dots-menu-btn" onclick="toggleProfileEditMode()" title="Editar Perfil">⋮</button>
-                        <button class="btn-pill-gold" onclick="switchView('feed')">Voltar</button>
-                    </div>
-                </div>
-
-                <div style="text-align:center; margin-bottom:16px;">
-                    <img id="myProfilePageAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" style="width:82px; height:82px; border-radius:50%; border:2px solid var(--gold-accent); object-fit:cover; margin-bottom:8px;">
-                    <h4 id="myProfilePageNameDisplay" style="color:var(--gold-accent); font-size:16px;">Usuário</h4>
-                    <p id="myProfilePageHandleDisplay" class="notranslate" style="font-size:12px; color:var(--gold-accent);">@arroba</p>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Meu Nome de Exibição</label>
-                    <input type="text" id="profileEditName" class="glass-input" disabled oninput="saveProfileChangesLive()">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Meu @Arroba (Para te acharem no <span translate="no">CherBluss</span>)</label>
-                    <input type="text" id="profileEditHandle" class="glass-input notranslate" disabled placeholder="@exemplo" oninput="saveProfileChangesLive()">
-                </div>
-                <div class="form-group" id="profileAvatarUploadGroup" style="display:none;">
-                    <label class="form-label">Foto de Perfil</label>
-                    <label for="profileEditAvatarFile" class="custom-file-trigger" id="profileAvatarLabel">📷 Escolher foto do perfil na galeria</label>
-                    <input type="file" id="profileEditAvatarFile" accept="image/*" style="display:none;" onchange="handleProfileAvatarSelected(event)">
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Tema do Perfil (Escolha totalmente a sua cor)</label>
-                    <div class="color-wheel-row">
-                        <input type="color" id="profileColorWheel" class="circular-color-picker" disabled value="#fbbf24" oninput="applyCustomAccentColor(this.value)">
-                        <div>
-                            <span style="font-size:13px; font-weight:600; color:var(--text-main); display:block;">Cor de Destaque & Bordas</span>
-                            <span id="profileColorHexLabel" style="font-size:11px; color:var(--gold-accent);">#FBBF24</span>
+                <div class="profile-hero-top">
+                    <div class="profile-avatar-130-box">
+                        <img id="myProfilePageAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" class="profile-avatar-130">
+                        <h3 id="myProfilePageNameDisplay" class="profile-name-under-130">Usuário</h3>
+                        <span id="myProfilePageHandleDisplay" class="profile-handle-under-130 notranslate">@arroba</span>
+                        <div class="edit-trigger-row">
+                            <button class="discrete-edit-btn" onclick="toggleProfileEditMode()">✏️ editar</button>
+                            <button class="dots-menu-btn" style="padding:2px 9px; font-size:13px;" onclick="toggleProfileEditMode()" title="Opções de Edição">⋮</button>
                         </div>
                     </div>
+
+                    <button class="btn-pill-gold" onclick="switchView('feed')">Voltar ao Feed</button>
                 </div>
 
-                <div class="form-group" id="profileBgUploadGroup" style="display:none;">
-                    <label class="form-label">Plano de Fundo Personalizado (Nativo: fundo.png)</label>
-                    <div style="display:flex; gap:8px;">
-                        <label for="profileBgFile" class="custom-file-trigger" style="flex:1;" id="profileBgLabel">🖼️ Escolher fundo na galeria</label>
-                        <button type="button" class="btn-pill-gold" onclick="resetDefaultBackground()" title="Voltar ao fundo.png">Fundo Nativo</button>
+                <!-- Campo editável: Como entrou nesse universo? -->
+                <div class="bio-universe-box">
+                    <label class="bio-universe-label" for="myUniverseBioInput">✨ Como entrou nesse universo?</label>
+                    <textarea id="myUniverseBioInput" class="bio-universe-input" rows="2" placeholder="Conte qual dorama ou grupo de K-pop conquistou seu coração..." oninput="saveUniverseBioLive(this.value)"></textarea>
+                </div>
+
+                <!-- Meu Aconchego & Destaques (Bolinha 100px + Pontinho capa + Botão +) -->
+                <div style="margin-bottom:6px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                        <span style="font-size:12px; font-weight:700; color:var(--gold-accent);">🏠 Meu Aconchego & Destaques</span>
+                        <span id="selectedAconchegoHint" style="font-size:10.5px; color:var(--text-muted);">Toque na bolinha para filtrar</span>
                     </div>
-                    <input type="file" id="profileBgFile" accept="image/*" style="display:none;" onchange="handleProfileBackgroundSelected(event)">
+                    <div class="aconchego-showcase-row" id="myAconchegoShowcaseRow"></div>
                 </div>
 
-                <button class="btn-danger-pill" style="width:100%; padding:10px; margin-top:8px;" onclick="logoutAccount()">🚪 Sair da Conta</button>
+                <!-- Modo de Edição (Aberto apenas ao clicar em editar / 3 pontinhos) -->
+                <div id="profileEditPanel" style="display:none; border-top:1px solid rgba(251,191,36,0.25); padding-top:16px; margin-top:12px;">
+                    <h4 style="font-size:13.5px; color:var(--gold-accent); margin-bottom:12px;">⚙️ Personalização & Configurações da Conta</h4>
+
+                    <div class="form-group">
+                        <label class="form-label">Nome de Exibição</label>
+                        <input type="text" id="profileEditName" class="glass-input" oninput="saveProfileChangesLive()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">@Arroba</label>
+                        <input type="text" id="profileEditHandle" class="glass-input notranslate" placeholder="@exemplo" oninput="saveProfileChangesLive()">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Nova Senha (Opcional)</label>
+                        <input type="password" id="profileEditPassword" class="glass-input" placeholder="••••••••">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Foto de Perfil Principal</label>
+                        <label for="profileEditAvatarFile" class="custom-file-trigger" id="profileAvatarLabel">📷 Escolher foto do perfil na galeria</label>
+                        <input type="file" id="profileEditAvatarFile" accept="image/*" style="display:none;" onchange="handleProfileAvatarSelected(event)">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Cor de Destaque & Bordas</label>
+                        <div class="color-wheel-row">
+                            <input type="color" id="profileColorWheel" class="circular-color-picker" value="#fbbf24" oninput="applyCustomAccentColor(this.value)">
+                            <div>
+                                <span style="font-size:13px; font-weight:600; color:var(--text-main); display:block;">Tema Personalizado</span>
+                                <span id="profileColorHexLabel" style="font-size:11px; color:var(--gold-accent);">#FBBF24</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Plano de Fundo Personalizado</label>
+                        <div style="display:flex; gap:8px;">
+                            <label for="profileBgFile" class="custom-file-trigger" style="flex:1;" id="profileBgLabel">🖼️ Escolher fundo na galeria</label>
+                            <button type="button" class="btn-pill-gold" onclick="resetDefaultBackground()">Fundo Nativo</button>
+                        </div>
+                        <input type="file" id="profileBgFile" accept="image/*" style="display:none;" onchange="handleProfileBackgroundSelected(event)">
+                    </div>
+
+                    <!-- Bloquear @Arroba -->
+                    <div class="form-group" style="background:rgba(244,63,94,0.08); border:1px solid rgba(244,63,94,0.3); padding:12px; border-radius:14px;">
+                        <label class="form-label" style="color:#fda4af; font-weight:700;">🚫 Bloquear @Arroba</label>
+                        <p style="font-size:11px; color:var(--text-muted); margin-bottom:8px;">Impede que usuários indesejados interajam ou apareçam no seu feed.</p>
+                        <div style="display:flex; gap:8px; margin-bottom:8px;">
+                            <input type="text" id="blockHandleInput" class="glass-input notranslate" placeholder="@usuario_indesejado">
+                            <button type="button" class="btn-danger-pill" style="padding:0 14px; font-size:12px;" onclick="blockUserByHandle()">Bloquear</button>
+                        </div>
+                        <div id="blockedHandlesList" style="display:flex; flex-wrap:wrap; gap:6px;"></div>
+                    </div>
+
+                    <!-- Meu Cantinho (Histórico geral com tudo salvo, podendo excluir) -->
+                    <div style="margin-top:14px; margin-bottom:14px;">
+                        <h4 style="font-size:13px; color:var(--gold-accent); margin-bottom:8px;">🧺 Meu Cantinho (Tudo o que foi salvo)</h4>
+                        <div id="meuCantinhoAllSavedList"></div>
+                    </div>
+
+                    <div style="display:flex; gap:8px;">
+                        <button class="btn-gold" style="flex:1;" onclick="toggleProfileEditMode()">Salvar e Fechar Edição</button>
+                        <button class="btn-danger-pill" style="padding:10px 14px;" onclick="logoutAccount()">🚪 Sair</button>
+                    </div>
+                </div>
             </div>
 
+            <!-- Feed de Histórico (Filtrado pela bolinha selecionada ou geral misturado) -->
             <div class="glass-panel" style="padding:16px;">
-                <h4 style="font-size:14px; color:var(--gold-accent); margin-bottom:12px;">🏠 Meu Aconchego (Histórico de Publicações)</h4>
+                <h4 id="myAconchegoFeedTitle" style="font-size:14px; color:var(--gold-accent); margin-bottom:12px;">✨ Histórico & Itens Salvos</h4>
                 <div class="feed-list" id="myAconchegoPostsList"></div>
             </div>
         </section>
 
-        <!-- Visita ao Perfil de Outra Coleguinha -->
+        <!-- Visita ao Perfil de Outra Pessoa ("Coleguinha") -->
         <section class="view-section" id="view-user-profile-feed">
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <img id="visitedProfileAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" style="width:36px; height:36px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
-                    <div>
-                        <span id="visitedProfileTitleName" style="font-size:15px; font-weight:700; color:var(--gold-accent);">Perfil</span>
-                        <span id="visitedProfileHandleSub" class="notranslate" style="font-size:11px; color:var(--text-muted); display:block;">• @arroba</span>
+            <div class="glass-panel" style="padding:20px; margin-bottom:14px;">
+                <div class="profile-hero-top">
+                    <div class="profile-avatar-130-box">
+                        <img id="visitedProfileAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" class="profile-avatar-130">
+                        <h3 id="visitedProfileTitleName" class="profile-name-under-130">Coleguinha</h3>
+                        <span id="visitedProfileHandleSub" class="profile-handle-under-130 notranslate">@arroba</span>
                     </div>
+                    <button class="btn-pill-gold" onclick="closeVisitedUserProfile()">Voltar ao Feed</button>
                 </div>
-                <button class="btn-pill-gold" onclick="closeVisitedUserProfile()">Voltar ao Feed</button>
+
+                <!-- Resposta dela sobre como entrou para o universo de K-pop/doramas -->
+                <div class="bio-universe-box">
+                    <span class="bio-universe-label">✨ Como entrou nesse universo?</span>
+                    <p id="visitedProfileUniverseBio" style="font-size:13px; color:var(--text-main); line-height:1.4;">Ainda não preencheu sua história no universo K-pop/doramas.</p>
+                </div>
+
+                <!-- Botão "Quero assistir um dorama" (Fixo se não for amigo, some quando aceita amizade) -->
+                <div id="visitedFriendActionBox" style="margin-bottom:14px;"></div>
+
+                <!-- Vitrine Visual do Meu Aconchego dela -->
+                <div style="margin-top:8px;">
+                    <span style="font-size:12px; font-weight:700; color:var(--gold-accent); display:block; margin-bottom:6px;">🏠 Meu Aconchego (Vitrine)</span>
+                    <div class="aconchego-showcase-row" id="visitedAconchegoShowcaseRow"></div>
+                </div>
             </div>
+
+            <!-- Feed Público dela -->
             <div class="feed-list" id="visitedProfileFeedList"></div>
         </section>
 
+        <!-- Desafio Semanal -->
         <section class="view-section" id="view-desafio">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Desafio Semanal</span>
@@ -1113,6 +1416,7 @@
             <div class="feed-list" id="challengeFeedList"></div>
         </section>
 
+        <!-- Fandoms Particulares -->
         <section class="view-section" id="view-fandom">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Fandoms Particulares</span>
@@ -1124,6 +1428,7 @@
             <div class="fandoms-grid-container" id="fandomsGridContainer"></div>
         </section>
 
+        <!-- Dentro de um Fandom -->
         <section class="view-section" id="view-inside-fandom">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 4px 14px; border-bottom:1px solid rgba(251,191,36,0.2); margin-bottom:12px;">
                 <div style="display:flex; align-items:center; gap:8px;">
@@ -1141,6 +1446,7 @@
             <div class="feed-list" id="insideFandomFeedList"></div>
         </section>
 
+        <!-- Lista de Amigos -->
         <section class="view-section" id="view-amigos">
             <div class="glass-panel section-header-bar">
                 <span class="section-title">Meus Amigos</span>
@@ -1151,7 +1457,7 @@
 
     </div>
 
-    <!-- Barra Inferior Recolhível com a Setinha Bonitinha Original -->
+    <!-- Barra Inferior de Envio Inteligente (Começa recolhida apenas na setinha à direita) -->
     <div class="floating-composer-wrapper" id="floatingComposerWrapper">
         <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button>
         <div class="gemini-composer">
@@ -1160,18 +1466,19 @@
             <input type="file" id="videoDirectInput" accept="video/*" capture="environment" style="display:none;" onchange="handleMediaSelected(event)">
             <input type="file" id="galleryDirectInput" accept="image/*,video/*" style="display:none;" onchange="handleMediaSelected(event)">
 
-            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no CherBluss..." onkeypress="if(event.key==='Enter') submitPost()">
+            <input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Sher Bluss..." onkeydown="if(event.key==='Enter'){ event.preventDefault(); submitPost(); }">
             <button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()" title="Enviar">➤</button>
         </div>
     </div>
 
+    <!-- Rodapé Oficial -->
     <footer class="app-footer notranslate" translate="no">
-        cherbluss.suporte@gmail.com
+        Sher Bluss • sherbluss.suporte@gmail.com
     </footer>
 
     <div class="modal-backdrop" id="customModalBackdrop">
         <div class="glass-panel modal-box">
-            <h3 class="modal-title notranslate" id="customModalTitle">CherBluss</h3>
+            <h3 class="modal-title notranslate" id="customModalTitle">Sher Bluss</h3>
             <div class="modal-body-text" id="customModalBody"></div>
             <div class="modal-actions" id="customModalActions"></div>
         </div>
@@ -1224,21 +1531,28 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'cherbluss_clean_state_v2';
+        const LOCAL_KEY = 'sherbluss_state_v3';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
                 uid: '',
                 loggedIn: false,
-                name: 'Usuário',
-                handle: '@usuario',
+                name: 'Usuária',
+                handle: '@usuaria',
                 email: '',
                 avatar: './aconchego.png',
+                universeBio: '',
                 accentColor: '#fbbf24',
-                customBgUrl: ''
+                customBgUrl: '',
+                aconchegoCover: './aconchego.png',
+                aconchegoGroups: [],
+                savedItems: [],
+                blockedHandles: [],
+                friends: [],
+                pendingFriendRequests: [],
+                sentFriendRequests: []
             },
             bias: { name: '', role: 'Ator', id: null, frontalUrl: '', lastUpdated: 0 },
-            registeredBiases: [],
             dailyVotes: { date: new Date().toDateString(), used: 0 },
             directives: {
                 segunda: 'Segunda-feira: Sob o Mesmo Guarda-Chuva. Poste a foto do seu Bias!',
@@ -1249,11 +1563,17 @@
                 sabadoDomingo: 'Fim de semana: Descanso e apuração do Pódio da semana!'
             },
             fandoms: [],
-            friends: [
-                { id: 'f_1', name: 'Amiga Dorama', handle: '@amigadorama', avatar: './amigos.png', status: 'Amizade ativa' }
-            ],
             notifications: []
         };
+
+        // Garantia de campos existentes após migração de estado local
+        if (!appState.user.aconchegoGroups) appState.user.aconchegoGroups = [];
+        if (!appState.user.savedItems) appState.user.savedItems = [];
+        if (!appState.user.blockedHandles) appState.user.blockedHandles = [];
+        if (!appState.user.friends) appState.user.friends = [];
+        if (!appState.user.pendingFriendRequests) appState.user.pendingFriendRequests = [];
+        if (!appState.user.sentFriendRequests) appState.user.sentFriendRequests = [];
+        if (!appState.user.aconchegoCover) appState.user.aconchegoCover = './aconchego.png';
 
         let postsFromFirebase = [];
         let biasesDatabase = [];
@@ -1262,7 +1582,10 @@
         let currentAttachedType = null;
         let activeFandomFilter = null;
         let activeVisitedUserUid = null;
+        let selectedAconchegoFilterId = null; // null = feed geral misturado; 'oficial' ou id do subgrupo
+        let coverUploadTargetId = 'oficial';
         let tempBiasPhotoPreviewUrl = '';
+        let isProfileEditable = false;
 
         function saveLocal() {
             localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -1293,6 +1616,22 @@
             return `@${start}**${end}`;
         }
 
+        function isUserBlocked(handle, uid) {
+            const blockedList = appState.user.blockedHandles || [];
+            if (handle) {
+                const cleanH = handle.toLowerCase().startsWith('@') ? handle.toLowerCase() : '@' + handle.toLowerCase();
+                if (blockedList.includes(cleanH)) return true;
+            }
+            if (uid) {
+                const uObj = usersDirectory.find(u => u.uid === uid);
+                if (uObj && uObj.handle) {
+                    const cleanU = uObj.handle.toLowerCase().startsWith('@') ? uObj.handle.toLowerCase() : '@' + uObj.handle.toLowerCase();
+                    if (blockedList.includes(cleanU)) return true;
+                }
+            }
+            return false;
+        }
+
         function startMidnightCountdown() {
             function updateTimer() {
                 const now = new Date();
@@ -1318,13 +1657,12 @@
                 if (timerEl) {
                     timerEl.textContent = `${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
                 }
-
-                renderAll();
             }
             updateTimer();
             setInterval(updateTimer, 1000);
         }
 
+        // Sincronização em Tempo Real com o Firebase
         function initFirebaseSync() {
             const qPosts = query(collection(db, "posts"), orderBy("createdAt", "desc"));
             onSnapshot(qPosts, (snapshot) => {
@@ -1332,7 +1670,11 @@
                 snapshot.forEach((docSnap) => {
                     postsFromFirebase.push({ id: docSnap.id, ...docSnap.data() });
                 });
+                syncAllNotifications();
                 renderAll();
+                if (document.getElementById('view-meu-perfil').classList.contains('active')) {
+                    renderMyAconchegoPosts();
+                }
             });
 
             const qFandoms = query(collection(db, "fandoms"));
@@ -1341,7 +1683,7 @@
                 snapshot.forEach((docSnap) => {
                     appState.fandoms.push({ id: docSnap.id, ...docSnap.data() });
                 });
-                syncFandomNotifications();
+                syncAllNotifications();
                 renderAll();
             });
 
@@ -1358,30 +1700,85 @@
             onSnapshot(qUsers, (snapshot) => {
                 usersDirectory = [];
                 snapshot.forEach((docSnap) => {
-                    usersDirectory.push({ uid: docSnap.id, ...docSnap.data() });
+                    const data = { uid: docSnap.id, ...docSnap.data() };
+                    usersDirectory.push(data);
+                    if (appState.user.uid && docSnap.id === appState.user.uid) {
+                        appState.user.friends = data.friends || [];
+                        appState.user.pendingFriendRequests = data.pendingFriendRequests || [];
+                        appState.user.sentFriendRequests = data.sentFriendRequests || [];
+                        if (data.universeBio !== undefined) appState.user.universeBio = data.universeBio;
+                        if (data.aconchegoCover) appState.user.aconchegoCover = data.aconchegoCover;
+                        if (data.aconchegoGroups) appState.user.aconchegoGroups = data.aconchegoGroups;
+                        if (data.savedItems) appState.user.savedItems = data.savedItems;
+                        if (data.blockedHandles) appState.user.blockedHandles = data.blockedHandles;
+                        saveLocal();
+                    }
                 });
+                syncAllNotifications();
+                renderAll();
+                if (activeVisitedUserUid) {
+                    refreshVisitedUserHeaderAndButton();
+                }
             });
         }
 
-        function syncFandomNotifications() {
+        function syncAllNotifications() {
             if (!appState.user.loggedIn || !appState.user.uid) return;
-            const fandomNotifs = [];
+            const combinedNotifs = [];
+
+            // 1. Solicitações de Amizade ("Vamos assistir juntos?")
+            (appState.user.pendingFriendRequests || []).forEach(req => {
+                if (!isUserBlocked(req.handle, req.uid)) {
+                    combinedNotifs.push({
+                        type: 'friend_request',
+                        fromUid: req.uid,
+                        fromName: req.name,
+                        fromHandle: req.handle || '@coleguinha',
+                        fromAvatar: req.avatar || './aconchego.png',
+                        text: `🎬 <strong>${req.name}</strong> (${req.handle || '@coleguinha'}) mandou: <em>"Vamos assistir juntos?"</em>`
+                    });
+                }
+            });
+
+            // 2. Pedidos de Fandom apenas para ADMs / Criadores
             appState.fandoms.forEach(f => {
                 const isAdminOrCreator = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
                 if (isAdminOrCreator && f.pendingRequests && f.pendingRequests.length > 0) {
                     f.pendingRequests.forEach(req => {
-                        fandomNotifs.push({
-                            type: 'fandom_request',
-                            fandomId: f.id,
-                            fandomName: f.name,
-                            requesterUid: req.uid,
-                            requesterName: req.name,
-                            text: `🔒 <strong>${req.name}</strong> solicitou entrada no fandom privado <strong>${f.name}</strong>.`
-                        });
+                        if (!isUserBlocked(null, req.uid)) {
+                            combinedNotifs.push({
+                                type: 'fandom_request',
+                                fandomId: f.id,
+                                fandomName: f.name,
+                                requesterUid: req.uid,
+                                requesterName: req.name,
+                                text: `🔒 <strong>${req.name}</strong> pediu para entrar no fandom <strong>${f.name}</strong>.`
+                            });
+                        }
                     });
                 }
             });
-            appState.notifications = fandomNotifs;
+
+            // 3. Marcações em comentários com link direto para o post
+            const myHandleLower = (appState.user.handle || '').toLowerCase();
+            if (myHandleLower && myHandleLower.length > 1) {
+                postsFromFirebase.forEach(p => {
+                    if (isUserBlocked(p.authorHandle, p.authorUid)) return;
+                    (p.comments || []).forEach((cText, idx) => {
+                        if (cText.toLowerCase().includes(myHandleLower) && !cText.startsWith(`<strong>${appState.user.name}</strong>`)) {
+                            combinedNotifs.push({
+                                type: 'mention',
+                                postId: p.id,
+                                fandom: p.fandom || 'Geral',
+                                isChallenge: !!p.isChallenge,
+                                text: `💬 Você foi marcada em um comentário na publicação de <strong>${p.author}</strong>.`
+                            });
+                        }
+                    });
+                });
+            }
+
+            appState.notifications = combinedNotifs;
             updateNotifBadge();
         }
 
@@ -1389,12 +1786,14 @@
             if (user) {
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuário CherBluss';
-                if (!appState.user.handle || appState.user.handle === '@usuario') {
-                    appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuario');
+                appState.user.name = user.displayName || 'Usuária Sher Bluss';
+                if (!appState.user.handle || appState.user.handle === '@usuaria') {
+                    appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuaria');
                 }
                 appState.user.email = user.email || '';
-                if (user.photoURL) appState.user.avatar = user.photoURL;
+                if (user.photoURL && appState.user.avatar === './aconchego.png') {
+                    appState.user.avatar = user.photoURL;
+                }
 
                 const userRef = doc(db, "users", user.uid);
                 const userDoc = await getDoc(userRef);
@@ -1402,18 +1801,34 @@
                     await setDoc(userRef, {
                         name: appState.user.name,
                         handle: appState.user.handle,
-                        avatar: appState.user.avatar
+                        avatar: appState.user.avatar,
+                        universeBio: '',
+                        aconchegoCover: './aconchego.png',
+                        aconchegoGroups: [],
+                        savedItems: [],
+                        blockedHandles: [],
+                        friends: [],
+                        pendingFriendRequests: [],
+                        sentFriendRequests: []
                     }, { merge: true });
                 } else {
                     const data = userDoc.data();
                     if (data.handle) appState.user.handle = data.handle;
                     if (data.name) appState.user.name = data.name;
                     if (data.avatar) appState.user.avatar = data.avatar;
+                    if (data.universeBio !== undefined) appState.user.universeBio = data.universeBio;
+                    if (data.aconchegoCover) appState.user.aconchegoCover = data.aconchegoCover;
+                    if (data.aconchegoGroups) appState.user.aconchegoGroups = data.aconchegoGroups;
+                    if (data.savedItems) appState.user.savedItems = data.savedItems;
+                    if (data.blockedHandles) appState.user.blockedHandles = data.blockedHandles;
+                    if (data.friends) appState.user.friends = data.friends;
+                    if (data.pendingFriendRequests) appState.user.pendingFriendRequests = data.pendingFriendRequests;
+                    if (data.sentFriendRequests) appState.user.sentFriendRequests = data.sentFriendRequests;
                 }
 
                 saveLocal();
                 applyUserTheme();
-                syncFandomNotifications();
+                syncAllNotifications();
                 renderAll();
             }
         });
@@ -1436,26 +1851,26 @@
                 const user = result.user;
                 appState.user.uid = user.uid;
                 appState.user.loggedIn = true;
-                appState.user.name = user.displayName || 'Usuário Google';
-                appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuario');
+                appState.user.name = user.displayName || 'Usuária Google';
+                appState.user.handle = '@' + (user.displayName ? user.displayName.toLowerCase().replace(/[^a-z0-9]/g, '') : 'usuaria');
                 appState.user.email = user.email || '';
                 if (user.photoURL) appState.user.avatar = user.photoURL;
                 await saveUserDataToFirestore();
                 saveLocal();
                 applyUserTheme();
                 closeAuthGate();
-                syncFandomNotifications();
+                syncAllNotifications();
                 renderAll();
             } catch (error) {
-                showCherBlussModal({ title: 'Aviso de Login', htmlBody: error.message });
+                showSherBlussModal({ title: 'Aviso de Login', htmlBody: error.message });
             }
         };
 
         window.showManualRegisterForm = function () {
             const card = document.getElementById('authCardMain');
             card.innerHTML = `
-                <img src="./logo.png" alt="CherBluss" class="auth-logo" style="max-width:90px;">
-                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta no <span translate="no">CherBluss</span></h3>
+                <img src="./logo.png" alt="Sher Bluss" class="auth-logo" style="max-width:90px;">
+                <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Criar Conta no <span translate="no">Sher Bluss</span></h3>
                 <div class="form-group"><input type="text" id="regName" class="glass-input" placeholder="Seu Nome"></div>
                 <div class="form-group"><input type="text" id="regHandle" class="glass-input" placeholder="Seu @Arroba (Ex: @luana)"></div>
                 <div class="form-group"><input type="email" id="regEmail" class="glass-input" placeholder="Seu E-mail"></div>
@@ -1471,7 +1886,10 @@
             const email = document.getElementById('regEmail').value.trim();
             const pass = document.getElementById('regPass').value;
 
-            if (!name || !handle || !email || !pass) { showCherBlussModal({ title: 'Atenção', htmlBody: 'Preencha todos os campos!' }); return; }
+            if (!name || !handle || !email || !pass) {
+                showSherBlussModal({ title: 'Atenção', htmlBody: 'Preencha todos os campos!' });
+                return;
+            }
 
             appState.user.uid = 'manual_' + Date.now();
             appState.user.loggedIn = true;
@@ -1482,14 +1900,14 @@
             saveLocal();
             applyUserTheme();
             closeAuthGate();
-            syncFandomNotifications();
+            syncAllNotifications();
             renderAll();
         };
 
         window.showManualLoginForm = function () {
             const card = document.getElementById('authCardMain');
             card.innerHTML = `
-                <img src="./logo.png" alt="CherBluss" class="auth-logo" style="max-width:90px;">
+                <img src="./logo.png" alt="Sher Bluss" class="auth-logo" style="max-width:90px;">
                 <h3 style="color:var(--gold-accent); font-size:16px; margin-bottom:10px;">Entrar na sua Conta</h3>
                 <div class="form-group"><input type="email" id="logEmail" class="glass-input" placeholder="Seu E-mail"></div>
                 <div class="form-group"><input type="password" id="logPass" class="glass-input" placeholder="Sua Senha"></div>
@@ -1501,7 +1919,10 @@
         window.submitManualLogin = async function () {
             const email = document.getElementById('logEmail').value.trim();
             const pass = document.getElementById('logPass').value;
-            if (!email || !pass) { showCherBlussModal({ title: 'Atenção', htmlBody: 'Informe e-mail e senha.' }); return; }
+            if (!email || !pass) {
+                showSherBlussModal({ title: 'Atenção', htmlBody: 'Informe e-mail e senha.' });
+                return;
+            }
             appState.user.uid = 'manual_' + email.replace(/[^a-zA-Z0-9]/g, '_');
             appState.user.loggedIn = true;
             appState.user.name = email.split('@')[0];
@@ -1511,7 +1932,7 @@
             saveLocal();
             applyUserTheme();
             closeAuthGate();
-            syncFandomNotifications();
+            syncAllNotifications();
             renderAll();
         };
 
@@ -1519,8 +1940,8 @@
             try { await signOut(auth); } catch (e) {}
             appState.user.loggedIn = false;
             appState.user.uid = '';
-            appState.user.name = 'Usuário';
-            appState.user.handle = '@usuario';
+            appState.user.name = 'Usuária';
+            appState.user.handle = '@usuaria';
             appState.user.email = '';
             saveLocal();
             location.reload();
@@ -1591,22 +2012,286 @@
             saveLocal();
         };
 
-        // Edição do perfil pelo botão de 3 pontinhos (⋮)
-        let isProfileEditable = false;
+        // =========================================================================
+        // 2. COMPORTAMENTO DA TELA DE PRÓPRIO PERFIL (DONA DA CONTA) & MEU ACONCHEGO
+        // =========================================================================
+
         window.toggleProfileEditMode = function() {
             isProfileEditable = !isProfileEditable;
-            
-            document.getElementById('profileEditName').disabled = !isProfileEditable;
-            document.getElementById('profileEditHandle').disabled = !isProfileEditable;
-            document.getElementById('profileColorWheel').disabled = !isProfileEditable;
-            
-            document.getElementById('profileAvatarUploadGroup').style.display = isProfileEditable ? 'block' : 'none';
-            document.getElementById('profileBgUploadGroup').style.display = isProfileEditable ? 'block' : 'none';
+            const panel = document.getElementById('profileEditPanel');
+            panel.style.display = isProfileEditable ? 'block' : 'none';
 
-            if (!isProfileEditable) {
-                showCherBlussModal({ title: 'Perfil Salvo! 🌸', htmlBody: 'Suas alterações foram salvas com sucesso.' });
+            if (isProfileEditable) {
+                renderBlockedHandlesList();
+                renderMeuCantinhoSavedList();
+            } else {
+                showCherBlussModal({ title: 'Perfil Atualizado 🌸', htmlBody: 'Suas alterações foram salvas com sucesso.' });
             }
         };
+
+        window.saveUniverseBioLive = async function(val) {
+            appState.user.universeBio = val;
+            saveLocal();
+            await saveUserDataToFirestore();
+        };
+
+        window.triggerAconchegoCoverChange = function(targetId, event) {
+            if (event) event.stopPropagation();
+            coverUploadTargetId = targetId;
+            document.getElementById('aconchegoCoverInput').click();
+        };
+
+        window.handleAconchegoCoverSelected = async function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const dataUrl = e.target.result;
+                if (coverUploadTargetId === 'oficial') {
+                    appState.user.aconchegoCover = dataUrl;
+                } else {
+                    const grp = appState.user.aconchegoGroups.find(g => g.id === coverUploadTargetId);
+                    if (grp) grp.cover = dataUrl;
+                }
+                saveLocal();
+                renderMyAconchegoShowcase();
+                await saveUserDataToFirestore();
+            };
+            reader.readAsDataURL(file);
+            event.target.value = '';
+        };
+
+        window.openCreateAconchegoSubgroupModal = function() {
+            showCherBlussModal({
+                title: '✨ Novo Subgrupo no Aconchego',
+                htmlBody: `
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Crie uma pasta personalizada (ex: Doramas Favoritos, MVs, Bias) para organizar seus itens salvos:</p>
+                    <div class="form-group">
+                        <label class="form-label">Nome do Subgrupo / Pasta</label>
+                        <input type="text" id="newSubgroupNameInput" class="glass-input" placeholder="Ex: Doramas Românticos...">
+                    </div>
+                `,
+                buttons: [
+                    { label: 'Cancelar', primary: false, onClick: closeCherBlussModal },
+                    {
+                        label: 'Criar Bolinha ✨',
+                        primary: true,
+                        onClick: async () => {
+                            const name = document.getElementById('newSubgroupNameInput').value.trim();
+                            if (!name) return;
+                            const newGroup = {
+                                id: 'sub_' + Date.now(),
+                                name: name,
+                                cover: './logo.png'
+                            };
+                            appState.user.aconchegoGroups.push(newGroup);
+                            saveLocal();
+                            renderMyAconchegoShowcase();
+                            await saveUserDataToFirestore();
+                            closeCherBlussModal();
+                        }
+                    }
+                ]
+            });
+        };
+
+        window.toggleSelectAconchegoBubble = function(bubbleId) {
+            if (selectedAconchegoFilterId === bubbleId) {
+                selectedAconchegoFilterId = null; // Desseleciona e volta ao feed geral misturado
+            } else {
+                selectedAconchegoFilterId = bubbleId;
+            }
+            renderMyAconchegoShowcase();
+            renderMyAconchegoPosts();
+        };
+
+        function renderMyAconchegoShowcase() {
+            const row = document.getElementById('myAconchegoShowcaseRow');
+            const hint = document.getElementById('selectedAconchegoHint');
+            if (!row) return;
+
+            if (selectedAconchegoFilterId) {
+                row.classList.add('aligned-left-mode');
+                hint.textContent = 'Toque novamente para ver tudo';
+            } else {
+                row.classList.remove('aligned-left-mode');
+                hint.textContent = 'Toque na bolinha para filtrar';
+            }
+
+            const oficialActive = selectedAconchegoFilterId === 'oficial';
+            const oficialInactive = selectedAconchegoFilterId && selectedAconchegoFilterId !== 'oficial';
+
+            let html = `
+                <div class="aconchego-bubble-wrapper ${oficialActive ? 'active-bubble' : ''} ${oficialInactive ? 'inactive-bubble' : ''}" onclick="toggleSelectAconchegoBubble('oficial')">
+                    <div class="aconchego-circle-100">
+                        <img src="${appState.user.aconchegoCover || './aconchego.png'}" onerror="this.src='./logo.png'" alt="Meu Aconchego Oficial">
+                        <span class="cover-edit-dot" onclick="triggerAconchegoCoverChange('oficial', event)" title="Trocar foto de capa">✎</span>
+                    </div>
+                    <span class="aconchego-bubble-label">Meu Aconchego</span>
+                </div>
+            `;
+
+            (appState.user.aconchegoGroups || []).forEach(grp => {
+                const isAct = selectedAconchegoFilterId === grp.id;
+                const isInact = selectedAconchegoFilterId && selectedAconchegoFilterId !== grp.id;
+                html += `
+                    <div class="aconchego-bubble-wrapper ${isAct ? 'active-bubble' : ''} ${isInact ? 'inactive-bubble' : ''}" onclick="toggleSelectAconchegoBubble('${grp.id}')">
+                        <div class="aconchego-circle-100">
+                            <img src="${grp.cover || './logo.png'}" onerror="this.src='./logo.png'" alt="${grp.name}">
+                            <span class="cover-edit-dot" onclick="triggerAconchegoCoverChange('${grp.id}', event)" title="Trocar capa">✎</span>
+                        </div>
+                        <span class="aconchego-bubble-label">${grp.name}</span>
+                    </div>
+                `;
+            });
+
+            // Botão (+) bem bonitinho e estilizado ao lado para criar subgrupos
+            html += `
+                <button type="button" class="add-subgroup-btn" onclick="openCreateAconchegoSubgroupModal()" title="Criar novo subgrupo / pasta">+</button>
+            `;
+
+            row.innerHTML = html;
+        }
+
+        // Opção nos três pontinhos de qualquer postagem/vídeo do feed: "Salvar no Meu Aconchego"
+        window.openPostThreeDotsMenu = function(postId) {
+            const post = postsFromFirebase.find(p => p.id === postId);
+            if (!post) return;
+
+            const isOwnPost = appState.user.loggedIn && post.authorUid === appState.user.uid;
+            const subgroups = appState.user.aconchegoGroups || [];
+
+            let subgroupsButtonsHtml = '';
+            if (subgroups.length > 0) {
+                subgroupsButtonsHtml = subgroups.map(g => `
+                    <button class="btn-pill-gold" style="width:100%; text-align:left; margin-top:6px;" onclick="savePostToAconchego('${postId}', '${g.id}', '${g.name.replace(/'/g, "\\'")}')">
+                        📁 Salvar em: <strong>${g.name}</strong>
+                    </button>
+                `).join('');
+            }
+
+            showCherBlussModal({
+                title: 'Opções da Publicação',
+                htmlBody: `
+                    <div style="display:flex; flex-direction:column; gap:6px;">
+                        <button class="btn-gold" onclick="savePostToAconchego('${postId}', 'oficial', 'Meu Aconchego Oficial')">
+                            🏠 Salvar no Meu Aconchego
+                        </button>
+                        ${subgroupsButtonsHtml}
+                        ${isOwnPost ? `
+                            <button class="btn-danger-pill" style="width:100%; padding:10px; margin-top:8px;" onclick="closeCherBlussModal(); confirmDeletePost('${postId}')">
+                                🗑️ Excluir minha publicação
+                            </button>
+                        ` : ''}
+                    </div>
+                `,
+                buttons: [{ label: 'Fechar', primary: false, onClick: closeCherBlussModal }]
+            });
+        };
+
+        window.savePostToAconchego = async function(postId, folderId, folderName) {
+            requireAuthForAction(async () => {
+                const post = postsFromFirebase.find(p => p.id === postId);
+                if (!post) return;
+
+                const existingIdx = (appState.user.savedItems || []).findIndex(item => item.postId === postId && item.folderId === folderId);
+                if (existingIdx !== -1) {
+                    closeCherBlussModal();
+                    showCherBlussModal({ title: 'Já Salvo 🌸', htmlBody: `Este item já está guardado em <strong>${folderName}</strong>.` });
+                    return;
+                }
+
+                appState.user.savedItems.unshift({
+                    saveId: 'save_' + Date.now(),
+                    postId: post.id,
+                    folderId: folderId,
+                    folderName: folderName,
+                    author: post.author,
+                    authorHandle: post.authorHandle || '@usuaria',
+                    text: post.text || '',
+                    media: post.media || '',
+                    mediaType: post.mediaType || '',
+                    savedAt: Date.now()
+                });
+
+                saveLocal();
+                await saveUserDataToFirestore();
+                closeCherBlussModal();
+                showCherBlussModal({ title: 'Guardado com Carinho! 🏠', htmlBody: `Item salvo em <strong>${folderName}</strong>.` });
+            });
+        };
+
+        window.removeSavedItemFromCantinho = async function(saveId) {
+            appState.user.savedItems = (appState.user.savedItems || []).filter(i => i.saveId !== saveId);
+            saveLocal();
+            await saveUserDataToFirestore();
+            renderMeuCantinhoSavedList();
+            renderMyAconchegoPosts();
+        };
+
+        function renderMeuCantinhoSavedList() {
+            const container = document.getElementById('meuCantinhoAllSavedList');
+            if (!container) return;
+            const items = appState.user.savedItems || [];
+            if (items.length === 0) {
+                container.innerHTML = '<p style="font-size:11.5px; color:var(--text-muted);">Nenhum item salvo no Meu Cantinho ainda.</p>';
+                return;
+            }
+            container.innerHTML = items.map(item => `
+                <div style="display:flex; justify-content:space-between; align-items:center; background:rgba(255,255,255,0.05); padding:8px 10px; border-radius:10px; margin-bottom:6px; border:1px solid rgba(251,191,36,0.2);">
+                    <div style="flex:1; padding-right:8px; overflow:hidden;">
+                        <span style="font-size:10px; color:var(--gold-accent); display:block;">📁 ${item.folderName} • por ${item.author}</span>
+                        <span style="font-size:11.5px; color:var(--text-main); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block;">${item.text || '(Mídia salva)'}</span>
+                    </div>
+                    <button type="button" class="btn-danger-pill" style="font-size:10px;" onclick="removeSavedItemFromCantinho('${item.saveId}')">Excluir</button>
+                </div>
+            `).join('');
+        }
+
+        window.blockUserByHandle = async function() {
+            const input = document.getElementById('blockHandleInput');
+            let raw = input.value.trim().toLowerCase();
+            if (!raw) return;
+            if (!raw.startsWith('@')) raw = '@' + raw;
+
+            if (raw === (appState.user.handle || '').toLowerCase()) {
+                showCherBlussModal({ title: 'Aviso', htmlBody: 'Você não pode bloquear o seu próprio @.' });
+                return;
+            }
+
+            if (!appState.user.blockedHandles.includes(raw)) {
+                appState.user.blockedHandles.push(raw);
+                saveLocal();
+                await saveUserDataToFirestore();
+                renderBlockedHandlesList();
+                renderAll();
+            }
+            input.value = '';
+        };
+
+        window.unblockUserHandle = async function(handle) {
+            appState.user.blockedHandles = (appState.user.blockedHandles || []).filter(h => h !== handle);
+            saveLocal();
+            await saveUserDataToFirestore();
+            renderBlockedHandlesList();
+            renderAll();
+        };
+
+        function renderBlockedHandlesList() {
+            const listEl = document.getElementById('blockedHandlesList');
+            if (!listEl) return;
+            const list = appState.user.blockedHandles || [];
+            if (list.length === 0) {
+                listEl.innerHTML = '<span style="font-size:11px; color:var(--text-muted);">Nenhum @ bloqueado.</span>';
+                return;
+            }
+            listEl.innerHTML = list.map(h => `
+                <span style="background:rgba(244,63,94,0.2); border:1px solid rgba(244,63,94,0.4); color:#fda4af; font-size:11px; padding:3px 9px; border-radius:99px; display:inline-flex; align-items:center; gap:6px;">
+                    ${h}
+                    <button type="button" style="background:transparent; border:none; color:#fff; cursor:pointer; font-weight:700;" onclick="unblockUserHandle('${h}')">✕</button>
+                </span>
+            `).join('');
+        }
 
         window.switchToProfileSection = function() {
             if (!appState.user.loggedIn) {
@@ -1615,12 +2300,11 @@
             }
             activeVisitedUserUid = null;
             isProfileEditable = false;
-            document.getElementById('profileEditName').disabled = true;
-            document.getElementById('profileEditHandle').disabled = true;
-            document.getElementById('profileColorWheel').disabled = true;
-            document.getElementById('profileAvatarUploadGroup').style.display = 'none';
-            document.getElementById('profileBgUploadGroup').style.display = 'none';
+            selectedAconchegoFilterId = null;
 
+            // Ao clicar na foto do topo esquerdo, o carrossel superior some
+            document.getElementById('carouselWrapper').classList.add('hidden-in-profile');
+            document.getElementById('profileEditPanel').style.display = 'none';
             document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
 
             document.getElementById('profileEditName').value = appState.user.name;
@@ -1628,11 +2312,13 @@
             document.getElementById('myProfilePageAvatar').src = appState.user.avatar;
             document.getElementById('myProfilePageNameDisplay').textContent = appState.user.name;
             document.getElementById('myProfilePageHandleDisplay').textContent = appState.user.handle;
+            document.getElementById('myUniverseBioInput').value = appState.user.universeBio || '';
 
             const currentHex = appState.user.accentColor || '#fbbf24';
             document.getElementById('profileColorWheel').value = currentHex;
             document.getElementById('profileColorHexLabel').textContent = currentHex.toUpperCase();
 
+            renderMyAconchegoShowcase();
             renderMyAconchegoPosts();
 
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
@@ -1658,28 +2344,71 @@
             const file = event.target.files[0];
             if (!file) return;
             document.getElementById('profileAvatarLabel').textContent = '✅ Foto de perfil atualizada';
-            appState.user.avatar = URL.createObjectURL(file);
-            document.getElementById('myProfilePageAvatar').src = appState.user.avatar;
-            applyUserTheme();
-            saveLocal();
-            await saveUserDataToFirestore();
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                appState.user.avatar = e.target.result;
+                document.getElementById('myProfilePageAvatar').src = appState.user.avatar;
+                applyUserTheme();
+                saveLocal();
+                await saveUserDataToFirestore();
+            };
+            reader.readAsDataURL(file);
         };
 
         function renderMyAconchegoPosts() {
-            const myPosts = postsFromFirebase.filter(p => p.authorUid === appState.user.uid && (!p.fandom || p.fandom === 'Geral'));
             const container = document.getElementById('myAconchegoPostsList');
-            container.innerHTML = myPosts.length > 0 
-                ? myPosts.map(p => `
-                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border); display:flex; justify-content:space-between; align-items:flex-start;">
-                        <div style="flex:1; padding-right:8px;">
-                            <span style="font-size:10px; color:var(--gold-accent); display:block; margin-bottom:4px;">${formatPostDate(p.createdAt)} • ${p.isChallenge ? 'Desafio' : 'Geral'}</span>
-                            <p style="font-size:12px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia)'}</p>
-                            ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:220px; object-fit:contain; border-radius:8px; background:#000;" controls playsinline webkit-playsinline muted preload="metadata" onloadedmetadata="this.currentTime=0.1"></video>` : `<img src="${p.media}" style="width:100%; max-height:140px; object-fit:cover; border-radius:8px;">`) : ''}
+            const titleEl = document.getElementById('myAconchegoFeedTitle');
+            if (!container) return;
+
+            // Se uma bolinha específica estiver selecionada, exibe APENAS os itens salvos dentro daquela bolinha
+            if (selectedAconchegoFilterId) {
+                const folderTitle = selectedAconchegoFilterId === 'oficial'
+                    ? 'Meu Aconchego Oficial'
+                    : ((appState.user.aconchegoGroups.find(g => g.id === selectedAconchegoFilterId) || {}).name || 'Subgrupo');
+                titleEl.textContent = `🏠 Itens Salvos em: ${folderTitle}`;
+
+                const filteredSaved = (appState.user.savedItems || []).filter(i => i.folderId === selectedAconchegoFilterId);
+                container.innerHTML = filteredSaved.length > 0
+                    ? filteredSaved.map(item => `
+                        <div style="background:rgba(255,255,255,0.04); padding:12px; border-radius:14px; margin-bottom:10px; border:1px solid var(--gold-border);">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                                <span style="font-size:11px; color:var(--gold-accent); font-weight:700;">Salvo de ${item.author} (${item.authorHandle})</span>
+                                <button class="btn-danger-pill" style="font-size:10px;" onclick="removeSavedItemFromCantinho('${item.saveId}')">Remover</button>
+                            </div>
+                            ${item.text ? `<p style="font-size:13px; margin-bottom:8px; color:var(--text-main);">${item.text}</p>` : ''}
+                            ${item.media ? (item.mediaType === 'video'
+                                ? `<video src="${item.media}" style="width:100%; max-height:320px; object-fit:contain; border-radius:10px; background:#000;" controls playsinline webkit-playsinline preload="metadata"></video>`
+                                : `<img src="${item.media}" style="width:100%; max-height:320px; object-fit:contain; border-radius:10px;" onclick="openLightbox('${item.media}', 'image', '${item.author}')">`)
+                            : ''}
                         </div>
-                        <button class="btn-danger-pill" style="font-size:10px;" onclick="confirmDeletePost('${p.id}')">Excluir</button>
-                    </div>
-                `).join('')
-                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Seu histórico do Aconchego está vazio.</p>';
+                    `).join('')
+                    : `<p style="font-size:12px; color:var(--text-muted); text-align:center; padding:14px 0;">Nenhum item salvo dentro de <strong>${folderTitle}</strong> ainda.</p>`;
+                return;
+            }
+
+            // Se nenhuma bolinha estiver selecionada, exibe o feed geral misturado (próprias publicações + itens salvos)
+            titleEl.textContent = '✨ Feed Geral do Meu Perfil (Publicações & Salvos)';
+            const myPosts = postsFromFirebase.filter(p => p.authorUid === appState.user.uid && (!p.fandom || p.fandom === 'Geral'));
+            const savedPosts = (appState.user.savedItems || []);
+
+            if (myPosts.length === 0 && savedPosts.length === 0) {
+                container.innerHTML = '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Seu histórico está vazio.</p>';
+                return;
+            }
+
+            let html = myPosts.map(p => renderPostCardHTML(p)).join('');
+            html += savedPosts.map(item => `
+                <div style="background:rgba(251,191,36,0.05); padding:12px; border-radius:14px; margin-bottom:10px; border:1px dashed var(--gold-border);">
+                    <span style="font-size:10.5px; color:var(--gold-accent); display:block; margin-bottom:4px;">🏠 Guardado em ${item.folderName} • Original de ${item.author}</span>
+                    ${item.text ? `<p style="font-size:13px; margin-bottom:6px; color:var(--text-main);">${item.text}</p>` : ''}
+                    ${item.media ? (item.mediaType === 'video'
+                        ? `<video src="${item.media}" style="width:100%; max-height:280px; object-fit:contain; border-radius:10px; background:#000;" controls playsinline webkit-playsinline preload="metadata"></video>`
+                        : `<img src="${item.media}" style="width:100%; max-height:280px; object-fit:contain; border-radius:10px;">`)
+                    : ''}
+                </div>
+            `).join('');
+
+            container.innerHTML = html;
         }
 
         async function saveUserDataToFirestore() {
@@ -1688,41 +2417,154 @@
                 await setDoc(doc(db, "users", appState.user.uid), {
                     name: appState.user.name,
                     handle: appState.user.handle,
-                    avatar: appState.user.avatar
+                    avatar: appState.user.avatar,
+                    universeBio: appState.user.universeBio || '',
+                    aconchegoCover: appState.user.aconchegoCover || './aconchego.png',
+                    aconchegoGroups: appState.user.aconchegoGroups || [],
+                    savedItems: appState.user.savedItems || [],
+                    blockedHandles: appState.user.blockedHandles || [],
+                    friends: appState.user.friends || [],
+                    pendingFriendRequests: appState.user.pendingFriendRequests || [],
+                    sentFriendRequests: appState.user.sentFriendRequests || []
                 }, { merge: true });
             } catch (e) { console.error(e); }
         }
 
+        // =========================================================================
+        // 3. VISITA AO PERFIL DE OUTRA PESSOA ("COLEGUINHA") E FLUXO DE AMIZADE
+        // =========================================================================
+
         window.visitUserProfile = async function(authorUid, authorName, authorHandle) {
             if (!authorUid) return;
+            if (appState.user.loggedIn && authorUid === appState.user.uid) {
+                switchToProfileSection();
+                return;
+            }
+            if (isUserBlocked(authorHandle, authorUid)) {
+                showCherBlussModal({ title: 'Perfil Bloqueado 🚫', htmlBody: 'Você bloqueou este usuário.' });
+                return;
+            }
+
             activeVisitedUserUid = authorUid;
 
-            let userAvatar = './aconchego.png';
-            let userHandle = authorHandle || '@usuario';
-            try {
-                const userDoc = await getDoc(doc(db, "users", authorUid));
-                if (userDoc.exists()) {
-                    const data = userDoc.data();
-                    if (data.avatar) userAvatar = data.avatar;
-                    if (data.handle) userHandle = data.handle;
-                }
-            } catch (e) {}
-
+            // Pódio e Desafio somem totalmente ao visitar o perfil de outra pessoa
+            document.getElementById('carouselWrapper').classList.add('hidden-in-profile');
             document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
 
-            document.getElementById('visitedProfileAvatar').src = userAvatar;
-            document.getElementById('visitedProfileTitleName').textContent = authorName;
-            document.getElementById('visitedProfileHandleSub').textContent = `• ${userHandle}`;
+            await refreshVisitedUserHeaderAndButton(authorName, authorHandle);
 
             const userPosts = postsFromFirebase.filter(p => p.authorUid === authorUid && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
             const container = document.getElementById('visitedProfileFeedList');
             container.innerHTML = userPosts.length > 0 
                 ? userPosts.map(p => renderPostCardHTML(p)).join('')
-                : '<div class="glass-panel empty-state-box">Este usuário ainda não publicou nada no feed público.</div>';
+                : '<div class="glass-panel empty-state-box">Esta coleguinha ainda não publicou nada no feed público.</div>';
 
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.getElementById('view-user-profile-feed').classList.add('active');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        async function refreshVisitedUserHeaderAndButton(fallbackName = 'Coleguinha', fallbackHandle = '@coleguinha') {
+            if (!activeVisitedUserUid) return;
+
+            let userData = usersDirectory.find(u => u.uid === activeVisitedUserUid) || {};
+            try {
+                const userDoc = await getDoc(doc(db, "users", activeVisitedUserUid));
+                if (userDoc.exists()) {
+                    userData = userDoc.data();
+                }
+            } catch (e) {}
+
+            const vAvatar = userData.avatar || './aconchego.png';
+            const vName = userData.name || fallbackName;
+            const vHandle = userData.handle || fallbackHandle;
+            const vBio = userData.universeBio || 'Ainda não contou como entrou no universo de K-pop/doramas.';
+            const vAconchegoCover = userData.aconchegoCover || './aconchego.png';
+            const vGroups = userData.aconchegoGroups || [];
+
+            // Cabeçalho exibe foto dela à esquerda, nome Sher Bluss no centro, lupinha na direita
+            document.getElementById('headerUserAvatar').src = vAvatar;
+            document.getElementById('visitedProfileAvatar').src = vAvatar;
+            document.getElementById('visitedProfileTitleName').textContent = vName;
+            document.getElementById('visitedProfileHandleSub').textContent = vHandle;
+            document.getElementById('visitedProfileUniverseBio').textContent = vBio;
+
+            // Vitrine Visual do Meu Aconchego dela (apenas visualização)
+            const showcaseRow = document.getElementById('visitedAconchegoShowcaseRow');
+            let showcaseHtml = `
+                <div class="aconchego-bubble-wrapper" style="cursor:default;">
+                    <div class="aconchego-circle-100">
+                        <img src="${vAconchegoCover}" onerror="this.src='./logo.png'" alt="Meu Aconchego">
+                    </div>
+                    <span class="aconchego-bubble-label">Meu Aconchego</span>
+                </div>
+            `;
+            vGroups.forEach(g => {
+                showcaseHtml += `
+                    <div class="aconchego-bubble-wrapper" style="cursor:default;">
+                        <div class="aconchego-circle-100">
+                            <img src="${g.cover || './logo.png'}" onerror="this.src='./logo.png'" alt="${g.name}">
+                        </div>
+                        <span class="aconchego-bubble-label">${g.name}</span>
+                    </div>
+                `;
+            });
+            showcaseRow.innerHTML = showcaseHtml;
+
+            // Botão "Quero assistir um dorama"
+            const actionBox = document.getElementById('visitedFriendActionBox');
+            const myFriends = appState.user.friends || [];
+            const isAlreadyFriend = myFriends.some(f => f.uid === activeVisitedUserUid) || (userData.friends || []).some(f => f.uid === appState.user.uid);
+            const alreadySent = (appState.user.sentFriendRequests || []).includes(activeVisitedUserUid) ||
+                                (userData.pendingFriendRequests || []).some(r => r.uid === appState.user.uid);
+
+            if (isAlreadyFriend) {
+                // Se já são amigos, o botão "Quero assistir um dorama" some do perfil
+                actionBox.innerHTML = '';
+            } else if (alreadySent) {
+                actionBox.innerHTML = `
+                    <button type="button" class="dorama-friend-btn" style="opacity:0.85;" onclick="sendDoramaFriendRequest('${activeVisitedUserUid}', '${vName.replace(/'/g, "\\'")}', '${vHandle}', '${vAvatar}')">
+                        🎬 Quero assistir um dorama (Convite enviado ✓)
+                    </button>
+                `;
+            } else {
+                actionBox.innerHTML = `
+                    <button type="button" class="dorama-friend-btn" onclick="sendDoramaFriendRequest('${activeVisitedUserUid}', '${vName.replace(/'/g, "\\'")}', '${vHandle}', '${vAvatar}')">
+                        🎬 Quero assistir um dorama
+                    </button>
+                `;
+            }
+        }
+
+        window.sendDoramaFriendRequest = function(targetUid, targetName, targetHandle, targetAvatar) {
+            requireAuthForAction(async () => {
+                try {
+                    const targetRef = doc(db, "users", targetUid);
+                    await setDoc(targetRef, {
+                        pendingFriendRequests: arrayUnion({
+                            uid: appState.user.uid,
+                            name: appState.user.name,
+                            handle: appState.user.handle,
+                            avatar: appState.user.avatar,
+                            message: 'Vamos assistir juntos?'
+                        })
+                    }, { merge: true });
+
+                    if (!appState.user.sentFriendRequests.includes(targetUid)) {
+                        appState.user.sentFriendRequests.push(targetUid);
+                    }
+                    saveLocal();
+                    await saveUserDataToFirestore();
+                    await refreshVisitedUserHeaderAndButton(targetName, targetHandle);
+
+                    showCherBlussModal({
+                        title: 'Convite Enviado! 🎬',
+                        htmlBody: `Você enviou <em>"Vamos assistir juntos?"</em> para <strong>${targetName}</strong>.`
+                    });
+                } catch (e) {
+                    showCherBlussModal({ title: 'Erro', htmlBody: e.message });
+                }
+            });
         };
 
         window.closeVisitedUserProfile = function() {
@@ -1730,6 +2572,153 @@
             applyUserTheme();
             switchView('feed');
         };
+
+        // =========================================================================
+        // NOTIFICAÇÕES (AMIZADE "VAMOS ASSISTIR JUNTOS?", FANDOM ADM E MENÇÕES)
+        // =========================================================================
+
+        window.openNotificationsModal = function () {
+            requireAuthForAction(() => {
+                if (appState.notifications.length === 0) {
+                    showCherBlussModal({ title: 'Notificações 💧', htmlBody: 'Nenhum novo aviso no momento.' });
+                    return;
+                }
+
+                const notif = appState.notifications[0];
+
+                if (notif.type === 'friend_request') {
+                    showCherBlussModal({
+                        title: 'Convite de Amizade 🎬',
+                        htmlBody: `<p>${notif.text}</p><p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Deseja aceitar a amizade?</p>`,
+                        buttons: [
+                            {
+                                label: 'Não',
+                                primary: false,
+                                onClick: async () => {
+                                    appState.user.pendingFriendRequests = (appState.user.pendingFriendRequests || []).filter(r => r.uid !== notif.fromUid);
+                                    saveLocal();
+                                    await saveUserDataToFirestore();
+                                    syncAllNotifications();
+                                    closeCherBlussModal();
+                                }
+                            },
+                            {
+                                label: 'Sim 🌸',
+                                primary: true,
+                                onClick: async () => {
+                                    // Adiciona aos amigos de ambas as contas
+                                    appState.user.pendingFriendRequests = (appState.user.pendingFriendRequests || []).filter(r => r.uid !== notif.fromUid);
+                                    if (!appState.user.friends.some(f => f.uid === notif.fromUid)) {
+                                        appState.user.friends.push({
+                                            uid: notif.fromUid,
+                                            name: notif.fromName,
+                                            handle: notif.fromHandle,
+                                            avatar: notif.fromAvatar,
+                                            status: 'Assistindo doramas juntas'
+                                        });
+                                    }
+                                    saveLocal();
+                                    await saveUserDataToFirestore();
+
+                                    try {
+                                        await setDoc(doc(db, "users", notif.fromUid), {
+                                            friends: arrayUnion({
+                                                uid: appState.user.uid,
+                                                name: appState.user.name,
+                                                handle: appState.user.handle,
+                                                avatar: appState.user.avatar,
+                                                status: 'Assistindo doramas juntas'
+                                            }),
+                                            sentFriendRequests: arrayRemove(appState.user.uid)
+                                        }, { merge: true });
+                                    } catch (e) {}
+
+                                    syncAllNotifications();
+                                    renderAll();
+                                    closeCherBlussModal();
+                                    showCherBlussModal({
+                                        title: 'Agora vocês são amigas! 🌸',
+                                        htmlBody: `Você e <strong>${notif.fromName}</strong> agora estão na lista de amigos!`
+                                    });
+                                }
+                            }
+                        ]
+                    });
+                } else if (notif.type === 'fandom_request') {
+                    showCherBlussModal({
+                        title: 'Solicitação de Fandom 🔒',
+                        htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Aprovar entrada neste espaço particular?</p>`,
+                        buttons: [
+                            {
+                                label: 'Não',
+                                primary: false,
+                                onClick: async () => {
+                                    try {
+                                        await updateDoc(doc(db, "fandoms", notif.fandomId), {
+                                            pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
+                                        });
+                                    } catch (e) {}
+                                    closeCherBlussModal();
+                                }
+                            },
+                            { 
+                                label: 'Sim ✅', 
+                                primary: true, 
+                                onClick: async () => { 
+                                    try {
+                                        await updateDoc(doc(db, "fandoms", notif.fandomId), {
+                                            members: arrayUnion(notif.requesterUid),
+                                            pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
+                                        });
+                                    } catch (e) {}
+                                    closeCherBlussModal(); 
+                                } 
+                            }
+                        ]
+                    });
+                } else if (notif.type === 'mention') {
+                    showCherBlussModal({
+                        title: 'Marcação em Comentário 💬',
+                        htmlBody: `<p>${notif.text}</p>`,
+                        buttons: [
+                            { label: 'Fechar', primary: false, onClick: closeCherBlussModal },
+                            {
+                                label: 'Ver Comentário ➔',
+                                primary: true,
+                                onClick: () => {
+                                    closeCherBlussModal();
+                                    navigateToPostDirect(notif.postId, notif.fandom, notif.isChallenge);
+                                }
+                            }
+                        ]
+                    });
+                }
+            });
+        };
+
+        window.navigateToPostDirect = function(postId, fandomName, isChallenge) {
+            if (isChallenge) {
+                switchView('desafio');
+            } else if (fandomName && fandomName !== 'Geral') {
+                activeFandomFilter = fandomName;
+                document.getElementById('insideFandomTitle').textContent = fandomName;
+                switchView('inside-fandom');
+            } else {
+                switchView('feed');
+            }
+            setTimeout(() => {
+                const postEl = document.getElementById(`post_card_${postId}`);
+                if (postEl) {
+                    postEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    postEl.style.boxShadow = '0 0 18px var(--gold-accent)';
+                    setTimeout(() => { postEl.style.boxShadow = ''; }, 2500);
+                }
+            }, 250);
+        };
+
+        // =========================================================================
+        // BIAS & DESAFIO
+        // =========================================================================
 
         window.previewBiasSquarePhoto = function(event) {
             const file = event.target.files[0];
@@ -1868,6 +2857,10 @@
             });
         };
 
+        // =========================================================================
+        // 5. BARRA INFERIOR DE ENVIO INTELIGENTE & SEGURANÇA DE FANDOM
+        // =========================================================================
+
         window.openMediaActionSheet = function () {
             requireAuthForAction(() => {
                 showCherBlussModal({
@@ -1918,6 +2911,7 @@
             const text = input ? input.value.trim() : '';
             const isInsideFandomView = document.getElementById('view-inside-fandom').classList.contains('active');
 
+            // Segurança de Fandom: Se estiver dentro de um Fandom específico, restringe exclusivamente àquele Fandom
             const targetFandom = (!isChallenge && isInsideFandomView && activeFandomFilter) ? activeFandomFilter : 'Geral';
             const isPrivateFandom = targetFandom !== 'Geral';
 
@@ -1947,17 +2941,21 @@
                 document.getElementById('galleryDirectInput').value = '';
                 document.getElementById('challengeCameraInput').value = '';
                 document.getElementById('challengeGalleryInput').value = '';
+
+                // Recolhimento Automático imediato
                 document.getElementById('floatingComposerWrapper').classList.remove('expanded');
 
                 saveLocal();
                 renderAll();
-                showCherBlussModal({ title: 'Publicado com Sucesso! 🌸', htmlBody: isPrivateFandom ? `Publicado com segurança dentro de <strong>${targetFandom}</strong>.` : 'Sua mídia foi enviada perfeitamente.' });
+                showCherBlussModal({
+                    title: 'Publicado com Sucesso! 🌸',
+                    htmlBody: isPrivateFandom ? `Publicado exclusivamente dentro do fandom <strong>${targetFandom}</strong>.` : 'Sua mídia foi publicada no feed.'
+                });
             } catch (e) {
                 showCherBlussModal({ title: 'Erro ao Enviar', htmlBody: `Não foi possível publicar: ${e.message}` });
             }
         }
 
-        // Expandir barra de busca pela lupa
         window.toggleSearchExpansion = function() {
             const container = document.getElementById('searchBalaoContainer');
             container.classList.toggle('expanded');
@@ -1969,7 +2967,6 @@
             }
         };
 
-        // Abrir/fechar a caixa de digitar do Rodapé pela setinha original (Anti-vazamento)
         window.toggleComposerPanel = function() {
             requireAuthForAction(() => {
                 const wrapper = document.getElementById('floatingComposerWrapper');
@@ -2000,11 +2997,13 @@
             }
 
             const matchedUsers = usersDirectory.filter(u => 
-                (u.handle && u.handle.toLowerCase().replace('@', '').includes(cleanQuery)) ||
-                (u.name && u.name.toLowerCase().includes(cleanQuery))
+                !isUserBlocked(u.handle, u.uid) &&
+                ((u.handle && u.handle.toLowerCase().replace('@', '').includes(cleanQuery)) ||
+                (u.name && u.name.toLowerCase().includes(cleanQuery)))
             );
 
             const matchedPosts = postsFromFirebase.filter(p => 
+                !isUserBlocked(p.authorHandle, p.authorUid) &&
                 !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral') &&
                 ((p.authorHandle && p.authorHandle.toLowerCase().replace('@', '').includes(cleanQuery)) ||
                  (p.author && p.author.toLowerCase().includes(cleanQuery)))
@@ -2017,12 +3016,12 @@
 
             if (matchedUsers.length > 0) {
                 htmlOutput += matchedUsers.map(u => `
-                    <div class="glass-panel" style="padding:12px 14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="visitUserProfile('${u.uid}', '${(u.name || 'Usuário').replace(/'/g, "\\'")}', '${u.handle || '@usuario'}')">
+                    <div class="glass-panel" style="padding:12px 14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer; margin-bottom:10px;" onclick="visitUserProfile('${u.uid}', '${(u.name || 'Usuária').replace(/'/g, "\\'")}', '${u.handle || '@usuaria'}')">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <img src="${u.avatar || './aconchego.png'}" onerror="this.src='./logo.png'" style="width:42px; height:42px; border-radius:50%; border:1px solid var(--gold-accent); object-fit:cover;">
                             <div>
-                                <div style="font-size:13.5px; font-weight:700; color:var(--gold-accent);">${u.name || 'Usuário'}</div>
-                                <div class="notranslate" style="font-size:11.5px; color:var(--text-muted);">${u.handle || '@usuario'}</div>
+                                <div style="font-size:13.5px; font-weight:700; color:var(--gold-accent);">${u.name || 'Usuária'}</div>
+                                <div class="notranslate" style="font-size:11.5px; color:var(--text-muted);">${u.handle || '@usuaria'}</div>
                             </div>
                         </div>
                         <span style="font-size:11.5px; color:var(--gold-accent);">Ver Perfil ➔</span>
@@ -2045,6 +3044,9 @@
             activeVisitedUserUid = null;
             applyUserTheme();
 
+            // Restaura o carrossel superior ao voltar para abas normais
+            document.getElementById('carouselWrapper').classList.remove('hidden-in-profile');
+
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             const target = document.getElementById('view-' + viewName);
             if (target) target.classList.add('active');
@@ -2058,16 +3060,16 @@
             }
 
             const composerInput = document.getElementById('mainComposerInput');
-            if (viewName === 'feed') composerInput.placeholder = "Escreva no CherBluss...";
-            else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
-            else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
+            if (viewName === 'feed') composerInput.placeholder = "Escreva no Sher Bluss...";
+            else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para entrar...";
+            else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva apenas em ${activeFandomFilter} (Privado)...`;
             else if (viewName === 'amigos') composerInput.placeholder = "Mande uma mensagem para seus amigos...";
 
             renderAll();
         };
 
         window.openPodiumFullscreen = function (rank) {
-            const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge && !isUserBlocked(p.authorHandle, p.authorUid)).sort((a, b) => (b.likes || 0) - (a.likes || 0));
             const winner = challengePosts[rank - 1];
             if (winner && winner.media) {
                 const maskedUser = maskHandle(winner.authorHandle, winner.author);
@@ -2082,7 +3084,10 @@
             requireAuthForAction(async () => {
                 const input = document.getElementById('mainComposerInput');
                 const text = input.value.trim();
-                if (!text && !currentAttachedDataUrl) return;
+                if (!text && !currentAttachedDataUrl) {
+                    document.getElementById('floatingComposerWrapper').classList.remove('expanded');
+                    return;
+                }
 
                 const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
                 const isInsideFandomView = document.getElementById('view-inside-fandom').classList.contains('active');
@@ -2090,13 +3095,14 @@
                 if (isInsideFandomView && activeFandomFilter) {
                     const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
                     if (!fandomObj || !hasFandomAccess(fandomObj)) {
-                        showCherBlussModal({ title: 'Acesso Negado 🔒', htmlBody: 'Você precisa ser aprovado neste Fandom para publicar aqui.' });
+                        showCherBlussModal({ title: 'Acesso Negado 🔒', htmlBody: 'Você precisa ser aprovada neste Fandom para publicar aqui.' });
                         return;
                     }
                 }
 
                 try {
-                    const targetFandom = isInsideFandomView && activeFandomFilter ? activeFandomFilter : 'Geral';
+                    // Segurança de Fandom: Se estiver dentro de um Fandom, restringe exclusivamente àquele Fandom
+                    const targetFandom = (isInsideFandomView && activeFandomFilter) ? activeFandomFilter : 'Geral';
                     const isPrivateFandom = targetFandom !== 'Geral';
 
                     await addDoc(collection(db, "posts"), {
@@ -2120,7 +3126,10 @@
                     input.value = '';
                     currentAttachedDataUrl = null;
                     currentAttachedType = null;
+
+                    // Recolhimento Automático imediato após o envio
                     document.getElementById('floatingComposerWrapper').classList.remove('expanded');
+
                     saveLocal();
                     renderAll();
                 } catch (e) {
@@ -2206,46 +3215,9 @@
             } catch (e) { console.error(e); }
         };
 
-        window.openNotificationsModal = function () {
-            requireAuthForAction(() => {
-                if (appState.notifications.length === 0) {
-                    showCherBlussModal({ title: 'Notificações 💧', htmlBody: 'Nenhuma nova solicitação pendente nos seus Fandoms.' });
-                    return;
-                }
-                const notif = appState.notifications[0];
-                showCherBlussModal({
-                    title: 'Solicitação de Fandom 🔒',
-                    htmlBody: `<p>${notif.text}</p><p style="font-size:11.5px; color:var(--text-muted); margin-top:8px;">Ao aprovar, esta pessoa poderá ver e publicar dentro deste espaço particular.</p>`,
-                    buttons: [
-                        {
-                            label: 'Recusar',
-                            primary: false,
-                            onClick: async () => {
-                                try {
-                                    await updateDoc(doc(db, "fandoms", notif.fandomId), {
-                                        pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
-                                    });
-                                } catch (e) {}
-                                closeCherBlussModal();
-                            }
-                        },
-                        { 
-                            label: 'Aprovar Entrada ✅', 
-                            primary: true, 
-                            onClick: async () => { 
-                                try {
-                                    await updateDoc(doc(db, "fandoms", notif.fandomId), {
-                                        members: arrayUnion(notif.requesterUid),
-                                        pendingRequests: arrayRemove({ uid: notif.requesterUid, name: notif.requesterName })
-                                    });
-                                } catch (e) {}
-                                closeCherBlussModal(); 
-                            } 
-                        }
-                    ]
-                });
-            });
-        };
+        // =========================================================================
+        // FANDOMS PARTICULARES
+        // =========================================================================
 
         window.openCreateFandomModal = function () {
             requireAuthForAction(() => {
@@ -2329,7 +3301,7 @@
                     if (alreadyRequested) {
                         showCherBlussModal({
                             title: `Solicitação Pendente ⏳`,
-                            htmlBody: `Você já enviou uma solicitação para entrar em <strong>${fandomName}</strong>. Aguarde o administrador aprovar.`
+                            htmlBody: `Você já enviou uma solicitação para entrar em <strong>${fandomName}</strong>. Aguarde a administração aprovar.`
                         });
                     } else {
                         showCherBlussModal({
@@ -2525,13 +3497,16 @@
 
         function updateNotifBadge() {
             const badge = document.getElementById('notifBadge');
+            const badgeCount = document.getElementById('notifBadgeCount');
             const count = appState.notifications.length;
-            badge.textContent = count;
+            if (badgeCount) badgeCount.textContent = count;
             badge.style.display = count > 0 ? 'flex' : 'none';
         }
 
         function applyUserTheme() {
-            document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
+            if (!activeVisitedUserUid) {
+                document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
+            }
             if (appState.user.accentColor) {
                 document.documentElement.style.setProperty('--gold-accent', appState.user.accentColor);
                 document.documentElement.style.setProperty('--gold-border', hexToRgba(appState.user.accentColor, 0.45));
@@ -2572,15 +3547,15 @@
             `).join('');
 
             const postDateStr = formatPostDate(post.createdAt);
-            const userHandleDisplay = post.authorHandle || '@usuario';
+            const userHandleDisplay = post.authorHandle || '@usuaria';
             const subLabel = post.isChallenge 
                 ? `Desafio Semanal${post.biasName ? ' • ' + post.biasName : ''}` 
                 : (post.fandom || 'Geral');
 
             return `
-                <article class="post-card-clean">
+                <article class="post-card-clean" id="post_card_${post.id}">
                     <div class="post-header">
-                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author}', '${userHandleDisplay}')">
+                        <div class="post-author-box" onclick="visitUserProfile('${post.authorUid}', '${post.author.replace(/'/g, "\\'")}', '${userHandleDisplay}')">
                             <img src="${post.avatar}" alt="" class="post-avatar" onerror="this.src='./aconchego.png'">
                             <div>
                                 <div class="post-author-name">
@@ -2590,8 +3565,9 @@
                                 <div class="post-meta notranslate">${userHandleDisplay} • ${subLabel}</div>
                             </div>
                         </div>
-                        <div style="font-size:11px; color:var(--text-muted); font-weight:600;">
-                            📅 ${postDateStr}
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span style="font-size:11px; color:var(--text-muted); font-weight:600;">📅 ${postDateStr}</span>
+                            <button type="button" class="post-dots-btn" onclick="openPostThreeDotsMenu('${post.id}')" title="Salvar no Meu Aconchego / Opções">⋮</button>
                         </div>
                     </div>
 
@@ -2608,7 +3584,7 @@
                     <div class="comments-section-clean">
                         ${commentsHtml}
                         <div class="comment-input-row">
-                            <input type="text" id="inlineCommentInput_${post.id}" class="comment-input-clean" placeholder="Responder..." onkeypress="if(event.key==='Enter') submitInlineComment('${post.id}')">
+                            <input type="text" id="inlineCommentInput_${post.id}" class="comment-input-clean" placeholder="Responder (use @arroba para marcar)..." onkeypress="if(event.key==='Enter') submitInlineComment('${post.id}')">
                             <button class="btn-pill-gold" style="padding:3px 10px; font-size:11px;" onclick="submitInlineComment('${post.id}')">Enviar</button>
                         </div>
                     </div>
@@ -2623,7 +3599,7 @@
             document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
             updateNotifBadge();
 
-            const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge).sort((a, b) => (b.likes || 0) - (a.likes || 0));
+            const challengePosts = [...postsFromFirebase].filter(p => p.isChallenge && !isUserBlocked(p.authorHandle, p.authorUid)).sort((a, b) => (b.likes || 0) - (a.likes || 0));
             for (let i = 0; i < 3; i++) {
                 const rank = i + 1;
                 const winner = challengePosts[i];
@@ -2648,7 +3624,7 @@
                 fandomsGrid.innerHTML = appState.fandoms.map(f => {
                     const unlocked = hasFandomAccess(f);
                     return `
-                        <div class="glass-panel fandom-box-card" style="border-color: ${f.borderColor || '#fbbf24'};" onclick="selectFandom('${f.name}')">
+                        <div class="glass-panel fandom-box-card" style="border-color: ${f.borderColor || '#fbbf24'};" onclick="selectFandom('${f.name.replace(/'/g, "\\'")}')">
                             <h4 style="color: var(--gold-accent);">
                                 <span class="fandom-dot" style="background-color: ${f.dotColor || '#fbbf24'};"></span>
                                 ${f.name}
@@ -2665,46 +3641,57 @@
                     closeCurrentFandom();
                     return;
                 }
-                const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
+                const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter && !isUserBlocked(p.authorHandle, p.authorUid));
                 document.getElementById('insideFandomFeedList').innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p)).join('') : `<div class="empty-state-box">Este fandom está silencioso. Compartilhe algo aqui dentro!</div>`;
             }
 
             if (activeVisitedUserUid) {
                 const userPosts = postsFromFirebase.filter(p => p.authorUid === activeVisitedUserUid && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
-                document.getElementById('visitedProfileFeedList').innerHTML = userPosts.length > 0 ? userPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Este usuário ainda não publicou nada no feed público.</div>`;
+                document.getElementById('visitedProfileFeedList').innerHTML = userPosts.length > 0 ? userPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Esta coleguinha ainda não publicou nada no feed público.</div>`;
             }
 
             if (!document.getElementById('globalSearchInput').value.trim()) {
                 const generalPosts = postsFromFirebase.filter(p => 
+                    !isUserBlocked(p.authorHandle, p.authorUid) &&
                     !p.isChallenge && 
                     !p.isPrivateFandom && 
                     (!p.fandom || p.fandom === 'Geral')
                 );
-                document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra abaixo para compartilhar!</div>`;
+                document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Toque na setinha no canto inferior direito para compartilhar!</div>`;
             }
 
-            const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
+            const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge && !isUserBlocked(p.authorHandle, p.authorUid));
             document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
 
-            document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
-                <div class="glass-panel" style="padding:14px; display:flex; align-items:center; gap:10px;">
-                    <img src="${f.avatar}" onerror="this.src='./logo.png'" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
-                    <div>
-                        <div style="font-size:14px; font-weight:700;">${f.name}</div>
-                        <div class="notranslate" style="font-size:11.5px; color:var(--text-muted);">${f.handle || '@amigo'} • ${f.status}</div>
+            const friendsList = appState.user.friends || [];
+            document.getElementById('friendsListContainer').innerHTML = friendsList.length > 0
+                ? friendsList.map(f => `
+                    <div class="glass-panel" style="padding:14px; display:flex; align-items:center; justify-content:space-between; cursor:pointer;" onclick="visitUserProfile('${f.uid}', '${(f.name || 'Amiga').replace(/'/g, "\\'")}', '${f.handle || '@amiga'}')">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <img src="${f.avatar || './amigos.png'}" onerror="this.src='./logo.png'" style="width:46px; height:46px; border-radius:50%; border:1px solid var(--gold-border); object-fit:cover;">
+                            <div>
+                                <div style="font-size:14px; font-weight:700; color:var(--gold-accent);">${f.name}</div>
+                                <div class="notranslate" style="font-size:11.5px; color:var(--text-muted);">${f.handle || '@amiga'} • ${f.status || 'Amizade ativa'}</div>
+                            </div>
+                        </div>
+                        <span style="font-size:11.5px; color:var(--gold-accent);">Ver Perfil ➔</span>
                     </div>
-                </div>
-            `).join('');
+                `).join('')
+                : `<div class="glass-panel empty-state-box">Você ainda não tem amigas adicionadas.<br>Visite um perfil e clique em <strong>"Quero assistir um dorama"</strong>!</div>`;
         }
 
+        // Encolher Header ao rolar a página para baixo (Sher Bluss some suavemente)
         window.addEventListener('scroll', () => {
             const carouselSec = document.getElementById('carouselWrapper');
             const centerTitle = document.getElementById('topBarCenterTitle');
+            const isInProfile = document.getElementById('view-meu-perfil').classList.contains('active') ||
+                                document.getElementById('view-user-profile-feed').classList.contains('active');
+
             if (window.scrollY > 25) {
-                carouselSec.classList.add('scrolled');
+                if (!isInProfile) carouselSec.classList.add('scrolled');
                 if (centerTitle) centerTitle.classList.add('hidden-title');
             } else {
-                carouselSec.classList.remove('scrolled');
+                if (!isInProfile) carouselSec.classList.remove('scrolled');
                 if (centerTitle) centerTitle.classList.remove('hidden-title');
             }
         }, { passive: true });
