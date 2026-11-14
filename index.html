@@ -403,12 +403,12 @@
         }
 
         .btn-danger-pill {
-            background: #1e1115;
-            border: 1px solid #f43f5e;
-            color: #fda4af;
+            background: #1a1216;
+            border: 1px solid rgba(244,63,94,0.4);
+            color: #fca5a5;
             font-size: 11px;
             font-weight: 600;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 99px;
             cursor: pointer;
             box-shadow: none;
@@ -1512,7 +1512,7 @@
         const provider = new GoogleAuthProvider();
 
         const CLOUDINARY_CLOUD_NAME = 'l6tlvzln';
-        const CLOUDINARY_UPLOAD_PRESET = 'umbrella';
+        const CLOUDINARY_UPLOAD_PRESET = 'unsigned_upload';
 
         const LOCAL_KEY = 'sherbluss_state_v3';
 
@@ -3237,7 +3237,10 @@
             const fandomObj = appState.fandoms.find(f => f.name === activeFandomFilter);
             const isCreatorOrAdmin = fandomObj && (fandomObj.creatorUid === appState.user.uid || (fandomObj.admins && fandomObj.admins.includes(appState.user.uid)));
 
-            let adminHtml = isCreatorOrAdmin ? `<button class="btn-gold" style="margin-bottom:8px;" onclick="closeSherBlussModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>` : '';
+            let adminHtml = isCreatorOrAdmin ? `
+                <button class="btn-gold" style="margin-bottom:8px;" onclick="closeSherBlussModal(); openManageAdminsModal('${activeFandomFilter}')">🛡️ Gerenciar Membros & Admins</button>
+                <button class="btn-danger-pill" style="width:100%; margin-top:4px;" onclick="if(confirm('Tem certeza que deseja apagar este fandom?')) { deleteDoc(doc(db, 'fandoms', '${fandomObj ? fandomObj.id : ''}')); activeFandomFilter = null; closeSherBlussModal(); switchView('fandom'); }">🗑️ Excluir Fandom</button>
+            ` : '';
 
             showSherBlussModal({
                 title: `Opções • ${activeFandomFilter}`,
