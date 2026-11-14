@@ -197,33 +197,9 @@
             padding: 0 3px;
         }
 
-        .logo-section {
-            width: 100%;
-            padding: 4px 20px 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            max-height: 170px;
-            transition: max-height 0.25s ease, opacity 0.2s ease;
-        }
-
-        .logo-section.scrolled {
-            max-height: 0;
-            opacity: 0;
-            padding: 0;
-            overflow: hidden;
-        }
-
-        .brand-logo {
-            max-height: 140px;
-            max-width: 85%;
-            object-fit: contain;
-            display: block;
-        }
-
         .main-carousel-wrapper {
             width: 100%;
-            padding: 6px 20px 18px;
+            padding: 10px 20px 14px;
             display: flex;
             gap: 16px;
             overflow-x: auto;
@@ -231,9 +207,18 @@
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             align-items: center;
+            max-height: 150px;
+            transition: max-height 0.25s ease, opacity 0.2s ease, padding 0.25s ease;
         }
 
         .main-carousel-wrapper::-webkit-scrollbar { display: none; }
+
+        .main-carousel-wrapper.scrolled {
+            max-height: 0;
+            opacity: 0;
+            padding: 0;
+            overflow: hidden;
+        }
 
         @media (min-width: 769px) {
             .main-carousel-wrapper {
@@ -449,12 +434,13 @@
 
         .post-media {
             width: 100%;
-            max-height: 420px;
+            max-height: 480px;
             object-fit: cover;
             border-radius: 14px;
             border: 1px solid var(--gold-border);
             margin-bottom: 8px;
             display: block;
+            background: #000;
         }
 
         .comments-section-clean {
@@ -767,12 +753,6 @@
 
     <div class="app-shell">
 
-        <div class="logo-section" id="logoSection">
-            <div class="logo-container" onclick="switchView('feed')">
-                <img src="./logo.png" alt="Umbrella" class="brand-logo" id="brandLogo">
-            </div>
-        </div>
-
         <nav class="main-carousel-wrapper" id="carouselWrapper">
             <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
                 <div class="podium-circle-clean podium-circle-1">
@@ -817,13 +797,6 @@
                     <img src="./amigos.png" alt="Amigos">
                 </div>
                 <span class="tab-label-clean">Amigos</span>
-            </div>
-
-            <div class="carousel-item-clean tab-item-box" onclick="switchView('aconchego')">
-                <div class="tab-icon-free">
-                    <img src="./aconchego.png" alt="Aconchego">
-                </div>
-                <span class="tab-label-clean">Aconchego</span>
             </div>
         </nav>
 
@@ -910,14 +883,6 @@
             <div class="feed-list" id="friendsListContainer"></div>
         </section>
 
-        <section class="view-section" id="view-aconchego">
-            <div class="glass-panel section-header-bar">
-                <span class="section-title">Meu Aconchego</span>
-                <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
-            </div>
-            <div class="feed-list" id="aconchegoHistoryList"></div>
-        </section>
-
     </div>
 
     <div class="floating-composer-wrapper">
@@ -999,7 +964,7 @@
         const db = getFirestore(app);
         const provider = new GoogleAuthProvider();
 
-        const LOCAL_KEY = 'umbrella_clean_state_v43';
+        const LOCAL_KEY = 'umbrella_clean_state_v44';
 
         let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
             user: {
@@ -1243,6 +1208,7 @@
             }
         };
 
+        // PERFIL INTEGRADO COM O ACONCHEGO
         window.openProfileModal = function () {
             if (!appState.user.loggedIn) {
                 document.getElementById('authGateOverlay').style.display = 'flex';
@@ -1250,9 +1216,18 @@
             }
 
             const isPlaying = !document.getElementById('globalActiveAudio').paused && document.getElementById('globalActiveAudio').src !== '';
+            const aconchegoPosts = postsFromFirebase.filter(p => p.isAconchego && p.author === appState.user.name);
+            const aconchegoHtml = aconchegoPosts.length > 0 
+                ? aconchegoPosts.map(p => `
+                    <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border);">
+                        <p style="font-size:12px; margin-bottom:6px;">${p.text || '(Mídia no Aconchego)'}</p>
+                        ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:160px; border-radius:8px;" controls playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:160px; object-fit:cover; border-radius:8px;">`) : ''}
+                    </div>
+                `).join('')
+                : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Seu Aconchego está vazio.</p>';
 
             showUmbrellaModal({
-                title: `Perfil & Player do Muka`,
+                title: `Perfil & Meu Aconchego`,
                 htmlBody: `
                     <div style="text-align:center; margin-bottom:14px;">
                         <img src="${appState.user.avatar}" style="width:72px; height:72px; border-radius:50%; border:2px solid var(--gold-border); object-fit:cover; margin-bottom:8px;">
@@ -1283,6 +1258,16 @@
                                 <button class="btn-pill-gold" style="padding:6px 14px;" onclick="toggleGlobalAudioPlay()">${isPlaying ? '⏸️ Pause' : '▶️ Play'}</button>
                                 <button class="btn-danger-pill" style="padding:6px 14px;" onclick="stopGlobalAudio()">⏹️ Parar</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-top:14px; border-top:1px solid rgba(251,191,36,0.2); padding-top:12px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                            <span style="font-size:13px; font-weight:700; color:var(--gold-accent);">🏠 Meu Aconchego (Privado)</span>
+                            <button class="btn-pill-gold" style="font-size:10px; padding:4px 8px;" onclick="closeUmbrellaModal(); switchView('feed');">Postar no Aconchego</button>
+                        </div>
+                        <div style="max-height:160px; overflow-y:auto;">
+                            ${aconchegoHtml}
                         </div>
                     </div>
 
@@ -1379,7 +1364,7 @@
             openProfileModal();
         };
 
-        // PERFIL DE OUTRA PESSOA LIBERADO
+        // PERFIL DE OUTRA PESSOA NO FEED
         window.visitUserProfile = async function(authorUid, authorName) {
             if (!authorUid) {
                 showUmbrellaModal({ title: authorName, htmlBody: 'Perfil de usuário Umbrella.' });
@@ -1402,7 +1387,7 @@
                 ? userPosts.map(p => `
                     <div style="background:rgba(255,255,255,0.04); padding:10px; border-radius:12px; margin-bottom:8px; border:1px solid var(--gold-border);">
                         <p style="font-size:12.5px; margin-bottom:6px; color:var(--text-main);">${p.text || '(Mídia publicada)'}</p>
-                        ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:180px; border-radius:8px;" controls playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:180px; object-fit:cover; border-radius:8px;">`) : ''}
+                        ${p.media ? (p.mediaType === 'video' ? `<video src="${p.media}" style="width:100%; max-height:220px; border-radius:8px;" controls playsinline></video>` : `<img src="${p.media}" style="width:100%; max-height:220px; object-fit:cover; border-radius:8px;">`) : ''}
                     </div>
                 `).join('')
                 : '<p style="font-size:12px; color:var(--text-muted); text-align:center;">Este usuário ainda não publicou nada no feed.</p>';
@@ -1448,7 +1433,6 @@
             });
         };
 
-        // VÍDEOS E FOTOS USAM OBJECT URL (SEM LIMITE DE TAMANHO)
         window.handleMediaSelected = async function (event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1499,7 +1483,7 @@
                 const matchedPosts = postsFromFirebase.filter(p => p.author.toLowerCase().includes(queryUser));
                 const container = document.getElementById('mainFeedList');
                 if (matchedPosts.length > 0) {
-                    container.innerHTML = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; color:var(--gold-accent); font-size:12.5px;">Resultados para: ${val}</div>` + matchedPosts.map(p => renderPostCardHTML(p, false)).join('');
+                    container.innerHTML = `<div class="glass-panel" style="padding:10px 14px; margin-bottom:10px; color:var(--gold-accent); font-size:12.5px;">Resultados para: ${val}</div>` + matchedPosts.map(p => renderPostCardHTML(p)).join('');
                 } else {
                     showUmbrellaModal({ title: 'Busca Umbrella', htmlBody: `Nenhuma publicação encontrada para <strong>${val}</strong>.` });
                 }
@@ -1517,7 +1501,6 @@
             else if (viewName === 'desafio') composerInput.placeholder = "Escreva sua participação no Desafio do Dia...";
             else if (viewName === 'fandom') composerInput.placeholder = "Selecione um Fandom para solicitar entrada...";
             else if (viewName === 'inside-fandom') composerInput.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
-            else if (viewName === 'aconchego') composerInput.placeholder = "Escreva no seu Aconchego pessoal...";
             else if (viewName === 'amigos') composerInput.placeholder = "Mande uma mensagem para seus amigos...";
 
             renderAll();
@@ -1549,7 +1532,6 @@
             });
         };
 
-        // SEM AMPULHETA: ENVIO INSTANTÂNEO
         window.submitPost = async function () {
             requireAuthForAction(async () => {
                 const input = document.getElementById('mainComposerInput');
@@ -1557,7 +1539,6 @@
                 if (!text && !currentAttachedDataUrl) return;
 
                 const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
-                const isAconchegoView = document.getElementById('view-aconchego').classList.contains('active');
                 const isInsideFandomView = document.getElementById('view-inside-fandom').classList.contains('active');
 
                 if (isChallengeView && !appState.bias.id) {
@@ -1592,7 +1573,7 @@
                         likedByMe: false,
                         fandom: targetFandom,
                         isChallenge: isChallengeView,
-                        isAconchego: isAconchegoView,
+                        isAconchego: false,
                         createdAt: serverTimestamp(),
                         comments: []
                     });
@@ -1987,10 +1968,10 @@
             if (appState.user.audioUrl) playAudioUrl(appState.user.audioUrl);
         }
 
-        function renderPostCardHTML(post, isAconchegoTab = false) {
+        function renderPostCardHTML(post) {
             const mediaHtml = post.media
                 ? (post.mediaType === 'video'
-                    ? `<video src="${post.media}" class="post-media" controls playsinline preload="metadata"></video>`
+                    ? `<video src="${post.media}" class="post-media" controls playsinline webkit-playsinline preload="metadata"></video>`
                     : `<img src="${post.media}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${post.media}', 'image', '${post.author}')">`)
                 : '';
 
@@ -2022,7 +2003,7 @@
                                     ${post.author}
                                     ${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}
                                 </div>
-                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : (post.isAconchego ? 'Meu Aconchego' : post.fandom)}</div>
+                                <div class="post-meta">${post.isChallenge ? 'Desafio Semanal' : post.fandom}</div>
                             </div>
                         </div>
                         ${showDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${post.id}')" title="Apagar">✕</button>` : ''}
@@ -2094,17 +2075,14 @@
                     return;
                 }
                 const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
-                document.getElementById('insideFandomFeedList').innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p, false)).join('') : `<div class="empty-state-box">Este fandom está silencioso. Compartilhe algo!</div>`;
+                document.getElementById('insideFandomFeedList').innerHTML = filtered.length > 0 ? filtered.map(p => renderPostCardHTML(p)).join('') : `<div class="empty-state-box">Este fandom está silencioso. Compartilhe algo!</div>`;
             }
 
             const generalPosts = postsFromFirebase.filter(p => !p.isChallenge && !p.isAconchego && (!p.fandom || p.fandom === 'Geral'));
-            document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra abaixo para compartilhar!</div>`;
+            document.getElementById('mainFeedList').innerHTML = generalPosts.length > 0 ? generalPosts.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.<br>Use a barra abaixo para compartilhar!</div>`;
 
             const challengePostsFeed = postsFromFirebase.filter(p => p.isChallenge);
-            document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(p => renderPostCardHTML(p, false)).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
-
-            const aconchegoPosts = postsFromFirebase.filter(p => p.isAconchego && p.author === appState.user.name);
-            document.getElementById('aconchegoHistoryList').innerHTML = aconchegoPosts.length > 0 ? aconchegoPosts.map(p => renderPostCardHTML(p, true)).join('') : `<div class="glass-panel empty-state-box">Seu espaço Aconchego está vazio.</div>`;
+            document.getElementById('challengeFeedList').innerHTML = challengePostsFeed.length > 0 ? challengePostsFeed.map(p => renderPostCardHTML(p)).join('') : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
 
             document.getElementById('friendsListContainer').innerHTML = appState.friends.map(f => `
                 <div class="glass-panel" style="padding:14px; display:flex; align-items:center; gap:10px;">
@@ -2118,9 +2096,9 @@
         }
 
         window.addEventListener('scroll', () => {
-            const logoSec = document.getElementById('logoSection');
-            if (window.scrollY > 25) logoSec.classList.add('scrolled');
-            else logoSec.classList.remove('scrolled');
+            const carouselSec = document.getElementById('carouselWrapper');
+            if (window.scrollY > 25) carouselSec.classList.add('scrolled');
+            else carouselSec.classList.remove('scrolled');
         }, { passive: true });
 
         applyUserTheme();
