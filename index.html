@@ -42,7 +42,7 @@ html,body{width:100%;min-height:100vh;background:var(--theme-color-accent) var(-
 .auth-gate-overlay{position:fixed;inset:0;z-index:200;background:rgba(4,7,18,.88);display:none;align-items:center;justify-content:center;padding:20px}
 .auth-card{width:100%;max-width:400px;padding:26px;text-align:center}
 .auth-logo{max-width:110px;margin-bottom:14px;border-radius:50%}
-.unified-top-bar{width:100%;max-width:850px;margin:0 auto;padding:calc(env(safe-area-inset-top, 0px) + 10px) 20px 8px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;z-index:100;position:fixed;top:0;left:50%;transform:translateX(-50%);background:rgba(6,10,30,.97);backdrop-filter:blur(10px);border-bottom:1px solid rgba(251,191,36,.15)} body{padding-top:62px} .app-shell{padding-top:6px}
+.unified-top-bar{width:100%;max-width:850px;margin:0 auto;padding:10px 20px 8px;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:12px;z-index:100;position:fixed;top:0;left:0;right:0;background:#060a1e;border-bottom:1px solid rgba(251,191,36,.15)} body{padding-top:60px}
 .header-left-btn{position:relative;width:38px;height:38px;border-radius:50%;border:1.5px solid var(--gold-accent);background:var(--glass-dark);cursor:pointer;padding:0;flex-shrink:0}
 .header-left-btn.hidden-in-profile-view{display:none!important}
 .header-left-btn img{width:100%;height:100%;object-fit:cover;display:block;border-radius:50%}
@@ -323,32 +323,8 @@ onAuthStateChanged(auth, async (user)=>{
 });
 function requireAuthForAction(cb){ if(!appState.user.loggedIn){ document.getElementById('authGateOverlay').style.display='flex'; return; } cb(); }
 window.closeAuthGate=function(){ document.getElementById('authGateOverlay').style.display='none'; };
-window.loginWithGoogle=async function(){
-  // Mostra a frase certinha: Você está saindo do app
-  const overlay = document.createElement('div');
-  overlay.id = 'sairDoAppOverlay';
-  overlay.style.cssText = 'position:fixed;inset:0;z-index:300;background:rgba(4,7,18,.92);display:flex;align-items:center;justify-content:center;padding:20px;';
-  overlay.innerHTML = '<div style="background:#12182e;border:1px solid #fbbf24;border-radius:20px;padding:26px;max-width:360px;width:100%;text-align:center;">'
-    + '<img src="./logo.png" style="width:80px;height:80px;border-radius:50%;margin-bottom:12px;">'
-    + '<h3 style="color:#fbbf24;font-size:18px;margin-bottom:8px;">Você está saindo do app</h3>'
-    + '<p style="color:#e2e8f0;font-size:13.5px;line-height:1.5;margin-bottom:18px;">Para mostrar a listinha das suas contas do Google, vamos abrir o login do Google no Chrome.<br><br>Escolha sua conta lá, e depois volte para o app que você já vai estar logada!</p>'
-    + '<button id="btnSairProChrome" style="background:#fbbf24;border:none;color:#060a1e;font-weight:800;padding:12px 18px;border-radius:99px;width:100%;cursor:pointer;font-size:14px;margin-bottom:8px;">Continuar para o login do Google →</button>'
-    + '<button id="btnFicarNoApp" style="background:transparent;border:1px solid rgba(255,255,255,.25);color:#e2e8f0;padding:10px 16px;border-radius:99px;width:100%;cursor:pointer;font-size:13px;">Ficar aqui mesmo</button>'
-    + '</div>';
-  document.body.appendChild(overlay);
-  document.getElementById('btnFicarNoApp').onclick = ()=>{ overlay.remove(); signInWithRedirect(auth,provider).catch(e=>showSherBlussModal({title:'Aviso de Login',htmlBody:escapeHtml(e.message)})); };
-  document.getElementById('btnSairProChrome').onclick = ()=>{
-    // Sai de verdade do app e abre o Chrome com o login do Google - intent do Android
-    const destino = window.location.origin + window.location.pathname + '?login=google';
-    const intentUrl = 'intent://' + destino.replace('https://','') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(destino) + ';end';
-    try{ window.location.href = intentUrl; }catch(e){}
-    // Se o intent não abrir em 1s, tenta abrir normal no Chrome
-    setTimeout(()=>{ try{ window.open(destino, '_blank'); }catch(e){} }, 1000);
-  };
-};
-// Se abriu no Chrome com ?login=google, já abre o login do Google direto
-if(window.location.search.includes('login=google')){
-  setTimeout(()=>{ try{ signInWithRedirect(auth,provider); }catch(e){} }, 600);
+window.loginWithGoogle=async function(){ try{ await signInWithRedirect(auth,provider); }catch(e){ showSherBlussModal({title:'Aviso de Login',htmlBody:escapeHtml(e.message)}); } };
+getRedirectResult(auth).then((res)=>{ if(res && res.user){ closeAuthGate(); } }).catch(()=>{});, 600);
 }
 getRedirectResult(auth).then((res)=>{ if(res && res.user){ closeAuthGate(); } }).catch(()=>{});
 window.showManualRegisterForm=function(){ const card=document.getElementById('authCardMain'); card.innerHTML=`<img src="./logo.png" class="auth-logo" style="max-width:90px;"><h3 style="color:var(--gold-accent);font-size:16px;margin-bottom:10px;">Criar Conta Real (Firebase)</h3><div class="form-group"><input type="text" id="regName" class="glass-input" placeholder="Seu Nome"></div><div class="form-group"><input type="text" id="regHandle" class="glass-input" placeholder="Seu @Arroba (Ex: @luana)"></div><div class="form-group"><input type="email" id="regEmail" class="glass-input" placeholder="Seu E-mail"></div><div class="form-group"><input type="password" id="regPass" class="glass-input" placeholder="Crie uma Senha (mín. 6 dígitos)"></div><button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualRegister()">Cadastrar Conta</button><button class="btn-pill-gold" style="width:100%;" onclick="location.reload()">Voltar</button>`; };
@@ -477,8 +453,7 @@ function renderAll(){
   if(activeVisitedUserUid){ const ups=postsFromFirebase.filter(p=>p.authorUid===activeVisitedUserUid&&!p.isPrivateFandom&&(!p.fandom||p.fandom==='Geral')); document.getElementById('visitedProfileFeedList').innerHTML=ups.length?ups.map(p=>renderPostCardHTML(p)).join(''):`<div class="glass-panel empty-state-box">Esta coleguinha ainda não publicou nada no feed público.</div>`; }
   if(!document.getElementById('globalSearchInput').value.trim()){ const general=postsFromFirebase.filter(p=>!isUserBlocked(p.authorHandle,p.authorUid)&&!p.isChallenge&&!p.isPrivateFandom&&(!p.fandom||p.fandom==='Geral')); document.getElementById('mainFeedList').innerHTML=general.length?general.map(p=>renderPostCardHTML(p)).join(''):`<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.</div>`; }
   const cpf=postsFromFirebase.filter(p=>p.isChallenge&&!isUserBlocked(p.authorHandle,p.authorUid)); document.getElementById('challengeFeedList').innerHTML=cpf.length?cpf.map(p=>renderPostCardHTML(p)).join(''):`<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
-  const friends=appState.user.friends||[]; setTimeout(sherMostrarPrimeiroQuadro, 300);
-  document.getElementById('friendsListContainer').innerHTML=friends.length?friends.map(f=>`<div class="glass-panel" style="padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name||'Amiga')}','${escapeAttr(f.handle||'@amiga')}')"><div style="display:flex;align-items:center;gap:10px;"><img src="${escapeAttr(f.avatar||'./amigos.png')}" onerror="this.src='./logo.png'" style="width:46px;height:46px;border-radius:50%;border:1px solid var(--gold-border);object-fit:cover;"><div><div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div><div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(f.handle||'@amiga')} • ${escapeHtml(f.status||'Amizade ativa')}</div></div></div><span style="font-size:11.5px;color:var(--gold-accent);">Ver Perfil ➔</span></div>`).join(''):`<div class="glass-panel empty-state-box">Você ainda não tem amigas adicionadas.</div>`;
+  const friends=appState.user.friends||[]; document.getElementById('friendsListContainer').innerHTML=friends.length?friends.map(f=>`<div class="glass-panel" style="padding:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name||'Amiga')}','${escapeAttr(f.handle||'@amiga')}')"><div style="display:flex;align-items:center;gap:10px;"><img src="${escapeAttr(f.avatar||'./amigos.png')}" onerror="this.src='./logo.png'" style="width:46px;height:46px;border-radius:50%;border:1px solid var(--gold-border);object-fit:cover;"><div><div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div><div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(f.handle||'@amiga')} • ${escapeHtml(f.status||'Amizade ativa')}</div></div></div><span style="font-size:11.5px;color:var(--gold-accent);">Ver Perfil ➔</span></div>`).join(''):`<div class="glass-panel empty-state-box">Você ainda não tem amigas adicionadas.</div>`;
 }
 window.addEventListener('scroll',()=>{ const carousel=document.getElementById('carouselWrapper'); const title=document.getElementById('topBarCenterTitle'); const isInProfile=document.getElementById('view-meu-perfil').classList.contains('active')||document.getElementById('view-user-profile-feed').classList.contains('active'); if(window.scrollY>25){ if(!isInProfile) carousel.classList.add('scrolled'); if(title) title.classList.add('hidden-title'); } else { if(!isInProfile) carousel.classList.remove('scrolled'); if(title) title.classList.remove('hidden-title'); } },{passive:true});
 applyUserTheme(); startMidnightCountdown(); initFirebaseSync();
