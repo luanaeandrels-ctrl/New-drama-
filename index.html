@@ -23,6 +23,18 @@
 }
 </style>
 <meta charset="UTF-8">
+<title>Sher Bluss - A certeza do desabrochar | App de fandoms</title>
+<meta name="description" content="Sher Bluss - Share + Bliss. O app onde seu fandom desabrocha. Entre no seu universo, poste seu bias, participe de desafios e encontre seu aconchego. A certeza do desabrochar.">
+<meta name="keywords" content="Sher Bluss, SherBluss, app Sher Bluss, fandom, bias, EXO-L, ELFE, a certeza do desabrochar">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://sher-bluss.vercel.app/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sher Bluss - A certeza do desabrochar">
+<meta property="og:description" content="Share + Bliss. O app onde seu fandom desabrocha. Entre, poste seu bias e encontre seu aconchego.">
+<meta property="og:image" content="https://sher-bluss.vercel.app/logo.png">
+<meta property="og:url" content="https://sher-bluss.vercel.app/">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Sher Bluss","applicationCategory":"SocialNetworkingApplication","operatingSystem":"Web","description":"Sher Bluss - Share + Bliss. O app onde seu fandom desabrocha. A certeza do desabrochar.","offers":{"@type":"Offer","price":"0"}}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google" content="notranslate">
 <title translate="no">Sher Bluss</title>
@@ -147,7 +159,7 @@ html,body{width:100%;min-height:100vh;background:var(--theme-color-accent) var(-
 .lightbox-caption{margin-top:12px;font-size:13px;color:var(--gold-accent);text-align:center}
 .dots-menu-btn{background:#141b34;border:1px solid var(--gold-border);color:var(--gold-accent);border-radius:8px;padding:4px 12px;font-size:14px;cursor:pointer;font-weight:700}
 
-/* Otimizando vídeo */
+/* Otimizando video */
 .opt-video-overlay{position:fixed;inset:0;z-index:999;background:rgba(4,7,18,.88);display:none;align-items:center;justify-content:center;padding:20px}
 .opt-video-card{width:100%;max-width:380px;padding:24px;text-align:center}
 .opt-video-bar{height:10px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;margin:14px 0 8px}
@@ -251,6 +263,7 @@ function validMediaFile(file){
   if(!file) return false;
   if(!file.type.startsWith('image/') && !file.type.startsWith('video/')) return false;
   if(file.type.startsWith('image/') && file.size>MAX_FILE_BYTES) return false;
+  if(file.type.startsWith('video/') && file.size>100*1024*1024) return false;
   return true;
 }
 function showFileError(file){
@@ -342,8 +355,13 @@ async function uploadMediaToCloudinary(file){
     showOptVideo(2,'Otimizando vídeo... não feche o app.');
     try{ fileToSend=await compressVideoFile(file, (pct)=> showOptVideo(pct, 'Otimizando vídeo... '+Math.round(pct)+'% - não feche o app.')); }catch(e){ fileToSend=file; }
     hideOptVideo();
-    if(fileToSend.size>MAX_FILE_BYTES){ showSherBlussModal({title:'Vídeo ainda grande',htmlBody:'Tentamos comprimir 3 vezes e mesmo assim ficou acima de 10MB. Tente um vídeo de até 5 minutos um pouquinho mais curto.'}); return null; }
-    if(fileToSend!==file) showSherBlussModal({title:'Vídeo otimizado! ✨',htmlBody:'Seu vídeo foi comprimido automaticamente para até 9,5MB e já foi enviado.'});
+    if(fileToSend.size>MAX_FILE_BYTES){
+      const querEnviar = await new Promise((res)=>{
+        showSherBlussModal({title:'Vídeo muito pesado pra comprimir aqui',htmlBody:'Tentamos comprimir 3 vezes e mesmo assim ficou acima de 10MB. Isso acontece com vídeo que veio da galeria depois de cortar, ele fica muito pesado.<br><br>Quer <b>enviar mesmo assim</b>? A nuvem vai deixar ele levinho na hora de mostrar, igual o vídeo direto do TikTok.', buttons:[{label:'Enviar mesmo assim', primary:true, onClick:()=>{ closeSherBlussModal(); res(true); }},{label:'Escolher outro vídeo', onClick:()=>{ closeSherBlussModal(); res(false); }}]});
+      });
+      if(!querEnviar) return null;
+      fileToSend = file;
+    } else if(fileToSend!==file) showSherBlussModal({title:'Vídeo otimizado! ✨',htmlBody:'Seu vídeo foi comprimido automaticamente para até 9,5MB e já foi enviado.'});
   }
   const isVideo=fileToSend.type.startsWith('video/'); const rt=isVideo?'video':'image'; const fd=new FormData(); fd.append('file',fileToSend); fd.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
   try{ const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${rt}/upload`,{method:'POST',body:fd}); const d=await r.json(); if(d.secure_url) return {url:d.secure_url,type:rt}; throw new Error(d.error?.message||'Falha no upload'); }
