@@ -23,18 +23,6 @@
 }
 </style>
 <meta charset="UTF-8">
-<title>Sher Bluss - A certeza do desabrochar | App de fandoms</title>
-<meta name="description" content="Sher Bluss - Share + Bliss. O app onde seu fandom desabrocha. Entre no seu universo, poste seu bias, participe de desafios e encontre seu aconchego. A certeza do desabrochar.">
-<meta name="keywords" content="Sher Bluss, SherBluss, app Sher Bluss, fandom, bias, EXO-L, ELFE, a certeza do desabrochar">
-<meta name="robots" content="index, follow">
-<link rel="canonical" href="https://sher-bluss.vercel.app/">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Sher Bluss - A certeza do desabrochar">
-<meta property="og:description" content="Share + Bliss. O app onde seu fandom desabrocha. Entre, poste seu bias e encontre seu aconchego.">
-<meta property="og:image" content="https://sher-bluss.vercel.app/logo.png">
-<meta property="og:url" content="https://sher-bluss.vercel.app/">
-<meta name="twitter:card" content="summary_large_image">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Sher Bluss","applicationCategory":"SocialNetworkingApplication","operatingSystem":"Web","description":"Sher Bluss - Share + Bliss. O app onde seu fandom desabrocha. A certeza do desabrochar.","offers":{"@type":"Offer","price":"0"}}</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="google" content="notranslate">
 <title translate="no">Sher Bluss</title>
@@ -159,7 +147,7 @@ html,body{width:100%;min-height:100vh;background:var(--theme-color-accent) var(-
 .lightbox-caption{margin-top:12px;font-size:13px;color:var(--gold-accent);text-align:center}
 .dots-menu-btn{background:#141b34;border:1px solid var(--gold-border);color:var(--gold-accent);border-radius:8px;padding:4px 12px;font-size:14px;cursor:pointer;font-weight:700}
 
-/* Otimizando video */
+/* Otimizando vídeo - compressão automática */
 .opt-video-overlay{position:fixed;inset:0;z-index:999;background:rgba(4,7,18,.88);display:none;align-items:center;justify-content:center;padding:20px}
 .opt-video-card{width:100%;max-width:380px;padding:24px;text-align:center}
 .opt-video-bar{height:10px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;margin:14px 0 8px}
@@ -195,8 +183,8 @@ html,body{width:100%;min-height:100vh;background:var(--theme-color-accent) var(-
 </nav>
 <main class="view-section active" id="view-feed"><div class="feed-list" id="mainFeedList"></div></main>
 <section class="view-section" id="view-meu-perfil"><div style="padding:16px 4px;margin-bottom:14px;">
-<div class="profile-hero-top"><div class="profile-avatar-130-box"><img id="myProfilePageAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" class="profile-avatar-130"><h3 id="myProfilePageNameDisplay" class="profile-name-under-130">Usuário</h3><span id="myProfilePageHandleDisplay" class="profile-handle-under-130 notranslate">@arroba</span><div class="edit-trigger-row"><button class="discrete-edit-btn" onclick="toggleProfileEditMode()">✏️ editar</button><button class="dots-menu-btn" onclick="openProfileQuickMenu()" title="Opções do Perfil">⋮</button></div></div><button class="btn-pill-gold" onclick="switchView('feed')">Voltar ao Feed</button></div>
-<div class="bio-universe-box"><label class="bio-universe-label" for="myUniverseBioInput">✨ Como entrou nesse universo?</label><textarea id="myUniverseBioInput" class="bio-universe-input" rows="2" placeholder="Conte qual dorama ou grupo de K-pop conquistou seu coração..."></textarea></div>
+<div class="profile-hero-top"><div class="profile-avatar-130-box"><img id="myProfilePageAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" class="profile-avatar-130"><h3 id="myProfilePageNameDisplay" class="profile-name-under-130">Usuário</h3><span id="myProfilePageHandleDisplay" class="profile-handle-under-130 notranslate">@arroba</span><div class="edit-trigger-row"><button class="discrete-edit-btn" onclick="toggleProfileEditMode()">editar</button></div></div><button class="btn-pill-gold" onclick="switchView('feed')">Voltar ao Feed</button></div>
+<div class="bio-universe-box"><label class="bio-universe-label" for="myUniverseBioInput">✨ Como entrou nesse universo?</label><textarea id="myUniverseBioInput" class="bio-universe-input" rows="2" placeholder="Conte qual dorama ou grupo de K-pop conquistou seu coração..."></textarea><button type="button" onclick="saveUniverseBioExplicit()" style="background:#141b34;border:1px solid #fbbf24;color:#fbbf24;font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px;cursor:pointer;margin-top:8px;">Salvar</button></div>
 <div style="margin-bottom:6px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><span style="font-size:12px;font-weight:700;color:var(--gold-accent);">🏠 Meu Aconchego & Destaques</span><span id="selectedAconchegoHint" style="font-size:10.5px;color:var(--text-muted);">Toque na bolinha para filtrar</span></div><div class="aconchego-showcase-row" id="myAconchegoShowcaseRow"></div></div>
 <div id="profileEditPanel" class="glass-panel" style="display:none;padding:16px;margin-top:12px;">
 <h4 style="font-size:13.5px;color:var(--gold-accent);margin-bottom:12px;">⚙️ Configurações da Conta</h4>
@@ -223,7 +211,7 @@ html,body{width:100%;min-height:100vh;background:var(--theme-color-accent) var(-
 <section class="view-section" id="view-inside-fandom"><div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px 14px;border-bottom:1px solid rgba(251,191,36,.2);margin-bottom:12px;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:16px;">🔒</span><div><span id="insideFandomTitle" style="font-size:15px;font-weight:700;color:var(--gold-accent);">Fandom</span><span id="insideFandomActiveCount" style="font-size:11px;color:var(--text-muted);display:block;">• Espaço Privado Isolado</span></div></div><div style="display:flex;align-items:center;gap:8px;"><button class="dots-menu-btn" onclick="openFandomOptionsMenu()" title="Opções">•••</button><button onclick="closeCurrentFandom()" style="background:#1e1115;border:1px solid #f43f5e;color:#fda4af;width:30px;height:30px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;" title="Fechar">✕</button></div></div><div class="feed-list" id="insideFandomFeedList"></div></section>
 <section class="view-section" id="view-amigos"><div class="glass-panel section-header-bar"><span class="section-title">Meus Amigos</span><button class="btn-pill-gold" onclick="switchView('feed')">Feed</button></div><div class="feed-list" id="friendsListContainer"></div></section>
 </div>
-<div class="floating-composer-wrapper" id="floatingComposerWrapper"><button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">✏️</button><div class="gemini-composer"><button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria">+</button><input type="file" id="universalMediaInput" accept="image/*,video/*" style="display:none;"><input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Sher Bluss..."><button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()">Enviar</button></div></div>
+<div class="floating-composer-wrapper" id="floatingComposerWrapper"><button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button><div class="gemini-composer"><button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria">+</button><input type="file" id="universalMediaInput" accept="image/*,video/*" style="display:none;"><input type="text" id="mainComposerInput" class="composer-input" placeholder="Escreva no Sher Bluss..."><button type="button" id="mainSendBtn" class="composer-send-btn" onclick="submitPost()">Enviar</button></div></div>
 <footer class="app-footer notranslate" translate="no">Sher Bluss • sherbluss.suporte@gmail.com</footer>
 <div class="modal-backdrop" id="customModalBackdrop"><div class="glass-panel modal-box"><h3 class="modal-title notranslate" id="customModalTitle">Sher Bluss</h3><div class="modal-body-text" id="customModalBody"></div><div class="modal-actions" id="customModalActions"></div></div></div>
 <div class="lightbox-overlay" id="nativeMediaLightbox"><button class="lightbox-close" onclick="closeLightbox()">✕</button><div id="lightboxMediaContainer" style="display:flex;justify-content:center;align-items:center;width:100%;"></div><p class="lightbox-caption" id="lightboxCaption"></p></div>
@@ -243,8 +231,8 @@ const CLOUDINARY_CLOUD_NAME='l6tlvzln';
 const CLOUDINARY_UPLOAD_PRESET='umbrella';
 const LOCAL_KEY='sherbluss_state_v3';
 const MAX_FILE_BYTES = 10*1024*1024;
-const COMPRESS_TARGET_BYTES = 9.5*1024*1024;
-const MAX_VIDEO_DURATION_SEC = 5*60;
+const COMPRESS_TARGET_BYTES = 9.5*1024*1024; // comprime para no máximo 9,5MB para aproveitar ao máximo os 10MB
+const MAX_VIDEO_DURATION_SEC = 5*60; // vídeos de até 5 minutos
 
 /* ============ SEGURANCA - HELPERS ============ */
 function escapeHtml(s){ return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;"); }
@@ -263,7 +251,8 @@ function validMediaFile(file){
   if(!file) return false;
   if(!file.type.startsWith('image/') && !file.type.startsWith('video/')) return false;
   if(file.type.startsWith('image/') && file.size>MAX_FILE_BYTES) return false;
-  if(file.type.startsWith('video/') && file.size>100*1024*1024) return false;
+  // Vídeo: qualquer tamanho acima de 10MB entra para ser comprimido.
+  // O limite é tempo: até 5 minutos, verificado na hora do upload.
   return true;
 }
 function showFileError(file){
@@ -272,12 +261,16 @@ function showFileError(file){
   else if(file.type.startsWith('image/') && file.size>MAX_FILE_BYTES) showSherBlussModal({title:'Foto muito grande',htmlBody:'Escolha uma foto de até 10MB.'});
   else if(file.type.startsWith('video/')) showSherBlussModal({title:'Vídeo de até 5 minutos',htmlBody:'Aqui é só vídeo de até 5 minutos. Escolha um vídeo de até 5 minutinhos que a gente comprime ele para você.'});
 }
+// ===== COMPRESSÃO AUTOMÁTICA NO NAVEGADOR =====
+// Mostra "Otimizando vídeo..." e comprime o vídeo no próprio aparelho,
+// sem instalar nada, sem gastar servidor. Usa Canvas + MediaRecorder.
 function showOptVideo(pct, text){
-  const ov=document.getElementById('optVideoOverlay'); if(!ov) return;
+  const ov=document.getElementById('optVideoOverlay');
+  if(!ov) return;
   ov.style.display='flex';
   const f=document.getElementById('optVideoFill'); if(f) f.style.width=Math.max(0,Math.min(100,pct))+'%';
-  const pp=document.getElementById('optVideoPct'); if(pp) pp.textContent=Math.round(pct)+'%';
-  if(text){ const tt=document.getElementById('optVideoText'); if(tt) tt.textContent=text; }
+  const p=document.getElementById('optVideoPct'); if(p) p.textContent=Math.round(pct)+'%';
+  if(text){ const t2=document.getElementById('optVideoText'); if(t2) t2.textContent=text; }
 }
 function hideOptVideo(){ const ov=document.getElementById('optVideoOverlay'); if(ov) ov.style.display='none'; }
 function pickSupportedMime(){
@@ -286,41 +279,57 @@ function pickSupportedMime(){
   return '';
 }
 function compressVideoFile(file, onProgress){
-  const attempts=[{maxH:720,minBitrate:400000,maxBitrate:2500000},{maxH:480,minBitrate:300000,maxBitrate:1200000},{maxH:360,minBitrate:200000,maxBitrate:700000}];
-  const tryOnce=(attemptIdx)=>{
-    return new Promise((resolve)=>{
-      if(file.size<=MAX_FILE_BYTES){ resolve(file); return; }
-      const cfg=attempts[attemptIdx]||attempts[attempts.length-1];
-      const url=URL.createObjectURL(file);
-      const video=document.createElement('video');
-      video.muted=true; video.playsInline=true; video.preload='auto'; video.src=url;
-      video.onloadedmetadata=()=>{
-        const dur=video.duration||0;
-        if(!dur || !isFinite(dur) || dur<=0){ URL.revokeObjectURL(url); resolve(file); return; }
-        const targetBitrate=Math.max(cfg.minBitrate, Math.min(cfg.maxBitrate, Math.floor((COMPRESS_TARGET_BYTES*8)/dur)));
-        const scale=Math.min(1, cfg.maxH/Math.max(video.videoWidth||720, video.videoHeight||720));
-        const w=Math.max(2, Math.floor((video.videoWidth||1280)*scale/2)*2);
-        const h=Math.max(2, Math.floor((video.videoHeight||720)*scale/2)*2);
-        const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
-        const ctx=canvas.getContext('2d');
-        let stream=null;
-        try{ stream=canvas.captureStream(24); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
-        const mime=pickSupportedMime();
-        let rec=null;
-        try{ rec=new MediaRecorder(stream, mime?{mimeType:mime, videoBitsPerSecond:targetBitrate}:{videoBitsPerSecond:targetBitrate}); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
-        const chunks=[];
-        rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
-        rec.onstop=()=>{ URL.revokeObjectURL(url); const blob=new Blob(chunks,{type:mime||'video/webm'}); if(!blob.size){ resolve(file); return; } const out=new File([blob], file.name.replace(/\.[^.]+$/, '')+'-otimizado.webm', {type:mime||'video/webm', lastModified:Date.now()}); resolve(out); };
-        rec.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-        video.onplay=()=>{ const draw=()=>{ if(video.ended || video.paused){ try{ rec.stop(); }catch(e){} return; } try{ ctx.drawImage(video,0,0,w,h); }catch(e){} const base=(attemptIdx/attempts.length)*100; const pct=dur?Math.min(96, base + (video.currentTime/dur)*(96/attempts.length)):10; if(onProgress) onProgress(pct); requestAnimationFrame(draw); }; requestAnimationFrame(draw); };
-        video.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-        rec.start(1000); video.play().catch(()=>{ URL.revokeObjectURL(url); resolve(file); });
-        setTimeout(()=>{ try{ if(rec.state!=='inactive') rec.stop(); }catch(e){} try{ video.pause(); }catch(e){} }, 90000);
+  return new Promise((resolve, reject)=>{
+    if(file.size<=MAX_FILE_BYTES){ resolve(file); return; }
+    const url=URL.createObjectURL(file);
+    const video=document.createElement('video');
+    video.muted=true; video.playsInline=true; video.preload='auto'; video.src=url;
+    video.onloadedmetadata=()=>{
+      const dur=video.duration||0;
+      if(!dur || !isFinite(dur) || dur<=0){ URL.revokeObjectURL(url); resolve(file); return; }
+      // Alvo: 720p, bitrate calculado para caber em ~9MB
+      const targetBitrate=Math.max(400000, Math.min(2500000, Math.floor((COMPRESS_TARGET_BYTES*8)/dur)));
+      const scale=Math.min(1, 720/Math.max(video.videoWidth||720, video.videoHeight||720));
+      const w=Math.max(2, Math.floor((video.videoWidth||1280)*scale/2)*2);
+      const h=Math.max(2, Math.floor((video.videoHeight||720)*scale/2)*2);
+      const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+      const ctx=canvas.getContext('2d');
+      let stream=null;
+      try{ stream=canvas.captureStream(30); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
+      const mime=pickSupportedMime();
+      let rec=null;
+      try{ rec=new MediaRecorder(stream, mime?{mimeType:mime, videoBitsPerSecond:targetBitrate}:{videoBitsPerSecond:targetBitrate}); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
+      const chunks=[];
+      rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+      rec.onstop=()=>{
+        URL.revokeObjectURL(url);
+        const type=mime||'video/webm';
+        const blob=new Blob(chunks,{type});
+        // Se não conseguiu reduzir, devolve o original para tentar enviar mesmo assim
+        if(!blob.size || blob.size>=file.size){ resolve(file); return; }
+        const out=new File([blob], file.name.replace(/\.[^.]+$/, '')+'-otimizado.webm', {type, lastModified:Date.now()});
+        resolve(out);
+      };
+      rec.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
+      video.onplay=()=>{
+        const start=performance.now();
+        const draw=()=>{
+          if(video.ended || video.paused){ try{ rec.stop(); }catch(e){} return; }
+          try{ ctx.drawImage(video,0,0,w,h); }catch(e){}
+          const pct=dur?Math.min(96,(video.currentTime/dur)*96):10;
+          if(onProgress) onProgress(pct);
+          requestAnimationFrame(draw);
+        };
+        requestAnimationFrame(draw);
       };
       video.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-    });
-  };
-  return (async()=>{ let current=file; for(let i=0;i<attempts.length;i++){ const out=await tryOnce(i); if(out===file && i>0) break; current=out; if(current.size<=COMPRESS_TARGET_BYTES) break; } return current; })();
+      rec.start(1000);
+      video.play().catch(()=>{ URL.revokeObjectURL(url); resolve(file); });
+      // Trava de segurança: 90s
+      setTimeout(()=>{ try{ if(rec.state!=='inactive') rec.stop(); }catch(e){} try{ video.pause(); }catch(e){} }, 90000);
+    };
+    video.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
+  });
 }
 
 let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
@@ -347,21 +356,35 @@ function isUserBlocked(handle, uid){ const list=appState.user.blockedHandles||[]
 async function uploadMediaToCloudinary(file){
   if(!validMediaFile(file)){ showFileError(file); return null; }
   let fileToSend=file;
+  // Vídeo: limite é tempo, não MB. Qualquer vídeo acima de 10MB é comprimido.
   if(file.type.startsWith('video/')){
-    const durSec = await new Promise((res)=>{ try{ const u=URL.createObjectURL(file); const v=document.createElement('video'); v.preload='metadata'; v.muted=true; v.src=u; v.onloadedmetadata=()=>{ const d=v.duration||0; URL.revokeObjectURL(u); res(d); }; v.onerror=()=>{ URL.revokeObjectURL(u); res(0); }; setTimeout(()=>{ try{URL.revokeObjectURL(u);}catch(e){} res(0); }, 5000); }catch(e){ res(0); } });
-    if(durSec && durSec > MAX_VIDEO_DURATION_SEC){ showSherBlussModal({title:'Vídeo de até 5 minutos',htmlBody:'Esse vídeo tem mais de 5 minutos. Aqui é só vídeo de até 5 minutos, senão não aguenta comprimir.'}); return null; }
+    // Descobre a duração do vídeo antes de comprimir
+    const durSec = await new Promise((res)=>{
+      try{
+        const u=URL.createObjectURL(file);
+        const v=document.createElement('video'); v.preload='metadata'; v.muted=true; v.src=u;
+        v.onloadedmetadata=()=>{ const d=v.duration||0; URL.revokeObjectURL(u); res(d); };
+        v.onerror=()=>{ URL.revokeObjectURL(u); res(0); };
+        setTimeout(()=>{ try{URL.revokeObjectURL(u);}catch(e){} res(0); }, 5000);
+      }catch(e){ res(0); }
+    });
+    if(durSec && durSec > MAX_VIDEO_DURATION_SEC){
+      showSherBlussModal({title:'Vídeo de até 5 minutos',htmlBody:'Esse vídeo tem mais de 5 minutos. Aqui é só vídeo de até 5 minutos, senão não aguenta comprimir. Escolha um vídeo de até 5 minutinhos que a gente comprime ele para você.'});
+      return null;
+    }
   }
+  // Se o vídeo passou de 10MB, comprime automaticamente no aparelho antes de enviar
   if(file.type.startsWith('video/') && file.size>MAX_FILE_BYTES){
-    showOptVideo(2,'Otimizando vídeo... não feche o app.');
-    try{ fileToSend=await compressVideoFile(file, (pct)=> showOptVideo(pct, 'Otimizando vídeo... '+Math.round(pct)+'% - não feche o app.')); }catch(e){ fileToSend=file; }
+    showOptVideo(2,'Vídeo de até 5 minutos. Estamos deixando seu vídeo levinho para enviar, sem você precisar fazer nada.');
+    try{
+      fileToSend=await compressVideoFile(file, (pct)=> showOptVideo(pct, 'Otimizando vídeo... '+Math.round(pct)+'% - não feche o app.'));
+    }catch(e){ fileToSend=file; }
     hideOptVideo();
     if(fileToSend.size>MAX_FILE_BYTES){
-      const querEnviar = await new Promise((res)=>{
-        showSherBlussModal({title:'Vídeo muito pesado pra comprimir aqui',htmlBody:'Tentamos comprimir 3 vezes e mesmo assim ficou acima de 10MB. Isso acontece com vídeo que veio da galeria depois de cortar, ele fica muito pesado.<br><br>Quer <b>enviar mesmo assim</b>? A nuvem vai deixar ele levinho na hora de mostrar, igual o vídeo direto do TikTok.', buttons:[{label:'Enviar mesmo assim', primary:true, onClick:()=>{ closeSherBlussModal(); res(true); }},{label:'Escolher outro vídeo', onClick:()=>{ closeSherBlussModal(); res(false); }}]});
-      });
-      if(!querEnviar) return null;
-      fileToSend = file;
-    } else if(fileToSend!==file) showSherBlussModal({title:'Vídeo otimizado! ✨',htmlBody:'Seu vídeo foi comprimido automaticamente para até 9,5MB e já foi enviado.'});
+      showSherBlussModal({title:'Vídeo ainda grande',htmlBody:'Mesmo otimizando, esse vídeo ficou acima de 10MB. Tente um vídeo de até 5 minutos um pouquinho mais curto que a gente envia na hora.'});
+      return null;
+    }
+    if(fileToSend!==file) showSherBlussModal({title:'Vídeo otimizado! ✨',htmlBody:'Seu vídeo foi comprimido automaticamente para até 9,5MB para ficar levinho e já foi enviado.'});
   }
   const isVideo=fileToSend.type.startsWith('video/'); const rt=isVideo?'video':'image'; const fd=new FormData(); fd.append('file',fileToSend); fd.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
   try{ const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${rt}/upload`,{method:'POST',body:fd}); const d=await r.json(); if(d.secure_url) return {url:d.secure_url,type:rt}; throw new Error(d.error?.message||'Falha no upload'); }
@@ -410,8 +433,9 @@ window.handleProfileBackgroundSelected=function(event){ const file=event.target.
 window.resetDefaultBackground=function(){ appState.user.customBgUrl=''; document.documentElement.style.setProperty('--custom-bg-url',`url('./fundo.png')`); document.getElementById('profileBgLabel').textContent='🖼️ Escolher fundo na galeria'; saveLocal(); };
 window.toggleProfileEditMode=function(){ isProfileEditable=!isProfileEditable; const panel=document.getElementById('profileEditPanel'); panel.style.display=isProfileEditable?'block':'none'; if(isProfileEditable){ renderBlockedHandlesList(); renderMeuCantinhoSavedList(); } else { showSherBlussModal({title:'Perfil Atualizado 🌸',htmlBody:'Suas alterações foram salvas com sucesso.'}); } };
 window.openProfileQuickMenu=function(){ showSherBlussModal({title:'Opções Rápidas do Perfil',htmlBody:`<div style="display:flex;flex-direction:column;gap:8px;"><button class="btn-gold" onclick="closeSherBlussModal();toggleProfileEditMode();">⚙️ Abrir Configurações</button><button class="btn-pill-gold" style="width:100%;" onclick="closeSherBlussModal();switchView('feed');">🏠 Ir para o Feed Principal</button></div>`,buttons:[{label:'Fechar',primary:false,onClick:closeSherBlussModal}]}); };
-window.saveUniverseBioLive=async function(val){ appState.user.universeBio=val; saveLocal(); await updateDoc(doc(db,"users",appState.user.uid),{universeBio:val}).catch(()=>{}); };
+window.saveUniverseBioLive=async function(val){ appState.user.universeBio=val; saveLocal(); try{ await setDoc(doc(db,"users",appState.user.uid),{universeBio:val},{merge:true}); }catch(e){} };
 
+window.saveUniverseBioExplicit=async function(){ requireAuthForAction(async()=>{ const val=document.getElementById('myUniverseBioInput').value.trim(); appState.user.universeBio=val; saveLocal(); try{ await setDoc(doc(db,"users",appState.user.uid),{universeBio:val},{merge:true}); showSherBlussModal({title:'Salvo! ✨',htmlBody:'Sua bio "Como entrou nesse universo?" foi salva e agora todo mundo pode ver no seu perfil.'}); }catch(e){ showSherBlussModal({title:'Não salvou',htmlBody:'Não consegui salvar sua bio no servidor: '+escapeHtml(e.message)}); } }); };
 window.triggerAconchegoCoverChange=function(targetId,event){ if(event) event.stopPropagation(); coverUploadTargetId=targetId; document.getElementById('aconchegoCoverInput').click(); };
 document.getElementById('aconchegoCoverInput').addEventListener('change', async (event)=>{
   const file=event.target.files[0]; if(!file) return;
@@ -420,7 +444,7 @@ document.getElementById('aconchegoCoverInput').addEventListener('change', async 
 });
 window.openCreateAconchegoSubgroupModal=function(){ showSherBlussModal({title:'✨ Novo Subgrupo no Aconchego',htmlBody:`<p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Crie uma pasta personalizada para organizar seus itens salvos:</p><div class="form-group"><label class="form-label">Nome do Subgrupo / Pasta</label><input type="text" id="newSubgroupNameInput" class="glass-input" placeholder="Ex: Doramas Românticos..."></div>`,buttons:[{label:'Cancelar',primary:false,onClick:closeSherBlussModal},{label:'Criar Bolinha ✨',primary:true,onClick:async()=>{ const name=document.getElementById('newSubgroupNameInput').value.trim(); if(!name) return; appState.user.aconchegoGroups.push({id:'sub_'+Date.now(),name:name,cover:'./logo.png'}); saveLocal(); renderMyAconchegoShowcase(); await saveUserDataToFirestore(); closeSherBlussModal(); }}]}); };
 window.toggleSelectAconchegoBubble=function(id){ selectedAconchegoFilterId=(selectedAconchegoFilterId===id)?null:id; renderMyAconchegoShowcase(); renderMyAconchegoPosts(); };
-function renderMyAconchegoShowcase(){ const row=document.getElementById('myAconchegoShowcaseRow'); const hint=document.getElementById('selectedAconchegoHint'); if(!row) return; if(selectedAconchegoFilterId){ row.classList.add('aligned-left-mode'); hint.textContent='Toque novamente para ver tudo'; } else { row.classList.remove('aligned-left-mode'); hint.textContent='Toque na bolinha para filtrar'; } const oficialActive=selectedAconchegoFilterId==='oficial'; const oficialInactive=selectedAconchegoFilterId&&selectedAconchegoFilterId!=='oficial'; let html=`<div class="aconchego-bubble-wrapper ${oficialActive?'active-bubble':''} ${oficialInactive?'inactive-bubble':''}" onclick="toggleSelectAconchegoBubble('oficial')"><div class="aconchego-circle-100"><img src="${escapeAttr(appState.user.aconchegoCover||'./aconchego.png')}" onerror="this.src='./logo.png'"><span class="cover-edit-dot" onclick="triggerAconchegoCoverChange('oficial',event)">✎</span></div><span class="aconchego-bubble-label">Meu Aconchego</span></div>`; (appState.user.aconchegoGroups||[]).forEach(grp=>{ const isAct=selectedAconchegoFilterId===grp.id; const isInact=selectedAconchegoFilterId&&selectedAconchegoFilterId!==grp.id; html+=`<div class="aconchego-bubble-wrapper ${isAct?'active-bubble':''} ${isInact?'inactive-bubble':''}" onclick="toggleSelectAconchegoBubble('${escapeAttr(grp.id)}')"><div class="aconchego-circle-100"><img src="${escapeAttr(grp.cover||'./logo.png')}" onerror="this.src='./logo.png'"><span class="cover-edit-dot" onclick="triggerAconchegoCoverChange('${escapeAttr(grp.id)}',event)">✎</span></div><span class="aconchego-bubble-label">${escapeHtml(grp.name)}</span></div>`; }); html+=`<button type="button" class="add-subgroup-btn" onclick="openCreateAconchegoSubgroupModal()">+</button>`; row.innerHTML=html; }
+function renderMyAconchegoShowcase(){ const row=document.getElementById('myAconchegoShowcaseRow'); const hint=document.getElementById('selectedAconchegoHint'); if(!row) return; if(selectedAconchegoFilterId){ row.classList.add('aligned-left-mode'); hint.textContent='Toque novamente para ver tudo'; } else { row.classList.remove('aligned-left-mode'); hint.textContent='Toque na bolinha para filtrar'; } const oficialActive=selectedAconchegoFilterId==='oficial'; const oficialInactive=selectedAconchegoFilterId&&selectedAconchegoFilterId!=='oficial'; let html=`<div class="aconchego-bubble-wrapper ${oficialActive?'active-bubble':''} ${oficialInactive?'inactive-bubble':''}" onclick="toggleSelectAconchegoBubble('oficial')"><div class="aconchego-circle-100"><img src="${escapeAttr(appState.user.aconchegoCover||'./aconchego.png')}" onerror="this.src='./logo.png'"><span class="cover-edit-dot" onclick="triggerAconchegoCoverChange('oficial',event)"></span></div><span class="aconchego-bubble-label">Meu Aconchego</span></div>`; (appState.user.aconchegoGroups||[]).forEach(grp=>{ const isAct=selectedAconchegoFilterId===grp.id; const isInact=selectedAconchegoFilterId&&selectedAconchegoFilterId!==grp.id; html+=`<div class="aconchego-bubble-wrapper ${isAct?'active-bubble':''} ${isInact?'inactive-bubble':''}" onclick="toggleSelectAconchegoBubble('${escapeAttr(grp.id)}')"><div class="aconchego-circle-100"><img src="${escapeAttr(grp.cover||'./logo.png')}" onerror="this.src='./logo.png'"><span class="cover-edit-dot" onclick="triggerAconchegoCoverChange('${escapeAttr(grp.id)}',event)"></span></div><span class="aconchego-bubble-label">${escapeHtml(grp.name)}</span></div>`; }); html+=`<button type="button" class="add-subgroup-btn" onclick="openCreateAconchegoSubgroupModal()">+</button>`; row.innerHTML=html; }
 window.openPostThreeDotsMenu=function(postId){ const post=postsFromFirebase.find(p=>p.id===postId); if(!post) return; const isOwn=appState.user.loggedIn&&post.authorUid===appState.user.uid; const subs=appState.user.aconchegoGroups||[]; let subHtml=subs.map(g=>`<button class="btn-pill-gold" style="width:100%;text-align:left;margin-top:6px;" onclick="savePostToAconchego('${escapeAttr(postId)}','${escapeAttr(g.id)}','${escapeAttr(g.name)}')">📁 Salvar em: <strong>${escapeHtml(g.name)}</strong></button>`).join(''); showSherBlussModal({title:'Opções da Publicação',htmlBody:`<div style="display:flex;flex-direction:column;gap:6px;"><button class="btn-gold" onclick="savePostToAconchego('${escapeAttr(postId)}','oficial','Meu Aconchego Oficial')">🏠 Salvar no Meu Aconchego</button>${subHtml}${isOwn?`<button class="btn-danger-pill" style="width:100%;padding:10px;margin-top:8px;" onclick="closeSherBlussModal();confirmDeletePost('${escapeAttr(postId)}')">🗑️ Excluir minha publicação</button>`:''}</div>`,buttons:[{label:'Fechar',primary:false,onClick:closeSherBlussModal}]}); };
 window.savePostToAconchego=async function(postId,folderId,folderName){ requireAuthForAction(async()=>{ const post=postsFromFirebase.find(p=>p.id===postId); if(!post) return; const existing=(appState.user.savedItems||[]).findIndex(i=>i.postId===postId&&i.folderId===folderId); if(existing!==-1){ closeSherBlussModal(); showSherBlussModal({title:'Já Salvo 🌸',htmlBody:`Este item já está guardado em <strong>${escapeHtml(folderName)}</strong>.`}); return; } appState.user.savedItems.unshift({saveId:'save_'+Date.now(),postId:post.id,folderId:folderId,folderName:folderName,author:post.author,authorHandle:post.authorHandle||'@usuaria',text:post.text||'',media:post.media||'',mediaType:post.mediaType||'',savedAt:Date.now()}); saveLocal(); await saveUserDataToFirestore(); closeSherBlussModal(); showSherBlussModal({title:'Guardado com Carinho! 🏠',htmlBody:`Item salvo em <strong>${escapeHtml(folderName)}</strong>.`}); }); };
 window.removeSavedItemFromCantinho=async function(saveId){ appState.user.savedItems=(appState.user.savedItems||[]).filter(i=>i.saveId!==saveId); saveLocal(); await saveUserDataToFirestore(); renderMeuCantinhoSavedList(); renderMyAconchegoPosts(); };
@@ -479,8 +503,9 @@ window.submitPost=async function(){ requireAuthForAction(async()=>{ const input=
 window.confirmDeletePost=function(postId){ requireAuthForAction(()=>{ const post=postsFromFirebase.find(p=>p.id===postId); if(!post) return; if(post.authorUid!==appState.user.uid) return; showSherBlussModal({title:'🗑️ Excluir Publicação',htmlBody:'Você realmente deseja apagar essa publicação?',buttons:[{label:'Cancelar',primary:false,onClick:closeSherBlussModal},{label:'Sim, Apagar',primary:true,onClick:async()=>{ try{ await deleteDoc(doc(db,"posts",postId)); closeSherBlussModal(); postsFromFirebase=postsFromFirebase.filter(p=>p.id!==postId); renderAll(); if(document.getElementById('view-meu-perfil').classList.contains('active')) renderMyAconchegoPosts(); }catch(e){ showSherBlussModal({title:'Erro',htmlBody:escapeHtml(e.message)}); } }}]}); }); };
 /* CORRECAO: like com transacao, nao perde voto */
 window.toggleLikeUmbrella=async function(postId){ requireAuthForAction(async()=>{ const post=postsFromFirebase.find(p=>p.id===postId); if(!post) return; const already=(post.likedBy||[]).includes(appState.user.uid); if(post.isChallenge&&!already&&appState.dailyVotes.used>=3){ showSherBlussModal({title:'Limite Atingido',htmlBody:'Você já usou seus 3 votos de hoje.'}); return; } try{ await runTransaction(db, async (t)=>{ const ref=doc(db,"posts",postId); const snap=await t.get(ref); if(!snap.exists()) return; const data=snap.data(); const likedBy=data.likedBy||[]; const isLiked=likedBy.includes(appState.user.uid); const newLikedBy=isLiked?likedBy.filter(u=>u!==appState.user.uid):[...likedBy,appState.user.uid]; t.update(ref,{likedBy:newLikedBy,likes:newLikedBy.length}); }); if(post.isChallenge){ if(!already) appState.dailyVotes.used+=1; else appState.dailyVotes.used=Math.max(0,appState.dailyVotes.used-1); saveLocal(); } }catch(e){ console.error(e); } }); };
-window.submitInlineComment=async function(postId){ requireAuthForAction(async()=>{ const input=document.getElementById(`inlineCommentInput_${postId}`); const val=input.value.trim(); if(!val) return; const post=postsFromFirebase.find(p=>p.id===postId); if(!post) return; const comments=post.comments||[]; comments.push({text:val,authorUid:appState.user.uid,authorName:appState.user.name,createdAt:Date.now()}); try{ await updateDoc(doc(db,"posts",postId),{comments}); input.value=''; }catch(e){ showSherBlussModal({title:'Erro',htmlBody:escapeHtml(e.message)}); } }); };
+window.submitInlineComment=async function(postId){ requireAuthForAction(async()=>{ const input=document.getElementById(`inlineCommentInput_${postId}`); const val=input.value.trim(); if(!val) return; const post=postsFromFirebase.find(p=>p.id===postId); if(!post) return; const comments=post.comments||[]; comments.push({text:val,authorUid:appState.user.uid,authorName:appState.user.name,authorHandle:appState.user.handle,createdAt:Date.now()}); try{ await updateDoc(doc(db,"posts",postId),{comments}); input.value=''; }catch(e){ showSherBlussModal({title:'Erro',htmlBody:escapeHtml(e.message)}); } }); };
 /* CORRECAO: so dono do post ou dono do comentario apaga, com confirmacao */
+window.replyToComment=function(postId,authorName){ const input=document.getElementById(`inlineCommentInput_${postId}`); if(!input) return; const tag=authorName?('@'+String(authorName).trim().split(' ')[0]+' '):''; if(tag && !input.value.includes(tag)) input.value=tag+input.value; input.focus(); };
 window.confirmDeleteComment=async function(postId,commentIndex){ const post=postsFromFirebase.find(p=>p.id===postId); if(!post) return; const raw=(post.comments||[])[commentIndex]; const c=normalizeComment(raw); if(!c) return; const isPostOwner=appState.user.loggedIn&&post.authorUid===appState.user.uid; const isCommentOwner=appState.user.loggedIn&&c.authorUid&&c.authorUid===appState.user.uid; if(!isPostOwner&&!isCommentOwner) return; showSherBlussModal({title:'Excluir comentário?',htmlBody:'Você realmente deseja apagar esse comentário?',buttons:[{label:'Cancelar',primary:false,onClick:closeSherBlussModal},{label:'Sim, Apagar',primary:true,onClick:async()=>{ try{ const comments=[...(post.comments||[])]; comments.splice(commentIndex,1); await updateDoc(doc(db,"posts",postId),{comments}); closeSherBlussModal(); }catch(e){ console.error(e); } }}]}); };
 window.openCreateFandomModal=function(){ requireAuthForAction(()=>{ showSherBlussModal({title:'Criar Novo Fandom Particular 🔒',htmlBody:`<p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">Este espaço nasce trancado e totalmente isolado.</p><div class="form-group"><label class="form-label">Nome do Fandom</label><input type="text" id="newFandomNameInput" class="glass-input" placeholder="Ex: MeuFandomPrivado..."></div>`,buttons:[{label:'Cancelar',primary:false,onClick:closeSherBlussModal},{label:'Criar Fandom Trancado',primary:true,onClick:async()=>{ const name=document.getElementById('newFandomNameInput').value.trim(); if(name){ try{ await addDoc(collection(db,"fandoms"),{name,borderColor:'#fbbf24',dotColor:'#fbbf24',creatorUid:appState.user.uid,admins:[appState.user.uid],members:[appState.user.uid],pendingRequests:[],createdAt:serverTimestamp()}); closeSherBlussModal(); }catch(e){ showSherBlussModal({title:'Erro',htmlBody:escapeHtml(e.message)}); } } }}]}); }); };
 function hasFandomAccess(f){ if(!appState.user.loggedIn||!appState.user.uid) return false; if(f.creatorUid===appState.user.uid) return true; if(f.admins&&f.admins.includes(appState.user.uid)) return true; if(f.members&&f.members.includes(appState.user.uid)) return true; return false; }
@@ -498,7 +523,7 @@ function renderPostCardHTML(post){
   const mediaHtml=post.media?(post.mediaType==='video'?`<video src="${escapeAttr(post.media)}" class="post-media" controls playsinline preload="metadata"></video>`:`<img src="${escapeAttr(post.media)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`):'';
   let isAdmin=false; if(post.fandom&&post.fandom!=='Geral'){ const fo=appState.fandoms.find(f=>f.name===post.fandom); if(fo&&((fo.creatorUid===post.authorUid)||(fo.admins&&fo.admins.includes(post.authorUid)))) isAdmin=true; }
   const comments=(post.comments||[]).map(normalizeComment).filter(Boolean);
-  const commentsHtml=comments.map((c,idx)=>{ const canDelete=appState.user.loggedIn&&(post.authorUid===appState.user.uid||(c.authorUid&&c.authorUid===appState.user.uid)); const label=c.authorName?`<strong>${escapeHtml(c.authorName)}</strong>: ${escapeHtml(c.text)}`:escapeHtml(c.text); return `<div class="comment-item-clean"><span style="flex:1;">${label}</span>${canDelete?`<button class="btn-danger-pill" style="font-size:9px;padding:2px 6px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">✕</button>`:''}</div>`; }).join('');
+  const commentsHtml=comments.map((c,idx)=>{ const canDelete=appState.user.loggedIn&&(post.authorUid===appState.user.uid||(c.authorUid&&c.authorUid===appState.user.uid)); const label=c.authorName?`<strong>${escapeHtml(c.authorName)}</strong>: ${escapeHtml(c.text)}`:escapeHtml(c.text); return `<div class="comment-item-clean"><span style="flex:1;">${label}</span><button type="button" title="Responder" style="background:transparent;border:none;color:var(--gold-accent);font-size:10.5px;font-weight:700;cursor:pointer;padding:2px 6px;flex-shrink:0;" onclick="replyToComment('${escapeAttr(post.id)}','${escapeAttr(c.authorName||'')}')">Responder</button>${canDelete?`<button type="button" title="Excluir comentário" style="background:transparent;border:none;color:rgba(255,255,255,.75);font-size:11px;line-height:1;padding:2px 4px;margin-left:6px;cursor:pointer;flex-shrink:0;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">x</button>`:''}</div>`; }).join('');
   const likedByMe=(post.likedBy||[]).includes(appState.user.uid);
   const subLabel=post.isChallenge?`Desafio Semanal${post.biasName?' • '+escapeHtml(post.biasName):''}`:escapeHtml(post.fandom||'Geral');
   return `<article class="post-card-clean" id="post_card_${escapeAttr(post.id)}"><div class="post-header"><div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid)}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle||'@usuaria')}')"><img src="${escapeAttr(post.avatar)}" class="post-avatar" onerror="this.src='./aconchego.png'"><div><div class="post-author-name">${escapeHtml(post.author)}${isAdmin?'<span class="admin-badge">Admin</span>':''}</div><div class="post-meta notranslate">${escapeHtml(post.authorHandle||'@usuaria')} • ${subLabel}</div></div></div><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:11px;color:var(--text-muted);font-weight:600;">📅 ${escapeHtml(formatPostDate(post.createdAt))}</span><button type="button" class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')">⋮</button></div></div>${post.text?`<p class="post-text">${escapeHtml(post.text)}</p>`:''}${mediaHtml}<div class="post-actions-clean"><button class="like-umbrella-btn ${likedByMe?'liked':''}" onclick="toggleLikeUmbrella('${escapeAttr(post.id)}')"><span>🌸</span><span>${post.likes||0}</span></button></div><div class="comments-section-clean">${commentsHtml}<div class="comment-input-row"><input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Responder..."><button class="btn-gold" style="width:auto;padding:4px 12px;font-size:11.5px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">Enviar</button></div></div></article>`;
@@ -519,5 +544,8 @@ function renderAll(){
 window.addEventListener('scroll',()=>{ const carousel=document.getElementById('carouselWrapper'); const title=document.getElementById('topBarCenterTitle'); const isInProfile=document.getElementById('view-meu-perfil').classList.contains('active')||document.getElementById('view-user-profile-feed').classList.contains('active'); if(window.scrollY>25){ if(!isInProfile) carousel.classList.add('scrolled'); if(title) title.classList.add('hidden-title'); } else { if(!isInProfile) carousel.classList.remove('scrolled'); if(title) title.classList.remove('hidden-title'); } },{passive:true});
 applyUserTheme(); startMidnightCountdown(); initFirebaseSync();
 </script>
-<div id="optVideoOverlay" class="opt-video-overlay"><div class="glass-panel opt-video-card"><div style="font-size:34px;">🎬</div><h3 style="color:var(--gold-accent);margin:8px 0 6px;">Otimizando vídeo...</h3><p id="optVideoText" style="font-size:13px;color:var(--text-muted);line-height:1.4;">Vídeo de até 5 minutos. Estamos deixando seu vídeo levinho para enviar.</p><div class="opt-video-bar"><div id="optVideoFill" class="opt-video-fill"></div></div><div id="optVideoPct" class="opt-video-pct">0%</div><p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Não feche o app, é rapidinho.</p></div></div><script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+
+<!-- Otimizando vídeo -->
+<div id="optVideoOverlay" class="opt-video-overlay"><div class="glass-panel opt-video-card"><div style="font-size:34px;">🎬</div><h3 style="color:var(--gold-accent);margin:8px 0 6px;">Otimizando vídeo...</h3><p id="optVideoText" style="font-size:13px;color:var(--text-muted);line-height:1.4;">Vídeo de até 5 minutos. Estamos deixando seu vídeo levinho para enviar, sem você precisar fazer nada.</p><div class="opt-video-bar"><div id="optVideoFill" class="opt-video-fill"></div></div><div id="optVideoPct" class="opt-video-pct">0%</div><p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Não feche o app, é rapidinho.</p></div></div>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
