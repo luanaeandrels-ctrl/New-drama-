@@ -279,80 +279,79 @@ function pickSupportedMime(){
   return '';
 }
 function compressVideoFile(file, onProgress){
-  return new Promise((resolve, reject)=>{
-    if(file.size<=MAX_FILE_BYTES){ resolve(file); return; }
-    const url=URL.createObjectURL(file);
-    const video=document.createElement('video');
-    video.muted=true; video.playsInline=true; video.preload='auto'; video.src=url;
-    video.onloadedmetadata=()=>{
-      const dur=video.duration||0;
-      if(!dur || !isFinite(dur) || dur<=0){ URL.revokeObjectURL(url); resolve(file); return; }
-      // Alvo: 720p, bitrate calculado para caber em ~9MB
-      const targetBitrate=Math.max(400000, Math.min(2500000, Math.floor((COMPRESS_TARGET_BYTES*8)/dur)));
-      const scale=Math.min(1, 720/Math.max(video.videoWidth||720, video.videoHeight||720));
-      const w=Math.max(2, Math.floor((video.videoWidth||1280)*scale/2)*2);
-      const h=Math.max(2, Math.floor((video.videoHeight||720)*scale/2)*2);
-      const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
-      const ctx=canvas.getContext('2d');
-      let stream=null;
-      try{ stream=canvas.captureStream(30); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
-      const mime=pickSupportedMime();
-      let rec=null;
-      try{ rec=new MediaRecorder(stream, mime?{mimeType:mime, videoBitsPerSecond:targetBitrate}:{videoBitsPerSecond:targetBitrate}); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
-      const chunks=[];
-      rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
-      rec.onstop=()=>{
-        URL.revokeObjectURL(url);
-        const type=mime||'video/webm';
-        const blob=new Blob(chunks,{type});
-        // Se não conseguiu reduzir, devolve o original para tentar enviar mesmo assim
-        if(!blob.size || blob.size>=file.size){ resolve(file); return; }
-        const out=new File([blob], file.name.replace(/\.[^.]+$/, '')+'-otimizado.webm', {type, lastModified:Date.now()});
-        resolve(out);
-      };
-      rec.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-      video.onplay=()=>{
-        const start=performance.now();
-        const draw=()=>{
-          if(video.ended || video.paused){ try{ rec.stop(); }catch(e){} return; }
-          try{ ctx.drawImage(video,0,0,w,h); }catch(e){}
-          const pct=dur?Math.min(96,(video.currentTime/dur)*96):10;
-          if(onProgress) onProgress(pct);
+  // Tenta até 3 vezes, cada vez apertando mais: 720p -> 480p -> 360p
+  // Porque alguns celulares ignoram o bitrate na primeira tentativa e ainda deixam acima de 10MB
+  const attempts=[
+    {maxH:720, minBitrate:400000, maxBitrate:2500000},
+    {maxH:480, minBitrate:300000, maxBitrate:1200000},
+    {maxH:360, minBitrate:200000, maxBitrate:700000},
+  ];
+  const tryOnce=(attemptIdx)=>{
+    return new Promise((resolve)=>{
+      if(file.size<=MAX_FILE_BYTES){ resolve(file); return; }
+      const cfg=attempts[attemptIdx]||attempts[attempts.length-1];
+      const url=URL.createObjectURL(file);
+      const video=document.createElement('video');
+      video.muted=true; video.playsInline=true; video.preload='auto'; video.src=url;
+      video.onloadedmetadata=()=>{
+        const dur=video.duration||0;
+        if(!dur || !isFinite(dur) || dur<=0){ URL.revokeObjectURL(url); resolve(file); return; }
+        const targetBitrate=Math.max(cfg.minBitrate, Math.min(cfg.maxBitrate, Math.floor((COMPRESS_TARGET_BYTES*8)/dur)));
+        const scale=Math.min(1, cfg.maxH/Math.max(video.videoWidth||720, video.videoHeight||720));
+        const w=Math.max(2, Math.floor((video.videoWidth||1280)*scale/2)*2);
+        const h=Math.max(2, Math.floor((video.videoHeight||720)*scale/2)*2);
+        const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+        const ctx=canvas.getContext('2d');
+        let stream=null;
+        try{ stream=canvas.captureStream(24); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
+        const mime=pickSupportedMime();
+        let rec=null;
+        try{ rec=new MediaRecorder(stream, mime?{mimeType:mime, videoBitsPerSecond:targetBitrate}:{videoBitsPerSecond:targetBitrate}); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
+        const chunks=[];
+        rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
+        rec.onstop=()=>{
+          URL.revokeObjectURL(url);
+          const type=mime||'video/webm';
+          const blob=new Blob(chunks,{type});
+          if(!blob.size){ resolve(file); return; }
+          const out=new File([blob], file.name.replace(/\.[^.]+$/, '')+'-otimizado.webm', {type, lastModified:Date.now()});
+          resolve(out);
+        };
+        rec.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
+        video.onplay=()=>{
+          const draw=()=>{
+            if(video.ended || video.paused){ try{ rec.stop(); }catch(e){} return; }
+            try{ ctx.drawImage(video,0,0,w,h); }catch(e){}
+            const base = (attemptIdx/attempts.length)*100;
+            const pct=dur?Math.min(96, base + (video.currentTime/dur)*(96/attempts.length)):10;
+            if(onProgress) onProgress(pct);
+            requestAnimationFrame(draw);
+          };
           requestAnimationFrame(draw);
         };
-        requestAnimationFrame(draw);
+        video.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
+        rec.start(1000);
+        video.play().catch(()=>{ URL.revokeObjectURL(url); resolve(file); });
+        setTimeout(()=>{ try{ if(rec.state!=='inactive') rec.stop(); }catch(e){} try{ video.pause(); }catch(e){} }, 90000);
       };
       video.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-      rec.start(1000);
-      video.play().catch(()=>{ URL.revokeObjectURL(url); resolve(file); });
-      // Trava de segurança: 90s
-      setTimeout(()=>{ try{ if(rec.state!=='inactive') rec.stop(); }catch(e){} try{ video.pause(); }catch(e){} }, 90000);
-    };
-    video.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-  });
+    });
+  };
+  // Roda as tentativas em sequência até caber em 9,5MB
+  return (async()=>{
+    let current=file;
+    for(let i=0;i<attempts.length;i++){
+      const out=await tryOnce(i);
+      // Se não conseguiu comprimir nada, para
+      if(out===file && i>0) break;
+      current=out;
+      if(current.size<=COMPRESS_TARGET_BYTES) break;
+      // Se ainda ficou grande, tenta de novo apertando mais
+      if(i<attempts.length-1 && onProgress) onProgress(10+i*10);
+    }
+    return current;
+  })();
 }
-
-let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
-  user:{ uid:'', loggedIn:false, name:'Usuária', handle:'@usuaria', email:'', avatar:'./aconchego.png', universeBio:'', accentColor:'#fbbf24', customBgUrl:'', aconchegoCover:'./aconchego.png', aconchegoGroups:[], savedItems:[], blockedHandles:[], friends:[], pendingFriendRequests:[], sentFriendRequests:[] },
-  bias:{ name:'', role:'Ator', id:null, frontalUrl:'', lastUpdated:0 },
-  dailyVotes:{ date:new Date().toDateString(), used:0 },
-  directives:{ segunda:'Segunda-feira: Sob o Mesmo Guarda-Chuva. Poste a foto do seu Bias!', terca:'Terça-feira: Sorriso Inesquecível. Poste o melhor sorriso!', quarta:'Quarta-feira: Momento Fofo / Casual. Poste o Bias relaxando.', quinta:'Quinta-feira: Close no Olhar. Foco total na expressão!', sexta:'Sexta-feira: Clima de Dorama. A grande final do pódio!', sabadoDomingo:'Fim de semana: Descanso e apuração do Pódio da semana!' },
-  fandoms:[], notifications:[]
-};
-if(!appState.user.aconchegoGroups) appState.user.aconchegoGroups=[];
-if(!appState.user.savedItems) appState.user.savedItems=[];
-if(!appState.user.blockedHandles) appState.user.blockedHandles=[];
-if(!appState.user.friends) appState.user.friends=[];
-if(!appState.user.pendingFriendRequests) appState.user.pendingFriendRequests=[];
-if(!appState.user.sentFriendRequests) appState.user.sentFriendRequests=[];
-if(!appState.user.aconchegoCover) appState.user.aconchegoCover='./aconchego.png';
-
-let postsFromFirebase=[]; let biasesDatabase=[]; let usersDirectory=[];
-let activeFandomFilter=null; let activeVisitedUserUid=null; let selectedAconchegoFilterId=null; let coverUploadTargetId='oficial'; let tempBiasPhotoPreviewUrl=''; let isProfileEditable=false;
-function saveLocal(){ localStorage.setItem(LOCAL_KEY, JSON.stringify(appState)); }
-function getCurrentDayDirective(){ const day=new Date().getDay(); const d=appState.directives||{}; if(day===1) return d.segunda||'Segunda-feira: Desafio do Dia'; if(day===2) return d.terca||'Terça-feira: Desafio do Dia'; if(day===3) return d.quarta||'Quarta-feira: Desafio do Dia'; if(day===4) return d.quinta||'Quinta-feira: Desafio do Dia'; if(day===5) return d.sexta||'Sexta-feira: Desafio do Dia'; return d.sabadoDomingo||'Fim de semana: Apuração do Pódio!'; }
-function maskHandle(rawHandle, fallbackAuthor){ let clean=(rawHandle||'').trim(); if(!clean) clean='@'+(fallbackAuthor||'user').toLowerCase().replace(/[^a-z0-9]/g,''); if(!clean.startsWith('@')) clean='@'+clean; const body=clean.slice(1); if(body.length<=2) return '@'+body[0]+'**'; if(body.length===3) return '@'+body[0]+'**'+body[2]; return `@${body.slice(0,2)}**${body.slice(-2)}`; }
-function isUserBlocked(handle, uid){ const list=appState.user.blockedHandles||[]; if(handle){ const c=handle.toLowerCase().startsWith('@')?handle.toLowerCase():'@'+handle.toLowerCase(); if(list.includes(c)) return true; } if(uid){ const u=usersDirectory.find(x=>x.uid===uid); if(u&&u.handle){ const c=u.handle.toLowerCase().startsWith('@')?u.handle.toLowerCase():'@'+u.handle.toLowerCase(); if(list.includes(c)) return true; } } return false; }
 async function uploadMediaToCloudinary(file){
   if(!validMediaFile(file)){ showFileError(file); return null; }
   let fileToSend=file;
@@ -381,7 +380,7 @@ async function uploadMediaToCloudinary(file){
     }catch(e){ fileToSend=file; }
     hideOptVideo();
     if(fileToSend.size>MAX_FILE_BYTES){
-      showSherBlussModal({title:'Vídeo ainda grande',htmlBody:'Mesmo otimizando, esse vídeo ficou acima de 10MB. Tente um vídeo de até 5 minutos um pouquinho mais curto que a gente envia na hora.'});
+      showSherBlussModal({title:'Vídeo ainda grande',htmlBody:'Tentamos comprimir 3 vezes e mesmo assim esse vídeo ficou acima de 10MB. Tente um vídeo de até 5 minutos um pouquinho mais curto, ou com menos movimento, que a gente envia na hora.'});
       return null;
     }
     if(fileToSend!==file) showSherBlussModal({title:'Vídeo otimizado! ✨',htmlBody:'Seu vídeo foi comprimido automaticamente para até 9,5MB para ficar levinho e já foi enviado.'});
