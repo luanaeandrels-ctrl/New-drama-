@@ -323,7 +323,33 @@ onAuthStateChanged(auth, async (user)=>{
 });
 function requireAuthForAction(cb){ if(!appState.user.loggedIn){ document.getElementById('authGateOverlay').style.display='flex'; return; } cb(); }
 window.closeAuthGate=function(){ document.getElementById('authGateOverlay').style.display='none'; };
-window.loginWithGoogle=async function(){ try{ const querChrome = confirm('Para mostrar a listinha das suas contas do Google, abrir no Chrome?\n\nOK = Abrir no Chrome (mostra a listinha)\nCancelar = Continuar aqui mesmo (vai pedir para digitar)'); if(querChrome){ window.open(window.location.href, '_blank'); return; } await signInWithRedirect(auth,provider); }catch(e){ showSherBlussModal({title:'Aviso de Login',htmlBody:escapeHtml(e.message)}); } };
+window.loginWithGoogle=async function(){
+  // Mostra a frase certinha: Você está saindo do app
+  const overlay = document.createElement('div');
+  overlay.id = 'sairDoAppOverlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:300;background:rgba(4,7,18,.92);display:flex;align-items:center;justify-content:center;padding:20px;';
+  overlay.innerHTML = '<div style="background:#12182e;border:1px solid #fbbf24;border-radius:20px;padding:26px;max-width:360px;width:100%;text-align:center;">'
+    + '<img src="./logo.png" style="width:80px;height:80px;border-radius:50%;margin-bottom:12px;">'
+    + '<h3 style="color:#fbbf24;font-size:18px;margin-bottom:8px;">Você está saindo do app</h3>'
+    + '<p style="color:#e2e8f0;font-size:13.5px;line-height:1.5;margin-bottom:18px;">Para mostrar a listinha das suas contas do Google, vamos abrir o login do Google no Chrome.<br><br>Escolha sua conta lá, e depois volte para o app que você já vai estar logada!</p>'
+    + '<button id="btnSairProChrome" style="background:#fbbf24;border:none;color:#060a1e;font-weight:800;padding:12px 18px;border-radius:99px;width:100%;cursor:pointer;font-size:14px;margin-bottom:8px;">Continuar para o login do Google →</button>'
+    + '<button id="btnFicarNoApp" style="background:transparent;border:1px solid rgba(255,255,255,.25);color:#e2e8f0;padding:10px 16px;border-radius:99px;width:100%;cursor:pointer;font-size:13px;">Ficar aqui mesmo</button>'
+    + '</div>';
+  document.body.appendChild(overlay);
+  document.getElementById('btnFicarNoApp').onclick = ()=>{ overlay.remove(); signInWithRedirect(auth,provider).catch(e=>showSherBlussModal({title:'Aviso de Login',htmlBody:escapeHtml(e.message)})); };
+  document.getElementById('btnSairProChrome').onclick = ()=>{
+    // Sai de verdade do app e abre o Chrome com o login do Google - intent do Android
+    const destino = window.location.origin + window.location.pathname + '?login=google';
+    const intentUrl = 'intent://' + destino.replace('https://','') + '#Intent;scheme=https;package=com.android.chrome;S.browser_fallback_url=' + encodeURIComponent(destino) + ';end';
+    try{ window.location.href = intentUrl; }catch(e){}
+    // Se o intent não abrir em 1s, tenta abrir normal no Chrome
+    setTimeout(()=>{ try{ window.open(destino, '_blank'); }catch(e){} }, 1000);
+  };
+};
+// Se abriu no Chrome com ?login=google, já abre o login do Google direto
+if(window.location.search.includes('login=google')){
+  setTimeout(()=>{ try{ signInWithRedirect(auth,provider); }catch(e){} }, 600);
+}
 getRedirectResult(auth).then((res)=>{ if(res && res.user){ closeAuthGate(); } }).catch(()=>{});
 window.showManualRegisterForm=function(){ const card=document.getElementById('authCardMain'); card.innerHTML=`<img src="./logo.png" class="auth-logo" style="max-width:90px;"><h3 style="color:var(--gold-accent);font-size:16px;margin-bottom:10px;">Criar Conta Real (Firebase)</h3><div class="form-group"><input type="text" id="regName" class="glass-input" placeholder="Seu Nome"></div><div class="form-group"><input type="text" id="regHandle" class="glass-input" placeholder="Seu @Arroba (Ex: @luana)"></div><div class="form-group"><input type="email" id="regEmail" class="glass-input" placeholder="Seu E-mail"></div><div class="form-group"><input type="password" id="regPass" class="glass-input" placeholder="Crie uma Senha (mín. 6 dígitos)"></div><button class="btn-gold" style="margin-bottom:8px;" onclick="submitManualRegister()">Cadastrar Conta</button><button class="btn-pill-gold" style="width:100%;" onclick="location.reload()">Voltar</button>`; };
 window.submitManualRegister=async function(){ const name=document.getElementById('regName').value.trim(); const handle=document.getElementById('regHandle').value.trim(); const email=document.getElementById('regEmail').value.trim(); const pass=document.getElementById('regPass').value; if(!name||!handle||!email||!pass){ showSherBlussModal({title:'Atenção',htmlBody:'Preencha todos os campos!'}); return; } try{ const cred=await createUserWithEmailAndPassword(auth,email,pass); const user=cred.user; appState.user.uid=user.uid; appState.user.loggedIn=true; appState.user.name=name; appState.user.handle=handle.startsWith('@')?handle:'@'+handle; appState.user.email=email; await saveUserDataToFirestore(); saveLocal(); applyUserTheme(); closeAuthGate(); syncAllNotifications(); renderAll(); }catch(e){ showSherBlussModal({title:'Erro no Cadastro',htmlBody:escapeHtml(e.message)}); } };
