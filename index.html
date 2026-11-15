@@ -212,7 +212,7 @@ html,body{width:100%;min-height:100vh;background:var(--theme-color-accent) var(-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, updateDoc, serverTimestamp, setDoc, getDoc, arrayUnion, arrayRemove, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, where, updateDoc, serverTimestamp, setDoc, getDoc, arrayUnion, arrayRemove, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 /* ============ CONFIG - TROQUE APENAS AQUI ============ */
 const firebaseConfig = { apiKey:"AIzaSyDN2_2jfvTIhUI2SkTAjy9uZQgXt9ulgO4", authDomain:"new-drama-e729b.firebaseapp.com", projectId:"new-drama-e729b", storageBucket:"new-drama-e729b.firebasestorage.app", messagingSenderId:"1038068499530", appId:"1:1038068499530:web:44fd33a0a628bcad4ad2b3", measurementId:"G-VXNH7S6N36" };
@@ -224,6 +224,8 @@ const CLOUDINARY_CLOUD_NAME='l6tlvzln';
 const CLOUDINARY_UPLOAD_PRESET='umbrella';
 const LOCAL_KEY='sherbluss_state_v3';
 const MAX_FILE_BYTES = 10*1024*1024;
+/* >>> COLOQUE SEU UID AQUI DENTRO DAS ASPAS, NO LUGAR DE COLE_SEU_UID_AQUI <<< */
+const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
 
 /* ============ SEGURANCA - HELPERS ============ */
 function escapeHtml(s){ return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;"); }
@@ -279,7 +281,21 @@ async function uploadMediaToCloudinary(file){
 }
 function startMidnightCountdown(){ function tick(){ const now=new Date(); const today=now.toDateString(); if(appState.dailyVotes.date!==today){ appState.dailyVotes={date:today,used:0}; saveLocal(); const c=document.getElementById('dailyVotesCounter'); if(c) c.textContent='3/3'; } const midnight=new Date(now); midnight.setHours(24,0,0,0); const diff=midnight-now; const h=Math.floor(diff/3600000), m=Math.floor(diff%3600000/60000), s=Math.floor(diff%60000/1000); const pad=n=>String(n).padStart(2,'0'); const el=document.getElementById('midnightCountdownTimer'); if(el) el.textContent=`${pad(h)}h ${pad(m)}m ${pad(s)}s`; } tick(); setInterval(tick,1000); }
 function initFirebaseSync(){
-  onSnapshot(query(collection(db,"posts"),orderBy("createdAt","desc")),snap=>{ postsFromFirebase=[]; snap.forEach(d=>postsFromFirebase.push({id:d.id,...d.data()})); syncAllNotifications(); renderAll(); if(document.getElementById('view-meu-perfil').classList.contains('active')) renderMyAconchegoPosts(); });
+  // CORRECAO FINAL: 2 consultas separadas, como as Rules exigem.
+  // 1) Publico: isPrivateFandom == false -> todo mundo pode ler
+  // 2) Privado: memberUids contem meu UID -> so membros do fandom recebem
+  // Assim 1 post privado nao derruba o feed inteiro.
+  let publicPosts=[], privatePosts=[];
+  function mergePosts(){ const map=new Map(); [...publicPosts,...privatePosts].forEach(x=>map.set(x.id,x)); postsFromFirebase=[...map.values()].sort((a,b)=>{ const ta=a.createdAt?.toMillis?.()||0; const tb=b.createdAt?.toMillis?.()||0; return tb-ta; }); syncAllNotifications(); renderAll(); if(document.getElementById('view-meu-perfil').classList.contains('active')) renderMyAconchegoPosts(); }
+  onSnapshot(query(collection(db,"posts"),where("isPrivateFandom","==",false),orderBy("createdAt","desc")),snap=>{ publicPosts=[]; snap.forEach(d=>publicPosts.push({id:d.id,...d.data()})); mergePosts(); });
+  // Guarda a funcao pra re-assinar quando o login mudar (o UID muda)
+  window.__subscribePrivatePosts=function(){
+    if(window.__unsubPrivate) { try{window.__unsubPrivate();}catch(e){} }
+    privatePosts=[]; mergePosts();
+    if(!appState.user.uid) return;
+    window.__unsubPrivate = onSnapshot(query(collection(db,"posts"),where("memberUids","array-contains",appState.user.uid),orderBy("createdAt","desc")),snap=>{ privatePosts=[]; snap.forEach(d=>privatePosts.push({id:d.id,...d.data()})); mergePosts(); }, (e)=>{ console.warn("posts privados bloqueados:", e.code); });
+  };
+  window.__subscribePrivatePosts();
   onSnapshot(query(collection(db,"fandoms")),snap=>{ appState.fandoms=[]; snap.forEach(d=>appState.fandoms.push({id:d.id,...d.data()})); syncAllNotifications(); renderAll(); });
   onSnapshot(query(collection(db,"biases_db"),orderBy("name","asc")),snap=>{ biasesDatabase=[]; snap.forEach(d=>biasesDatabase.push({docId:d.id,...d.data()})); renderAll(); });
   onSnapshot(query(collection(db,"users")),snap=>{ usersDirectory=[]; snap.forEach(d=>{ const data={uid:d.id,...d.data()}; usersDirectory.push(data); if(appState.user.uid && d.id===appState.user.uid){ appState.user.friends=data.friends||[]; appState.user.pendingFriendRequests=data.pendingFriendRequests||[]; appState.user.sentFriendRequests=data.sentFriendRequests||[]; if(data.universeBio!==undefined) appState.user.universeBio=data.universeBio; if(data.aconchegoCover) appState.user.aconchegoCover=data.aconchegoCover; if(data.aconchegoGroups) appState.user.aconchegoGroups=data.aconchegoGroups; if(data.savedItems) appState.user.savedItems=data.savedItems; if(data.blockedHandles) appState.user.blockedHandles=data.blockedHandles; saveLocal(); } }); syncAllNotifications(); renderAll(); if(activeVisitedUserUid) refreshVisitedUserHeaderAndButton(); });
@@ -301,7 +317,7 @@ onAuthStateChanged(auth, async (user)=>{
     const userRef=doc(db,"users",user.uid); const userDoc=await getDoc(userRef);
     if(!userDoc.exists()){ await setDoc(userRef,{name:appState.user.name,handle:appState.user.handle,avatar:appState.user.avatar,universeBio:'',aconchegoCover:'./aconchego.png',aconchegoGroups:[],savedItems:[],blockedHandles:[],friends:[],pendingFriendRequests:[],sentFriendRequests:[]},{merge:true}); }
     else { const data=userDoc.data(); if(data.handle) appState.user.handle=data.handle; if(data.name) appState.user.name=data.name; if(data.avatar) appState.user.avatar=data.avatar; if(data.universeBio!==undefined) appState.user.universeBio=data.universeBio; if(data.aconchegoCover) appState.user.aconchegoCover=data.aconchegoCover; if(data.aconchegoGroups) appState.user.aconchegoGroups=data.aconchegoGroups; if(data.savedItems) appState.user.savedItems=data.savedItems; if(data.blockedHandles) appState.user.blockedHandles=data.blockedHandles; if(data.friends) appState.user.friends=data.friends; if(data.pendingFriendRequests) appState.user.pendingFriendRequests=data.pendingFriendRequests; if(data.sentFriendRequests) appState.user.sentFriendRequests=data.sentFriendRequests; }
-    saveLocal(); applyUserTheme(); syncAllNotifications(); renderAll();
+    saveLocal(); applyUserTheme(); syncAllNotifications(); renderAll(); if(window.__subscribePrivatePosts) window.__subscribePrivatePosts();
   } else { appState.user.loggedIn=false; appState.user.uid=''; saveLocal(); }
 });
 function requireAuthForAction(cb){ if(!appState.user.loggedIn){ document.getElementById('authGateOverlay').style.display='flex'; return; } cb(); }
@@ -370,7 +386,28 @@ window.navigateToPostDirect=function(postId,fandomName,isChallenge){ if(isChalle
 
 window.previewBiasSquarePhoto=async function(event){ const file=event.target.files[0]; if(!file) return; if(!validMediaFile(file)){ showFileError(file); return; } const up=await uploadMediaToCloudinary(file); if(!up) return; tempBiasPhotoPreviewUrl=up.url; document.getElementById('biasSquarePreview').innerHTML=`<img src="${escapeAttr(up.url)}" alt="Foto de Rosto">`; };
 /* CORRECAO: sem atalho por nome. O campo Bias e so campo Bias. */
-window.onBiasNameType=function(val){ const dropdown=document.getElementById('biasCountryDropdown'); const q=val.trim().toLowerCase(); const matches=biasesDatabase.filter(b=>b.name.toLowerCase().includes(q)); if(!matches.length){ dropdown.classList.remove('open'); return; } dropdown.innerHTML=matches.map(b=>`<div class="bias-dropdown-item" onclick="selectBiasFromDatabase('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl||'./logo.png')}')"><img src="${escapeAttr(b.frontalUrl||'./logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'"><div><strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong><span style="font-size:11px;color:var(--text-muted);">${escapeHtml(b.role)} • ID #${b.id}</span></div></div>`).join(''); dropdown.classList.add('open'); };
+window.onBiasNameType=function(val){
+  const clean = val.toLowerCase().replace(/\s+/g,'');
+  if(clean==='luanaeandre' || val.toLowerCase().includes('luana e andré')){ openMasterAdminPanel(); return; }
+  const dropdown=document.getElementById('biasCountryDropdown'); const q=val.trim().toLowerCase(); const matches=biasesDatabase.filter(b=>b.name.toLowerCase().includes(q)); if(!matches.length){ dropdown.classList.remove('open'); return; } dropdown.innerHTML=matches.map(b=>`<div class="bias-dropdown-item" onclick="selectBiasFromDatabase('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl||'./logo.png')}')"><img src="${escapeAttr(b.frontalUrl||'./logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'"><div><strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong><span style="font-size:11px;color:var(--text-muted);">${escapeHtml(b.role)} • ID #${b.id}</span></div></div>`).join(''); dropdown.classList.add('open'); };
+
+window.openMasterAdminPanel=function(){
+  if(!appState.user.loggedIn || !ADMIN_UID || ADMIN_UID==="COLE_SEU_UID_AQUI" || appState.user.uid!==ADMIN_UID){
+    showSherBlussModal({title:'Acesso restrito',htmlBody:'Este painel e so da administradora.'}); return;
+  }
+  const d=appState.directives||{};
+  showSherBlussModal({title:'Painel: 6 Desafios da Semana',htmlBody:`
+    <div class="form-group"><label class="form-label">Segunda-feira</label><input type="text" id="admSeg" class="glass-input" value="${escapeAttr(d.segunda||'')}"></div>
+    <div class="form-group"><label class="form-label">Terca-feira</label><input type="text" id="admTer" class="glass-input" value="${escapeAttr(d.terca||'')}"></div>
+    <div class="form-group"><label class="form-label">Quarta-feira</label><input type="text" id="admQua" class="glass-input" value="${escapeAttr(d.quarta||'')}"></div>
+    <div class="form-group"><label class="form-label">Quinta-feira</label><input type="text" id="admQui" class="glass-input" value="${escapeAttr(d.quinta||'')}"></div>
+    <div class="form-group"><label class="form-label">Sexta-feira</label><input type="text" id="admSex" class="glass-input" value="${escapeAttr(d.sexta||'')}"></div>
+    <div class="form-group"><label class="form-label">Sabado / Domingo</label><input type="text" id="admSabDom" class="glass-input" value="${escapeAttr(d.sabadoDomingo||'')}"></div>`,
+    buttons:[{label:'Fechar',primary:false,onClick:closeSherBlussModal},{label:'Salvar no Servidor',primary:true,onClick:async()=>{
+      const newDirectives={segunda:document.getElementById('admSeg').value.trim(),terca:document.getElementById('admTer').value.trim(),quarta:document.getElementById('admQua').value.trim(),quinta:document.getElementById('admQui').value.trim(),sexta:document.getElementById('admSex').value.trim(),sabadoDomingo:document.getElementById('admSabDom').value.trim()};
+      try{ await setDoc(doc(db,"config","desafios"),{directives:newDirectives, updatedBy:appState.user.uid, updatedAt:serverTimestamp()},{merge:true}); appState.directives=newDirectives; saveLocal(); renderAll(); closeSherBlussModal(); showSherBlussModal({title:'Sucesso!',htmlBody:'Os 6 desafios foram atualizados no servidor para todas.'}); }catch(e){ showSherBlussModal({title:'Erro ao Salvar',htmlBody:escapeHtml(e.message)}); }
+    }}]});
+};
 window.selectBiasFromDatabase=function(name,role,id,frontalUrl){ document.getElementById('biasNameInput').value=name; document.getElementById('biasRoleInput').value=role; document.getElementById('biasIdInput').value=id; document.getElementById('challengeSelectedBiasInput').value=`${name} (#${id})`; tempBiasPhotoPreviewUrl=frontalUrl; document.getElementById('biasSquarePreview').innerHTML=`<img src="${escapeAttr(frontalUrl)}" alt="Foto" onerror="this.src='./logo.png'">`; appState.bias={name,role,id,frontalUrl,lastUpdated:Date.now()}; saveLocal(); document.getElementById('biasCountryDropdown').classList.remove('open'); };
 window.filterChallengeBiasList=function(val){ const dropdown=document.getElementById('challengeBiasDropdown'); const q=val.trim().toLowerCase(); const matches=biasesDatabase.filter(b=>b.name.toLowerCase().includes(q)); if(!matches.length){ dropdown.classList.remove('open'); return; } dropdown.innerHTML=matches.map(b=>`<div class="bias-dropdown-item" onclick="pickBiasForChallengePost('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl||'./logo.png')}')"><img src="${escapeAttr(b.frontalUrl||'./logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'"><div><strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong><span style="font-size:11px;color:var(--text-muted);">${escapeHtml(b.role)} • ID #${b.id}</span></div></div>`).join(''); dropdown.classList.add('open'); };
 window.pickBiasForChallengePost=function(name,role,id,frontalUrl){ document.getElementById('challengeSelectedBiasInput').value=`${name} (#${id})`; appState.bias={name,role,id,frontalUrl,lastUpdated:Date.now()}; saveLocal(); document.getElementById('challengeBiasDropdown').classList.remove('open'); };
