@@ -146,13 +146,6 @@ html,body{width:100%;min-height:100vh;background:var(--theme-color-accent) var(-
 .lightbox-media{max-width:100%;max-height:82vh;border-radius:14px;border:1px solid var(--gold-border);object-fit:contain;background:#000}
 .lightbox-caption{margin-top:12px;font-size:13px;color:var(--gold-accent);text-align:center}
 .dots-menu-btn{background:#141b34;border:1px solid var(--gold-border);color:var(--gold-accent);border-radius:8px;padding:4px 12px;font-size:14px;cursor:pointer;font-weight:700}
-
-/* Otimizando vídeo - compressão automática */
-.opt-video-overlay{position:fixed;inset:0;z-index:999;background:rgba(4,7,18,.88);display:none;align-items:center;justify-content:center;padding:20px}
-.opt-video-card{width:100%;max-width:380px;padding:24px;text-align:center}
-.opt-video-bar{height:10px;background:rgba(255,255,255,.12);border-radius:99px;overflow:hidden;margin:14px 0 8px}
-.opt-video-fill{height:100%;width:0%;background:linear-gradient(90deg,#fbbf24,#f59e0b);border-radius:99px;transition:width .25s}
-.opt-video-pct{font-size:12px;color:var(--text-muted);font-weight:600}
 </style>
 </head>
 <body class="notranslate">
@@ -231,8 +224,6 @@ const CLOUDINARY_CLOUD_NAME='l6tlvzln';
 const CLOUDINARY_UPLOAD_PRESET='umbrella';
 const LOCAL_KEY='sherbluss_state_v3';
 const MAX_FILE_BYTES = 10*1024*1024;
-const COMPRESS_TARGET_BYTES = 9.5*1024*1024; // comprime para no máximo 9,5MB para aproveitar ao máximo os 10MB
-const MAX_VIDEO_DURATION_SEC = 5*60; // vídeos de até 5 minutos
 
 /* ============ SEGURANCA - HELPERS ============ */
 function escapeHtml(s){ return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'","&#39;"); }
@@ -250,86 +241,13 @@ function normalizeComment(c){
 function validMediaFile(file){
   if(!file) return false;
   if(!file.type.startsWith('image/') && !file.type.startsWith('video/')) return false;
-  if(file.type.startsWith('image/') && file.size>MAX_FILE_BYTES) return false;
-  // Vídeo: qualquer tamanho acima de 10MB entra para ser comprimido.
-  // O limite é tempo: até 5 minutos, verificado na hora do upload.
+  if(file.size>MAX_FILE_BYTES) return false;
   return true;
 }
 function showFileError(file){
   if(!file) return;
   if(!file.type.startsWith('image/') && !file.type.startsWith('video/')) showSherBlussModal({title:'Arquivo inválido',htmlBody:'Escolha apenas foto ou vídeo.'});
-  else if(file.type.startsWith('image/') && file.size>MAX_FILE_BYTES) showSherBlussModal({title:'Foto muito grande',htmlBody:'Escolha uma foto de até 10MB.'});
-  else if(file.type.startsWith('video/')) showSherBlussModal({title:'Vídeo de até 5 minutos',htmlBody:'Aqui é só vídeo de até 5 minutos. Escolha um vídeo de até 5 minutinhos que a gente comprime ele para você.'});
-}
-// ===== COMPRESSÃO AUTOMÁTICA NO NAVEGADOR =====
-// Mostra "Otimizando vídeo..." e comprime o vídeo no próprio aparelho,
-// sem instalar nada, sem gastar servidor. Usa Canvas + MediaRecorder.
-function showOptVideo(pct, text){
-  const ov=document.getElementById('optVideoOverlay');
-  if(!ov) return;
-  ov.style.display='flex';
-  const f=document.getElementById('optVideoFill'); if(f) f.style.width=Math.max(0,Math.min(100,pct))+'%';
-  const p=document.getElementById('optVideoPct'); if(p) p.textContent=Math.round(pct)+'%';
-  if(text){ const t2=document.getElementById('optVideoText'); if(t2) t2.textContent=text; }
-}
-function hideOptVideo(){ const ov=document.getElementById('optVideoOverlay'); if(ov) ov.style.display='none'; }
-function pickSupportedMime(){
-  const list=['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm','video/mp4'];
-  for(const m of list){ try{ if(window.MediaRecorder && MediaRecorder.isTypeSupported(m)) return m; }catch(e){} }
-  return '';
-}
-function compressVideoFile(file, onProgress){
-  return new Promise((resolve, reject)=>{
-    if(file.size<=MAX_FILE_BYTES){ resolve(file); return; }
-    const url=URL.createObjectURL(file);
-    const video=document.createElement('video');
-    video.muted=true; video.playsInline=true; video.preload='auto'; video.src=url;
-    video.onloadedmetadata=()=>{
-      const dur=video.duration||0;
-      if(!dur || !isFinite(dur) || dur<=0){ URL.revokeObjectURL(url); resolve(file); return; }
-      // Alvo: 720p, bitrate calculado para caber em ~9MB
-      const targetBitrate=Math.max(400000, Math.min(2500000, Math.floor((COMPRESS_TARGET_BYTES*8)/dur)));
-      const scale=Math.min(1, 720/Math.max(video.videoWidth||720, video.videoHeight||720));
-      const w=Math.max(2, Math.floor((video.videoWidth||1280)*scale/2)*2);
-      const h=Math.max(2, Math.floor((video.videoHeight||720)*scale/2)*2);
-      const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
-      const ctx=canvas.getContext('2d');
-      let stream=null;
-      try{ stream=canvas.captureStream(30); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
-      const mime=pickSupportedMime();
-      let rec=null;
-      try{ rec=new MediaRecorder(stream, mime?{mimeType:mime, videoBitsPerSecond:targetBitrate}:{videoBitsPerSecond:targetBitrate}); }catch(e){ URL.revokeObjectURL(url); resolve(file); return; }
-      const chunks=[];
-      rec.ondataavailable=e=>{ if(e.data && e.data.size) chunks.push(e.data); };
-      rec.onstop=()=>{
-        URL.revokeObjectURL(url);
-        const type=mime||'video/webm';
-        const blob=new Blob(chunks,{type});
-        // Se não conseguiu reduzir, devolve o original para tentar enviar mesmo assim
-        if(!blob.size || blob.size>=file.size){ resolve(file); return; }
-        const out=new File([blob], file.name.replace(/\.[^.]+$/, '')+'-otimizado.webm', {type, lastModified:Date.now()});
-        resolve(out);
-      };
-      rec.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-      video.onplay=()=>{
-        const start=performance.now();
-        const draw=()=>{
-          if(video.ended || video.paused){ try{ rec.stop(); }catch(e){} return; }
-          try{ ctx.drawImage(video,0,0,w,h); }catch(e){}
-          const pct=dur?Math.min(96,(video.currentTime/dur)*96):10;
-          if(onProgress) onProgress(pct);
-          requestAnimationFrame(draw);
-        };
-        requestAnimationFrame(draw);
-      };
-      video.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-      rec.start(1000);
-      video.play().catch(()=>{ URL.revokeObjectURL(url); resolve(file); });
-      // Trava de segurança: 90s
-      setTimeout(()=>{ try{ if(rec.state!=='inactive') rec.stop(); }catch(e){} try{ video.pause(); }catch(e){} }, 90000);
-    };
-    video.onerror=()=>{ URL.revokeObjectURL(url); resolve(file); };
-  });
+  else if(file.size>MAX_FILE_BYTES) showSherBlussModal({title:'Arquivo muito grande',htmlBody:'Escolha um arquivo de até 10MB.'});
 }
 
 let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
@@ -355,38 +273,7 @@ function maskHandle(rawHandle, fallbackAuthor){ let clean=(rawHandle||'').trim()
 function isUserBlocked(handle, uid){ const list=appState.user.blockedHandles||[]; if(handle){ const c=handle.toLowerCase().startsWith('@')?handle.toLowerCase():'@'+handle.toLowerCase(); if(list.includes(c)) return true; } if(uid){ const u=usersDirectory.find(x=>x.uid===uid); if(u&&u.handle){ const c=u.handle.toLowerCase().startsWith('@')?u.handle.toLowerCase():'@'+u.handle.toLowerCase(); if(list.includes(c)) return true; } } return false; }
 async function uploadMediaToCloudinary(file){
   if(!validMediaFile(file)){ showFileError(file); return null; }
-  let fileToSend=file;
-  // Vídeo: limite é tempo, não MB. Qualquer vídeo acima de 10MB é comprimido.
-  if(file.type.startsWith('video/')){
-    // Descobre a duração do vídeo antes de comprimir
-    const durSec = await new Promise((res)=>{
-      try{
-        const u=URL.createObjectURL(file);
-        const v=document.createElement('video'); v.preload='metadata'; v.muted=true; v.src=u;
-        v.onloadedmetadata=()=>{ const d=v.duration||0; URL.revokeObjectURL(u); res(d); };
-        v.onerror=()=>{ URL.revokeObjectURL(u); res(0); };
-        setTimeout(()=>{ try{URL.revokeObjectURL(u);}catch(e){} res(0); }, 5000);
-      }catch(e){ res(0); }
-    });
-    if(durSec && durSec > MAX_VIDEO_DURATION_SEC){
-      showSherBlussModal({title:'Vídeo de até 5 minutos',htmlBody:'Esse vídeo tem mais de 5 minutos. Aqui é só vídeo de até 5 minutos, senão não aguenta comprimir. Escolha um vídeo de até 5 minutinhos que a gente comprime ele para você.'});
-      return null;
-    }
-  }
-  // Se o vídeo passou de 10MB, comprime automaticamente no aparelho antes de enviar
-  if(file.type.startsWith('video/') && file.size>MAX_FILE_BYTES){
-    showOptVideo(2,'Vídeo de até 5 minutos. Estamos deixando seu vídeo levinho para enviar, sem você precisar fazer nada.');
-    try{
-      fileToSend=await compressVideoFile(file, (pct)=> showOptVideo(pct, 'Otimizando vídeo... '+Math.round(pct)+'% - não feche o app.'));
-    }catch(e){ fileToSend=file; }
-    hideOptVideo();
-    if(fileToSend.size>MAX_FILE_BYTES){
-      showSherBlussModal({title:'Vídeo ainda grande',htmlBody:'Mesmo otimizando, esse vídeo ficou acima de 10MB. Tente um vídeo de até 5 minutos um pouquinho mais curto que a gente envia na hora.'});
-      return null;
-    }
-    if(fileToSend!==file) showSherBlussModal({title:'Vídeo otimizado! ✨',htmlBody:'Seu vídeo foi comprimido automaticamente para até 9,5MB para ficar levinho e já foi enviado.'});
-  }
-  const isVideo=fileToSend.type.startsWith('video/'); const rt=isVideo?'video':'image'; const fd=new FormData(); fd.append('file',fileToSend); fd.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
+  const isVideo=file.type.startsWith('video/'); const rt=isVideo?'video':'image'; const fd=new FormData(); fd.append('file',file); fd.append('upload_preset',CLOUDINARY_UPLOAD_PRESET);
   try{ const r=await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${rt}/upload`,{method:'POST',body:fd}); const d=await r.json(); if(d.secure_url) return {url:d.secure_url,type:rt}; throw new Error(d.error?.message||'Falha no upload'); }
   catch(e){ console.error(e); showSherBlussModal({title:'Erro no upload',htmlBody:'Não foi possível enviar a mídia. Tente de novo.'}); return null; }
 }
@@ -544,8 +431,5 @@ function renderAll(){
 window.addEventListener('scroll',()=>{ const carousel=document.getElementById('carouselWrapper'); const title=document.getElementById('topBarCenterTitle'); const isInProfile=document.getElementById('view-meu-perfil').classList.contains('active')||document.getElementById('view-user-profile-feed').classList.contains('active'); if(window.scrollY>25){ if(!isInProfile) carousel.classList.add('scrolled'); if(title) title.classList.add('hidden-title'); } else { if(!isInProfile) carousel.classList.remove('scrolled'); if(title) title.classList.remove('hidden-title'); } },{passive:true});
 applyUserTheme(); startMidnightCountdown(); initFirebaseSync();
 </script>
-
-<!-- Otimizando vídeo -->
-<div id="optVideoOverlay" class="opt-video-overlay"><div class="glass-panel opt-video-card"><div style="font-size:34px;">🎬</div><h3 style="color:var(--gold-accent);margin:8px 0 6px;">Otimizando vídeo...</h3><p id="optVideoText" style="font-size:13px;color:var(--text-muted);line-height:1.4;">Vídeo de até 5 minutos. Estamos deixando seu vídeo levinho para enviar, sem você precisar fazer nada.</p><div class="opt-video-bar"><div id="optVideoFill" class="opt-video-fill"></div></div><div id="optVideoPct" class="opt-video-pct">0%</div><p style="font-size:11px;color:var(--text-muted);margin-top:8px;">Não feche o app, é rapidinho.</p></div></div>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
