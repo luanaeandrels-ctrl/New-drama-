@@ -1222,52 +1222,76 @@
       font-weight: 700;
     }
 
-    /* 4 - BATE-PAPO (reusa os mesmos estilos, sem mudar layout do resto) */
+    /* 4 - BATE-PAPO COM GLASSMORPHISM & BALÕES INDIVIDUAIS */
+    .chat-view-container {
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 120px);
+      justify-content: space-between;
+    }
+
     .chat-list {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
+      overflow-y: auto;
+      padding: 10px 4px 20px;
+      flex: 1;
     }
 
     .chat-msg {
       max-width: 82%;
-      padding: 9px 12px;
-      border-radius: 14px;
+      padding: 11px 14px;
+      border-radius: 16px;
       font-size: 13.5px;
       line-height: 1.45;
       word-break: break-word;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     }
 
     .chat-msg.mine {
       margin-left: auto;
-      background: #141b34;
+      background: rgba(20, 27, 52, 0.85);
       border: 1px solid var(--gold-accent);
+      border-bottom-right-radius: 4px;
     }
 
     .chat-msg.theirs {
       margin-right: auto;
-      background: #0e1222;
+      background: rgba(14, 18, 34, 0.85);
       border: 1px solid var(--gold-border);
+      border-bottom-left-radius: 4px;
     }
 
     .chat-msg img,
     .chat-msg video {
       width: 100%;
-      max-height: 320px;
+      max-height: 280px;
       object-fit: contain;
-      border-radius: 10px;
-      margin-top: 6px;
+      border-radius: 12px;
+      margin-top: 8px;
       background: #000;
+      border: 1px solid var(--gold-border);
+    }
+
+    .chat-composer-fixed-bottom {
+      width: 100%;
+      padding: 10px 0 0;
+      background: transparent;
+      margin-top: auto;
     }
 
     .chat-composer {
       display: flex;
       gap: 8px;
       align-items: center;
-      padding: 10px;
-      background: #0e1222;
-      border: 1px solid var(--gold-accent);
+      padding: 8px 12px;
+      background: var(--glass-bg);
+      border: 1.5px solid var(--gold-accent);
       border-radius: 9999px;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
     }
 
     .chat-composer input {
@@ -1277,6 +1301,11 @@
       color: var(--text-main);
       font-size: 13.5px;
       outline: none;
+      padding: 4px 6px;
+    }
+
+    .chat-composer input::placeholder {
+      color: var(--text-muted);
     }
   </style>
 </head>
@@ -1594,12 +1623,16 @@
         <span class="section-title" id="chatTitle">Bate-papo</span>
         <button class="btn-pill-gold" onclick="switchView('amigos')">Voltar</button>
       </div>
-      <div id="chatMessagesList" class="chat-list" style="margin-bottom:12px;"></div>
-      <div class="chat-composer">
-        <button type="button" class="composer-plus-btn" onclick="document.getElementById('chatMediaInput').click()" title="Foto / Vídeo">+</button>
-        <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
-        <input type="text" id="chatInput" placeholder="Escreva...">
-        <button type="button" class="composer-send-btn" onclick="sendChatMessage()" title="Enviar" style="font-size:11px;width:auto;padding:0 10px;">Enviar</button>
+      <div class="chat-view-container">
+        <div id="chatMessagesList" class="chat-list"></div>
+        <div class="chat-composer-fixed-bottom">
+          <div class="chat-composer">
+            <button type="button" class="composer-plus-btn" onclick="document.getElementById('chatMediaInput').click()" title="Foto / Vídeo">+</button>
+            <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
+            <input type="text" id="chatInput" placeholder="Escreva...">
+            <button type="button" class="composer-send-btn" onclick="sendChatMessage()" title="Enviar" style="font-size:11px;width:auto;padding:0 10px;">Enviar</button>
+          </div>
+        </div>
       </div>
     </section>
   </div>
@@ -2961,7 +2994,7 @@
       if (last) last.scrollIntoView({ block: 'end' });
     }
 
-    /* 4 - BATE-PAPO EM TEMPO REAL com onSnapshot */
+    /* 4 - BATE-PAPO EM TEMPO REAL COM PARTICIPANTS PARA O FIRESTORE */
     window.openChatWith = function(uid, name) {
       requireAuthForAction(() => {
         if (!uid || uid === appState.user.uid) return;
@@ -3000,8 +3033,10 @@
       input.value = '';
 
       const cid = chatIdFor(appState.user.uid, activeChatUid);
+      const participantsList = [appState.user.uid, activeChatUid];
+
       await setDoc(doc(db, "chats", cid), {
-        participants: [appState.user.uid, activeChatUid],
+        participants: participantsList,
         updatedAt: serverTimestamp()
       }, { merge: true });
 
@@ -3009,6 +3044,7 @@
         text,
         senderUid: appState.user.uid,
         senderName: appState.user.name,
+        participants: participantsList, // Exigido pelas regras do Firestore
         media: '',
         mediaType: '',
         createdAt: serverTimestamp()
@@ -3027,8 +3063,10 @@
       }
 
       const cid = chatIdFor(appState.user.uid, activeChatUid);
+      const participantsList = [appState.user.uid, activeChatUid];
+
       await setDoc(doc(db, "chats", cid), {
-        participants: [appState.user.uid, activeChatUid],
+        participants: participantsList,
         updatedAt: serverTimestamp()
       }, { merge: true });
 
@@ -3036,6 +3074,7 @@
         text: '',
         senderUid: appState.user.uid,
         senderName: appState.user.name,
+        participants: participantsList, // Exigido pelas regras do Firestore
         media: up.url,
         mediaType: up.type,
         createdAt: serverTimestamp()
