@@ -2269,7 +2269,7 @@
         if (activeVisitedUserUid) refreshVisitedUserHeaderAndButton();
       });
 
-      onSnapshot(query(collection(db, "config", "desafios")), snap => {
+      onSnapshot(doc(db, "config", "desafios"), snap => {
         if (snap.exists() && snap.data().directives) {
           appState.directives = snap.data().directives;
           saveLocal();
