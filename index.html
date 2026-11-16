@@ -114,7 +114,7 @@
       border-radius: 50%;
     }
 
-    /* BARRA SUPERIOR ANCORADA E ESTÁVEL (Sem tremer no modo desktop do celular) */
+    /* BARRA SUPERIOR ANCORADA E ESTÁVEL */
     .unified-top-bar {
       width: 100%;
       max-width: 760px;
@@ -251,7 +251,7 @@
       flex-shrink: 0;
     }
 
-    /* CARROSSEL SUAVE E ESTÁVEL (Sem tremedeira na rolagem) */
+    /* CARROSSEL SUAVE E ESTÁVEL */
     .main-carousel-wrapper {
       width: 100%;
       max-width: 760px;
@@ -2007,14 +2007,6 @@
         return null;
       }
     }
-
-    window.toggleFeedVideo = function(el) {
-      if (el.paused) {
-        el.play().catch(() => {});
-      } else {
-        el.pause();
-      }
-    };
 
     let appState = JSON.parse(localStorage.getItem(LOCAL_KEY)) || {
       user: {
@@ -4361,7 +4353,7 @@
     function renderPostCardHTML(post) {
       const mediaHtml = post.media
         ? post.mediaType === 'video'
-          ? `<video src="${escapeAttr(post.media)}" class="post-media" playsinline preload="metadata" muted onclick="toggleFeedVideo(this)"></video>`
+          ? `<video src="${escapeAttr(post.media)}" class="post-media" controls preload="metadata" playsinline></video>`
           : `<img src="${escapeAttr(post.media)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`
         : '';
 
