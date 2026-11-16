@@ -1213,7 +1213,7 @@
       font-weight: 700;
     }
 
-    /* BATE-PAPO - Tela isolada fixa e perfeita para telemóvel */
+    /* BATE-PAPO - Tela isolada fixa e perfeita para telemóvel (Layout Flex corrigido) */
     #view-chat {
       display: none;
       flex-direction: column;
@@ -1235,16 +1235,13 @@
     }
 
     .chat-header-fixed {
-      position: sticky;
-      top: 0;
-      z-index: 20;
+      flex-shrink: 0;
       background: rgba(14, 18, 34, 0.95);
       backdrop-filter: blur(10px);
       margin-bottom: 10px;
       padding: 10px 14px;
       border-radius: 14px;
       border: 1px solid var(--gold-border);
-      flex-shrink: 0;
     }
 
     .chat-list {
@@ -1253,7 +1250,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-bottom: 80px;
+      padding-bottom: 12px;
       scrollbar-width: thin;
     }
 
@@ -1289,11 +1286,8 @@
     }
 
     .chat-composer {
-      position: absolute;
-      bottom: 12px;
-      left: 16px;
-      right: 16px;
-      z-index: 55;
+      flex-shrink: 0;
+      margin-top: 8px;
       display: flex;
       gap: 8px;
       align-items: center;
@@ -2080,7 +2074,6 @@
       localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
     }
 
-    // Sistema de presença online (Heartbeat a cada 1 minuto)
     function startOnlineHeartbeat() {
       if (!appState.user.uid) return;
       updateDoc(doc(db, "users", appState.user.uid), {
@@ -2100,7 +2093,7 @@
     function renderOnlineDot(userData) {
       if (!userData || !userData.lastSeen || !userData.lastSeen.toMillis) return '';
       const diffMs = Date.now() - userData.lastSeen.toMillis();
-      const isOnline = diffMs < 120000; // Menos de 2 min = online
+      const isOnline = diffMs < 120000;
       return isOnline ? `<span class="online-dot" title="Online agora"></span>` : '';
     }
 
