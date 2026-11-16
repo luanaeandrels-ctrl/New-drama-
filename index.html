@@ -1220,7 +1220,7 @@
       font-weight: 700;
     }
 
-    /* BATE-PAPO - Layout Perfeito, Fixo e Otimizado para Celular */
+    /* BATE-PAPO - Layout Otimizado e Correção de Toque no Celular */
     #view-chat {
       display: none;
       flex-direction: column;
@@ -1232,6 +1232,7 @@
       background: var(--theme-color-accent);
       z-index: 60;
       padding: 0;
+      pointer-events: auto;
     }
 
     #view-chat.active {
@@ -3055,7 +3056,6 @@
         document.getElementById('chatTitle').textContent = activeChatName;
         document.getElementById('chatUserAvatar').src = activeChatAvatar;
 
-        // Determinar e atualizar status online/offline baseado em atividade recente ou presença
         const targetUser = usersDirectory.find(u => u.uid === uid);
         const isOnline = targetUser && targetUser.lastActive ? (Date.now() - targetUser.lastActive < 300000) : true;
         const dot = document.getElementById('chatStatusDot');
@@ -3098,7 +3098,7 @@
       const text = input.value.trim();
       if (!text) return;
       input.value = '';
-      input.blur(); // Recolhe o teclado automaticamente no celular após o envio
+      input.blur();
 
       const cid = chatIdFor(appState.user.uid, activeChatUid);
       await setDoc(doc(db, "chats", cid), {
