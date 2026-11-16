@@ -116,7 +116,6 @@
       border-radius: 50%;
     }
 
-    /* 1 - BARRINHA FIXA */
     .unified-top-bar {
       width: 100%;
       max-width: 850px;
@@ -608,7 +607,6 @@
       display: block;
     }
 
-    /* 3 - BOLINHA DE CAPA: so bolinha dourada, sem simbolo */
     .cover-edit-dot {
       position: absolute;
       bottom: 2px;
@@ -1222,11 +1220,14 @@
       font-weight: 700;
     }
 
-    /* 4 - BATE-PAPO COM GLASSMORPHISM & BALÕES INDIVIDUAIS */
+    /* CHAT AJUSTADO: ALTURA FIXA PERFEITA E BALÕES GLASSMORPHISM */
     .chat-view-container {
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 120px);
+      height: calc(100vh - 84px);
+      max-height: calc(100vh - 84px);
+      padding-top: 54px;
+      padding-bottom: 12px;
       justify-content: space-between;
     }
 
@@ -1277,9 +1278,9 @@
 
     .chat-composer-fixed-bottom {
       width: 100%;
-      padding: 10px 0 0;
+      padding: 8px 0;
       background: transparent;
-      margin-top: auto;
+      flex-shrink: 0;
     }
 
     .chat-composer {
@@ -1619,11 +1620,11 @@
     </section>
 
     <section class="view-section" id="view-chat">
-      <div class="glass-panel section-header-bar">
-        <span class="section-title" id="chatTitle">Bate-papo</span>
-        <button class="btn-pill-gold" onclick="switchView('amigos')">Voltar</button>
-      </div>
       <div class="chat-view-container">
+        <div class="glass-panel section-header-bar" style="margin-bottom:8px;">
+          <span class="section-title" id="chatTitle">Bate-papo</span>
+          <button class="btn-pill-gold" onclick="switchView('amigos')">Voltar</button>
+        </div>
         <div id="chatMessagesList" class="chat-list"></div>
         <div class="chat-composer-fixed-bottom">
           <div class="chat-composer">
@@ -1776,7 +1777,6 @@
       }
     }
 
-    /* 5 - COMPRESSAO */
     function getVideoDuration(file) {
       return new Promise(res => {
         const v = document.createElement('video');
@@ -1985,7 +1985,6 @@
       }
     }
 
-    /* 6 - VIDEO: tocar no video da play/pausa, sem botao de play por cima */
     window.toggleFeedVideo = function(el) {
       if (el.paused) {
         el.play().catch(() => {});
@@ -2994,7 +2993,6 @@
       if (last) last.scrollIntoView({ block: 'end' });
     }
 
-    /* 4 - BATE-PAPO EM TEMPO REAL COM PARTICIPANTS PARA O FIRESTORE */
     window.openChatWith = function(uid, name) {
       requireAuthForAction(() => {
         if (!uid || uid === appState.user.uid) return;
@@ -3044,7 +3042,7 @@
         text,
         senderUid: appState.user.uid,
         senderName: appState.user.name,
-        participants: participantsList, // Exigido pelas regras do Firestore
+        participants: participantsList,
         media: '',
         mediaType: '',
         createdAt: serverTimestamp()
@@ -3074,7 +3072,7 @@
         text: '',
         senderUid: appState.user.uid,
         senderName: appState.user.name,
-        participants: participantsList, // Exigido pelas regras do Firestore
+        participants: participantsList,
         media: up.url,
         mediaType: up.type,
         createdAt: serverTimestamp()
@@ -4649,7 +4647,7 @@
           parent.postMessage({ type: "ecto:usercontent-link-click", href: url }, "*");
           return null;
         }
-        return nativeOpen ? nativeOpen.apply(window, arguments) : null;
+        return nativeOpen ? nativeOpen.apply(system, arguments) : null;
       };
 
       document.addEventListener(
