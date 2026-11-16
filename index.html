@@ -1,20 +1,25 @@
 <!DOCTYPE html>
+<!-- o próximo tópico fala sobre configuração do documento HTML -->
 <html lang="pt-BR" translate="no" class="notranslate">
 <head>
+  <!-- o próximo tópico fala sobre metadados e viewport -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google" content="notranslate">
   <title translate="no">Sher Bluss</title>
 
+  <!-- o próximo tópico fala sobre manifest e ícones -->
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#060a1e">
   <link rel="icon" type="image/png" href="./logo.png">
   <link rel="apple-touch-icon" href="./logo.png">
 
+  <!-- o próximo tópico fala sobre fontes do Google -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 
+  <!-- o próximo tópico fala sobre fontes locais e variáveis iniciais -->
   <style>
     @font-face {
       font-family: "Optimistic";
@@ -41,6 +46,7 @@
     }
   </style>
 
+  <!-- o próximo tópico fala sobre variáveis de cores, glassmorphism e estilos globais do app -->
   <style>
     :root {
       --glass-bg: rgba(18, 24, 46, .78);
@@ -1280,6 +1286,7 @@
     }
   </style>
 </head>
+<!-- o próximo tópico fala sobre o corpo da página e gate de autenticação -->
 <body class="notranslate">
 
   <input type="file" id="aconchegoCoverInput" accept="image/*" style="display:none;">
@@ -1300,6 +1307,7 @@
     </div>
   </div>
 
+  <!-- o próximo tópico fala sobre a barra de navegação superior fixa -->
   <div class="unified-top-bar" id="unifiedTopBar">
     <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego">
       <img id="headerUserAvatar" src="./aconchego.png" alt="" onerror="this.src='./logo.png'">
@@ -1314,6 +1322,7 @@
     </div>
   </div>
 
+  <!-- o próximo tópico fala sobre o carrossel principal, pódios e seções do app -->
   <div class="app-shell">
     <nav class="main-carousel-wrapper" id="carouselWrapper">
       <div class="carousel-item-clean podium-item-box" onclick="openPodiumFullscreen(1)">
@@ -1363,10 +1372,12 @@
       </div>
     </nav>
 
+    <!-- o próximo tópico fala sobre o feed principal de postagens -->
     <main class="view-section active" id="view-feed">
       <div class="feed-list" id="mainFeedList"></div>
     </main>
 
+    <!-- o próximo tópico fala sobre a seção de perfil do usuário -->
     <section class="view-section" id="view-meu-perfil">
       <div style="padding:16px 4px;margin-bottom:14px;">
         <div class="profile-hero-top">
@@ -1464,6 +1475,7 @@
       </div>
     </section>
 
+    <!-- o próximo tópico fala sobre a seção de perfil de outros usuários visitados -->
     <section class="view-section" id="view-user-profile-feed">
       <div style="padding:16px 4px;margin-bottom:14px;">
         <div class="profile-hero-top">
@@ -1491,6 +1503,7 @@
       <div class="feed-list" id="visitedProfileFeedList"></div>
     </section>
 
+    <!-- o próximo tópico fala sobre a seção de desafio semanal -->
     <section class="view-section" id="view-desafio">
       <div class="glass-panel section-header-bar">
         <span class="section-title">Desafio Semanal</span>
@@ -1553,6 +1566,7 @@
       <div class="feed-list" id="challengeFeedList"></div>
     </section>
 
+    <!-- o próximo tópico fala sobre a seção de fandoms particulares -->
     <section class="view-section" id="view-fandom">
       <div class="glass-panel section-header-bar">
         <span class="section-title">Fandoms Particulares</span>
@@ -1564,6 +1578,7 @@
       <div class="fandoms-grid-container" id="fandomsGridContainer"></div>
     </section>
 
+    <!-- o próximo tópico fala sobre a visualização interna de um fandom -->
     <section class="view-section" id="view-inside-fandom">
       <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px 14px;border-bottom:1px solid rgba(251,191,36,.2);margin-bottom:12px;">
         <div style="display:flex;align-items:center;gap:8px;">
@@ -1581,6 +1596,7 @@
       <div class="feed-list" id="insideFandomFeedList"></div>
     </section>
 
+    <!-- o próximo tópico fala sobre a seção de amigos -->
     <section class="view-section" id="view-amigos">
       <div class="glass-panel section-header-bar">
         <span class="section-title">Meus Amigos</span>
@@ -1589,6 +1605,7 @@
       <div class="feed-list" id="friendsListContainer"></div>
     </section>
 
+    <!-- o próximo tópico fala sobre a seção de bate-papo -->
     <section class="view-section" id="view-chat">
       <div class="glass-panel section-header-bar">
         <span class="section-title" id="chatTitle">Bate-papo</span>
@@ -1604,6 +1621,7 @@
     </section>
   </div>
 
+  <!-- o próximo tópico fala sobre o compositor flutuante de publicações -->
   <div class="floating-composer-wrapper" id="floatingComposerWrapper">
     <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button>
     <div class="gemini-composer">
@@ -1614,8 +1632,10 @@
     </div>
   </div>
 
+  <!-- o próximo tópico fala sobre o rodapé da aplicação -->
   <footer class="app-footer notranslate" translate="no">Sher Bluss • sherbluss.suporte@gmail.com</footer>
 
+  <!-- o próximo tópico fala sobre modals, lightbox e scripts de integração com Firebase -->
   <div class="modal-backdrop" id="customModalBackdrop">
     <div class="glass-panel modal-box">
       <h3 class="modal-title notranslate" id="customModalTitle">Sher Bluss</h3>
@@ -1630,6 +1650,7 @@
     <p class="lightbox-caption" id="lightboxCaption"></p>
   </div>
 
+  <!-- o próximo tópico fala sobre a lógica de script principal do Firebase e interações -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import {
@@ -4479,6 +4500,7 @@
     initFirebaseSync();
   </script>
 
+  <!-- o próximo tópico fala sobre scripts auxiliares de links e redimensionamento -->
   <script>
     (function() {
       var loc = location.href.replace(/#.*$/, "");
@@ -4646,6 +4668,7 @@
     })();
   </script>
 
+  <!-- o próximo tópico fala sobre o gerenciador final de eventos e foco do documento -->
   <script>
     (function() {
       var FOCUS_TYPE = "ecto:artifact-focus-request";
