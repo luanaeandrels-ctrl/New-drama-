@@ -1220,7 +1220,7 @@
       font-weight: 700;
     }
 
-    /* BATE-PAPO - Layout corrigido, fixo e perfeito para telemóvel */
+    /* BATE-PAPO - Layout Perfeito, Fixo e Otimizado para Celular */
     #view-chat {
       display: none;
       flex-direction: column;
@@ -1242,15 +1242,65 @@
       position: sticky;
       top: 0;
       z-index: 10;
-      background: rgba(18, 24, 46, .92);
+      background: rgba(18, 24, 46, .95);
       backdrop-filter: blur(10px);
       border-bottom: 1px solid var(--gold-border);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 12px 16px;
+      padding: 10px 16px;
       margin: 0;
       border-radius: 0;
+    }
+
+    .chat-header-user-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .chat-header-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid var(--gold-accent);
+      object-fit: cover;
+    }
+
+    .chat-header-text-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .chat-header-name {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--gold-accent);
+      line-height: 1.2;
+    }
+
+    .chat-header-status {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .status-dot-indicator {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .status-dot-indicator.online {
+      background: #22c55e;
+      box-shadow: 0 0 6px #22c55e;
+    }
+
+    .status-dot-indicator.offline {
+      background: #64748b;
     }
 
     .chat-list {
@@ -1259,8 +1309,9 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding: 16px 16px 90px 16px;
+      padding: 16px 16px 110px 16px;
       scrollbar-width: thin;
+      -webkit-overflow-scrolling: touch;
     }
 
     .chat-msg {
@@ -1306,9 +1357,9 @@
       display: flex;
       gap: 8px;
       align-items: center;
-      padding: 10px 16px;
-      background: rgba(14, 18, 34, .95);
-      backdrop-filter: blur(10px);
+      padding: 10px 16px calc(10px + env(safe-area-inset-bottom, 0px)) 16px;
+      background: rgba(14, 18, 34, .98);
+      backdrop-filter: blur(12px);
       border-top: 1.5px solid var(--gold-accent);
       box-shadow: 0 -6px 20px rgba(0, 0, 0, .65);
     }
@@ -1636,14 +1687,23 @@
 
     <section class="view-section" id="view-chat">
       <div class="chat-header-bar">
-        <span class="section-title" id="chatTitle">Bate-papo</span>
+        <div class="chat-header-user-info">
+          <img id="chatUserAvatar" src="./aconchego.png" class="chat-header-avatar" onerror="this.src='./logo.png'">
+          <div class="chat-header-text-group">
+            <span class="chat-header-name" id="chatTitle">Bate-papo</span>
+            <span class="chat-header-status" id="chatUserStatus">
+              <span class="status-dot-indicator offline" id="chatStatusDot"></span>
+              <span id="chatStatusText">Offline</span>
+            </span>
+          </div>
+        </div>
         <button class="btn-pill-gold" onclick="switchView('amigos')">Voltar</button>
       </div>
       <div id="chatMessagesList" class="chat-list"></div>
       <div class="chat-composer">
         <button type="button" class="composer-plus-btn" onclick="document.getElementById('chatMediaInput').click()" title="Foto / Vídeo">+</button>
         <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
-        <input type="text" id="chatInput" placeholder="Escreva...">
+        <input type="text" id="chatInput" placeholder="Escreva..." autocomplete="off">
         <button type="button" class="composer-send-btn" onclick="sendChatMessage()" title="Enviar" style="font-size:11px;width:auto;padding:0 10px;">Enviar</button>
       </div>
     </section>
@@ -2058,6 +2118,7 @@
     let isProfileEditable = false;
     let activeChatUid = null;
     let activeChatName = 'Bate-papo';
+    let activeChatAvatar = './aconchego.png';
     let chatUnsub = null;
 
     function saveLocal() {
@@ -2984,12 +3045,28 @@
       if (last) last.scrollIntoView({ block: 'end' });
     }
 
-    window.openChatWith = function(uid, name) {
+    window.openChatWith = function(uid, name, avatarUrl) {
       requireAuthForAction(() => {
         if (!uid || uid === appState.user.uid) return;
         activeChatUid = uid;
         activeChatName = name || 'Bate-papo';
+        activeChatAvatar = avatarUrl || './aconchego.png';
+
         document.getElementById('chatTitle').textContent = activeChatName;
+        document.getElementById('chatUserAvatar').src = activeChatAvatar;
+
+        // Determinar e atualizar status online/offline baseado em atividade recente ou presença
+        const targetUser = usersDirectory.find(u => u.uid === uid);
+        const isOnline = targetUser && targetUser.lastActive ? (Date.now() - targetUser.lastActive < 300000) : true;
+        const dot = document.getElementById('chatStatusDot');
+        const txt = document.getElementById('chatStatusText');
+        if (isOnline) {
+          dot.className = 'status-dot-indicator online';
+          txt.textContent = 'Online';
+        } else {
+          dot.className = 'status-dot-indicator offline';
+          txt.textContent = 'Offline';
+        }
 
         const cid = chatIdFor(appState.user.uid, uid);
         if (chatUnsub) {
@@ -3021,6 +3098,7 @@
       const text = input.value.trim();
       if (!text) return;
       input.value = '';
+      input.blur(); // Recolhe o teclado automaticamente no celular após o envio
 
       const cid = chatIdFor(appState.user.uid, activeChatUid);
       await setDoc(doc(db, "chats", cid), {
@@ -3236,7 +3314,7 @@
       const isFriend = myFriends.some(f => f.uid === activeVisitedUserUid) || (userData.friends || []).some(f => f.uid === appState.user.uid);
       const sent = (appState.user.sentFriendRequests || []).includes(activeVisitedUserUid) || (userData.pendingFriendRequests || []).some(r => r.uid === appState.user.uid);
 
-      let chatBtn = `<button type="button" class="dorama-friend-btn" style="margin-left:8px;" onclick="openChatWith('${escapeAttr(activeVisitedUserUid)}','${escapeAttr(vName)}')">Bate-papo</button>`;
+      let chatBtn = `<button type="button" class="dorama-friend-btn" style="margin-left:8px;" onclick="openChatWith('${escapeAttr(activeVisitedUserUid)}','${escapeAttr(vName)}','${escapeAttr(vAvatar)}')">Bate-papo</button>`;
 
       if (isFriend) {
         box.innerHTML = chatBtn;
@@ -4278,9 +4356,11 @@
     function updateNotifBadge() {
       const badge = document.getElementById('notifBadge');
       const countEl = document.getElementById('notifBadgeCount');
-      const count = appState.notifications.length;
+      const count = (appState.notifications || []).length;
       if (countEl) countEl.textContent = count;
-      badge.style.display = count > 0 ? 'flex' : 'none';
+      if (badge) {
+        badge.style.display = count > 0 ? 'flex' : 'none';
+      }
     }
 
     function applyUserTheme() {
@@ -4476,7 +4556,7 @@
                     <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(f.handle || '@amiga')} • ${escapeHtml(f.status || 'Amizade ativa')}</div>
                   </div>
                 </div>
-                <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}')">Bate-papo</button>
+                <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}','${escapeAttr(f.avatar || './amigos.png)}')">Bate-papo</button>
               </div>
             `)
             .join('')
