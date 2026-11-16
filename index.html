@@ -2258,7 +2258,10 @@
             if (data.savedItems) appState.user.savedItems = data.savedItems;
             if (data.blockedHandles) appState.user.blockedHandles = data.blockedHandles;
             if (data.blockedUids) appState.user.blockedUids = data.blockedUids;
+            if (data.accentColor) appState.user.accentColor = data.accentColor;
+            if (data.customBgUrl) appState.user.customBgUrl = data.customBgUrl;
             saveLocal();
+            applyUserTheme();
           }
         });
         syncAllNotifications();
@@ -2365,6 +2368,8 @@
             friends: [],
             pendingFriendRequests: [],
             sentFriendRequests: [],
+            accentColor: appState.user.accentColor || '#fbbf24',
+            customBgUrl: appState.user.customBgUrl || '',
             lastSeen: serverTimestamp()
           }, { merge: true });
         } else {
@@ -2380,13 +2385,15 @@
           if (data.friends) appState.user.friends = data.friends;
           if (data.pendingFriendRequests) appState.user.pendingFriendRequests = data.pendingFriendRequests;
           if (data.sentFriendRequests) appState.user.sentFriendRequests = data.sentFriendRequests;
+          if (data.accentColor) appState.user.accentColor = data.accentColor;
+          if (data.customBgUrl) appState.user.customBgUrl = data.customBgUrl;
         }
 
         saveLocal();
         applyUserTheme();
         syncAllNotifications();
         renderAll();
-        startOnlineHeartbeat(); // Ativa o envio do online a cada 1 min
+        startOnlineHeartbeat();
         if (window.__subscribePrivatePosts) window.__subscribePrivatePosts();
         if (window.__subscribeMyBiases) window.__subscribeMyBiases();
       } else {
@@ -2574,6 +2581,7 @@
       const el = document.getElementById('profileColorHexLabel');
       if (el) el.textContent = hex.toUpperCase();
       saveLocal();
+      saveUserDataToFirestore();
     };
 
     window.handleProfileBackgroundSelected = function(event) {
@@ -2585,20 +2593,22 @@
       }
 
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = async function(e) {
         appState.user.customBgUrl = e.target.result;
         document.documentElement.style.setProperty('--custom-bg-url', `url('${e.target.result}')`);
         document.getElementById('profileBgLabel').textContent = '✅ Fundo Personalizado Ativo';
         saveLocal();
+        await saveUserDataToFirestore();
       };
       reader.readAsDataURL(file);
     };
 
-    window.resetDefaultBackground = function() {
+    window.resetDefaultBackground = async function() {
       appState.user.customBgUrl = '';
       document.documentElement.style.setProperty('--custom-bg-url', `url('./fundo.png')`);
       document.getElementById('profileBgLabel').textContent = '🖼️ Escolher fundo na galeria';
       saveLocal();
+      await saveUserDataToFirestore();
     };
 
     window.toggleProfileEditMode = function() {
@@ -3183,6 +3193,8 @@
           friends: appState.user.friends || [],
           pendingFriendRequests: appState.user.pendingFriendRequests || [],
           sentFriendRequests: appState.user.sentFriendRequests || [],
+          accentColor: appState.user.accentColor || '#fbbf24',
+          customBgUrl: appState.user.customBgUrl || '',
           lastSeen: serverTimestamp()
         }, { merge: true });
       } catch (e) {
@@ -3456,7 +3468,7 @@
           el.style.boxShadow = '0 0 18px var(--gold-accent)';
           setTimeout(() => {
             el.style.boxShadow = '';
-          }, 2500);
+          }, 2505);
         }
       }, 250);
     };
@@ -4378,7 +4390,6 @@
         ? `Desafio Semanal${post.biasName ? ' • ' + escapeHtml(post.biasName) : ''}`
         : escapeHtml(post.fandom || 'Geral');
 
-      // Procurar dados do autor para checar o status online
       const authorUser = usersDirectory.find(u => u.uid === post.authorUid);
 
       return `
