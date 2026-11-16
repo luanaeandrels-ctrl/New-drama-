@@ -1213,7 +1213,7 @@
       font-weight: 700;
     }
 
-    /* BATE-PAPO - Tela isolada fixa e perfeita para telemóvel (Layout Flex corrigido) */
+    /* BATE-PAPO - Tela isolada fixa e perfeita para telemóvel (Layout Flex corrigido + 100dvh) */
     #view-chat {
       display: none;
       flex-direction: column;
@@ -1222,9 +1222,10 @@
       left: 0;
       right: 0;
       bottom: 0;
+      height: 100dvh;
       max-width: 760px;
       margin: 0 auto;
-      padding: 12px 16px;
+      padding: 12px 16px 20px 16px;
       z-index: 150;
       background: var(--theme-color-accent) var(--custom-bg-url) no-repeat center center fixed;
       background-size: cover;
@@ -1250,7 +1251,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-bottom: 12px;
+      padding-bottom: 90px;
       scrollbar-width: thin;
     }
 
@@ -3009,7 +3010,7 @@
           const mine = m.senderUid === appState.user.uid;
           const media = m.media
             ? m.mediaType === 'video'
-              ? `<video src="${escapeAttr(m.media)}" preload="metadata" playsinline muted onclick="toggleFeedVideo(this)"></video>`
+              ? `<video src="${escapeAttr(m.media)}" controls preload="metadata" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
               : `<img src="${escapeAttr(m.media)}" onclick="openLightbox('${escapeAttr(m.media)}','image','')">`
             : '';
           return `<div class="chat-msg ${mine ? 'mine' : 'theirs'}">${m.text ? escapeHtml(m.text) : ''}${media}</div>`;
@@ -3127,7 +3128,7 @@
                   ${
                     item.media
                       ? item.mediaType === 'video'
-                        ? `<video src="${escapeAttr(item.media)}" style="width:100%;max-height:320px;object-fit:contain;border-radius:10px;background:#000;" playsinline preload="metadata" muted onclick="toggleFeedVideo(this)"></video>`
+                        ? `<video src="${escapeAttr(item.media)}" controls preload="metadata" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
                         : `<img src="${escapeAttr(item.media)}" style="width:100%;max-height:320px;object-fit:contain;border-radius:10px;">`
                       : ''
                   }
@@ -3159,7 +3160,7 @@
             ${
               item.media
                 ? item.mediaType === 'video'
-                  ? `<video src="${escapeAttr(item.media)}" style="width:100%;max-height:280px;object-fit:contain;border-radius:10px;background:#000;" playsinline preload="metadata" muted onclick="toggleFeedVideo(this)"></video>`
+                  ? `<video src="${escapeAttr(item.media)}" controls preload="metadata" playsinline style="width:100%;max-height:280px;border-radius:10px;background:#000;"></video>`
                   : `<img src="${escapeAttr(item.media)}" style="width:100%;max-height:280px;object-fit:contain;border-radius:10px;">`
                 : ''
             }
@@ -4213,7 +4214,8 @@
         : '';
 
       let deleteHtml = isCreator
-        ? `<button class="btn-danger-pill" style="margin-top:8px;width:100%;padding:10px;" onclick="closeSherBlussModal();confirmDeleteFandom('${escapeAttr(f.id)}','${escapeAttr(activeFandomFilter)}')">🗑️ Excluir Fandom</button>`
+        ? `<button class="btn-danger-pill" style="margin-top:8px;width:100%;padding:10px;" onclick="closeSherBlussModal();confirmDeleteFandom('${escapeAttr(f.id)
+}','${escapeAttr(activeFandomFilter)}')">🗑️ Excluir Fandom</button>`
         : '';
 
       showSherBlussModal({
