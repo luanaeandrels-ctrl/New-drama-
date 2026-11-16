@@ -39,9 +39,7 @@
     :where(code, pre, kbd, samp) {
       font-family: "Optimistic Mono", ui-monospace, monospace;
     }
-  </style>
 
-  <style>
     :root {
       --glass-bg: rgba(18, 24, 46, .78);
       --glass-dark: rgba(14, 18, 34, .45);
@@ -1076,11 +1074,6 @@
       border: 2px solid #fff;
     }
 
-    .circular-color-picker::-moz-color-swatch {
-      border-radius: 50%;
-      border: 2px solid #fff;
-    }
-
     .custom-file-trigger {
       width: 100%;
       padding: 10px 13px;
@@ -1220,19 +1213,38 @@
       font-weight: 700;
     }
 
-    /* BATE-PAPO - Layout isolado e perfeito para telemóvel */
+    /* BATE-PAPO - Tela isolada fixa e perfeita para telemóvel */
     #view-chat {
       display: none;
       flex-direction: column;
-      height: calc(100vh - 90px);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       max-width: 760px;
       margin: 0 auto;
-      padding: 0 16px 12px;
-      position: relative;
+      padding: 12px 16px;
+      z-index: 150;
+      background: var(--theme-color-accent) var(--custom-bg-url) no-repeat center center fixed;
+      background-size: cover;
     }
 
     #view-chat.active {
       display: flex;
+    }
+
+    .chat-header-fixed {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(14, 18, 34, 0.95);
+      backdrop-filter: blur(10px);
+      margin-bottom: 10px;
+      padding: 10px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--gold-border);
+      flex-shrink: 0;
     }
 
     .chat-list {
@@ -1241,7 +1253,7 @@
       display: flex;
       flex-direction: column;
       gap: 10px;
-      padding-bottom: 75px;
+      padding-bottom: 80px;
       scrollbar-width: thin;
     }
 
@@ -1278,11 +1290,9 @@
 
     .chat-composer {
       position: absolute;
-      bottom: 8px;
+      bottom: 12px;
       left: 16px;
       right: 16px;
-      width: calc(100% - 32px);
-      max-width: 728px;
       z-index: 55;
       display: flex;
       gap: 8px;
@@ -1291,7 +1301,7 @@
       background: #0e1222;
       border: 1.5px solid var(--gold-accent);
       border-radius: 9999px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, .65);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .8);
     }
 
     .chat-composer input[type="text"] {
@@ -1303,6 +1313,24 @@
       font-size: 13.5px;
       outline: none;
       padding: 6px 4px;
+    }
+
+    /* Estilo do Pontinho Verde Online */
+    .avatar-container {
+      position: relative;
+      display: inline-block;
+    }
+
+    .online-dot {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 12px;
+      height: 12px;
+      background: #22c55e;
+      border: 2px solid #060a1e;
+      border-radius: 50%;
+      z-index: 3;
     }
   </style>
 </head>
@@ -1328,7 +1356,9 @@
 
   <div class="unified-top-bar" id="unifiedTopBar">
     <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego">
-      <img id="headerUserAvatar" src="./aconchego.png" alt="" onerror="this.src='./logo.png'">
+      <div class="avatar-container" style="width:100%;height:100%;">
+        <img id="headerUserAvatar" src="./aconchego.png" alt="" onerror="this.src='./logo.png'" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+      </div>
       <span class="droplet-badge-overlay" id="notifBadge" onclick="event.stopPropagation();openNotificationsModal()">
         <span id="notifBadgeCount">0</span>
       </span>
@@ -1397,7 +1427,9 @@
       <div style="padding:16px 4px;margin-bottom:14px;">
         <div class="profile-hero-top">
           <div class="profile-avatar-130-box">
-            <img id="myProfilePageAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" class="profile-avatar-130">
+            <div class="avatar-container">
+              <img id="myProfilePageAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" class="profile-avatar-130">
+            </div>
             <h3 id="myProfilePageNameDisplay" class="profile-name-under-130">Usuário</h3>
             <span id="myProfilePageHandleDisplay" class="profile-handle-under-130 notranslate">@arroba</span>
             <div class="edit-trigger-row">
@@ -1494,7 +1526,9 @@
       <div style="padding:16px 4px;margin-bottom:14px;">
         <div class="profile-hero-top">
           <div class="profile-avatar-130-box">
-            <img id="visitedProfileAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" class="profile-avatar-130">
+            <div class="avatar-container">
+              <img id="visitedProfileAvatar" src="./aconchego.png" onerror="this.src='./logo.png'" class="profile-avatar-130">
+            </div>
             <h3 id="visitedProfileTitleName" class="profile-name-under-130">Coleguinha</h3>
             <span id="visitedProfileHandleSub" class="profile-handle-under-130 notranslate">@arroba</span>
           </div>
@@ -1614,21 +1648,22 @@
       </div>
       <div class="feed-list" id="friendsListContainer"></div>
     </section>
-
-    <section class="view-section" id="view-chat">
-      <div class="glass-panel section-header-bar" style="margin-bottom:8px;">
-        <span class="section-title" id="chatTitle">Bate-papo</span>
-        <button class="btn-pill-gold" onclick="switchView('amigos')">Voltar</button>
-      </div>
-      <div id="chatMessagesList" class="chat-list"></div>
-      <div class="chat-composer">
-        <button type="button" class="composer-plus-btn" onclick="document.getElementById('chatMediaInput').click()" title="Foto / Vídeo">+</button>
-        <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
-        <input type="text" id="chatInput" placeholder="Escreva...">
-        <button type="button" class="composer-send-btn" onclick="sendChatMessage()" title="Enviar" style="font-size:11px;width:auto;padding:0 10px;">Enviar</button>
-      </div>
-    </section>
   </div>
+
+  <!-- SEÇÃO DE CHAT ISOLADA E FIXA -->
+  <section class="view-section" id="view-chat">
+    <div class="glass-panel chat-header-fixed" style="display:flex;align-items:center;justify-content:space-between;">
+      <span class="section-title" id="chatTitle">Bate-papo</span>
+      <button class="btn-pill-gold" onclick="switchView('amigos')">Voltar</button>
+    </div>
+    <div id="chatMessagesList" class="chat-list"></div>
+    <div class="chat-composer">
+      <button type="button" class="composer-plus-btn" onclick="document.getElementById('chatMediaInput').click()" title="Foto / Vídeo">+</button>
+      <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
+      <input type="text" id="chatInput" placeholder="Escreva...">
+      <button type="button" class="composer-send-btn" onclick="sendChatMessage()" title="Enviar" style="font-size:11px;width:auto;padding:0 10px;">Enviar</button>
+    </div>
+  </section>
 
   <div class="floating-composer-wrapper" id="floatingComposerWrapper">
     <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button>
@@ -2045,6 +2080,30 @@
       localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
     }
 
+    // Sistema de presença online (Heartbeat a cada 1 minuto)
+    function startOnlineHeartbeat() {
+      if (!appState.user.uid) return;
+      updateDoc(doc(db, "users", appState.user.uid), {
+        lastSeen: serverTimestamp()
+      }).catch(() => {});
+
+      setInterval(async () => {
+        if (!appState.user.uid) return;
+        try {
+          await updateDoc(doc(db, "users", appState.user.uid), {
+            lastSeen: serverTimestamp()
+          });
+        } catch (e) {}
+      }, 60000);
+    }
+
+    function renderOnlineDot(userData) {
+      if (!userData || !userData.lastSeen || !userData.lastSeen.toMillis) return '';
+      const diffMs = Date.now() - userData.lastSeen.toMillis();
+      const isOnline = diffMs < 120000; // Menos de 2 min = online
+      return isOnline ? `<span class="online-dot" title="Online agora"></span>` : '';
+    }
+
     function getCurrentDayDirective() {
       const day = new Date().getDay();
       const d = appState.directives || {};
@@ -2133,16 +2192,12 @@
           snap.forEach(d => publicPosts.push({ id: d.id, ...d.data() }));
           mergePosts();
         },
-        e => {
-          console.warn("posts publicos:", e.code);
-        }
+        e => { console.warn("posts publicos:", e.code); }
       );
 
       window.__subscribePrivatePosts = function() {
         if (window.__unsubPrivate) {
-          try {
-            window.__unsubPrivate();
-          } catch (e) {}
+          try { window.__unsubPrivate(); } catch (e) {}
         }
         privatePosts = [];
         mergePosts();
@@ -2155,9 +2210,7 @@
             snap.forEach(d => privatePosts.push({ id: d.id, ...d.data() }));
             mergePosts();
           },
-          e => {
-            console.warn("posts privados:", e.code);
-          }
+          e => { console.warn("posts privados:", e.code); }
         );
       };
       window.__subscribePrivatePosts();
@@ -2171,9 +2224,7 @@
 
       window.__subscribeMyBiases = function() {
         if (window.__unsubBiases) {
-          try {
-            window.__unsubBiases();
-          } catch (e) {}
+          try { window.__unsubBiases(); } catch (e) {}
         }
         biasesDatabase = [];
         renderAll();
@@ -2187,9 +2238,7 @@
             biasesDatabase.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
             renderAll();
           },
-          e => {
-            console.warn("bias pessoal:", e.code);
-          }
+          e => { console.warn("bias pessoal:", e.code); }
         );
       };
       window.__subscribeMyBiases();
@@ -2315,7 +2364,8 @@
             blockedHandles: [],
             friends: [],
             pendingFriendRequests: [],
-            sentFriendRequests: []
+            sentFriendRequests: [],
+            lastSeen: serverTimestamp()
           }, { merge: true });
         } else {
           const data = userDoc.data();
@@ -2336,6 +2386,7 @@
         applyUserTheme();
         syncAllNotifications();
         renderAll();
+        startOnlineHeartbeat(); // Ativa o envio do online a cada 1 min
         if (window.__subscribePrivatePosts) window.__subscribePrivatePosts();
         if (window.__subscribeMyBiases) window.__subscribeMyBiases();
       } else {
@@ -2421,6 +2472,7 @@
         closeAuthGate();
         syncAllNotifications();
         renderAll();
+        startOnlineHeartbeat();
       } catch (e) {
         showSherBlussModal({
           title: 'Erro no Cadastro',
@@ -2974,9 +3026,7 @@
 
         const cid = chatIdFor(appState.user.uid, uid);
         if (chatUnsub) {
-          try {
-            chatUnsub();
-          } catch (e) {}
+          try { chatUnsub(); } catch (e) {}
         }
 
         chatUnsub = onSnapshot(
@@ -3013,6 +3063,7 @@
         text,
         senderUid: appState.user.uid,
         senderName: appState.user.name,
+        participants: [appState.user.uid, activeChatUid],
         media: '',
         mediaType: '',
         createdAt: serverTimestamp()
@@ -3040,6 +3091,7 @@
         text: '',
         senderUid: appState.user.uid,
         senderName: appState.user.name,
+        participants: [appState.user.uid, activeChatUid],
         media: up.url,
         mediaType: up.type,
         createdAt: serverTimestamp()
@@ -3130,7 +3182,8 @@
           blockedUids: appState.user.blockedUids || [],
           friends: appState.user.friends || [],
           pendingFriendRequests: appState.user.pendingFriendRequests || [],
-          sentFriendRequests: appState.user.sentFriendRequests || []
+          sentFriendRequests: appState.user.sentFriendRequests || [],
+          lastSeen: serverTimestamp()
         }, { merge: true });
       } catch (e) {
         console.error(e);
@@ -3457,7 +3510,7 @@
       if (!appState.user.loggedIn || !ADMIN_UID || ADMIN_UID === "COLE_SEU_UID_AQUI" || appState.user.uid !== ADMIN_UID) {
         showSherBlussModal({
           title: 'Acesso restrito',
-          htmlBody: 'Este painel e so da administradora.'
+          htmlBody: 'Este painel é só da administradora.'
         });
         return;
       }
@@ -3471,7 +3524,7 @@
             <input type="text" id="admSeg" class="glass-input" value="${escapeAttr(d.segunda || '')}">
           </div>
           <div class="form-group">
-            <label class="form-label">Terca-feira</label>
+            <label class="form-label">Terça-feira</label>
             <input type="text" id="admTer" class="glass-input" value="${escapeAttr(d.terca || '')}">
           </div>
           <div class="form-group">
@@ -3487,7 +3540,7 @@
             <input type="text" id="admSex" class="glass-input" value="${escapeAttr(d.sexta || '')}">
           </div>
           <div class="form-group">
-            <label class="form-label">Sabado / Domingo</label>
+            <label class="form-label">Sábado / Domingo</label>
             <input type="text" id="admSabDom" class="glass-input" value="${escapeAttr(d.sabadoDomingo || '')}">
           </div>
         `,
@@ -3774,7 +3827,10 @@
           .map(u => `
             <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px;" onclick="visitUserProfile('${escapeAttr(u.uid)}','${escapeAttr(u.name || 'Usuária')}','${escapeAttr(u.handle || '@usuaria')}')">
               <div style="display:flex;align-items:center;gap:10px;">
-                <img src="${escapeAttr(u.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
+                <div class="avatar-container">
+                  <img src="${escapeAttr(u.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
+                  ${renderOnlineDot(u)}
+                </div>
                 <div>
                   <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(u.name || 'Usuária')}</div>
                   <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(u.handle || '@usuaria')}</div>
@@ -4322,11 +4378,17 @@
         ? `Desafio Semanal${post.biasName ? ' • ' + escapeHtml(post.biasName) : ''}`
         : escapeHtml(post.fandom || 'Geral');
 
+      // Procurar dados do autor para checar o status online
+      const authorUser = usersDirectory.find(u => u.uid === post.authorUid);
+
       return `
         <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
           <div class="post-header">
             <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid)}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
-              <img src="${escapeAttr(post.avatar)}" class="post-avatar" onerror="this.src='./aconchego.png'">
+              <div class="avatar-container">
+                <img src="${escapeAttr(post.avatar)}" class="post-avatar" onerror="this.src='./aconchego.png'">
+                ${renderOnlineDot(authorUser)}
+              </div>
               <div>
                 <div class="post-author-name">${escapeHtml(post.author)}${isAdmin ? '<span class="admin-badge">Admin</span>' : ''}</div>
                 <div class="post-meta notranslate">${escapeHtml(post.authorHandle || '@usuaria')} • ${subLabel}</div>
@@ -4448,18 +4510,24 @@
       const friends = appState.user.friends || [];
       document.getElementById('friendsListContainer').innerHTML = friends.length
         ? friends
-            .map(f => `
-              <div class="glass-panel" style="padding:14px;display:flex;align-items:center;justify-content:space-between;">
-                <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}','${escapeAttr(f.handle || '@amiga')}')">
-                  <img src="${escapeAttr(f.avatar || './amigos.png')}" onerror="this.src='./logo.png'" style="width:46px;height:46px;border-radius:50%;border:1px solid var(--gold-border);object-fit:cover;">
-                  <div>
-                    <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
-                    <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(f.handle || '@amiga')} • ${escapeHtml(f.status || 'Amizade ativa')}</div>
+            .map(f => {
+              const friendUser = usersDirectory.find(u => u.uid === f.uid);
+              return `
+                <div class="glass-panel" style="padding:14px;display:flex;align-items:center;justify-content:space-between;">
+                  <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}','${escapeAttr(f.handle || '@amiga')}')">
+                    <div class="avatar-container">
+                      <img src="${escapeAttr(f.avatar || './amigos.png')}" onerror="this.src='./logo.png'" style="width:46px;height:46px;border-radius:50%;border:1px solid var(--gold-border);object-fit:cover;">
+                      ${renderOnlineDot(friendUser)}
+                    </div>
+                    <div>
+                      <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
+                      <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(f.handle || '@amiga')} • ${escapeHtml(f.status || 'Amizade ativa')}</div>
+                    </div>
                   </div>
+                  <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}')">Bate-papo</button>
                 </div>
-                <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}')">Bate-papo</button>
-              </div>
-            `)
+              `;
+            })
             .join('')
         : `<div class="glass-panel empty-state-box">Você ainda não tem amigas adicionadas.</div>`;
     }
@@ -4484,4 +4552,3 @@
   </script>
 </body>
 </html>
-Nova atualização
