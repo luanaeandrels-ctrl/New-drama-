@@ -863,9 +863,14 @@
       cursor: pointer;
       padding: 4px 10px;
       border-radius: 99px;
+      transition: transform 0.15s ease, background 0.15s ease;
     }
 
-    .like-umbrella-btn.liked span {
+    .like-umbrella-btn:active {
+      transform: scale(0.92);
+    }
+
+    .like-umbrella-btn.liked span:first-child {
       color: var(--gold-accent);
     }
 
@@ -1937,35 +1942,40 @@
           [0.45, 400000]
         ];
 
+        // Compressão tripla obrigatória em sequência rigorosa (1ª, 2ª e 3ª etapa)
         for (let i = 0; i < 3; i++) {
           cur = await compressVideoOnce(cur, tries[i][0], tries[i][1]);
-          if (cur.size <= TARGET_BYTES) return cur;
         }
 
-        return await new Promise(res => {
-          showSherBlussModal({
-            title: 'Vídeo ainda grande',
-            htmlBody: 'Depois de 3 tentativas, o vídeo ainda ficou acima de 9.5MB.',
-            buttons: [
-              {
-                label: 'Cancelar',
-                primary: false,
-                onClick: () => {
-                  closeSherBlussModal();
-                  res(null);
+        // Se após as três tentativas ainda estiver acima de 10 MB, exige confirmação via modal
+        if (cur.size > MAX_FILE_BYTES) {
+          return await new Promise(res => {
+            showSherBlussModal({
+              title: 'Arquivo Acima de 10 MB',
+              htmlBody: 'Após 3 tentativas seguidas de compressão, o vídeo ainda ficou acima de 10 MB. Deseja realmente enviá-lo assim mesmo?',
+              buttons: [
+                {
+                  label: 'Cancelar',
+                  primary: false,
+                  onClick: () => {
+                    closeSherBlussModal();
+                    res(null);
+                  }
+                },
+                {
+                  label: 'Sim, Enviar',
+                  primary: true,
+                  onClick: () => {
+                    closeSherBlussModal();
+                    res(cur);
+                  }
                 }
-              },
-              {
-                label: 'Enviar mesmo assim?',
-                primary: true,
-                onClick: () => {
-                  closeSherBlussModal();
-                  res(cur);
-                }
-              }
-            ]
+              ]
+            });
           });
-        });
+        }
+
+        return cur;
       }
 
       if (file.type.startsWith('image/') && file.size > MAX_FILE_BYTES) {
@@ -2167,11 +2177,24 @@
       function mergePosts() {
         const map = new Map();
         [...publicPosts, ...privatePosts].forEach(x => map.set(x.id, x));
-        postsFromFirebase = [...map.values()].sort((a, b) => {
+        
+        // Regra das 24 horas: Se posts de desafio ultrapassarem 24h, transicionam para o feed geral (isChallenge = false)
+        const nowMs = Date.now();
+        const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+
+        postsFromFirebase = [...map.values()].map(p => {
+          if (p.isChallenge && p.createdAt && p.createdAt.toMillis) {
+            if (nowMs - p.createdAt.toMillis() > TWENTY_FOUR_HOURS) {
+              return { ...p, isChallenge: false, fandom: 'Geral', isPrivateFandom: false };
+            }
+          }
+          return p;
+        }).sort((a, b) => {
           const ta = a.createdAt?.toMillis?.() || 0;
           const tb = b.createdAt?.toMillis?.() || 0;
           return tb - ta;
         });
+
         syncAllNotifications();
         renderAll();
         if (document.getElementById('view-meu-perfil').classList.contains('active')) {
@@ -4016,6 +4039,24 @@
           return;
         }
 
+        // Atualização otimista imediata na interface para evitar qualquer efeito de "piscar" ou atraso
+        const btnEl = document.querySelector(`#post_card_${postId} .like-umbrella-btn`);
+        if (btnEl) {
+          const spanCount = btnEl.querySelector('span:last-child');
+          const currentLikes = post.likes || 0;
+          if (already) {
+            btnEl.classList.remove('liked');
+            if (spanCount) spanCount.textContent = Math.max(0, currentLikes - 1);
+            post.likedBy = post.likedBy.filter(u => u !== appState.user.uid);
+            post.likes = Math.max(0, currentLikes - 1);
+          } else {
+            btnEl.classList.add('liked');
+            if (spanCount) spanCount.textContent = currentLikes + 1;
+            post.likedBy = [...(post.likedBy || []), appState.user.uid];
+            post.likes = currentLikes + 1;
+          }
+        }
+
         try {
           await runTransaction(db, async t => {
             const ref = doc(db, "posts", postId);
@@ -4353,7 +4394,7 @@
     function renderPostCardHTML(post) {
       const mediaHtml = post.media
         ? post.mediaType === 'video'
-          ? `<video src="${escapeAttr(post.media)}" class="post-media" controls preload="metadata" playsinline onclick="openLightbox('${escapeAttr(post.media)}','video','${escapeAttr(post.author)}')"></video>`
+          ? `<video src="${escapeAttr(post.media)}" class="post-media" controls preload="metadata" playsinline></video>`
           : `<img src="${escapeAttr(post.media)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`
         : '';
 
