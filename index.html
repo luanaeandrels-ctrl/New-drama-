@@ -2013,7 +2013,7 @@
         console.error(e);
         showSherBlussModal({
           title: 'Erro no upload',
-          htmlBody: 'Não foi possível enviar a mídia. Tente de novo.'
+          htmlBody: 'Não foi possível enviar a mídia. O arquivo pode estar muito pesado ou em formato incompatível para upload.'
         });
         return null;
       }
@@ -2175,7 +2175,7 @@
       let publicPosts = [];
       let privatePosts = [];
 
-      function mergePosts() {
+      function mergePosts(shouldRender = true) {
         const map = new Map();
         [...publicPosts, ...privatePosts].forEach(x => map.set(x.id, x));
         
@@ -2196,7 +2196,7 @@
         });
 
         syncAllNotifications();
-        renderAll();
+        if (shouldRender) renderAll();
         if (document.getElementById('view-meu-perfil').classList.contains('active')) {
           renderMyAconchegoPosts();
         }
@@ -2207,7 +2207,7 @@
         snap => {
           publicPosts = [];
           snap.forEach(d => publicPosts.push({ id: d.id, ...d.data() }));
-          mergePosts();
+          mergePosts(true);
         },
         e => { console.warn("posts publicos:", e.code); }
       );
@@ -2217,7 +2217,7 @@
           try { window.__unsubPrivate(); } catch (e) {}
         }
         privatePosts = [];
-        mergePosts();
+        mergePosts(false);
         if (!appState.user.uid) return;
 
         window.__unsubPrivate = onSnapshot(
@@ -2225,7 +2225,7 @@
           snap => {
             privatePosts = [];
             snap.forEach(d => privatePosts.push({ id: d.id, ...d.data() }));
-            mergePosts();
+            mergePosts(true);
           },
           e => { console.warn("posts privados:", e.code); }
         );
@@ -4025,6 +4025,7 @@
       });
     };
 
+    // CORREÇÃO DA PISCADA: Atualização estritamente isolada e otimizada (sem re-renderizar o feed)
     window.toggleLikeUmbrella = async function(postId) {
       requireAuthForAction(async () => {
         const post = postsFromFirebase.find(p => p.id === postId);
@@ -4039,6 +4040,7 @@
           return;
         }
 
+        // Atualização visual imediata APENAS no botão e contador deste post (sem flash na tela)
         const btnEl = document.querySelector(`#post_card_${postId} .like-umbrella-btn`);
         if (btnEl) {
           const spanCount = btnEl.querySelector('span:last-child');
