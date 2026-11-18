@@ -4353,7 +4353,7 @@
     function renderPostCardHTML(post) {
       const mediaHtml = post.media
         ? post.mediaType === 'video'
-          ? `<video src="${escapeAttr(post.media)}" class="post-media" controls preload="metadata" playsinline onclick="openLightbox('${escapeAttr(post.media)}','video','${escapeAttr(post.author)}')"></video>`
+          ? `<video src="${escapeAttr(post.media)}" class="post-media" controls preload="metadata" playsinline></video>`
           : `<img src="${escapeAttr(post.media)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`
         : '';
 
