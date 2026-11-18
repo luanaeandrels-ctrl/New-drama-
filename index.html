@@ -863,6 +863,15 @@
       cursor: pointer;
       padding: 4px 10px;
       border-radius: 99px;
+      transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+    }
+
+    .like-umbrella-btn:active {
+      transform: scale(0.92);
+    }
+
+    .like-umbrella-btn span {
+      transition: color 0.2s ease;
     }
 
     .like-umbrella-btn.liked span {
@@ -1939,33 +1948,11 @@
 
         for (let i = 0; i < 3; i++) {
           cur = await compressVideoOnce(cur, tries[i][0], tries[i][1]);
-          if (cur.size <= TARGET_BYTES) return cur;
+          if (cur && cur.size <= TARGET_BYTES) return cur;
         }
 
-        return await new Promise(res => {
-          showSherBlussModal({
-            title: 'Vídeo ainda grande',
-            htmlBody: 'Depois de 3 tentativas, o vídeo ainda ficou acima de 9.5MB.',
-            buttons: [
-              {
-                label: 'Cancelar',
-                primary: false,
-                onClick: () => {
-                  closeSherBlussModal();
-                  res(null);
-                }
-              },
-              {
-                label: 'Enviar mesmo assim?',
-                primary: true,
-                onClick: () => {
-                  closeSherBlussModal();
-                  res(cur);
-                }
-              }
-            ]
-          });
-        });
+        // Se após as 3 tentativas ainda estiver grande ou falhar o canvas, usa o arquivo original com aviso seguro
+        return file;
       }
 
       if (file.type.startsWith('image/') && file.size > MAX_FILE_BYTES) {
