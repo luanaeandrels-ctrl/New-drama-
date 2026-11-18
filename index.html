@@ -114,7 +114,6 @@
       border-radius: 50%;
     }
 
-    /* BARRA SUPERIOR ANCORADA E ESTÁVEL */
     .unified-top-bar {
       width: 100%;
       max-width: 760px;
@@ -251,7 +250,6 @@
       flex-shrink: 0;
     }
 
-    /* CARROSSEL SUAVE E ESTÁVEL */
     .main-carousel-wrapper {
       width: 100%;
       max-width: 760px;
@@ -1227,7 +1225,6 @@
       font-weight: 700;
     }
 
-    /* BATE-PAPO - Tela isolada fixa e perfeitamente travada */
     #view-chat {
       display: none;
       flex-direction: column;
@@ -1658,7 +1655,6 @@
     </section>
   </div>
 
-  <!-- SEÇÃO DE CHAT ISOLADA E FIXA -->
   <section class="view-section" id="view-chat">
     <div class="glass-panel chat-header-fixed" style="display:flex;align-items:center;justify-content:space-between;">
       <span class="section-title" id="chatTitle">Bate-papo</span>
@@ -1748,7 +1744,7 @@
     const CLOUDINARY_UPLOAD_PRESET = 'umbrella';
     const LOCAL_KEY = 'sherbluss_state_v3';
     const MAX_FILE_BYTES = 10 * 1024 * 1024;
-    const TARGET_BYTES = Math.floor(9.5 * 1024 * 1024);
+    const TOLERANCE_BYTES = 15 * 1024 * 1024; // 15 MB de vista grossa silenciosa
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
 
     function escapeHtml(s) {
@@ -1839,7 +1835,7 @@
                 res(file);
                 return;
               }
-              if (b.size <= TARGET_BYTES || (q <= 0.35 && s <= 0.5)) {
+              if (b.size <= MAX_FILE_BYTES || (q <= 0.35 && s <= 0.5)) {
                 res(new File([b], 'foto.jpg', { type: 'image/jpeg' }));
                 return;
               }
@@ -1933,8 +1929,12 @@
           });
           return null;
         }
-        if (file.size <= MAX_FILE_BYTES) return file;
 
+        // Regra 1: Até 10 MB passa direto
+        // Regra 2: Entre 10 MB e 15 MB (vista grossa): sobe silenciosamente sem comprimir
+        if (file.size <= TOLERANCE_BYTES) return file;
+
+        // Acima de 15 MB: tenta comprimir
         let cur = file;
         const tries = [
           [0.8, 1200000],
@@ -1942,17 +1942,18 @@
           [0.45, 400000]
         ];
 
-        // Compressão tripla obrigatória em sequência rigorosa (1ª, 2ª e 3ª etapa)
         for (let i = 0; i < 3; i++) {
           cur = await compressVideoOnce(cur, tries[i][0], tries[i][1]);
+          if (cur.size <= MAX_FILE_BYTES) return cur;
         }
 
-        // Se após as três tentativas ainda estiver acima de 10 MB, exige confirmação via modal
+        // Se após tentar comprimir ainda estiver acima de 10 MB, pergunta mostrando o tamanho exato atual
         if (cur.size > MAX_FILE_BYTES) {
+          const sizeMB = (cur.size / (1024 * 1024)).toFixed(1);
           return await new Promise(res => {
             showSherBlussModal({
-              title: 'Arquivo Acima de 10 MB',
-              htmlBody: 'Após 3 tentativas seguidas de compressão, o vídeo ainda ficou acima de 10 MB. Deseja realmente enviá-lo assim mesmo?',
+              title: 'Arquivo Grande',
+              htmlBody: `Após a tentativa de compactação, o vídeo ficou com <strong>${sizeMB} MB</strong>. Deseja realmente enviá-lo assim mesmo?`,
               buttons: [
                 {
                   label: 'Cancelar',
@@ -2178,7 +2179,6 @@
         const map = new Map();
         [...publicPosts, ...privatePosts].forEach(x => map.set(x.id, x));
         
-        // Regra das 24 horas: Se posts de desafio ultrapassarem 24h, transicionam para o feed geral (isChallenge = false)
         const nowMs = Date.now();
         const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
@@ -4039,7 +4039,6 @@
           return;
         }
 
-        // Atualização otimista imediata na interface para evitar qualquer efeito de "piscar" ou atraso
         const btnEl = document.querySelector(`#post_card_${postId} .like-umbrella-btn`);
         if (btnEl) {
           const spanCount = btnEl.querySelector('span:last-child');
