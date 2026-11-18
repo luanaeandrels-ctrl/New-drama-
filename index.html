@@ -1744,7 +1744,7 @@
     const CLOUDINARY_UPLOAD_PRESET = 'umbrella';
     const LOCAL_KEY = 'sherbluss_state_v3';
     const MAX_FILE_BYTES = 10 * 1024 * 1024;
-    const TOLERANCE_BYTES = 15 * 1024 * 1024; // 15 MB de vista grossa silenciosa
+    const TOLERANCE_BYTES = 20 * 1024 * 1024; // 20 MB de tolerância para vídeos no Cloudinary gratuito
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
 
     function escapeHtml(s) {
@@ -1930,50 +1930,20 @@
           return null;
         }
 
-        // Regra 1: Até 10 MB passa direto
-        // Regra 2: Entre 10 MB e 15 MB (vista grossa): sobe silenciosamente sem comprimir
+        // Se estiver abaixo de 20MB, deixa subir direto sem dor de cabeça
         if (file.size <= TOLERANCE_BYTES) return file;
 
-        // Acima de 15 MB: tenta comprimir
+        // Se for maior que 20MB, comprime em etapas automáticas
         let cur = file;
         const tries = [
-          [0.8, 1200000],
-          [0.6, 700000],
-          [0.45, 400000]
+          [0.75, 1000000],
+          [0.55, 600000],
+          [0.4, 300000]
         ];
 
         for (let i = 0; i < 3; i++) {
           cur = await compressVideoOnce(cur, tries[i][0], tries[i][1]);
-          if (cur.size <= MAX_FILE_BYTES) return cur;
-        }
-
-        // Se após tentar comprimir ainda estiver acima de 10 MB, pergunta mostrando o tamanho exato atual
-        if (cur.size > MAX_FILE_BYTES) {
-          const sizeMB = (cur.size / (1024 * 1024)).toFixed(1);
-          return await new Promise(res => {
-            showSherBlussModal({
-              title: 'Arquivo Grande',
-              htmlBody: `Após a tentativa de compactação, o vídeo ficou com <strong>${sizeMB} MB</strong>. Deseja realmente enviá-lo assim mesmo?`,
-              buttons: [
-                {
-                  label: 'Cancelar',
-                  primary: false,
-                  onClick: () => {
-                    closeSherBlussModal();
-                    res(null);
-                  }
-                },
-                {
-                  label: 'Sim, Enviar',
-                  primary: true,
-                  onClick: () => {
-                    closeSherBlussModal();
-                    res(cur);
-                  }
-                }
-              ]
-            });
-          });
+          if (cur.size <= TOLERANCE_BYTES) return cur;
         }
 
         return cur;
@@ -2013,7 +1983,7 @@
         console.error(e);
         showSherBlussModal({
           title: 'Erro no upload',
-          htmlBody: 'Não foi possível enviar a mídia. O arquivo pode estar muito pesado ou em formato incompatível para upload.'
+          htmlBody: 'Não foi possível enviar a mídia. O arquivo está muito pesado ou em formato incompatível. Tente um vídeo menor.'
         });
         return null;
       }
@@ -2081,6 +2051,7 @@
     let activeChatUid = null;
     let activeChatName = 'Bate-papo';
     let chatUnsub = null;
+    let isInitialFeedLoaded = false; // Evita renderização duplicada na entrada
 
     function saveLocal() {
       localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -2196,7 +2167,16 @@
         });
 
         syncAllNotifications();
-        if (shouldRender) renderAll();
+        
+        // Na primeira carga, renderiza de vez. Nas demais, apenas se necessário para evitar piscar.
+        if (!isInitialFeedLoaded) {
+          isInitialFeedLoaded = true;
+          if (shouldRender) renderAll();
+        } else if (shouldRender) {
+          // Atualiza apenas os contadores e elementos leves do feed sem redesenhar o DOM inteiro
+          updateFeedCountersOnly();
+        }
+
         if (document.getElementById('view-meu-perfil').classList.contains('active')) {
           renderMyAconchegoPosts();
         }
@@ -2291,6 +2271,18 @@
           appState.directives = snap.data().directives;
           saveLocal();
           renderAll();
+        }
+      });
+    }
+
+    function updateFeedCountersOnly() {
+      postsFromFirebase.forEach(p => {
+        const card = document.getElementById(`post_card_${p.id}`);
+        if (card) {
+          const likeSpan = card.querySelector('.like-umbrella-btn span:last-child');
+          if (likeSpan && likeSpan.textContent != String(p.likes || 0)) {
+            likeSpan.textContent = p.likes || 0;
+          }
         }
       });
     }
@@ -4025,7 +4017,7 @@
       });
     };
 
-    // CORREÇÃO DA PISCADA: Atualização estritamente isolada e otimizada (sem re-renderizar o feed)
+    // CURTIDA SEM PISCAR NENHUMA PARTE DA TELA
     window.toggleLikeUmbrella = async function(postId) {
       requireAuthForAction(async () => {
         const post = postsFromFirebase.find(p => p.id === postId);
@@ -4040,7 +4032,6 @@
           return;
         }
 
-        // Atualização visual imediata APENAS no botão e contador deste post (sem flash na tela)
         const btnEl = document.querySelector(`#post_card_${postId} .like-umbrella-btn`);
         if (btnEl) {
           const spanCount = btnEl.querySelector('span:last-child');
@@ -4103,9 +4094,32 @@
           createdAt: Date.now()
         });
 
+        // Atualização otimista imediata na tela para evitar qualquer piscada
+        if (!post.comments) post.comments = [];
+        post.comments.push({
+          text: val,
+          authorUid: appState.user.uid,
+          authorName: appState.user.name,
+          createdAt: Date.now()
+        });
+        
+        const card = document.getElementById(`post_card_${postId}`);
+        if (card) {
+          const commentsSection = card.querySelector('.comments-section-clean');
+          if (commentsSection) {
+            const newCommentHtml = `
+              <div class="comment-item-clean">
+                <span style="flex:1;"><strong>${escapeHtml(appState.user.name)}</strong>: ${escapeHtml(val)}</span>
+                <button class="btn-danger-pill" style="font-size:9px;padding:2px 6px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${post.comments.length - 1})">✕</button>
+              </div>
+            `;
+            commentsSection.insertAdjacentHTML('beforeend', newCommentHtml);
+          }
+        }
+        input.value = '';
+
         try {
-          await updateDoc(doc(db, "posts", postId), { comments });
-          input.value = '';
+          await updateDoc(doc(db, "posts", postId), { comments: post.comments });
         } catch (e) {
           showSherBlussModal({
             title: 'Erro',
