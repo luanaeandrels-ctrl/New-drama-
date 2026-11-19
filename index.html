@@ -1747,6 +1747,10 @@
     const TOLERANCE_BYTES = 10 * 1024 * 1024; // 10 MB de tolerância para vídeos no Cloudinary gratuito
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
 
+    function isModAdminUser() {
+      return !!(appState.user.loggedIn && appState.user.uid && appState.user.uid === ADMIN_UID);
+    }
+
     function escapeHtml(s) {
       return String(s ?? '')
         .replaceAll('&', '&amp;')
@@ -1930,10 +1934,8 @@
           return null;
         }
 
-        // Se estiver abaixo de 20MB, deixa subir direto sem dor de cabeça
         if (file.size <= TOLERANCE_BYTES) return file;
 
-        // Se for maior que 20MB, comprime em etapas automáticas
         let cur = file;
         const tries = [
           [0.75, 1000000],
@@ -2051,7 +2053,7 @@
     let activeChatUid = null;
     let activeChatName = 'Bate-papo';
     let chatUnsub = null;
-    let isInitialFeedLoaded = false; // Evita renderização duplicada na entrada
+    let isInitialFeedLoaded = false;
 
     function saveLocal() {
       localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -2149,7 +2151,7 @@
       function mergePosts(shouldRender = true) {
         const map = new Map();
         [...publicPosts, ...privatePosts].forEach(x => map.set(x.id, x));
-        
+
         const nowMs = Date.now();
         const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
@@ -2167,13 +2169,11 @@
         });
 
         syncAllNotifications();
-        
-        // Na primeira carga, renderiza de vez. Nas demais, apenas se necessário para evitar piscar.
+
         if (!isInitialFeedLoaded) {
           isInitialFeedLoaded = true;
           if (shouldRender) renderAll();
         } else if (shouldRender) {
-          // Atualiza apenas os contadores e elementos leves do feed sem redesenhar o DOM inteiro
           updateFeedCountersOnly();
         }
 
@@ -2199,6 +2199,19 @@
         privatePosts = [];
         mergePosts(false);
         if (!appState.user.uid) return;
+
+        if (isModAdminUser()) {
+          window.__unsubPrivate = onSnapshot(
+            query(collection(db, "posts"), where("isPrivateFandom", "==", true)),
+            snap => {
+              privatePosts = [];
+              snap.forEach(d => privatePosts.push({ id: d.id, ...d.data() }));
+              mergePosts(true);
+            },
+            e => { console.warn("posts privados admin:", e.code); }
+          );
+          return;
+        }
 
         window.__unsubPrivate = onSnapshot(
           query(collection(db, "posts"), where("memberUids", "array-contains", appState.user.uid)),
@@ -2769,6 +2782,7 @@
       if (!post) return;
 
       const isOwn = appState.user.loggedIn && post.authorUid === appState.user.uid;
+      const canDeletePost = isOwn || isModAdminUser();
       const subs = appState.user.aconchegoGroups || [];
       let subHtml = subs
         .map(g => `<button class="btn-pill-gold" style="width:100%;text-align:left;margin-top:6px;" onclick="savePostToAconchego('${escapeAttr(postId)}','${escapeAttr(g.id)}','${escapeAttr(g.name)}')">📁 Salvar em: <strong>${escapeHtml(g.name)}</strong></button>`)
@@ -2780,7 +2794,7 @@
           <div style="display:flex;flex-direction:column;gap:6px;">
             <button class="btn-gold" onclick="savePostToAconchego('${escapeAttr(postId)}','oficial','Meu Aconchego Oficial')">🏠 Salvar no Meu Aconchego</button>
             ${subHtml}
-            ${isOwn ? `<button class="btn-danger-pill" style="width:100%;padding:10px;margin-top:8px;" onclick="closeSherBlussModal();confirmDeletePost('${escapeAttr(postId)}')">🗑️ Excluir minha publicação</button>` : ''}
+            ${canDeletePost ? `<button class="btn-danger-pill" style="width:100%;padding:10px;margin-top:8px;" onclick="closeSherBlussModal();confirmDeletePost('${escapeAttr(postId)}')">🗑️ ${isOwn ? 'Excluir minha publicação' : 'Excluir publicação (Admin)'}</button>` : ''}
           </div>
         `,
         buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
@@ -3750,6 +3764,12 @@
       const targetFandom = !isChallenge && isInside && activeFandomFilter ? activeFandomFilter : 'Geral';
 
       try {
+        const fandomObj = targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom) : null;
+        const baseMembers = fandomObj?.members ? [...fandomObj.members] : [appState.user.uid];
+        if (!isModAdminUser() && !baseMembers.includes(appState.user.uid)) {
+          baseMembers.push(appState.user.uid);
+        }
+
         await addDoc(collection(db, "posts"), {
           author: appState.user.name,
           authorUid: appState.user.uid,
@@ -3763,7 +3783,7 @@
           fandom: targetFandom,
           fandomId: targetFandom,
           isPrivateFandom: targetFandom !== 'Geral',
-          memberUids: targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom)?.members || [appState.user.uid] : [],
+          memberUids: targetFandom !== 'Geral' ? baseMembers : [],
           isChallenge: isChallenge,
           biasName: isChallenge ? appState.bias.name : '',
           createdAt: serverTimestamp(),
@@ -3948,6 +3968,12 @@
 
         try {
           const targetFandom = isInside && activeFandomFilter ? activeFandomFilter : 'Geral';
+          const fandomObj = targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom) : null;
+          const baseMembers = fandomObj?.members ? [...fandomObj.members] : [appState.user.uid];
+          if (!isModAdminUser() && !baseMembers.includes(appState.user.uid)) {
+            baseMembers.push(appState.user.uid);
+          }
+
           await addDoc(collection(db, "posts"), {
             author: appState.user.name,
             authorUid: appState.user.uid,
@@ -3961,7 +3987,7 @@
             fandom: targetFandom,
             fandomId: targetFandom,
             isPrivateFandom: targetFandom !== 'Geral',
-            memberUids: targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom)?.members || [appState.user.uid] : [],
+            memberUids: targetFandom !== 'Geral' ? baseMembers : [],
             isChallenge: isChallengeView,
             biasName: isChallengeView ? appState.bias.name || '' : '',
             createdAt: serverTimestamp(),
@@ -3985,7 +4011,8 @@
       requireAuthForAction(() => {
         const post = postsFromFirebase.find(p => p.id === postId);
         if (!post) return;
-        if (post.authorUid !== appState.user.uid) return;
+        const canDelete = post.authorUid === appState.user.uid || isModAdminUser();
+        if (!canDelete) return;
 
         showSherBlussModal({
           title: '🗑️ Excluir Publicação',
@@ -4017,7 +4044,6 @@
       });
     };
 
-    // CURTIDA SEM PISCAR NENHUMA PARTE DA TELA
     window.toggleLikeUmbrella = async function(postId) {
       requireAuthForAction(async () => {
         const post = postsFromFirebase.find(p => p.id === postId);
@@ -4086,15 +4112,6 @@
         const post = postsFromFirebase.find(p => p.id === postId);
         if (!post) return;
 
-        const comments = post.comments || [];
-        comments.push({
-          text: val,
-          authorUid: appState.user.uid,
-          authorName: appState.user.name,
-          createdAt: Date.now()
-        });
-
-        // Atualização otimista imediata na tela para evitar qualquer piscada
         if (!post.comments) post.comments = [];
         post.comments.push({
           text: val,
@@ -4102,7 +4119,7 @@
           authorName: appState.user.name,
           createdAt: Date.now()
         });
-        
+
         const card = document.getElementById(`post_card_${postId}`);
         if (card) {
           const commentsSection = card.querySelector('.comments-section-clean');
@@ -4137,9 +4154,10 @@
       const c = normalizeComment(raw);
       if (!c) return;
 
+      const isAdmin = isModAdminUser();
       const isPostOwner = appState.user.loggedIn && post.authorUid === appState.user.uid;
       const isCommentOwner = appState.user.loggedIn && c.authorUid && c.authorUid === appState.user.uid;
-      if (!isPostOwner && !isCommentOwner) return;
+      if (!isAdmin && !isPostOwner && !isCommentOwner) return;
 
       showSherBlussModal({
         title: 'Excluir comentário?',
@@ -4190,7 +4208,7 @@
                       dotColor: '#fbbf24',
                       creatorUid: appState.user.uid,
                       admins: [appState.user.uid],
-                      members: [appState.user.uid],
+                      members: isModAdminUser() ? [] : [appState.user.uid],
                       pendingRequests: [],
                       createdAt: serverTimestamp()
                     });
@@ -4211,6 +4229,7 @@
 
     function hasFandomAccess(f) {
       if (!appState.user.loggedIn || !appState.user.uid) return false;
+      if (appState.user.uid === ADMIN_UID) return true;
       if (f.creatorUid === appState.user.uid) return true;
       if (f.admins && f.admins.includes(appState.user.uid)) return true;
       if (f.members && f.members.includes(appState.user.uid)) return true;
@@ -4262,14 +4281,14 @@
       const f = appState.fandoms.find(x => x.name === activeFandomFilter);
       if (!f) return;
 
-      const isCreatorOrAdmin = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
-      const isCreator = f.creatorUid === appState.user.uid;
+      const isCreatorOrAdmin = isModAdminUser() || f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
+      const canDeleteFandom = isModAdminUser() || f.creatorUid === appState.user.uid;
 
       let adminHtml = isCreatorOrAdmin
         ? `<button class="btn-gold" style="margin-bottom:8px;width:100%;" onclick="closeSherBlussModal();openManageAdminsModal('${escapeAttr(activeFandomFilter)}')">🛡️ Gerenciar Membros & Admins</button>`
         : '';
 
-      let deleteHtml = isCreator
+      let deleteHtml = canDeleteFandom
         ? `<button class="btn-danger-pill" style="margin-top:8px;width:100%;padding:10px;" onclick="closeSherBlussModal();confirmDeleteFandom('${escapeAttr(f.id)}','${escapeAttr(activeFandomFilter)}')">🗑️ Excluir Fandom</button>`
         : '';
 
@@ -4290,7 +4309,8 @@
       requireAuthForAction(() => {
         const f = appState.fandoms.find(x => x.id === fandomId);
         if (!f) return;
-        if (f.creatorUid !== appState.user.uid) return;
+        const canDelete = f.creatorUid === appState.user.uid || isModAdminUser();
+        if (!canDelete) return;
 
         showSherBlussModal({
           title: '🗑️ Excluir Fandom',
@@ -4346,7 +4366,7 @@
 
       showSherBlussModal({
         title: `Membros • ${escapeHtml(fandomName)}`,
-        htmlBody: `<div style="max-height:220px;overflow-y:auto;">${mh}</div>`,
+        htmlBody: `<div style="max-height:220px;overflow-y:auto;">${mh || '<p style="font-size:12px;color:var(--text-muted);">Nenhum membro listado.</p>'}</div>`,
         buttons: [{ label: 'Concluir', primary: true, onClick: closeSherBlussModal }]
       });
     };
@@ -4424,7 +4444,11 @@
       const comments = (post.comments || []).map(normalizeComment).filter(Boolean);
       const commentsHtml = comments
         .map((c, idx) => {
-          const canDelete = appState.user.loggedIn && (post.authorUid === appState.user.uid || (c.authorUid && c.authorUid === appState.user.uid));
+          const canDelete = appState.user.loggedIn && (
+            appState.user.uid === ADMIN_UID ||
+            post.authorUid === appState.user.uid ||
+            (c.authorUid && c.authorUid === appState.user.uid)
+          );
           const label = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ${escapeHtml(c.text)}` : escapeHtml(c.text);
           return `
             <div class="comment-item-clean">
