@@ -1811,6 +1811,12 @@
       return !!(appState.user.loggedIn && appState.user.uid && appState.user.uid === ADMIN_UID);
     }
 
+    function withAdminMember(list = []) {
+      const set = new Set((Array.isArray(list) ? list : []).filter(Boolean));
+      if (ADMIN_UID) set.add(ADMIN_UID);
+      return [...set];
+    }
+
     function isFandomModerator(f) {
       if (!f || !appState.user.loggedIn || !appState.user.uid) return false;
       if (isModAdminUser()) return true;
@@ -2186,7 +2192,8 @@
     }
 
     function renderOnlineDot(userData) {
-      if (!userData || !userData.lastSeen || !userData.lastSeen.toMillis) return '';
+      if (!userData || userData.uid === ADMIN_UID) return '';
+      if (!userData.lastSeen || !userData.lastSeen.toMillis) return '';
       const diffMs = Date.now() - userData.lastSeen.toMillis();
       const isOnline = diffMs < 120000;
       return isOnline ? `<span class="online-dot" title="Online agora"></span>` : '';
@@ -3989,10 +3996,7 @@
 
       try {
         const fandomObj = targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom) : null;
-        const baseMembers = fandomObj?.members ? [...fandomObj.members] : [appState.user.uid];
-        if (!isModAdminUser() && !baseMembers.includes(appState.user.uid)) {
-          baseMembers.push(appState.user.uid);
-        }
+        const baseMembers = withAdminMember([...(fandomObj?.members || []), appState.user.uid]);
 
         await addDoc(collection(db, "posts"), {
           author: appState.user.name,
@@ -4194,10 +4198,7 @@
         try {
           const targetFandom = isInside && activeFandomFilter ? activeFandomFilter : 'Geral';
           const fandomObj = targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom) : null;
-          const baseMembers = fandomObj?.members ? [...fandomObj.members] : [appState.user.uid];
-          if (!isModAdminUser() && !baseMembers.includes(appState.user.uid)) {
-            baseMembers.push(appState.user.uid);
-          }
+          const baseMembers = withAdminMember([...(fandomObj?.members || []), appState.user.uid]);
 
           await addDoc(collection(db, "posts"), {
             author: appState.user.name,
@@ -4436,8 +4437,8 @@
                       borderColor: '#fbbf24',
                       dotColor: '#fbbf24',
                       creatorUid: appState.user.uid,
-                      admins: [appState.user.uid],
-                      members: isModAdminUser() ? [] : [appState.user.uid],
+                      admins: withAdminMember([appState.user.uid]),
+                      members: withAdminMember([appState.user.uid]),
                       pendingRequests: [],
                       createdAt: serverTimestamp()
                     });
@@ -4579,7 +4580,7 @@
       const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
       try {
         await updateDoc(doc(db, "fandoms", f.id), {
-          members: arrayUnion(requesterUid),
+          members: arrayUnion(requesterUid, ADMIN_UID),
           pendingRequests: updatedReqs
         });
         openManageAdminsModal(fandomName);
@@ -4609,14 +4610,16 @@
 
       const currentAdmins = Array.isArray(f.admins) ? [...f.admins] : [];
       const isCurrentlyAdmin = currentAdmins.includes(targetUid);
-      const nextAdmins = isCurrentlyAdmin
-        ? currentAdmins.filter(id => id !== targetUid)
-        : [...currentAdmins, targetUid];
+      const nextAdmins = withAdminMember(
+        isCurrentlyAdmin
+          ? currentAdmins.filter(id => id !== targetUid)
+          : [...currentAdmins, targetUid]
+      );
 
       try {
         await updateDoc(doc(db, "fandoms", f.id), {
           admins: nextAdmins,
-          members: arrayUnion(targetUid)
+          members: arrayUnion(targetUid, ADMIN_UID)
         });
         openManageAdminsModal(fandomName);
       } catch (e) {
@@ -4627,10 +4630,10 @@
     window.banMemberFromFandom = async function(fandomName, targetUid) {
       const f = appState.fandoms.find(x => x.name === fandomName);
       if (!f || !isFandomModerator(f)) return;
-      if (targetUid === f.creatorUid) return;
+      if (targetUid === f.creatorUid || targetUid === ADMIN_UID) return;
 
-      const nextMembers = (f.members || []).filter(id => id !== targetUid);
-      const nextAdmins = (f.admins || []).filter(id => id !== targetUid);
+      const nextMembers = withAdminMember((f.members || []).filter(id => id !== targetUid));
+      const nextAdmins = withAdminMember((f.admins || []).filter(id => id !== targetUid));
       const nextPending = (f.pendingRequests || []).filter(r => r.uid !== targetUid);
 
       try {
@@ -4695,7 +4698,7 @@
             const isCoAdmin = Array.isArray(f.admins) && f.admins.includes(uid);
             const roleTag = isCreator ? '👑 Criador' : (isCoAdmin ? '🛡️ Admin' : 'Membro');
 
-            const actionsHtml = canModerate && !isCreator
+            const actionsHtml = canModerate && !isCreator && uid !== ADMIN_UID
               ? `
                 <div style="display:flex;gap:6px;flex-shrink:0;">
                   <button type="button" class="btn-pill-gold" style="padding:3px 8px;font-size:10.5px;" onclick="toggleFandomAdminRole('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">${isCoAdmin ? 'Tirar Admin' : 'Tornar Admin'}</button>
