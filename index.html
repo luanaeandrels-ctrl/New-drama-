@@ -46,7 +46,7 @@
       --gold-border: rgba(251, 191, 36, .45);
       --gold-accent: #fbbf24;
       --text-main: #f8fafc;
-      --text-muted: rgba(226, 232, 240, .7);
+      --text-muted: rgba(226, 232, 40, .7);
       --danger: #f43f5e;
       --theme-color-accent: #060a1e;
       --custom-bg-url: url('./fundo.png');
@@ -1831,9 +1831,8 @@
     }
 
     function getWeeklyCycleWindowMs() {
-      // Janela semanal fechando no domingo à meia-noite (fim da semana)
       const now = new Date();
-      const day = now.getDay(); // 0 = dom, 1 = seg, ..., 6 = sab
+      const day = now.getDay();
       const daysUntilSunday = day === 0 ? 0 : 7 - day;
       const endOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday, 23, 59, 59, 999);
       const startOfWeek = new Date(endOfWeek.getTime() - (7 * 24 * 60 * 60 * 1000) + 1);
@@ -2257,11 +2256,12 @@
 
     function initFirebaseSync() {
       let publicPosts = [];
-      let privatePosts = [];
+      let privatePostsByMember = [];
+      let privatePostsByAdmin = [];
 
       function mergePosts(shouldRender = true) {
         const map = new Map();
-        [...publicPosts, ...privatePosts].forEach(x => map.set(x.id, x));
+        [...publicPosts, ...privatePostsByMember, ...privatePostsByAdmin].forEach(x => map.set(x.id, x));
 
         const nowMs = Date.now();
         const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
@@ -2285,8 +2285,7 @@
           isInitialFeedLoaded = true;
           if (shouldRender) renderAll();
         } else if (shouldRender) {
-          updateFeedCountersOnly();
-          renderWeeklyPodiumCarousel();
+          renderAll();
         }
 
         if (document.getElementById('view-meu-perfil').classList.contains('active')) {
@@ -2305,22 +2304,41 @@
       );
 
       window.__subscribePrivatePosts = function() {
-        if (window.__unsubPrivate) {
-          try { window.__unsubPrivate(); } catch (e) {}
+        if (window.__unsubPrivateMember) {
+          try { window.__unsubPrivateMember(); } catch (e) {}
+          window.__unsubPrivateMember = null;
         }
-        privatePosts = [];
+        if (window.__unsubPrivateAdmin) {
+          try { window.__unsubPrivateAdmin(); } catch (e) {}
+          window.__unsubPrivateAdmin = null;
+        }
+        privatePostsByMember = [];
+        privatePostsByAdmin = [];
         mergePosts(false);
+
         if (!appState.user.uid) return;
 
-        window.__unsubPrivate = onSnapshot(
+        window.__unsubPrivateMember = onSnapshot(
           query(collection(db, "posts"), where("memberUids", "array-contains", appState.user.uid)),
           snap => {
-            privatePosts = [];
-            snap.forEach(d => privatePosts.push({ id: d.id, ...d.data() }));
+            privatePostsByMember = [];
+            snap.forEach(d => privatePostsByMember.push({ id: d.id, ...d.data() }));
             mergePosts(true);
           },
-          e => { console.warn("posts privados:", e.code); }
+          e => { console.warn("posts privados membro:", e.code); }
         );
+
+        if (isModAdminUser()) {
+          window.__unsubPrivateAdmin = onSnapshot(
+            query(collection(db, "posts"), where("isPrivateFandom", "==", true)),
+            snap => {
+              privatePostsByAdmin = [];
+              snap.forEach(d => privatePostsByAdmin.push({ id: d.id, ...d.data() }));
+              mergePosts(true);
+            },
+            e => { console.warn("posts privados admin:", e.code); }
+          );
+        }
       };
       window.__subscribePrivatePosts();
 
@@ -2383,18 +2401,6 @@
           appState.directives = snap.data().directives;
           saveLocal();
           renderAll();
-        }
-      });
-    }
-
-    function updateFeedCountersOnly() {
-      postsFromFirebase.forEach(p => {
-        const card = document.getElementById(`post_card_${p.id}`);
-        if (card) {
-          const likeSpan = card.querySelector('.like-umbrella-btn span:last-child');
-          if (likeSpan && likeSpan.textContent != String(p.likes || 0)) {
-            likeSpan.textContent = p.likes || 0;
-          }
         }
       });
     }
@@ -4894,7 +4900,10 @@
           closeCurrentFandom();
           return;
         }
-        const filtered = postsFromFirebase.filter(p => p.fandom === activeFandomFilter && !isUserBlocked(p.authorHandle, p.authorUid));
+        const filtered = postsFromFirebase.filter(p =>
+          !isUserBlocked(p.authorHandle, p.authorUid) &&
+          (p.fandom === activeFandomFilter || p.fandomId === activeFandomFilter || (fo.id && p.fandomDocId === fo.id))
+        );
         document.getElementById('insideFandomFeedList').innerHTML = filtered.length
           ? filtered.map(p => renderPostCardHTML(p)).join('')
           : `<div class="empty-state-box">Este fandom está silencioso.</div>`;
