@@ -1744,11 +1744,122 @@
     const CLOUDINARY_UPLOAD_PRESET = 'umbrella';
     const LOCAL_KEY = 'sherbluss_state_v3';
     const MAX_FILE_BYTES = 10 * 1024 * 1024;
-    const TOLERANCE_BYTES = 10 * 1024 * 1024; // 10 MB de tolerância para vídeos no Cloudinary gratuito
+    const TOLERANCE_BYTES = 10 * 1024 * 1024;
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
+
+    const BLOCKED_TERMS = [
+      'pedofilia', 'pedofilo', 'pedófilo', 'abuso infantil', 'pornografia infantil',
+      'cp', 'csam', 'lolicon', 'shotacon', 'estupro', 'violencia sexual',
+      'suicidio', 'suicídio', 'autoflagelacao', 'autoflagelação', 'drogas', 'cocaina', 'cocaína',
+      'crack', 'heroina', 'heroína', 'maconha', 'lsd', 'ecstasy', 'metanfetamina',
+      'pornografia', 'porno', 'pornô', 'sexo', 'puta', 'putaria', 'caralho',
+      'buceta', 'piroca', 'cacete', 'rola', 'viado', 'boiola', 'bicha', 'arrombado',
+      'fdp', 'filho da puta', 'desgraca', 'desgraça', 'merda', 'bosta', 'corno', 'vagabunda'
+    ];
+
+    function normalizeTextForModeration(rawText) {
+      return String(rawText || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/0/g, 'o')
+        .replace(/1/g, 'i')
+        .replace(/3/g, 'e')
+        .replace(/4/g, 'a')
+        .replace(/@/g, 'a')
+        .replace(/\$/g, 's')
+        .replace(/5/g, 's')
+        .replace(/7/g, 't')
+        .replace(/[^a-z0-9\s]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function findBlockedTerm(rawText) {
+      const norm = normalizeTextForModeration(rawText);
+      if (!norm) return null;
+      const compact = norm.replace(/\s+/g, '');
+      const words = norm.split(' ');
+
+      for (const term of BLOCKED_TERMS) {
+        const normTerm = normalizeTextForModeration(term);
+        if (!normTerm) continue;
+        const compactTerm = normTerm.replace(/\s+/g, '');
+
+        if (normTerm.length <= 3) {
+          if (words.includes(normTerm)) return term;
+        } else {
+          if (norm.includes(normTerm) || compact.includes(compactTerm)) return term;
+        }
+      }
+      return null;
+    }
+
+    function assertCleanContent(rawText, label = 'conteúdo') {
+      const hit = findBlockedTerm(rawText);
+      if (hit) {
+        showSherBlussModal({
+          title: 'Conteúdo bloqueado por segurança 🛡️',
+          htmlBody: `Não é permitido enviar ${escapeHtml(label)} com termos ou expressões proibidas na comunidade.`
+        });
+        return false;
+      }
+      return true;
+    }
 
     function isModAdminUser() {
       return !!(appState.user.loggedIn && appState.user.uid && appState.user.uid === ADMIN_UID);
+    }
+
+    function isFandomModerator(f) {
+      if (!f || !appState.user.loggedIn || !appState.user.uid) return false;
+      if (isModAdminUser()) return true;
+      if (f.creatorUid === appState.user.uid) return true;
+      if (Array.isArray(f.admins) && f.admins.includes(appState.user.uid)) return true;
+      return false;
+    }
+
+    function canDeleteSpecificPost(post) {
+      if (!post || !appState.user.loggedIn || !appState.user.uid) return false;
+      if (isModAdminUser()) return true;
+      if (post.authorUid === appState.user.uid) return true;
+      if (post.fandom && post.fandom !== 'Geral') {
+        const fo = appState.fandoms.find(f => f.name === post.fandom || f.id === post.fandomDocId);
+        if (fo && isFandomModerator(fo)) return true;
+      }
+      return false;
+    }
+
+    function getWeeklyCycleWindowMs() {
+      // Janela semanal fechando no domingo à meia-noite (fim da semana)
+      const now = new Date();
+      const day = now.getDay(); // 0 = dom, 1 = seg, ..., 6 = sab
+      const daysUntilSunday = day === 0 ? 0 : 7 - day;
+      const endOfWeek = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysUntilSunday, 23, 59, 59, 999);
+      const startOfWeek = new Date(endOfWeek.getTime() - (7 * 24 * 60 * 60 * 1000) + 1);
+      return { startMs: startOfWeek.getTime(), endMs: endOfWeek.getTime() };
+    }
+
+    function getWeeklyTopThreePhotos() {
+      const { startMs, endMs } = getWeeklyCycleWindowMs();
+      const candidates = postsFromFirebase.filter(p => {
+        if (!p.media || p.mediaType === 'video') return false;
+        if (isUserBlocked(p.authorHandle, p.authorUid)) return false;
+        const tsMs = p.createdAt?.toMillis ? p.createdAt.toMillis() : Date.now();
+        return tsMs >= startMs && tsMs <= endMs;
+      });
+
+      const sourceList = candidates.length > 0
+        ? candidates
+        : postsFromFirebase.filter(p => p.media && p.mediaType !== 'video' && !isUserBlocked(p.authorHandle, p.authorUid));
+
+      return [...sourceList].sort((a, b) => {
+        const diffLikes = (b.likes || 0) - (a.likes || 0);
+        if (diffLikes !== 0) return diffLikes;
+        const ta = a.createdAt?.toMillis?.() || 0;
+        const tb = b.createdAt?.toMillis?.() || 0;
+        return tb - ta;
+      }).slice(0, 3);
     }
 
     function escapeHtml(s) {
@@ -2175,6 +2286,7 @@
           if (shouldRender) renderAll();
         } else if (shouldRender) {
           updateFeedCountersOnly();
+          renderWeeklyPodiumCarousel();
         }
 
         if (document.getElementById('view-meu-perfil').classList.contains('active')) {
@@ -2199,19 +2311,6 @@
         privatePosts = [];
         mergePosts(false);
         if (!appState.user.uid) return;
-
-        if (isModAdminUser()) {
-          window.__unsubPrivate = onSnapshot(
-            query(collection(db, "posts"), where("isPrivateFandom", "==", true)),
-            snap => {
-              privatePosts = [];
-              snap.forEach(d => privatePosts.push({ id: d.id, ...d.data() }));
-              mergePosts(true);
-            },
-            e => { console.warn("posts privados admin:", e.code); }
-          );
-          return;
-        }
 
         window.__unsubPrivate = onSnapshot(
           query(collection(db, "posts"), where("memberUids", "array-contains", appState.user.uid)),
@@ -2300,6 +2399,26 @@
       });
     }
 
+    function renderWeeklyPodiumCarousel() {
+      const topThree = getWeeklyTopThreePhotos();
+      for (let i = 0; i < 3; i++) {
+        const rank = i + 1;
+        const winner = topThree[i];
+        const img = document.getElementById(`podiumImg${rank}`);
+        const label = document.getElementById(`podiumLabel${rank}`);
+        const biasEl = document.getElementById(`podiumBias${rank}`);
+
+        if (winner) {
+          if (winner.media) img.src = winner.media;
+          label.textContent = maskHandle(winner.authorHandle, winner.author);
+          biasEl.textContent = `${winner.likes || 0} 🌸 • ${winner.biasName || 'Foto'}`;
+        } else {
+          label.textContent = `${rank}º Pódio`;
+          biasEl.textContent = 'Aguardando';
+        }
+      }
+    }
+
     function syncAllNotifications() {
       if (!appState.user.loggedIn || !appState.user.uid) return;
       const combined = [];
@@ -2318,8 +2437,8 @@
       });
 
       appState.fandoms.forEach(f => {
-        const isAdmin = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
-        if (isAdmin && f.pendingRequests && f.pendingRequests.length) {
+        const isCreatorOrAdmin = f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
+        if (isCreatorOrAdmin && f.pendingRequests && f.pendingRequests.length) {
           f.pendingRequests.forEach(req => {
             if (!isUserBlocked(null, req.uid)) {
               combined.push({
@@ -2486,6 +2605,8 @@
         return;
       }
 
+      if (!assertCleanContent(name, 'o nome') || !assertCleanContent(handle, 'o arroba')) return;
+
       try {
         const cred = await createUserWithEmailAndPassword(auth, email, pass);
         const user = cred.user;
@@ -2650,6 +2771,7 @@
     };
 
     window.saveUniverseBioLive = async function(val) {
+      if (!assertCleanContent(val, 'a bio')) return;
       appState.user.universeBio = val;
       saveLocal();
       await updateDoc(doc(db, "users", appState.user.uid), { universeBio: val }).catch(() => {});
@@ -2657,6 +2779,7 @@
 
     window.saveUniverseBioFromButton = function() {
       const v = document.getElementById('myUniverseBioInput').value;
+      if (!assertCleanContent(v, 'a bio')) return;
       saveUniverseBioLive(v);
       const h = document.getElementById('bioSavedHint');
       if (h) h.textContent = 'Salvo!';
@@ -2712,6 +2835,7 @@
             onClick: async () => {
               const name = document.getElementById('newSubgroupNameInput').value.trim();
               if (!name) return;
+              if (!assertCleanContent(name, 'o nome do subgrupo')) return;
               appState.user.aconchegoGroups.push({
                 id: 'sub_' + Date.now(),
                 name: name,
@@ -2777,12 +2901,85 @@
       row.innerHTML = html;
     }
 
+    window.reportPostFromMenu = function(postId) {
+      requireAuthForAction(() => {
+        const post = postsFromFirebase.find(p => p.id === postId);
+        if (!post) return;
+
+        showSherBlussModal({
+          title: '🚨 Denunciar Publicação',
+          htmlBody: `
+            <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">
+              Denunciando publicação de <strong>${escapeHtml(post.author)}</strong> (${escapeHtml(post.authorHandle || '@usuaria')}).
+            </p>
+            <div class="form-group">
+              <label class="form-label">Motivo da denúncia</label>
+              <select id="reportReasonSelect" class="glass-select">
+                <option value="Conteúdo ilegal, abuso ou exploração">Conteúdo ilegal, abuso ou exploração</option>
+                <option value="Conteúdo adulto / impróprio">Conteúdo adulto / impróprio</option>
+                <option value="Assédio, ódio ou ameaça">Assédio, ódio ou ameaça</option>
+                <option value="Spam ou golpe">Spam ou golpe</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Detalhes (opcional)</label>
+              <input type="text" id="reportDetailsInput" class="glass-input" placeholder="Descreva brevemente o que aconteceu...">
+            </div>
+          `,
+          buttons: [
+            { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
+            {
+              label: 'Enviar Denúncia 🚨',
+              primary: true,
+              onClick: async () => {
+                const reason = document.getElementById('reportReasonSelect').value;
+                const details = document.getElementById('reportDetailsInput').value.trim();
+                const summary =
+                  `🚨 Denúncia recebida!\n` +
+                  `Post ID: ${post.id}\n` +
+                  `Autor: ${post.author} (${post.authorHandle || '@usuaria'} | UID: ${post.authorUid})\n` +
+                  `Fandom: ${post.fandom || 'Geral'}\n` +
+                  `Motivo: ${reason}` +
+                  (details ? `\nDetalhes: ${details}` : '');
+
+                try {
+                  if (ADMIN_UID && ADMIN_UID !== appState.user.uid) {
+                    const cid = [appState.user.uid, ADMIN_UID].sort().join('_');
+                    await setDoc(doc(db, "chats", cid), {
+                      participants: [appState.user.uid, ADMIN_UID],
+                      updatedAt: serverTimestamp()
+                    }, { merge: true });
+
+                    await addDoc(collection(db, "chats", cid, "messages"), {
+                      text: summary,
+                      senderUid: appState.user.uid,
+                      senderName: `Denúncia • ${appState.user.name}`,
+                      participants: [appState.user.uid, ADMIN_UID],
+                      media: '',
+                      mediaType: '',
+                      createdAt: serverTimestamp()
+                    });
+                  }
+                } catch (e) {}
+
+                closeSherBlussModal();
+                showSherBlussModal({
+                  title: 'Denúncia registrada 🛡️',
+                  htmlBody: 'Sua denúncia foi registrada para análise da administração.'
+                });
+              }
+            }
+          ]
+        });
+      });
+    };
+
     window.openPostThreeDotsMenu = function(postId) {
       const post = postsFromFirebase.find(p => p.id === postId);
       if (!post) return;
 
       const isOwn = appState.user.loggedIn && post.authorUid === appState.user.uid;
-      const canDeletePost = isOwn || isModAdminUser();
+      const canDeletePost = canDeleteSpecificPost(post);
       const subs = appState.user.aconchegoGroups || [];
       let subHtml = subs
         .map(g => `<button class="btn-pill-gold" style="width:100%;text-align:left;margin-top:6px;" onclick="savePostToAconchego('${escapeAttr(postId)}','${escapeAttr(g.id)}','${escapeAttr(g.name)}')">📁 Salvar em: <strong>${escapeHtml(g.name)}</strong></button>`)
@@ -2794,7 +2991,8 @@
           <div style="display:flex;flex-direction:column;gap:6px;">
             <button class="btn-gold" onclick="savePostToAconchego('${escapeAttr(postId)}','oficial','Meu Aconchego Oficial')">🏠 Salvar no Meu Aconchego</button>
             ${subHtml}
-            ${canDeletePost ? `<button class="btn-danger-pill" style="width:100%;padding:10px;margin-top:8px;" onclick="closeSherBlussModal();confirmDeletePost('${escapeAttr(postId)}')">🗑️ ${isOwn ? 'Excluir minha publicação' : 'Excluir publicação (Admin)'}</button>` : ''}
+            ${!isOwn ? `<button class="btn-danger-pill" style="width:100%;padding:9px;margin-top:6px;" onclick="closeSherBlussModal();reportPostFromMenu('${escapeAttr(postId)}')">🚨 Denunciar publicação</button>` : ''}
+            ${canDeletePost ? `<button class="btn-danger-pill" style="width:100%;padding:10px;margin-top:8px;" onclick="closeSherBlussModal();confirmDeletePost('${escapeAttr(postId)}')">🗑️ ${isOwn ? 'Excluir minha publicação' : 'Excluir publicação (Moderação)'}</button>` : ''}
           </div>
         `,
         buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
@@ -2960,6 +3158,9 @@
       const nameVal = document.getElementById('profileEditName').value.trim();
       const handleVal = document.getElementById('profileEditHandle').value.trim();
 
+      if (nameVal && !assertCleanContent(nameVal, 'o nome')) return;
+      if (handleVal && !assertCleanContent(handleVal, 'o arroba')) return;
+
       if (nameVal) appState.user.name = nameVal;
       if (handleVal) appState.user.handle = handleVal.startsWith('@') ? handleVal : '@' + handleVal;
 
@@ -3084,6 +3285,7 @@
       const input = document.getElementById('chatInput');
       const text = input.value.trim();
       if (!text) return;
+      if (!assertCleanContent(text, 'a mensagem')) return;
       input.value = '';
 
       const cid = chatIdFor(appState.user.uid, activeChatUid);
@@ -3434,18 +3636,30 @@
             title: 'Solicitação de Fandom 🔒',
             htmlBody: `<p>${notif.text}</p>`,
             buttons: [
-              { label: 'Não', primary: false, onClick: closeSherBlussModal },
               {
-                label: 'Sim ✅',
+                label: 'Recusar',
+                primary: false,
+                onClick: async () => {
+                  try {
+                    const fObj = appState.fandoms.find(x => x.id === notif.fandomId);
+                    const updatedReqs = (fObj?.pendingRequests || []).filter(r => r.uid !== notif.requesterUid);
+                    await updateDoc(doc(db, "fandoms", notif.fandomId), {
+                      pendingRequests: updatedReqs
+                    });
+                  } catch (e) {}
+                  closeSherBlussModal();
+                }
+              },
+              {
+                label: 'Aprovar ✅',
                 primary: true,
                 onClick: async () => {
                   try {
+                    const fObj = appState.fandoms.find(x => x.id === notif.fandomId);
+                    const updatedReqs = (fObj?.pendingRequests || []).filter(r => r.uid !== notif.requesterUid);
                     await updateDoc(doc(db, "fandoms", notif.fandomId), {
                       members: arrayUnion(notif.requesterUid),
-                      pendingRequests: arrayRemove({
-                        uid: notif.requesterUid,
-                        name: notif.requesterName
-                      })
+                      pendingRequests: updatedReqs
                     });
                   } catch (e) {}
                   closeSherBlussModal();
@@ -3684,6 +3898,8 @@
           return;
         }
 
+        if (!assertCleanContent(name, 'o nome do bias')) return;
+
         const frontalUrl = tempBiasPhotoPreviewUrl || './logo.png';
         try {
           const slugId = `bias_${appState.user.uid}_${idNum}_${name.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
@@ -3760,6 +3976,8 @@
     async function submitPostDirectlyWithMedia(mediaUrl, mediaType, isChallenge = false) {
       const input = document.getElementById('mainComposerInput');
       const text = input ? input.value.trim() : '';
+      if (text && !assertCleanContent(text, 'a publicação')) return;
+
       const isInside = document.getElementById('view-inside-fandom').classList.contains('active');
       const targetFandom = !isChallenge && isInside && activeFandomFilter ? activeFandomFilter : 'Geral';
 
@@ -3782,6 +4000,7 @@
           likedBy: [],
           fandom: targetFandom,
           fandomId: targetFandom,
+          fandomDocId: fandomObj?.id || '',
           isPrivateFandom: targetFandom !== 'Geral',
           memberUids: targetFandom !== 'Geral' ? baseMembers : [],
           isChallenge: isChallenge,
@@ -3925,19 +4144,17 @@
     };
 
     window.openPodiumFullscreen = function(rank) {
-      const cps = [...postsFromFirebase]
-        .filter(p => p.isChallenge && !isUserBlocked(p.authorHandle, p.authorUid))
-        .sort((a, b) => (b.likes || 0) - (a.likes || 0));
-      const winner = cps[rank - 1];
+      const topThree = getWeeklyTopThreePhotos();
+      const winner = topThree[rank - 1];
 
       if (winner && winner.media) {
         const masked = maskHandle(winner.authorHandle, winner.author);
         const bias = winner.biasName ? ` • ${winner.biasName}` : '';
-        openLightbox(winner.media, winner.mediaType || 'image', `${rank}º Lugar • ${masked}${bias} (${winner.likes || 0} votos)`);
+        openLightbox(winner.media, winner.mediaType || 'image', `${rank}º Lugar da Semana • ${masked}${bias} (${winner.likes || 0} 🌸)`);
       } else {
         showSherBlussModal({
-          title: `${rank}º Pódio Automático`,
-          htmlBody: 'Ainda não há participações suficientes para este pódio nesta semana.'
+          title: `${rank}º Pódio Semanal`,
+          htmlBody: 'Ainda não há fotos curtidas suficientes para este lugar no pódio da semana.'
         });
       }
     };
@@ -3951,6 +4168,8 @@
           document.getElementById('floatingComposerWrapper').classList.remove('expanded');
           return;
         }
+
+        if (!assertCleanContent(text, 'a publicação')) return;
 
         const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
         const isInside = document.getElementById('view-inside-fandom').classList.contains('active');
@@ -3986,6 +4205,7 @@
             likedBy: [],
             fandom: targetFandom,
             fandomId: targetFandom,
+            fandomDocId: fandomObj?.id || '',
             isPrivateFandom: targetFandom !== 'Geral',
             memberUids: targetFandom !== 'Geral' ? baseMembers : [],
             isChallenge: isChallengeView,
@@ -4011,8 +4231,7 @@
       requireAuthForAction(() => {
         const post = postsFromFirebase.find(p => p.id === postId);
         if (!post) return;
-        const canDelete = post.authorUid === appState.user.uid || isModAdminUser();
-        if (!canDelete) return;
+        if (!canDeleteSpecificPost(post)) return;
 
         showSherBlussModal({
           title: '🗑️ Excluir Publicação',
@@ -4075,6 +4294,8 @@
           }
         }
 
+        renderWeeklyPodiumCarousel();
+
         try {
           await runTransaction(db, async t => {
             const ref = doc(db, "posts", postId);
@@ -4108,6 +4329,7 @@
         const input = document.getElementById(`inlineCommentInput_${postId}`);
         const val = input.value.trim();
         if (!val) return;
+        if (!assertCleanContent(val, 'o comentário')) return;
 
         const post = postsFromFirebase.find(p => p.id === postId);
         if (!post) return;
@@ -4201,6 +4423,7 @@
               onClick: async () => {
                 const name = document.getElementById('newFandomNameInput').value.trim();
                 if (name) {
+                  if (!assertCleanContent(name, 'o nome do fandom')) return;
                   try {
                     await addDoc(collection(db, "fandoms"), {
                       name,
@@ -4281,7 +4504,7 @@
       const f = appState.fandoms.find(x => x.name === activeFandomFilter);
       if (!f) return;
 
-      const isCreatorOrAdmin = isModAdminUser() || f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid));
+      const isCreatorOrAdmin = isFandomModerator(f);
       const canDeleteFandom = isModAdminUser() || f.creatorUid === appState.user.uid;
 
       let adminHtml = isCreatorOrAdmin
@@ -4344,29 +4567,152 @@
       });
     };
 
+    window.approveFandomRequestFromModal = async function(fandomName, requesterUid) {
+      const f = appState.fandoms.find(x => x.name === fandomName);
+      if (!f || !isFandomModerator(f)) return;
+      const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
+      try {
+        await updateDoc(doc(db, "fandoms", f.id), {
+          members: arrayUnion(requesterUid),
+          pendingRequests: updatedReqs
+        });
+        openManageAdminsModal(fandomName);
+      } catch (e) {
+        showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
+      }
+    };
+
+    window.rejectFandomRequestFromModal = async function(fandomName, requesterUid) {
+      const f = appState.fandoms.find(x => x.name === fandomName);
+      if (!f || !isFandomModerator(f)) return;
+      const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
+      try {
+        await updateDoc(doc(db, "fandoms", f.id), {
+          pendingRequests: updatedReqs
+        });
+        openManageAdminsModal(fandomName);
+      } catch (e) {
+        showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
+      }
+    };
+
+    window.toggleFandomAdminRole = async function(fandomName, targetUid) {
+      const f = appState.fandoms.find(x => x.name === fandomName);
+      if (!f || !isFandomModerator(f)) return;
+      if (targetUid === f.creatorUid) return;
+
+      const currentAdmins = Array.isArray(f.admins) ? [...f.admins] : [];
+      const isCurrentlyAdmin = currentAdmins.includes(targetUid);
+      const nextAdmins = isCurrentlyAdmin
+        ? currentAdmins.filter(id => id !== targetUid)
+        : [...currentAdmins, targetUid];
+
+      try {
+        await updateDoc(doc(db, "fandoms", f.id), {
+          admins: nextAdmins,
+          members: arrayUnion(targetUid)
+        });
+        openManageAdminsModal(fandomName);
+      } catch (e) {
+        showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
+      }
+    };
+
+    window.banMemberFromFandom = async function(fandomName, targetUid) {
+      const f = appState.fandoms.find(x => x.name === fandomName);
+      if (!f || !isFandomModerator(f)) return;
+      if (targetUid === f.creatorUid) return;
+
+      const nextMembers = (f.members || []).filter(id => id !== targetUid);
+      const nextAdmins = (f.admins || []).filter(id => id !== targetUid);
+      const nextPending = (f.pendingRequests || []).filter(r => r.uid !== targetUid);
+
+      try {
+        await updateDoc(doc(db, "fandoms", f.id), {
+          members: nextMembers,
+          admins: nextAdmins,
+          pendingRequests: nextPending
+        });
+
+        const fandomPosts = postsFromFirebase.filter(p => p.fandom === fandomName || p.fandomDocId === f.id);
+        for (const post of fandomPosts) {
+          if (Array.isArray(post.memberUids) && post.memberUids.includes(targetUid)) {
+            await updateDoc(doc(db, "posts", post.id), {
+              memberUids: arrayRemove(targetUid)
+            }).catch(() => {});
+          }
+        }
+
+        openManageAdminsModal(fandomName);
+      } catch (e) {
+        showSherBlussModal({ title: 'Erro ao banir', htmlBody: escapeHtml(e.message) });
+      }
+    };
+
     window.openManageAdminsModal = function(fandomName) {
       const f = appState.fandoms.find(x => x.name === fandomName);
       if (!f) return;
 
-      const membersMap = {};
-      if (f.members) {
-        f.members.forEach(uid => {
-          membersMap[uid] = uid === appState.user.uid ? appState.user.name : `Membro (${uid.slice(0, 5)})`;
-        });
-      }
+      const canModerate = isFandomModerator(f);
+      const pending = Array.isArray(f.pendingRequests) ? f.pendingRequests : [];
+      const memberIds = Array.from(new Set([...(f.members || []), ...(f.admins || []), ...(f.creatorUid ? [f.creatorUid] : [])]));
 
-      let mh = '';
-      for (const [uid, uname] of Object.entries(membersMap)) {
-        mh += `
-          <div style="display:flex;justify-content:space-between;align-items:center;background:#141b34;padding:8px 12px;border-radius:10px;margin-bottom:6px;">
-            <span style="font-size:13px;font-weight:600;">${escapeHtml(uname)}</span>
+      let pendingHtml = '';
+      if (canModerate && pending.length) {
+        pendingHtml = `
+          <div style="margin-bottom:14px;">
+            <p style="font-size:11.5px;font-weight:700;color:var(--gold-accent);margin-bottom:6px;">📩 Solicitações pendentes (${pending.length})</p>
+            ${pending.map(req => {
+              const u = usersDirectory.find(x => x.uid === req.uid);
+              const displayName = req.name || u?.name || `Membro (${req.uid.slice(0, 5)})`;
+              return `
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;background:#141b34;padding:8px 10px;border-radius:10px;margin-bottom:6px;border:1px solid var(--gold-border);">
+                  <span style="font-size:12.5px;font-weight:600;flex:1;">${escapeHtml(displayName)}</span>
+                  <div style="display:flex;gap:6px;">
+                    <button type="button" class="btn-pill-gold" style="padding:3px 9px;font-size:11px;" onclick="approveFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Aprovar</button>
+                    <button type="button" class="btn-danger-pill" style="padding:3px 9px;font-size:11px;" onclick="rejectFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Recusar</button>
+                  </div>
+                </div>
+              `;
+            }).join('')}
           </div>
         `;
       }
 
+      const membersHtml = memberIds.length
+        ? memberIds.map(uid => {
+            const u = usersDirectory.find(x => x.uid === uid);
+            const uname = uid === appState.user.uid
+              ? `${appState.user.name} (Você)`
+              : (u?.name || `Membro (${uid.slice(0, 5)})`);
+            const isCreator = uid === f.creatorUid;
+            const isCoAdmin = Array.isArray(f.admins) && f.admins.includes(uid);
+            const roleTag = isCreator ? '👑 Criador' : (isCoAdmin ? '🛡️ Admin' : 'Membro');
+
+            const actionsHtml = canModerate && !isCreator
+              ? `
+                <div style="display:flex;gap:6px;flex-shrink:0;">
+                  <button type="button" class="btn-pill-gold" style="padding:3px 8px;font-size:10.5px;" onclick="toggleFandomAdminRole('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">${isCoAdmin ? 'Tirar Admin' : 'Tornar Admin'}</button>
+                  <button type="button" class="btn-danger-pill" style="padding:3px 8px;font-size:10.5px;" onclick="banMemberFromFandom('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">Banir</button>
+                </div>
+              `
+              : `<span style="font-size:11px;color:var(--gold-accent);font-weight:700;">${roleTag}</span>`;
+
+            return `
+              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;background:#141b34;padding:8px 12px;border-radius:10px;margin-bottom:6px;border:1px solid rgba(251,191,36,.18);">
+                <div style="min-width:0;">
+                  <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(uname)}</div>
+                  <div style="font-size:10.5px;color:var(--text-muted);">${roleTag}</div>
+                </div>
+                ${actionsHtml}
+              </div>
+            `;
+          }).join('')
+        : '<p style="font-size:12px;color:var(--text-muted);">Nenhum membro neste fandom.</p>';
+
       showSherBlussModal({
-        title: `Membros • ${escapeHtml(fandomName)}`,
-        htmlBody: `<div style="max-height:220px;overflow-y:auto;">${mh || '<p style="font-size:12px;color:var(--text-muted);">Nenhum membro listado.</p>'}</div>`,
+        title: `Administração • ${escapeHtml(fandomName)}`,
+        htmlBody: `<div style="max-height:280px;overflow-y:auto;">${pendingHtml}<p style="font-size:11.5px;font-weight:700;color:var(--gold-accent);margin-bottom:6px;">👥 Participantes</p>${membersHtml}</div>`,
         buttons: [{ label: 'Concluir', primary: true, onClick: closeSherBlussModal }]
       });
     };
@@ -4435,7 +4781,7 @@
 
       let isAdmin = false;
       if (post.fandom && post.fandom !== 'Geral') {
-        const fo = appState.fandoms.find(f => f.name === post.fandom);
+        const fo = appState.fandoms.find(f => f.name === post.fandom || f.id === post.fandomDocId);
         if (fo && (fo.creatorUid === post.authorUid || (fo.admins && fo.admins.includes(post.authorUid)))) {
           isAdmin = true;
         }
@@ -4520,26 +4866,7 @@
       document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
       updateNotifBadge();
 
-      const cps = [...postsFromFirebase]
-        .filter(p => p.isChallenge && !isUserBlocked(p.authorHandle, p.authorUid))
-        .sort((a, b) => (b.likes || 0) - (a.likes || 0));
-
-      for (let i = 0; i < 3; i++) {
-        const rank = i + 1;
-        const winner = cps[i];
-        const img = document.getElementById(`podiumImg${rank}`);
-        const label = document.getElementById(`podiumLabel${rank}`);
-        const biasEl = document.getElementById(`podiumBias${rank}`);
-
-        if (winner) {
-          if (winner.media && winner.mediaType !== 'video') img.src = winner.media;
-          label.textContent = maskHandle(winner.authorHandle, winner.author);
-          biasEl.textContent = winner.biasName || 'Vencedor';
-        } else {
-          label.textContent = `${rank}º Pódio`;
-          biasEl.textContent = 'Aguardando';
-        }
-      }
+      renderWeeklyPodiumCarousel();
 
       const grid = document.getElementById('fandomsGridContainer');
       if (!appState.fandoms.length) {
