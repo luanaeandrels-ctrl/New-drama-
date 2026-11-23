@@ -462,6 +462,33 @@
       cursor: pointer;
     }
 
+    .bias-list-item-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      background: #141b34;
+      border: 1px solid rgba(251, 191, 36, .22);
+      border-radius: 12px;
+      padding: 8px 10px;
+    }
+
+    .bias-list-item-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .bias-list-thumb {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1px solid var(--gold-border);
+      flex-shrink: 0;
+    }
+
     .profile-hero-top {
       display: flex;
       align-items: flex-start;
@@ -1405,7 +1432,7 @@
         <div class="challenge-header">
           <span>🌸 Desafio do Dia</span>
         </div>
-        <div class="challenge-text" id="carouselChallengeText">Tema: Sob o Mesmo Guarda-Chuva. Poste a foto do seu Bias!</div>
+        <div class="challenge-text" id="carouselChallengeText">Segunda, terça, quarta, quinta e sexta</div>
         <span style="font-size:10px;color:var(--gold-accent);">Ver desafio</span>
       </div>
 
@@ -1564,7 +1591,7 @@
 
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <p style="font-size:11.5px;color:var(--gold-accent);font-weight:700;">DIRETRIZ DA SEMANA</p>
-        <p id="weeklyDirectiveText" style="font-size:13.5px;margin:6px 0 12px;line-height:1.5;">Carregando desafio...</p>
+        <p id="weeklyDirectiveText" style="font-size:13.5px;margin:6px 0 12px;line-height:1.5;">Segunda, terça, quarta, quinta e sexta</p>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);border-top:1px solid rgba(251,191,36,.18);padding-top:8px;">
           <span>Votos hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
           <span>Reinicia em: <strong id="midnightCountdownTimer" style="color:var(--gold-accent);">--h --m --s</strong></span>
@@ -1572,7 +1599,10 @@
       </div>
 
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
-        <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:4px;">Meu Representante (ID 1 a 1000)</h4>
+        <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:4px;">Minha Lista Privada (Nº 1 a 1000)</h4>
+        <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
+          Cada item da sua lista pode ser atualizado a cada <strong>30 dias</strong>. Participantes repetidos não são duplicados.
+        </p>
         <div class="form-group" style="margin-bottom:10px;">
           <label class="form-label">Nome do Bias</label>
           <input type="text" id="biasNameInput" class="glass-input" placeholder="Ex: seu bias favorito..." autocomplete="off">
@@ -1588,23 +1618,31 @@
             </select>
           </div>
           <div>
-            <label class="form-label">ID Oficial (1 - 1000)</label>
-            <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="1 a 1000">
+            <label class="form-label">Posição na Minha Lista (1 - 1000)</label>
+            <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="Ex: 6">
           </div>
         </div>
         <div style="display:flex;gap:10px;align-items:center;">
-          <button class="btn-gold" style="flex:1;" onclick="saveBiasRegistration()">Salvar Representante</button>
+          <button class="btn-gold" style="flex:1;" onclick="saveBiasRegistration()">Salvar na Minha Lista</button>
           <label for="biasFrontalFile" class="photo-square-picker" id="biasSquarePreview" title="Escolher foto de rosto">
             <span style="font-size:18px;">🖼️</span>
           </label>
           <input type="file" id="biasFrontalFile" accept="image/*" style="display:none;">
+        </div>
+
+        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(251,191,36,.18);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <span style="font-size:12px;font-weight:700;color:var(--gold-accent);">📋 Itens Salvos na Minha Lista</span>
+            <span id="myPrivateBiasCountLabel" style="font-size:11px;color:var(--text-muted);">0 itens</span>
+          </div>
+          <div id="myPrivateBiasListContainer" style="display:flex;flex-direction:column;gap:8px;"></div>
         </div>
       </div>
 
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;text-align:center;">Participar do Desafio</h4>
         <div class="form-group">
-          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Escolha o Bias da lista..." autocomplete="off">
+          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Escolha o Bias da sua lista..." autocomplete="off">
           <div class="bias-country-dropdown" id="challengeBiasDropdown"></div>
         </div>
         <div style="display:flex;gap:10px;">
@@ -1746,6 +1784,7 @@
     const MAX_FILE_BYTES = 10 * 1024 * 1024;
     const TOLERANCE_BYTES = 10 * 1024 * 1024;
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
+    const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
 
     const BLOCKED_TERMS = [
       'pedofilia', 'pedofilo', 'pedófilo', 'abuso infantil', 'pornografia infantil',
@@ -1834,6 +1873,110 @@
       if (appState.bias?.id) return `#${appState.bias.id}`;
       return '';
     }
+
+    function normalizeParticipantKey(name) {
+      return String(name || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+    }
+
+    function getBiasTimestampMs(biasItem) {
+      if (!biasItem) return 0;
+      if (typeof biasItem.lastUpdatedMs === 'number' && biasItem.lastUpdatedMs > 0) return biasItem.lastUpdatedMs;
+      if (typeof biasItem.lastUpdated === 'number' && biasItem.lastUpdated > 0) return biasItem.lastUpdated;
+      if (biasItem.updatedAt?.toMillis) return biasItem.updatedAt.toMillis();
+      return 0;
+    }
+
+    function getRemainingThirtyDayLock(biasItem) {
+      const ts = getBiasTimestampMs(biasItem);
+      if (!ts) return null;
+      const diff = Date.now() - ts;
+      if (diff >= THIRTY_DAYS_MS) return null;
+      const remainingMs = THIRTY_DAYS_MS - diff;
+      const daysLeft = Math.max(1, Math.ceil(remainingMs / (24 * 60 * 60 * 1000)));
+      return { daysLeft, remainingMs };
+    }
+
+    function renderMyPrivateBiasList() {
+      const container = document.getElementById('myPrivateBiasListContainer');
+      const countEl = document.getElementById('myPrivateBiasCountLabel');
+      if (!container) return;
+
+      const myList = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid);
+      if (countEl) {
+        countEl.textContent = `${myList.length} ${myList.length === 1 ? 'item' : 'itens'}`;
+      }
+
+      if (!myList.length) {
+        container.innerHTML = '<p style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Nenhum participante salvo na sua lista ainda.</p>';
+        return;
+      }
+
+      container.innerHTML = myList
+        .map(b => {
+          const lock = getRemainingThirtyDayLock(b);
+          const lockLabel = lock
+            ? ` 🔒 Trava de 30 dias (${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'} restantes)`
+            : ' • Liberado para atualizar';
+
+          return `
+            <div class="bias-list-item-row">
+              <div class="bias-list-item-left" onclick="selectBiasFromDatabase('${escapeAttr(b.name)}','${escapeAttr(b.role || 'Ator')}',${Number(b.id) || 1},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})" style="cursor:pointer;">
+                <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-list-thumb" onerror="this.src='./logo.png'">
+                <div style="min-width:0;">
+                  <div style="font-size:13px;font-weight:700;color:var(--gold-accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                    #${escapeHtml(b.id)} • ${escapeHtml(b.name)}
+                  </div>
+                  <div style="font-size:10.5px;color:var(--text-muted);">
+                    ${escapeHtml(b.role || 'Ator')}${escapeHtml(lockLabel)}
+                  </div>
+                </div>
+              </div>
+              <button type="button" class="btn-danger-pill" onclick="deleteBiasFromMyList('${escapeAttr(b.docId)}','${escapeAttr(b.name)}')">Excluir</button>
+            </div>
+          `;
+        })
+        .join('');
+    }
+
+    window.deleteBiasFromMyList = async function(docId, biasName) {
+      requireAuthForAction(async () => {
+        if (!docId) return;
+        showSherBlussModal({
+          title: 'Excluir da Minha Lista',
+          htmlBody: `Deseja remover <strong>${escapeHtml(biasName)}</strong> da sua lista privada?`,
+          buttons: [
+            { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
+            {
+              label: 'Excluir',
+              primary: true,
+              onClick: async () => {
+                try {
+                  await deleteDoc(doc(db, "biases_db", docId));
+                  biasesDatabase = biasesDatabase.filter(x => x.docId !== docId);
+                  if (appState.bias && normalizeParticipantKey(appState.bias.name) === normalizeParticipantKey(biasName)) {
+                    appState.bias = { name: '', role: 'Ator', id: null, frontalUrl: '', lastUpdated: 0 };
+                    document.getElementById('challengeSelectedBiasInput').value = '';
+                    saveLocal();
+                  }
+                  renderMyPrivateBiasList();
+                  closeSherBlussModal();
+                } catch (e) {
+                  showSherBlussModal({
+                    title: 'Erro ao Excluir',
+                    htmlBody: escapeHtml(e.message)
+                  });
+                }
+              }
+            }
+          ]
+        });
+      });
+    };
 
     function isFandomModerator(f) {
       if (!f || !appState.user.loggedIn || !appState.user.uid) return false;
@@ -2156,12 +2299,12 @@
         used: 0
       },
       directives: {
-        segunda: 'Segunda-feira: Sob o Mesmo Guarda-Chuva. Poste a foto do seu Bias!',
-        terca: 'Terça-feira: Sorriso Inesquecível. Poste o melhor sorriso!',
-        quarta: 'Quarta-feira: Momento Fofo / Casual. Poste o Bias relaxando.',
-        quinta: 'Quinta-feira: Close no Olhar. Foco total na expressão!',
-        sexta: 'Sexta-feira: Clima de Dorama. A grande final do pódio!',
-        sabadoDomingo: 'Fim de semana: Descanso e apuração do Pódio da semana!'
+        segunda: '',
+        terca: '',
+        quarta: '',
+        quinta: '',
+        sexta: '',
+        sabadoDomingo: ''
       },
       fandoms: [],
       notifications: []
@@ -2220,12 +2363,12 @@
     function getCurrentDayDirective() {
       const day = new Date().getDay();
       const d = appState.directives || {};
-      if (day === 1) return d.segunda || 'Segunda-feira: Desafio do Dia';
-      if (day === 2) return d.terca || 'Terça-feira: Desafio do Dia';
-      if (day === 3) return d.quarta || 'Quarta-feira: Desafio do Dia';
-      if (day === 4) return d.quinta || 'Quinta-feira: Desafio do Dia';
-      if (day === 5) return d.sexta || 'Sexta-feira: Desafio do Dia';
-      return d.sabadoDomingo || 'Fim de semana: Apuração do Pódio!';
+      if (day === 1) return d.segunda || 'Segunda-feira';
+      if (day === 2) return d.terca || 'Terça-feira';
+      if (day === 3) return d.quarta || 'Quarta-feira';
+      if (day === 4) return d.quinta || 'Quinta-feira';
+      if (day === 5) return d.sexta || 'Sexta-feira';
+      return d.sabadoDomingo || 'Segunda, terça, quarta, quinta e sexta';
     }
 
     function maskHandle(rawHandle, fallbackAuthor) {
@@ -2387,7 +2530,7 @@
           snap => {
             biasesDatabase = [];
             snap.forEach(d => biasesDatabase.push({ docId: d.id, ...d.data() }));
-            biasesDatabase.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+            biasesDatabase.sort((a, b) => (a.id || 9999) - (b.id || 9999) || (a.name || "").localeCompare(b.name || ""));
             renderAll();
           },
           e => { console.warn("bias pessoal:", e.code); }
@@ -3765,7 +3908,7 @@
 
       const dropdown = document.getElementById('biasCountryDropdown');
       const q = val.trim().toLowerCase();
-      const matches = biasesDatabase.filter(b => b.name.toLowerCase().includes(q));
+      const matches = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid && b.name.toLowerCase().includes(q));
 
       if (!matches.length) {
         dropdown.classList.remove('open');
@@ -3774,11 +3917,11 @@
 
       dropdown.innerHTML = matches
         .map(b => `
-          <div class="bias-dropdown-item" onclick="selectBiasFromDatabase('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}')">
+          <div class="bias-dropdown-item" onclick="selectBiasFromDatabase('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})">
             <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
             <div>
               <strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong>
-              <span style="font-size:11px;color:var(--text-muted);">${escapeHtml(b.role)} • ID #${b.id}</span>
+              <span style="font-size:11px;color:var(--text-muted);">${escapeHtml(b.role)} • Minha lista #${b.id}</span>
             </div>
           </div>
         `)
@@ -3795,33 +3938,32 @@
         return;
       }
 
-      const d = appState.directives || {};
       showSherBlussModal({
-        title: 'Painel: 6 Desafios da Semana',
+        title: 'Painel: Desafios (Segunda a Sexta)',
         htmlBody: `
           <div class="form-group">
             <label class="form-label">Segunda-feira</label>
-            <input type="text" id="admSeg" class="glass-input" value="${escapeAttr(d.segunda || '')}">
+            <input type="text" id="admSeg" class="glass-input" value="" placeholder="Escreva o desafio de segunda...">
           </div>
           <div class="form-group">
             <label class="form-label">Terça-feira</label>
-            <input type="text" id="admTer" class="glass-input" value="${escapeAttr(d.terca || '')}">
+            <input type="text" id="admTer" class="glass-input" value="" placeholder="Escreva o desafio de terça...">
           </div>
           <div class="form-group">
             <label class="form-label">Quarta-feira</label>
-            <input type="text" id="admQua" class="glass-input" value="${escapeAttr(d.quarta || '')}">
+            <input type="text" id="admQua" class="glass-input" value="" placeholder="Escreva o desafio de quarta...">
           </div>
           <div class="form-group">
             <label class="form-label">Quinta-feira</label>
-            <input type="text" id="admQui" class="glass-input" value="${escapeAttr(d.quinta || '')}">
+            <input type="text" id="admQui" class="glass-input" value="" placeholder="Escreva o desafio de quinta...">
           </div>
           <div class="form-group">
             <label class="form-label">Sexta-feira</label>
-            <input type="text" id="admSex" class="glass-input" value="${escapeAttr(d.sexta || '')}">
+            <input type="text" id="admSex" class="glass-input" value="" placeholder="Escreva o desafio de sexta...">
           </div>
           <div class="form-group">
             <label class="form-label">Sábado / Domingo</label>
-            <input type="text" id="admSabDom" class="glass-input" value="${escapeAttr(d.sabadoDomingo || '')}">
+            <input type="text" id="admSabDom" class="glass-input" value="" placeholder="Escreva o aviso de fim de semana...">
           </div>
         `,
         buttons: [
@@ -3852,7 +3994,7 @@
                 closeSherBlussModal();
                 showSherBlussModal({
                   title: 'Sucesso!',
-                  htmlBody: 'Os 6 desafios foram atualizados no servidor para todas.'
+                  htmlBody: 'Os desafios foram atualizados no servidor.'
                 });
               } catch (e) {
                 showSherBlussModal({
@@ -3866,14 +4008,14 @@
       });
     };
 
-    window.selectBiasFromDatabase = function(name, role, id, frontalUrl) {
+    window.selectBiasFromDatabase = function(name, role, id, frontalUrl, lastUpdatedMs = 0) {
       document.getElementById('biasNameInput').value = name;
       document.getElementById('biasRoleInput').value = role;
       document.getElementById('biasIdInput').value = id;
       document.getElementById('challengeSelectedBiasInput').value = `${name} (#${id})`;
       tempBiasPhotoPreviewUrl = frontalUrl;
       document.getElementById('biasSquarePreview').innerHTML = `<img src="${escapeAttr(frontalUrl)}" alt="Foto" onerror="this.src='./logo.png'">`;
-      appState.bias = { name, role, id, frontalUrl, lastUpdated: Date.now() };
+      appState.bias = { name, role, id, frontalUrl, lastUpdated: lastUpdatedMs || Date.now() };
       saveLocal();
       document.getElementById('biasCountryDropdown').classList.remove('open');
     };
@@ -3881,7 +4023,7 @@
     window.filterChallengeBiasList = function(val) {
       const dropdown = document.getElementById('challengeBiasDropdown');
       const q = val.trim().toLowerCase();
-      const matches = biasesDatabase.filter(b => b.name.toLowerCase().includes(q));
+      const matches = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid && b.name.toLowerCase().includes(q));
 
       if (!matches.length) {
         dropdown.classList.remove('open');
@@ -3890,11 +4032,11 @@
 
       dropdown.innerHTML = matches
         .map(b => `
-          <div class="bias-dropdown-item" onclick="pickBiasForChallengePost('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}')">
+          <div class="bias-dropdown-item" onclick="pickBiasForChallengePost('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})">
             <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
             <div>
               <strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong>
-              <span style="font-size:11px;color:var(--text-muted);">${escapeHtml(b.role)} • ID #${b.id}</span>
+              <span style="font-size:11px;color:var(--text-muted);">${escapeHtml(b.role)} • Minha lista #${b.id}</span>
             </div>
           </div>
         `)
@@ -3902,9 +4044,9 @@
       dropdown.classList.add('open');
     };
 
-    window.pickBiasForChallengePost = function(name, role, id, frontalUrl) {
+    window.pickBiasForChallengePost = function(name, role, id, frontalUrl, lastUpdatedMs = 0) {
       document.getElementById('challengeSelectedBiasInput').value = `${name} (#${id})`;
-      appState.bias = { name, role, id, frontalUrl, lastUpdated: Date.now() };
+      appState.bias = { name, role, id, frontalUrl, lastUpdated: lastUpdatedMs || Date.now() };
       saveLocal();
       document.getElementById('challengeBiasDropdown').classList.remove('open');
     };
@@ -3924,33 +4066,60 @@
         if (!name || isNaN(idNum) || idNum < 1 || idNum > 1000) {
           showSherBlussModal({
             title: 'Dados Incompletos',
-            htmlBody: 'Informe o nome, escolha uma foto de rosto e defina o ID oficial (1 a 1000).'
+            htmlBody: 'Informe o nome e defina a posição da sua lista (1 a 1000).'
           });
           return;
         }
 
         if (!assertCleanContent(name, 'o nome do bias')) return;
 
-        const frontalUrl = tempBiasPhotoPreviewUrl || './logo.png';
+        const normalizedTargetName = normalizeParticipantKey(name);
+        const myExistingList = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid);
+        const existingByName = myExistingList.find(b => normalizeParticipantKey(b.name) === normalizedTargetName);
+        const existingByPos = myExistingList.find(b => Number(b.id) === idNum);
+
+        if (existingByName && (!existingByPos || existingByPos.docId !== existingByName.docId)) {
+          showSherBlussModal({
+            title: 'Participante já existe na sua lista',
+            htmlBody: `<strong>${escapeHtml(existingByName.name)}</strong> já está salvo na sua lista na posição <strong>#${escapeHtml(existingByName.id)}</strong>. Não é possível salvar o mesmo participante em posições diferentes.`
+          });
+          return;
+        }
+
+        const targetRecord = existingByPos || existingByName;
+        if (targetRecord) {
+          const lock = getRemainingThirtyDayLock(targetRecord);
+          if (lock) {
+            showSherBlussModal({
+              title: 'Trava de 30 dias ativa 🔒',
+              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>.`
+            });
+            return;
+          }
+        }
+
+        const nowMs = Date.now();
+        const frontalUrl = tempBiasPhotoPreviewUrl || targetRecord?.frontalUrl || './logo.png';
         try {
-          const slugId = `bias_${appState.user.uid}_${idNum}_${name.toLowerCase().replace(/[^a-z0-9]/g, '')}`;
+          const slugId = targetRecord?.docId || `bias_${appState.user.uid}_${idNum}_${normalizedTargetName.replace(/[^a-z0-9]/g, '') || 'item'}`;
           await setDoc(doc(db, "biases_db", slugId), {
             name,
             role,
             id: idNum,
             frontalUrl,
             registeredByUid: appState.user.uid,
+            lastUpdatedMs: nowMs,
             updatedAt: serverTimestamp()
           }, { merge: true });
 
-          appState.bias = { name, role, id: idNum, frontalUrl, lastUpdated: Date.now() };
+          appState.bias = { name, role, id: idNum, frontalUrl, lastUpdated: nowMs };
           document.getElementById('challengeSelectedBiasInput').value = `${name} (#${idNum})`;
           saveLocal();
           renderAll();
 
           showSherBlussModal({
-            title: 'Representante Salvo! 🌸',
-            htmlBody: `<strong>${escapeHtml(name)}</strong> (#${idNum}) foi salvo com sucesso!`
+            title: 'Salvo na Sua Lista! 🌸',
+            htmlBody: `<strong>${escapeHtml(name)}</strong> (#${idNum}) foi salvo na sua lista privada. Próxima alteração em 30 dias.`
           });
         } catch (e) {
           showSherBlussModal({
@@ -3989,7 +4158,7 @@
       if (!appState.bias.id || !appState.bias.name) {
         showSherBlussModal({
           title: 'Selecione seu Bias',
-          htmlBody: 'Escolha seu Bias na lista acima ou cadastre um novo antes de enviar.'
+          htmlBody: 'Escolha seu Bias da sua lista acima ou cadastre um novo antes de enviar.'
         });
         return;
       }
@@ -4023,7 +4192,7 @@
           authorUid: appState.user.uid,
           authorHandle: appState.user.handle,
           avatar: appState.user.avatar,
-          text: text || (isChallenge ? `Representando ${appState.bias.name} (#${appState.bias.id}) no desafio de ${challengeDay}!` : ''),
+          text: text || (isChallenge ? `Representando ${appState.bias.name} (${challengeBiasRank || '#' + appState.bias.id}) no desafio de ${challengeDay}!` : ''),
           media: mediaUrl || '',
           mediaType: mediaType || '',
           likes: 0,
@@ -4903,6 +5072,7 @@
       document.getElementById('carouselChallengeText').textContent = cur;
       document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
       updateNotifBadge();
+      renderMyPrivateBiasList();
 
       renderWeeklyPodiumCarousel();
 
