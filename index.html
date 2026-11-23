@@ -1630,7 +1630,7 @@
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;text-align:center;">Participar do Desafio</h4>
         <div class="form-group">
-          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Digite 6, #6, 6º, seis ou escolha da lista..." autocomplete="off">
+          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Digite 5, cinco, 4, #6, 6º ou escolha da lista..." autocomplete="off">
           <div class="bias-country-dropdown" id="challengeBiasDropdown"></div>
         </div>
         <div style="display:flex;gap:10px;">
@@ -1814,14 +1814,12 @@
 
       if (!cleaned) return null;
 
-      // 1) Dígitos diretos, com # ou ordinal (#6, 6, 06, 6º, 6ª, 6o, 6a)
       const digitMatch = cleaned.match(/(?:^|\s|#)0*(\d{1,4})(?:º|ª|o|a)?(?:\s|$)/);
       if (digitMatch && digitMatch[1]) {
         const n = parseInt(digitMatch[1], 10);
         if (!isNaN(n) && n >= 1 && n <= 1000) return n;
       }
 
-      // 2) Extenso / ordinal em português (ex.: "seis", "sexto", "cinquenta e cinco", "centesimo")
       const tokens = cleaned
         .replace(/[^\w\s-]/g, ' ')
         .replace(/\s+e\s+/g, ' ')
@@ -4282,21 +4280,19 @@
       const myList = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid);
       const parsedNum = parseNumberFromQuery(val);
 
-      // Se o usuário digitou um número/ordinal/extenso que bate com uma posição da lista, preenche automaticamente
-      if (parsedNum) {
-        const exactByPos = myList.find(b => Number(b.id) === parsedNum);
-        if (exactByPos) {
-          const formattedLabel = `${exactByPos.name} (#${exactByPos.id})`;
-          const inputEl = document.getElementById('challengeSelectedBiasInput');
-          if (inputEl && inputEl.value !== formattedLabel) {
-            inputEl.value = formattedLabel;
-          }
+      // Se o usuário apagou tudo, limpa o bias selecionado para não prender nenhum número anterior
+      if (!q) {
+        appState.bias = { name: '', role: 'Ator', id: null, frontalUrl: '', lastUpdated: 0 };
+        saveLocal();
+      } else if (parsedNum) {
+        const matchedByPos = myList.find(b => Number(b.id) === parsedNum);
+        if (matchedByPos) {
           appState.bias = {
-            name: exactByPos.name,
-            role: exactByPos.role,
-            id: exactByPos.id,
-            frontalUrl: exactByPos.frontalUrl || './logo.png',
-            lastUpdated: getBiasTimestampMs(exactByPos) || Date.now()
+            name: matchedByPos.name,
+            role: matchedByPos.role,
+            id: matchedByPos.id,
+            frontalUrl: matchedByPos.frontalUrl || './logo.png',
+            lastUpdated: getBiasTimestampMs(matchedByPos) || Date.now()
           };
           saveLocal();
         }
