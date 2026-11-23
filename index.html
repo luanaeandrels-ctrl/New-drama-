@@ -1051,6 +1051,7 @@
       margin-top: 4px;
       z-index: 60;
       display: none;
+      touch-action: pan-y;
     }
 
     .bias-country-dropdown.open {
@@ -1066,6 +1067,7 @@
       border-bottom: 1px solid rgba(251, 191, 36, .12);
       font-size: 13px;
       user-select: none;
+      touch-action: pan-y;
     }
 
     .bias-dropdown-item:hover {
@@ -1594,7 +1596,7 @@
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;">Minha Lista Privada (Nº 1 a 1000)</h4>
         <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
-          Segure o nome por 5 segundos para alterar a foto de rosto ou excluir (a posição fica bloqueada por 30 dias após salvar ou excluir).
+          Segure o nome por 10 segundos sem arrastar para alterar a foto de rosto ou excluir (a posição fica bloqueada por 30 dias após salvar ou excluir).
         </p>
         <div class="form-group" style="margin-bottom:10px;">
           <label class="form-label">Nome do Bias</label>
@@ -1628,7 +1630,7 @@
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;text-align:center;">Participar do Desafio</h4>
         <div class="form-group">
-          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Escolha ou segure o Bias da sua lista..." autocomplete="off">
+          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Digite 6, #6, 6º, seis ou escolha da lista..." autocomplete="off">
           <div class="bias-country-dropdown" id="challengeBiasDropdown"></div>
         </div>
         <div style="display:flex;gap:10px;">
@@ -1771,8 +1773,8 @@
     const TOLERANCE_BYTES = 10 * 1024 * 1024;
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-    const LONG_PRESS_DURATION_MS = 5000;
-    const SCROLL_CANCEL_THRESHOLD_PX = 10;
+    const LONG_PRESS_DURATION_MS = 10000;
+    const SCROLL_CANCEL_THRESHOLD_PX = 4;
 
     const BLOCKED_TERMS = [
       'pedofilia', 'pedofilo', 'pedófilo', 'abuso infantil', 'pornografia infantil',
@@ -1800,6 +1802,80 @@
         .replace(/[^a-z0-9\s]/g, ' ')
         .replace(/\s+/g, ' ')
         .trim();
+    }
+
+    // Converte números cardinais, ordinais ou por extenso (1..1000) em número inteiro
+    function parseNumberFromQuery(rawInput) {
+      const cleaned = String(rawInput || '')
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .trim();
+
+      if (!cleaned) return null;
+
+      // 1) Dígitos diretos, com # ou ordinal (#6, 6, 06, 6º, 6ª, 6o, 6a)
+      const digitMatch = cleaned.match(/(?:^|\s|#)0*(\d{1,4})(?:º|ª|o|a)?(?:\s|$)/);
+      if (digitMatch && digitMatch[1]) {
+        const n = parseInt(digitMatch[1], 10);
+        if (!isNaN(n) && n >= 1 && n <= 1000) return n;
+      }
+
+      // 2) Extenso / ordinal em português (ex.: "seis", "sexto", "cinquenta e cinco", "centesimo")
+      const tokens = cleaned
+        .replace(/[^\w\s-]/g, ' ')
+        .replace(/\s+e\s+/g, ' ')
+        .split(/[\s-]+/)
+        .filter(Boolean);
+
+      if (!tokens.length) return null;
+
+      const wordMap = {
+        'um': 1, 'uma': 1, 'primeiro': 1, 'primeira': 1,
+        'dois': 2, 'duas': 2, 'segundo': 2, 'segunda': 2,
+        'tres': 3, 'terceiro': 3, 'terceira': 3,
+        'quatro': 4, 'quarto': 4, 'quarta': 4,
+        'cinco': 5, 'quinto': 5, 'quinta': 5,
+        'seis': 6, 'sexto': 6, 'sexta': 6,
+        'sete': 7, 'setimo': 7, 'setima': 7,
+        'oito': 8, 'oitavo': 8, 'oitava': 8,
+        'nove': 9, 'nono': 9, 'nona': 9,
+        'dez': 10, 'decimo': 10, 'decima': 10,
+        'onze': 11, 'doze': 12, 'treze': 13, 'quatorze': 14, 'catorze': 14,
+        'quinze': 15, 'dezesseis': 16, 'dezasseis': 16, 'dezessete': 17, 'dezassete': 17,
+        'dezoito': 18, 'dezenove': 19, 'dezanove': 19,
+        'vinte': 20, 'vigesimo': 20, 'vigesima': 20,
+        'trinta': 30, 'trigesimo': 30, 'trigesima': 30,
+        'quarenta': 40, 'quadragesimo': 40, 'quadragesima': 40,
+        'cinquenta': 50, 'quinquagesimo': 50, 'quinquagesima': 50,
+        'sessenta': 60, 'sexagesimo': 60, 'sexagesima': 60,
+        'setenta': 70, 'septuagesimo': 70, 'septuagesima': 70,
+        'oitenta': 80, 'octogesimo': 80, 'octogesima': 80,
+        'noventa': 90, 'nonagesimo': 90, 'nonagesima': 90,
+        'cem': 100, 'cento': 100, 'centesimo': 100, 'centesima': 100,
+        'duzentos': 200, 'duzentas': 200, 'ducentesimo': 200, 'ducentesima': 200,
+        'trezentos': 300, 'trezentas': 300, 'trecentesimo': 300, 'trecentesima': 300,
+        'quatrocentos': 400, 'quatrocentas': 400, 'quadringentesimo': 400, 'quadringentesima': 400,
+        'quinhentos': 500, 'quinhentas': 500, 'quingentesimo': 500, 'quingentesima': 500,
+        'seiscentos': 600, 'seiscentas': 600, 'seiscentesimo': 600, 'seiscentesima': 600,
+        'setecentos': 700, 'setecentas': 700, 'septingentesimo': 700, 'septingentesima': 700,
+        'oitocentos': 800, 'oitocentas': 800, 'octingentesimo': 800, 'octingentesima': 800,
+        'novecentos': 900, 'novecentas': 900, 'nongentesimo': 900, 'nongentesima': 900,
+        'mil': 1000, 'milesimo': 1000, 'milesima': 1000
+      };
+
+      let total = 0;
+      let matchedAny = false;
+
+      for (const tok of tokens) {
+        if (Object.prototype.hasOwnProperty.call(wordMap, tok)) {
+          total += wordMap[tok];
+          matchedAny = true;
+        }
+      }
+
+      if (matchedAny && total >= 1 && total <= 1000) return total;
+      return null;
     }
 
     function findBlockedTerm(rawText) {
@@ -1854,7 +1930,6 @@
       return 'Fim de semana';
     }
 
-    // Extrai dinamicamente o número solicitado na diretriz do desafio atual (ex.: #6, nº 6, número 6)
     function extractRequestedChallengeNumber(directiveText) {
       const text = String(directiveText || '');
       if (!text.trim()) return null;
@@ -1873,7 +1948,7 @@
           }
         }
       }
-      return null;
+      return parseNumberFromQuery(text);
     }
 
     function getActiveChallengeRankNumber() {
@@ -1883,6 +1958,9 @@
         const parsed = parseInt(matchInInput[1], 10);
         if (!isNaN(parsed)) return parsed;
       }
+      const parsedFromText = parseNumberFromQuery(rawInput);
+      if (parsedFromText) return parsedFromText;
+
       if (appState.bias?.id) {
         const parsed = parseInt(appState.bias.id, 10);
         if (!isNaN(parsed)) return parsed;
@@ -4075,7 +4153,14 @@
 
       const dropdown = document.getElementById('biasCountryDropdown');
       const q = val.trim().toLowerCase();
-      const matches = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid && b.name.toLowerCase().includes(q));
+      const parsedNum = parseNumberFromQuery(val);
+      const myList = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid);
+
+      const matches = myList.filter(b => {
+        const nameMatch = b.name.toLowerCase().includes(q);
+        const numMatch = parsedNum ? Number(b.id) === parsedNum : String(b.id).includes(q);
+        return nameMatch || numMatch;
+      });
 
       if (!matches.length) {
         dropdown.classList.remove('open');
@@ -4194,7 +4279,35 @@
     window.filterChallengeBiasList = function(val) {
       const dropdown = document.getElementById('challengeBiasDropdown');
       const q = val.trim().toLowerCase();
-      const matches = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid && b.name.toLowerCase().includes(q));
+      const myList = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid);
+      const parsedNum = parseNumberFromQuery(val);
+
+      // Se o usuário digitou um número/ordinal/extenso que bate com uma posição da lista, preenche automaticamente
+      if (parsedNum) {
+        const exactByPos = myList.find(b => Number(b.id) === parsedNum);
+        if (exactByPos) {
+          const formattedLabel = `${exactByPos.name} (#${exactByPos.id})`;
+          const inputEl = document.getElementById('challengeSelectedBiasInput');
+          if (inputEl && inputEl.value !== formattedLabel) {
+            inputEl.value = formattedLabel;
+          }
+          appState.bias = {
+            name: exactByPos.name,
+            role: exactByPos.role,
+            id: exactByPos.id,
+            frontalUrl: exactByPos.frontalUrl || './logo.png',
+            lastUpdated: getBiasTimestampMs(exactByPos) || Date.now()
+          };
+          saveLocal();
+        }
+      }
+
+      const matches = myList.filter(b => {
+        if (!q) return true;
+        const nameMatch = b.name.toLowerCase().includes(q);
+        const numMatch = parsedNum ? Number(b.id) === parsedNum : String(b.id).includes(q);
+        return nameMatch || numMatch;
+      });
 
       if (!matches.length) {
         dropdown.classList.remove('open');
@@ -4276,7 +4389,7 @@
           if (lock) {
             showSherBlussModal({
               title: 'Trava de 30 dias ativa 🔒',
-              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>. Segure o nome por 5 segundos para alterar apenas a foto de rosto.`
+              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>. Segure o nome por 10 segundos sem arrastar para alterar apenas a foto de rosto.`
             });
             return;
           }
