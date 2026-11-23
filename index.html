@@ -452,9 +452,9 @@
     }
 
     .btn-danger-pill {
-      background: #1e1115;
-      border: 1px solid #f43f5e;
-      color: #fda4af;
+      background: #141b34;
+      border: 1px solid var(--gold-border);
+      color: var(--text-main);
       font-size: 11px;
       font-weight: 600;
       padding: 4px 10px;
@@ -462,31 +462,23 @@
       cursor: pointer;
     }
 
-    .bias-list-item-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      background: #141b34;
-      border: 1px solid rgba(251, 191, 36, .22);
-      border-radius: 12px;
-      padding: 8px 10px;
+    .delicate-x-btn {
+      background: transparent !important;
+      border: none !important;
+      box-shadow: none !important;
+      backdrop-filter: none !important;
+      color: #f8fafc;
+      font-size: 15px;
+      line-height: 1;
+      padding: 2px 6px;
+      cursor: pointer;
+      opacity: 0.85;
+      transition: opacity 0.15s ease, color 0.15s ease;
     }
 
-    .bias-list-item-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .bias-list-thumb {
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 1px solid var(--gold-border);
-      flex-shrink: 0;
+    .delicate-x-btn:hover {
+      opacity: 1;
+      color: var(--gold-accent);
     }
 
     .profile-hero-top {
@@ -1073,6 +1065,7 @@
       cursor: pointer;
       border-bottom: 1px solid rgba(251, 191, 36, .12);
       font-size: 13px;
+      user-select: none;
     }
 
     .bias-dropdown-item:hover {
@@ -1214,15 +1207,13 @@
       position: absolute;
       top: 18px;
       right: 18px;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      background: #141b34;
-      border: 1px solid var(--gold-accent);
-      color: var(--gold-accent);
-      font-size: 18px;
+      background: transparent;
+      border: none;
+      color: #f8fafc;
+      font-size: 22px;
       cursor: pointer;
       z-index: 125;
+      padding: 4px 8px;
     }
 
     .lightbox-media {
@@ -1369,6 +1360,7 @@
 <body class="notranslate">
 
   <input type="file" id="aconchegoCoverInput" accept="image/*" style="display:none;">
+  <input type="file" id="holdBiasPhotoInput" accept="image/*" style="display:none;">
 
   <div class="auth-gate-overlay" id="authGateOverlay">
     <div class="glass-panel auth-card" id="authCardMain">
@@ -1527,11 +1519,11 @@
             <input type="file" id="profileBgFile" accept="image/*" style="display:none;">
           </div>
 
-          <div class="form-group" style="background:#1e1115;border:1px solid #f43f5e;padding:12px;border-radius:14px;">
-            <label class="form-label" style="color:#fda4af;font-weight:700;">🚫 Bloquear @Arroba</label>
+          <div class="form-group" style="background:#141b34;border:1px solid var(--gold-border);padding:12px;border-radius:14px;">
+            <label class="form-label" style="color:var(--gold-accent);font-weight:700;">🚫 Bloquear @Arroba</label>
             <div style="display:flex;gap:8px;margin-bottom:8px;">
               <input type="text" id="blockHandleInput" class="glass-input notranslate" placeholder="@usuario_indesejado">
-              <button type="button" class="btn-danger-pill" style="padding:0 14px;font-size:12px;" onclick="blockUserByHandle()">Bloquear</button>
+              <button type="button" class="btn-pill-gold" style="padding:0 14px;font-size:12px;" onclick="blockUserByHandle()">Bloquear</button>
             </div>
             <div id="blockedHandlesList" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
           </div>
@@ -1543,7 +1535,7 @@
 
           <div style="display:flex;gap:8px;">
             <button class="btn-gold" style="flex:1;" onclick="toggleProfileEditMode()">Salvar e Fechar Edição</button>
-            <button class="btn-danger-pill" style="padding:10px 14px;" onclick="logoutAccount()">🚪 Sair</button>
+            <button class="btn-pill-gold" style="padding:10px 14px;" onclick="logoutAccount()">🚪 Sair</button>
           </div>
         </div>
       </div>
@@ -1599,9 +1591,9 @@
       </div>
 
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
-        <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:4px;">Minha Lista Privada (Nº 1 a 1000)</h4>
+        <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;">Minha Lista Privada (Nº 1 a 1000)</h4>
         <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
-          Cada item da sua lista pode ser atualizado a cada <strong>30 dias</strong>. Participantes repetidos não são duplicados.
+          Segure o nome do participante para alterar a foto ou excluir (mesmo excluindo, ele não entra de novo por 30 dias).
         </p>
         <div class="form-group" style="margin-bottom:10px;">
           <label class="form-label">Nome do Bias</label>
@@ -1629,20 +1621,12 @@
           </label>
           <input type="file" id="biasFrontalFile" accept="image/*" style="display:none;">
         </div>
-
-        <div style="margin-top:14px;padding-top:12px;border-top:1px solid rgba(251,191,36,.18);">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-            <span style="font-size:12px;font-weight:700;color:var(--gold-accent);">📋 Itens Salvos na Minha Lista</span>
-            <span id="myPrivateBiasCountLabel" style="font-size:11px;color:var(--text-muted);">0 itens</span>
-          </div>
-          <div id="myPrivateBiasListContainer" style="display:flex;flex-direction:column;gap:8px;"></div>
-        </div>
       </div>
 
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;text-align:center;">Participar do Desafio</h4>
         <div class="form-group">
-          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Escolha o Bias da sua lista..." autocomplete="off">
+          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Escolha ou segure o Bias da sua lista..." autocomplete="off">
           <div class="bias-country-dropdown" id="challengeBiasDropdown"></div>
         </div>
         <div style="display:flex;gap:10px;">
@@ -1678,7 +1662,7 @@
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <button class="dots-menu-btn" onclick="openFandomOptionsMenu()" title="Opções">•••</button>
-          <button onclick="closeCurrentFandom()" style="background:#1e1115;border:1px solid #f43f5e;color:#fda4af;width:30px;height:30px;border-radius:50%;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;" title="Fechar">✕</button>
+          <button onclick="closeCurrentFandom()" class="delicate-x-btn" style="font-size:18px;" title="Fechar">✕</button>
         </div>
       </div>
       <div class="feed-list" id="insideFandomFeedList"></div>
@@ -1901,82 +1885,137 @@
       return { daysLeft, remainingMs };
     }
 
-    function renderMyPrivateBiasList() {
-      const container = document.getElementById('myPrivateBiasListContainer');
-      const countEl = document.getElementById('myPrivateBiasCountLabel');
-      if (!container) return;
+    let pendingHoldBiasDocId = null;
+    let longPressTimer = null;
+    let longPressTriggered = false;
 
-      const myList = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid);
-      if (countEl) {
-        countEl.textContent = `${myList.length} ${myList.length === 1 ? 'item' : 'itens'}`;
-      }
-
-      if (!myList.length) {
-        container.innerHTML = '<p style="font-size:12px;color:var(--text-muted);text-align:center;padding:8px 0;">Nenhum participante salvo na sua lista ainda.</p>';
-        return;
-      }
-
-      container.innerHTML = myList
-        .map(b => {
-          const lock = getRemainingThirtyDayLock(b);
-          const lockLabel = lock
-            ? ` 🔒 Trava de 30 dias (${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'} restantes)`
-            : ' • Liberado para atualizar';
-
-          return `
-            <div class="bias-list-item-row">
-              <div class="bias-list-item-left" onclick="selectBiasFromDatabase('${escapeAttr(b.name)}','${escapeAttr(b.role || 'Ator')}',${Number(b.id) || 1},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})" style="cursor:pointer;">
-                <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-list-thumb" onerror="this.src='./logo.png'">
-                <div style="min-width:0;">
-                  <div style="font-size:13px;font-weight:700;color:var(--gold-accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                    #${escapeHtml(b.id)} • ${escapeHtml(b.name)}
-                  </div>
-                  <div style="font-size:10.5px;color:var(--text-muted);">
-                    ${escapeHtml(b.role || 'Ator')}${escapeHtml(lockLabel)}
-                  </div>
-                </div>
-              </div>
-              <button type="button" class="btn-danger-pill" onclick="deleteBiasFromMyList('${escapeAttr(b.docId)}','${escapeAttr(b.name)}')">Excluir</button>
-            </div>
-          `;
-        })
-        .join('');
+    function findBiasRecordByDocId(docId) {
+      return biasesDatabase.find(b => b.docId === docId) || null;
     }
 
-    window.deleteBiasFromMyList = async function(docId, biasName) {
-      requireAuthForAction(async () => {
-        if (!docId) return;
-        showSherBlussModal({
-          title: 'Excluir da Minha Lista',
-          htmlBody: `Deseja remover <strong>${escapeHtml(biasName)}</strong> da sua lista privada?`,
-          buttons: [
-            { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
-            {
-              label: 'Excluir',
-              primary: true,
-              onClick: async () => {
-                try {
-                  await deleteDoc(doc(db, "biases_db", docId));
-                  biasesDatabase = biasesDatabase.filter(x => x.docId !== docId);
-                  if (appState.bias && normalizeParticipantKey(appState.bias.name) === normalizeParticipantKey(biasName)) {
-                    appState.bias = { name: '', role: 'Ator', id: null, frontalUrl: '', lastUpdated: 0 };
-                    document.getElementById('challengeSelectedBiasInput').value = '';
-                    saveLocal();
-                  }
-                  renderMyPrivateBiasList();
-                  closeSherBlussModal();
-                } catch (e) {
-                  showSherBlussModal({
-                    title: 'Erro ao Excluir',
-                    htmlBody: escapeHtml(e.message)
-                  });
-                }
-              }
-            }
-          ]
-        });
+    window.openBiasLongPressPanel = function(docId) {
+      const item = findBiasRecordByDocId(docId);
+      if (!item) return;
+
+      const lock = getRemainingThirtyDayLock(item);
+      const statusText = lock
+        ? `Bloqueado para alterar posição por mais <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong> (30 dias).`
+        : 'Prazo de 30 dias concluído para alterar a posição.';
+
+      showSherBlussModal({
+        title: `#${escapeHtml(item.id)} • ${escapeHtml(item.name)}`,
+        htmlBody: `
+          <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:12px;">
+            ${statusText}<br>
+            Se você excluir, o participante não poderá ser adicionado novamente dentro dos 30 dias (nem em outra posição).
+          </p>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button type="button" class="btn-gold" onclick="triggerBiasPhotoOnlyChange('${escapeAttr(item.docId)}')">🖼️ Alterar foto (mantém posição #${escapeHtml(item.id)})</button>
+            <button type="button" class="btn-pill-gold" style="width:100%;padding:10px;" onclick="deleteBiasFromLongPress('${escapeAttr(item.docId)}')">Excluir participante</button>
+          </div>
+        `,
+        buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
       });
     };
+
+    window.triggerBiasPhotoOnlyChange = function(docId) {
+      pendingHoldBiasDocId = docId;
+      closeSherBlussModal();
+      document.getElementById('holdBiasPhotoInput').click();
+    };
+
+    document.getElementById('holdBiasPhotoInput').addEventListener('change', async event => {
+      const file = event.target.files[0];
+      const docId = pendingHoldBiasDocId;
+      pendingHoldBiasDocId = null;
+      event.target.value = '';
+      if (!file || !docId) return;
+
+      const item = findBiasRecordByDocId(docId);
+      if (!item) return;
+
+      const up = await uploadMediaToCloudinary(file);
+      if (!up) return;
+
+      try {
+        await updateDoc(doc(db, "biases_db", docId), {
+          frontalUrl: up.url
+        });
+        item.frontalUrl = up.url;
+        if (appState.bias && normalizeParticipantKey(appState.bias.name) === normalizeParticipantKey(item.name)) {
+          appState.bias.frontalUrl = up.url;
+          saveLocal();
+        }
+        showSherBlussModal({
+          title: 'Foto Atualizada 🌸',
+          htmlBody: `A foto de <strong>${escapeHtml(item.name)}</strong> foi atualizada mantendo a posição <strong>#${escapeHtml(item.id)}</strong>.`
+        });
+      } catch (e) {
+        showSherBlussModal({
+          title: 'Erro ao Atualizar Foto',
+          htmlBody: escapeHtml(e.message)
+        });
+      }
+    });
+
+    window.deleteBiasFromLongPress = async function(docId) {
+      const item = findBiasRecordByDocId(docId);
+      if (!item) return;
+
+      const nowMs = Date.now();
+      const origTs = getBiasTimestampMs(item) || nowMs;
+      const key = normalizeParticipantKey(item.name);
+
+      if (!Array.isArray(appState.user.blockedBiasKeys)) {
+        appState.user.blockedBiasKeys = [];
+      }
+      const existingIdx = appState.user.blockedBiasKeys.findIndex(x => x.key === key);
+      const lockUntilMs = origTs + THIRTY_DAYS_MS;
+      if (existingIdx !== -1) {
+        appState.user.blockedBiasKeys[existingIdx].untilMs = Math.max(appState.user.blockedBiasKeys[existingIdx].untilMs || 0, lockUntilMs);
+      } else {
+        appState.user.blockedBiasKeys.push({
+          key,
+          name: item.name,
+          position: Number(item.id) || null,
+          untilMs: lockUntilMs
+        });
+      }
+
+      try {
+        await deleteDoc(doc(db, "biases_db", docId));
+        biasesDatabase = biasesDatabase.filter(x => x.docId !== docId);
+
+        if (appState.bias && normalizeParticipantKey(appState.bias.name) === key) {
+          appState.bias = { name: '', role: 'Ator', id: null, frontalUrl: '', lastUpdated: 0 };
+          document.getElementById('challengeSelectedBiasInput').value = '';
+        }
+
+        saveLocal();
+        await saveUserDataToFirestore();
+        closeSherBlussModal();
+        showSherBlussModal({
+          title: 'Participante Excluído',
+          htmlBody: `<strong>${escapeHtml(item.name)}</strong> foi removido. Ele não poderá ser adicionado novamente dentro do prazo de 30 dias.`
+        });
+      } catch (e) {
+        showSherBlussModal({
+          title: 'Erro ao Excluir',
+          htmlBody: escapeHtml(e.message)
+        });
+      }
+    };
+
+    function getDeletedParticipantLock(name) {
+      const key = normalizeParticipantKey(name);
+      const list = Array.isArray(appState.user.blockedBiasKeys) ? appState.user.blockedBiasKeys : [];
+      const found = list.find(x => x.key === key);
+      if (!found || !found.untilMs) return null;
+      const diff = found.untilMs - Date.now();
+      if (diff <= 0) return null;
+      const daysLeft = Math.max(1, Math.ceil(diff / (24 * 60 * 60 * 1000)));
+      return { daysLeft, position: found.position };
+    }
 
     function isFandomModerator(f) {
       if (!f || !appState.user.loggedIn || !appState.user.uid) return false;
@@ -2283,6 +2322,7 @@
         aconchegoGroups: [],
         savedItems: [],
         blockedHandles: [],
+        blockedBiasKeys: [],
         friends: [],
         pendingFriendRequests: [],
         sentFriendRequests: []
@@ -2313,6 +2353,7 @@
     if (!appState.user.aconchegoGroups) appState.user.aconchegoGroups = [];
     if (!appState.user.savedItems) appState.user.savedItems = [];
     if (!appState.user.blockedHandles) appState.user.blockedHandles = [];
+    if (!appState.user.blockedBiasKeys) appState.user.blockedBiasKeys = [];
     if (!appState.user.friends) appState.user.friends = [];
     if (!appState.user.pendingFriendRequests) appState.user.pendingFriendRequests = [];
     if (!appState.user.sentFriendRequests) appState.user.sentFriendRequests = [];
@@ -2552,6 +2593,7 @@
             if (data.aconchegoGroups) appState.user.aconchegoGroups = data.aconchegoGroups;
             if (data.savedItems) appState.user.savedItems = data.savedItems;
             if (data.blockedHandles) appState.user.blockedHandles = data.blockedHandles;
+            if (data.blockedBiasKeys) appState.user.blockedBiasKeys = data.blockedBiasKeys;
             if (data.blockedUids) appState.user.blockedUids = data.blockedUids;
             if (data.accentColor) appState.user.accentColor = data.accentColor;
             if (data.customBgUrl) appState.user.customBgUrl = data.customBgUrl;
@@ -2680,6 +2722,7 @@
             aconchegoGroups: [],
             savedItems: [],
             blockedHandles: [],
+            blockedBiasKeys: [],
             friends: [],
             pendingFriendRequests: [],
             sentFriendRequests: [],
@@ -2697,6 +2740,7 @@
           if (data.aconchegoGroups) appState.user.aconchegoGroups = data.aconchegoGroups;
           if (data.savedItems) appState.user.savedItems = data.savedItems;
           if (data.blockedHandles) appState.user.blockedHandles = data.blockedHandles;
+          if (data.blockedBiasKeys) appState.user.blockedBiasKeys = data.blockedBiasKeys;
           if (data.friends) appState.user.friends = data.friends;
           if (data.pendingFriendRequests) appState.user.pendingFriendRequests = data.pendingFriendRequests;
           if (data.sentFriendRequests) appState.user.sentFriendRequests = data.sentFriendRequests;
@@ -3236,7 +3280,7 @@
               <span style="font-size:10px;color:var(--gold-accent);display:block;">📁 ${escapeHtml(item.folderName)} • por ${escapeHtml(item.author)}</span>
               <span style="font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;">${escapeHtml(item.text || '(Mídia salva)')}</span>
             </div>
-            <button type="button" class="btn-danger-pill" style="font-size:10px;" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
+            <button type="button" class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
           </div>
         `)
         .join('');
@@ -3286,9 +3330,9 @@
 
       el.innerHTML = list
         .map(h => `
-          <span style="background:#1e1115;border:1px solid #f43f5e;color:#fda4af;font-size:11px;padding:3px 9px;border-radius:99px;display:inline-flex;align-items:center;gap:6px;">
+          <span style="background:#0e1222;border:1px solid var(--gold-border);color:var(--text-main);font-size:11px;padding:3px 9px;border-radius:99px;display:inline-flex;align-items:center;gap:6px;">
             ${escapeHtml(h)}
-            <button type="button" style="background:transparent;border:none;color:#fff;cursor:pointer;font-weight:700;" onclick="unblockUserHandle('${escapeAttr(h)}')">✕</button>
+            <button type="button" class="delicate-x-btn" style="padding:0 2px;font-size:12px;" onclick="unblockUserHandle('${escapeAttr(h)}')">✕</button>
           </span>
         `)
         .join('');
@@ -3527,7 +3571,7 @@
                 <div style="background:#0e1222;padding:12px;border-radius:14px;margin-bottom:10px;border:1px solid var(--gold-border);">
                   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                     <span style="font-size:11px;color:var(--gold-accent);font-weight:700;">Salvo de ${escapeHtml(item.author)} (${escapeHtml(item.authorHandle)})</span>
-                    <button class="btn-danger-pill" style="font-size:10px;" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
+                    <button class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
                   </div>
                   ${item.text ? `<p style="font-size:13px;margin-bottom:8px;">${escapeHtml(item.text)}</p>` : ''}
                   ${
@@ -3559,7 +3603,7 @@
           <div style="background:#141b34;padding:12px;border-radius:14px;margin-bottom:10px;border:1px dashed var(--gold-border);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
               <span style="font-size:10.5px;color:var(--gold-accent);">🏠 Guardado em ${escapeHtml(item.folderName)} • Original de ${escapeHtml(item.author)}</span>
-              <button class="btn-danger-pill" style="font-size:10px;" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
+              <button class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
             </div>
             ${item.text ? `<p style="font-size:13px;margin-bottom:6px;">${escapeHtml(item.text)}</p>` : ''}
             ${
@@ -3588,6 +3632,7 @@
           aconchegoGroups: appState.user.aconchegoGroups || [],
           savedItems: appState.user.savedItems || [],
           blockedHandles: appState.user.blockedHandles || [],
+          blockedBiasKeys: appState.user.blockedBiasKeys || [],
           blockedUids: appState.user.blockedUids || [],
           friends: appState.user.friends || [],
           pendingFriendRequests: appState.user.pendingFriendRequests || [],
@@ -3899,6 +3944,28 @@
       document.getElementById('biasSquarePreview').innerHTML = `<img src="${escapeAttr(up.url)}" alt="Foto de Rosto">`;
     };
 
+    window.handleBiasItemPressStart = function(docId, name, role, id, frontalUrl, lastUpdatedMs) {
+      longPressTriggered = false;
+      clearTimeout(longPressTimer);
+      longPressTimer = setTimeout(() => {
+        longPressTriggered = true;
+        window.openBiasLongPressPanel(docId);
+      }, 520);
+    };
+
+    window.handleBiasItemPressEnd = function(docId, name, role, id, frontalUrl, lastUpdatedMs, isChallengeDropdown = false) {
+      clearTimeout(longPressTimer);
+      if (longPressTriggered) {
+        longPressTriggered = false;
+        return;
+      }
+      if (isChallengeDropdown) {
+        window.pickBiasForChallengePost(name, role, id, frontalUrl, lastUpdatedMs);
+      } else {
+        window.selectBiasFromDatabase(name, role, id, frontalUrl, lastUpdatedMs);
+      }
+    };
+
     window.onBiasNameType = function(val) {
       const clean = val.toLowerCase().replace(/\s+/g, '');
       if (clean === 'luanaeandre' || val.toLowerCase().includes('luana e andré')) {
@@ -3917,7 +3984,10 @@
 
       dropdown.innerHTML = matches
         .map(b => `
-          <div class="bias-dropdown-item" onclick="selectBiasFromDatabase('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})">
+          <div class="bias-dropdown-item"
+            onpointerdown="handleBiasItemPressStart('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})"
+            onpointerup="handleBiasItemPressEnd('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)},false)"
+            onpointercancel="clearTimeout(longPressTimer)">
             <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
             <div>
               <strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong>
@@ -4032,7 +4102,10 @@
 
       dropdown.innerHTML = matches
         .map(b => `
-          <div class="bias-dropdown-item" onclick="pickBiasForChallengePost('${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})">
+          <div class="bias-dropdown-item"
+            onpointerdown="handleBiasItemPressStart('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})"
+            onpointerup="handleBiasItemPressEnd('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)},true)"
+            onpointercancel="clearTimeout(longPressTimer)">
             <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
             <div>
               <strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong>
@@ -4073,6 +4146,15 @@
 
         if (!assertCleanContent(name, 'o nome do bias')) return;
 
+        const deletedLock = getDeletedParticipantLock(name);
+        if (deletedLock) {
+          showSherBlussModal({
+            title: 'Trava de 30 dias ativa 🔒',
+            htmlBody: `<strong>${escapeHtml(name)}</strong> foi removido recentemente e não pode ser adicionado novamente por mais <strong>${deletedLock.daysLeft} ${deletedLock.daysLeft === 1 ? 'dia' : 'dias'}</strong> (nem em outra posição).`
+          });
+          return;
+        }
+
         const normalizedTargetName = normalizeParticipantKey(name);
         const myExistingList = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid);
         const existingByName = myExistingList.find(b => normalizeParticipantKey(b.name) === normalizedTargetName);
@@ -4092,7 +4174,7 @@
           if (lock) {
             showSherBlussModal({
               title: 'Trava de 30 dias ativa 🔒',
-              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>.`
+              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>. Segure o nome para alterar apenas a foto.`
             });
             return;
           }
@@ -4551,7 +4633,7 @@
             const newCommentHtml = `
               <div class="comment-item-clean">
                 <span style="flex:1;"><strong>${escapeHtml(appState.user.name)}</strong>: ${escapeHtml(val)}</span>
-                <button class="btn-danger-pill" style="font-size:9px;padding:2px 6px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${post.comments.length - 1})">✕</button>
+                <button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${post.comments.length - 1})">✕</button>
               </div>
             `;
             commentsSection.insertAdjacentHTML('beforeend', newCommentHtml);
@@ -5003,7 +5085,7 @@
           return `
             <div class="comment-item-clean">
               <span style="flex:1;">${label}</span>
-              ${canDelete ? `<button class="btn-danger-pill" style="font-size:9px;padding:2px 6px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">✕</button>` : ''}
+              ${canDelete ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">✕</button>` : ''}
             </div>
           `;
         })
@@ -5072,7 +5154,6 @@
       document.getElementById('carouselChallengeText').textContent = cur;
       document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
       updateNotifBadge();
-      renderMyPrivateBiasList();
 
       renderWeeklyPodiumCarousel();
 
