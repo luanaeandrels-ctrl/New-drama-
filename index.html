@@ -1817,6 +1817,24 @@
       return [...set];
     }
 
+    function getChallengeDayLabel(dateObj = new Date()) {
+      const day = dateObj.getDay();
+      if (day === 1) return 'Segunda-feira';
+      if (day === 2) return 'Terça-feira';
+      if (day === 3) return 'Quarta-feira';
+      if (day === 4) return 'Quinta-feira';
+      if (day === 5) return 'Sexta-feira';
+      return 'Fim de semana';
+    }
+
+    function getSelectedBiasRankLabel() {
+      const rawInput = (document.getElementById('challengeSelectedBiasInput')?.value || '').trim();
+      const matchInInput = rawInput.match(/#(\d+)/);
+      if (matchInInput) return `#${matchInInput[1]}`;
+      if (appState.bias?.id) return `#${appState.bias.id}`;
+      return '';
+    }
+
     function isFandomModerator(f) {
       if (!f || !appState.user.loggedIn || !appState.user.uid) return false;
       if (isModAdminUser()) return true;
@@ -3993,6 +4011,8 @@
 
       const isInside = document.getElementById('view-inside-fandom').classList.contains('active');
       const targetFandom = !isChallenge && isInside && activeFandomFilter ? activeFandomFilter : 'Geral';
+      const challengeDay = isChallenge ? getChallengeDayLabel() : '';
+      const challengeBiasRank = isChallenge ? getSelectedBiasRankLabel() : '';
 
       try {
         const fandomObj = targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom) : null;
@@ -4003,7 +4023,7 @@
           authorUid: appState.user.uid,
           authorHandle: appState.user.handle,
           avatar: appState.user.avatar,
-          text: text || (isChallenge ? `Representando ${appState.bias.name} (#${appState.bias.id}) no Desafio!` : ''),
+          text: text || (isChallenge ? `Representando ${appState.bias.name} (#${appState.bias.id}) no desafio de ${challengeDay}!` : ''),
           media: mediaUrl || '',
           mediaType: mediaType || '',
           likes: 0,
@@ -4014,6 +4034,8 @@
           isPrivateFandom: targetFandom !== 'Geral',
           memberUids: targetFandom !== 'Geral' ? baseMembers : [],
           isChallenge: isChallenge,
+          challengeDay: challengeDay,
+          challengeBiasRank: challengeBiasRank,
           biasName: isChallenge ? appState.bias.name : '',
           createdAt: serverTimestamp(),
           comments: []
@@ -4199,6 +4221,8 @@
           const targetFandom = isInside && activeFandomFilter ? activeFandomFilter : 'Geral';
           const fandomObj = targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom) : null;
           const baseMembers = withAdminMember([...(fandomObj?.members || []), appState.user.uid]);
+          const challengeDay = isChallengeView ? getChallengeDayLabel() : '';
+          const challengeBiasRank = isChallengeView ? getSelectedBiasRankLabel() : '';
 
           await addDoc(collection(db, "posts"), {
             author: appState.user.name,
@@ -4216,6 +4240,8 @@
             isPrivateFandom: targetFandom !== 'Geral',
             memberUids: targetFandom !== 'Geral' ? baseMembers : [],
             isChallenge: isChallengeView,
+            challengeDay: challengeDay,
+            challengeBiasRank: challengeBiasRank,
             biasName: isChallengeView ? appState.bias.name || '' : '',
             createdAt: serverTimestamp(),
             comments: []
@@ -4815,8 +4841,11 @@
         .join('');
 
       const likedByMe = (post.likedBy || []).includes(appState.user.uid);
+      const dayLabel = post.challengeDay || (post.createdAt?.toDate ? getChallengeDayLabel(post.createdAt.toDate()) : '');
+      const rankPart = post.challengeBiasRank ? ` (${escapeHtml(post.challengeBiasRank)})` : '';
+      const biasPart = post.biasName ? ` • ${escapeHtml(post.biasName)}${rankPart}` : (rankPart ? ` • ${rankPart.trim()}` : '');
       const subLabel = post.isChallenge
-        ? `Desafio Semanal${post.biasName ? ' • ' + escapeHtml(post.biasName) : ''}`
+        ? `Desafio Semanal${dayLabel ? ' • ' + escapeHtml(dayLabel) : ''}${biasPart}`
         : escapeHtml(post.fandom || 'Geral');
 
       const authorUser = usersDirectory.find(u => u.uid === post.authorUid);
