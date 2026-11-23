@@ -1593,7 +1593,7 @@
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;">Minha Lista Privada (Nº 1 a 1000)</h4>
         <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
-          Segure o nome do participante para alterar a foto ou excluir (mesmo excluindo, ele não entra de novo por 30 dias).
+          Segure o nome por 5 segundos para alterar a foto ou excluir (mesmo excluindo, ele não entra de novo por 30 dias).
         </p>
         <div class="form-group" style="margin-bottom:10px;">
           <label class="form-label">Nome do Bias</label>
@@ -1769,6 +1769,8 @@
     const TOLERANCE_BYTES = 10 * 1024 * 1024;
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+    const LONG_PRESS_DURATION_MS = 5000;
+    const SCROLL_CANCEL_THRESHOLD_PX = 10;
 
     const BLOCKED_TERMS = [
       'pedofilia', 'pedofilo', 'pedófilo', 'abuso infantil', 'pornografia infantil',
@@ -1888,6 +1890,9 @@
     let pendingHoldBiasDocId = null;
     let longPressTimer = null;
     let longPressTriggered = false;
+    let pressStartX = 0;
+    let pressStartY = 0;
+    let pressMovedDuringScroll = false;
 
     function findBiasRecordByDocId(docId) {
       return biasesDatabase.find(b => b.docId === docId) || null;
@@ -3944,19 +3949,40 @@
       document.getElementById('biasSquarePreview').innerHTML = `<img src="${escapeAttr(up.url)}" alt="Foto de Rosto">`;
     };
 
-    window.handleBiasItemPressStart = function(docId, name, role, id, frontalUrl, lastUpdatedMs) {
+    window.handleBiasItemPressStart = function(event, docId, name, role, id, frontalUrl, lastUpdatedMs) {
       longPressTriggered = false;
+      pressMovedDuringScroll = false;
+      pressStartX = event.clientX ?? 0;
+      pressStartY = event.clientY ?? 0;
       clearTimeout(longPressTimer);
       longPressTimer = setTimeout(() => {
+        if (pressMovedDuringScroll) return;
         longPressTriggered = true;
         window.openBiasLongPressPanel(docId);
-      }, 520);
+      }, LONG_PRESS_DURATION_MS);
+    };
+
+    window.handleBiasItemPressMove = function(event) {
+      if (!longPressTimer && !pressMovedDuringScroll) return;
+      const cx = event.clientX ?? 0;
+      const cy = event.clientY ?? 0;
+      if (Math.hypot(cx - pressStartX, cy - pressStartY) > SCROLL_CANCEL_THRESHOLD_PX) {
+        pressMovedDuringScroll = true;
+        clearTimeout(longPressTimer);
+        longPressTimer = null;
+      }
     };
 
     window.handleBiasItemPressEnd = function(docId, name, role, id, frontalUrl, lastUpdatedMs, isChallengeDropdown = false) {
       clearTimeout(longPressTimer);
+      longPressTimer = null;
       if (longPressTriggered) {
         longPressTriggered = false;
+        pressMovedDuringScroll = false;
+        return;
+      }
+      if (pressMovedDuringScroll) {
+        pressMovedDuringScroll = false;
         return;
       }
       if (isChallengeDropdown) {
@@ -3985,9 +4011,10 @@
       dropdown.innerHTML = matches
         .map(b => `
           <div class="bias-dropdown-item"
-            onpointerdown="handleBiasItemPressStart('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})"
+            onpointerdown="handleBiasItemPressStart(event,'${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})"
+            onpointermove="handleBiasItemPressMove(event)"
             onpointerup="handleBiasItemPressEnd('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)},false)"
-            onpointercancel="clearTimeout(longPressTimer)">
+            onpointercancel="clearTimeout(longPressTimer);longPressTimer=null;pressMovedDuringScroll=true;">
             <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
             <div>
               <strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong>
@@ -4103,9 +4130,10 @@
       dropdown.innerHTML = matches
         .map(b => `
           <div class="bias-dropdown-item"
-            onpointerdown="handleBiasItemPressStart('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})"
+            onpointerdown="handleBiasItemPressStart(event,'${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})"
+            onpointermove="handleBiasItemPressMove(event)"
             onpointerup="handleBiasItemPressEnd('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)},true)"
-            onpointercancel="clearTimeout(longPressTimer)">
+            onpointercancel="clearTimeout(longPressTimer);longPressTimer=null;pressMovedDuringScroll=true;">
             <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
             <div>
               <strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong>
@@ -4174,7 +4202,7 @@
           if (lock) {
             showSherBlussModal({
               title: 'Trava de 30 dias ativa 🔒',
-              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>. Segure o nome para alterar apenas a foto.`
+              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>. Segure o nome por 5 segundos para alterar apenas a foto.`
             });
             return;
           }
