@@ -1584,6 +1584,7 @@
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <p style="font-size:11.5px;color:var(--gold-accent);font-weight:700;">DIRETRIZ DA SEMANA</p>
         <p id="weeklyDirectiveText" style="font-size:13.5px;margin:6px 0 12px;line-height:1.5;">Segunda, terça, quarta, quinta e sexta</p>
+        <div id="requiredNumberBanner" style="font-size:12px;color:var(--gold-accent);font-weight:600;margin-bottom:10px;"></div>
         <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);border-top:1px solid rgba(251,191,36,.18);padding-top:8px;">
           <span>Votos hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
           <span>Reinicia em: <strong id="midnightCountdownTimer" style="color:var(--gold-accent);">--h --m --s</strong></span>
@@ -1593,7 +1594,7 @@
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;">Minha Lista Privada (Nº 1 a 1000)</h4>
         <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
-          Segure o nome por 5 segundos para alterar a foto ou excluir (mesmo excluindo, ele não entra de novo por 30 dias).
+          Segure o nome por 5 segundos para alterar a foto de rosto ou excluir (a posição fica bloqueada por 30 dias após salvar ou excluir).
         </p>
         <div class="form-group" style="margin-bottom:10px;">
           <label class="form-label">Nome do Bias</label>
@@ -1621,6 +1622,7 @@
           </label>
           <input type="file" id="biasFrontalFile" accept="image/*" style="display:none;">
         </div>
+        <span style="font-size:11px;color:var(--gold-accent);display:block;margin-top:6px;">Foto de rosto</span>
       </div>
 
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
@@ -1630,8 +1632,8 @@
           <div class="bias-country-dropdown" id="challengeBiasDropdown"></div>
         </div>
         <div style="display:flex;gap:10px;">
-          <button class="btn-gold" style="flex:1;" onclick="document.getElementById('challengeCameraInput').click()">📸 Câmera</button>
-          <button class="btn-pill-gold" style="flex:1;" onclick="document.getElementById('challengeGalleryInput').click()">🖼️ Foto / Vídeo</button>
+          <button class="btn-gold" style="flex:1;" onclick="triggerChallengeMedia('camera')">📸 Câmera</button>
+          <button class="btn-pill-gold" style="flex:1;" onclick="triggerChallengeMedia('gallery')">🖼️ Foto / Vídeo</button>
         </div>
         <input type="file" id="challengeCameraInput" accept="image/*,video/*" capture="environment" style="display:none;">
         <input type="file" id="challengeGalleryInput" accept="image/*,video/*" style="display:none;">
@@ -1852,13 +1854,85 @@
       return 'Fim de semana';
     }
 
-    function getSelectedBiasRankLabel() {
+    // Extrai dinamicamente o número solicitado na diretriz do desafio atual (ex.: #6, nº 6, número 6)
+    function extractRequestedChallengeNumber(directiveText) {
+      const text = String(directiveText || '');
+      if (!text.trim()) return null;
+
+      const patterns = [
+        /(?:n[úu]mero|n[º°o]\.?|posi[çc][ãa]o|posto|coloca[çc][ãa]o)\s*[:\-]?\s*#?\s*(\d{1,4})\b/i,
+        /#\s*(\d{1,4})\b/
+      ];
+
+      for (const regex of patterns) {
+        const match = text.match(regex);
+        if (match && match[1]) {
+          const parsed = parseInt(match[1], 10);
+          if (!isNaN(parsed) && parsed >= 1 && parsed <= 1000) {
+            return parsed;
+          }
+        }
+      }
+      return null;
+    }
+
+    function getActiveChallengeRankNumber() {
       const rawInput = (document.getElementById('challengeSelectedBiasInput')?.value || '').trim();
       const matchInInput = rawInput.match(/#(\d+)/);
-      if (matchInInput) return `#${matchInInput[1]}`;
-      if (appState.bias?.id) return `#${appState.bias.id}`;
-      return '';
+      if (matchInInput) {
+        const parsed = parseInt(matchInInput[1], 10);
+        if (!isNaN(parsed)) return parsed;
+      }
+      if (appState.bias?.id) {
+        const parsed = parseInt(appState.bias.id, 10);
+        if (!isNaN(parsed)) return parsed;
+      }
+      return null;
     }
+
+    function getSelectedBiasRankLabel() {
+      const num = getActiveChallengeRankNumber();
+      return num ? `#${num}` : '';
+    }
+
+    function validateChallengeSelectionAgainstRequest() {
+      const requiredNum = extractRequestedChallengeNumber(getCurrentDayDirective());
+      if (!requiredNum) return true;
+
+      const chosenNum = getActiveChallengeRankNumber();
+      if (!chosenNum) {
+        showSherBlussModal({
+          title: `Posição #${requiredNum} exigida no desafio`,
+          htmlBody: `O desafio atual pede o participante da posição <strong>#${requiredNum}</strong>. Selecione o nome correspondente à posição <strong>#${requiredNum}</strong> na sua lista antes de enviar.`
+        });
+        return false;
+      }
+
+      if (chosenNum !== requiredNum) {
+        showSherBlussModal({
+          title: `Número diferente do solicitado (#${requiredNum})`,
+          htmlBody: `O desafio atual pede a posição <strong>#${requiredNum}</strong>, mas você selecionou a posição <strong>#${chosenNum}</strong>. Escolha o participante da posição <strong>#${requiredNum}</strong> para continuar.`
+        });
+        return false;
+      }
+
+      return true;
+    }
+
+    window.triggerChallengeMedia = function(sourceType) {
+      requireAuthForAction(() => {
+        if (!validateChallengeSelectionAgainstRequest()) return;
+        if (!appState.bias.id || !appState.bias.name) {
+          showSherBlussModal({
+            title: 'Selecione seu Bias',
+            htmlBody: 'Escolha seu Bias da sua lista acima ou cadastre um novo antes de enviar.'
+          });
+          return;
+        }
+        const inputId = sourceType === 'camera' ? 'challengeCameraInput' : 'challengeGalleryInput';
+        document.getElementById(inputId).click();
+      });
+    };
 
     function normalizeParticipantKey(name) {
       return String(name || '')
@@ -1915,7 +1989,7 @@
             Se você excluir, o participante não poderá ser adicionado novamente dentro dos 30 dias (nem em outra posição).
           </p>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <button type="button" class="btn-gold" onclick="triggerBiasPhotoOnlyChange('${escapeAttr(item.docId)}')">🖼️ Alterar foto (mantém posição #${escapeHtml(item.id)})</button>
+            <button type="button" class="btn-gold" onclick="triggerBiasPhotoOnlyChange('${escapeAttr(item.docId)}')">🖼️ Alterar foto de rosto (mantém posição #${escapeHtml(item.id)})</button>
             <button type="button" class="btn-pill-gold" style="width:100%;padding:10px;" onclick="deleteBiasFromLongPress('${escapeAttr(item.docId)}')">Excluir participante</button>
           </div>
         `,
@@ -1952,8 +2026,8 @@
           saveLocal();
         }
         showSherBlussModal({
-          title: 'Foto Atualizada 🌸',
-          htmlBody: `A foto de <strong>${escapeHtml(item.name)}</strong> foi atualizada mantendo a posição <strong>#${escapeHtml(item.id)}</strong>.`
+          title: 'Foto de Rosto Atualizada 🌸',
+          htmlBody: `A foto de rosto de <strong>${escapeHtml(item.name)}</strong> foi atualizada mantendo a posição <strong>#${escapeHtml(item.id)}</strong>.`
         });
       } catch (e) {
         showSherBlussModal({
@@ -3946,7 +4020,7 @@
       if (!up) return;
 
       tempBiasPhotoPreviewUrl = up.url;
-      document.getElementById('biasSquarePreview').innerHTML = `<img src="${escapeAttr(up.url)}" alt="Foto de Rosto">`;
+      document.getElementById('biasSquarePreview').innerHTML = `<img src="${escapeAttr(up.url)}" alt="Foto de rosto">`;
     };
 
     window.handleBiasItemPressStart = function(event, docId, name, role, id, frontalUrl, lastUpdatedMs) {
@@ -4111,7 +4185,7 @@
       document.getElementById('biasIdInput').value = id;
       document.getElementById('challengeSelectedBiasInput').value = `${name} (#${id})`;
       tempBiasPhotoPreviewUrl = frontalUrl;
-      document.getElementById('biasSquarePreview').innerHTML = `<img src="${escapeAttr(frontalUrl)}" alt="Foto" onerror="this.src='./logo.png'">`;
+      document.getElementById('biasSquarePreview').innerHTML = `<img src="${escapeAttr(frontalUrl)}" alt="Foto de rosto" onerror="this.src='./logo.png'">`;
       appState.bias = { name, role, id, frontalUrl, lastUpdated: lastUpdatedMs || Date.now() };
       saveLocal();
       document.getElementById('biasCountryDropdown').classList.remove('open');
@@ -4202,7 +4276,7 @@
           if (lock) {
             showSherBlussModal({
               title: 'Trava de 30 dias ativa 🔒',
-              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>. Segure o nome por 5 segundos para alterar apenas a foto.`
+              htmlBody: `A posição <strong>#${escapeHtml(targetRecord.id)}</strong> (<strong>${escapeHtml(targetRecord.name)}</strong>) só pode ser atualizada a cada <strong>30 dias</strong>. Faltam <strong>${lock.daysLeft} ${lock.daysLeft === 1 ? 'dia' : 'dias'}</strong>. Segure o nome por 5 segundos para alterar apenas a foto de rosto.`
             });
             return;
           }
@@ -4265,25 +4339,37 @@
       const file = event.target.files[0];
       if (!file) return;
 
+      if (!validateChallengeSelectionAgainstRequest()) {
+        event.target.value = '';
+        return;
+      }
+
       if (!appState.bias.id || !appState.bias.name) {
         showSherBlussModal({
           title: 'Selecione seu Bias',
           htmlBody: 'Escolha seu Bias da sua lista acima ou cadastre um novo antes de enviar.'
         });
+        event.target.value = '';
         return;
       }
 
       if (!validMediaFile(file)) {
         showFileError(file);
+        event.target.value = '';
         return;
       }
 
       const up = await uploadMediaToCloudinary(file);
-      if (!up) return;
+      if (!up) {
+        event.target.value = '';
+        return;
+      }
       await submitPostDirectlyWithMedia(up.url, up.type, true);
     };
 
     async function submitPostDirectlyWithMedia(mediaUrl, mediaType, isChallenge = false) {
+      if (isChallenge && !validateChallengeSelectionAgainstRequest()) return;
+
       const input = document.getElementById('mainComposerInput');
       const text = input ? input.value.trim() : '';
       if (text && !assertCleanContent(text, 'a publicação')) return;
@@ -4483,6 +4569,8 @@
         if (!assertCleanContent(text, 'a publicação')) return;
 
         const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
+        if (isChallengeView && !validateChallengeSelectionAgainstRequest()) return;
+
         const isInside = document.getElementById('view-inside-fandom').classList.contains('active');
 
         if (isInside && activeFandomFilter) {
@@ -5181,6 +5269,15 @@
       document.getElementById('weeklyDirectiveText').textContent = cur;
       document.getElementById('carouselChallengeText').textContent = cur;
       document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
+
+      const reqNum = extractRequestedChallengeNumber(cur);
+      const bannerEl = document.getElementById('requiredNumberBanner');
+      if (bannerEl) {
+        bannerEl.textContent = reqNum
+          ? `🔒 Trava ativa para o desafio: posição #${reqNum}`
+          : '🔓 Sem número específico exigido na diretriz atual';
+      }
+
       updateNotifBadge();
 
       renderWeeklyPodiumCarousel();
