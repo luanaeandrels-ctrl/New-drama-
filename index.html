@@ -1804,7 +1804,41 @@
         .trim();
     }
 
-    // Converte números cardinais, ordinais ou por extenso (1..1000) em número inteiro
+    const NUMBER_WORD_MAP = {
+      'um': 1, 'uma': 1, 'primeiro': 1, 'primeira': 1,
+      'dois': 2, 'duas': 2, 'segundo': 2, 'segunda': 2,
+      'tres': 3, 'terceiro': 3, 'terceira': 3,
+      'quatro': 4, 'quarto': 4, 'quarta': 4,
+      'cinco': 5, 'quinto': 5, 'quinta': 5,
+      'seis': 6, 'sexto': 6, 'sexta': 6,
+      'sete': 7, 'setimo': 7, 'setima': 7,
+      'oito': 8, 'oitavo': 8, 'oitava': 8,
+      'nove': 9, 'nono': 9, 'nona': 9,
+      'dez': 10, 'decimo': 10, 'decima': 10,
+      'onze': 11, 'doze': 12, 'treze': 13, 'quatorze': 14, 'catorze': 14,
+      'quinze': 15, 'dezesseis': 16, 'dezasseis': 16, 'dezessete': 17, 'dezassete': 17,
+      'dezoito': 18, 'dezenove': 19, 'dezanove': 19,
+      'vinte': 20, 'vigesimo': 20, 'vigesima': 20,
+      'trinta': 30, 'trigesimo': 30, 'trigesima': 30,
+      'quarenta': 40, 'quadragesimo': 40, 'quadragesima': 40,
+      'cinquenta': 50, 'quinquagesimo': 50, 'quinquagesima': 50,
+      'sessenta': 60, 'sexagesimo': 60, 'sexagesima': 60,
+      'setenta': 70, 'septuagesimo': 70, 'septuagesima': 70,
+      'oitenta': 80, 'octogesimo': 80, 'octogesima': 80,
+      'noventa': 90, 'nonagesimo': 90, 'nonagesima': 90,
+      'cem': 100, 'cento': 100, 'centesimo': 100, 'centesima': 100,
+      'duzentos': 200, 'duzentas': 200, 'ducentesimo': 200, 'ducentesima': 200,
+      'trezentos': 300, 'trezentas': 300, 'trecentesimo': 300, 'trecentesima': 300,
+      'quatrocentos': 400, 'quatrocentas': 400, 'quadringentesimo': 400, 'quadringentesima': 400,
+      'quinhentos': 500, 'quinhentas': 500, 'quingentesimo': 500, 'quingentesima': 500,
+      'seiscentos': 600, 'seiscentas': 600, 'seiscentesimo': 600, 'seiscentesima': 600,
+      'setecentos': 700, 'setecentas': 700, 'septingentesimo': 700, 'septingentesima': 700,
+      'oitocentos': 800, 'oitocentas': 800, 'octingentesimo': 800, 'octingentesima': 800,
+      'novecentos': 900, 'novecentas': 900, 'nongentesimo': 900, 'nongentesima': 900,
+      'mil': 1000, 'milesimo': 1000, 'milesima': 1000
+    };
+
+    // Extrai número de forma limpa (ex: "#6", "6", "número 6", "seis") sem somar palavras soltas de forma errada
     function parseNumberFromQuery(rawInput) {
       const cleaned = String(rawInput || '')
         .toLowerCase()
@@ -1814,65 +1848,53 @@
 
       if (!cleaned) return null;
 
-      const digitMatch = cleaned.match(/(?:^|\s|#)0*(\d{1,4})(?:º|ª|o|a)?(?:\s|$)/);
-      if (digitMatch && digitMatch[1]) {
-        const n = parseInt(digitMatch[1], 10);
+      // 1. Se tiver #6, #9, etc. ou "número 6" / "posição 6" / "nº 6"
+      const explicitTagMatch = cleaned.match(/(?:#|n[úu]mero|n[º°o]\.?|posi[çc][ãa]o|posto|coloca[çc][ãa]o)\s*[:\-]?\s*0*(\d{1,4})\b/);
+      if (explicitTagMatch && explicitTagMatch[1]) {
+        const n = parseInt(explicitTagMatch[1], 10);
         if (!isNaN(n) && n >= 1 && n <= 1000) return n;
       }
 
+      // 2. Se for um número puro ou ordinal simples (ex: "5", "6º", "9a")
+      const standaloneNumMatch = cleaned.match(/^0*(\d{1,4})(?:º|ª|o|a)?$/);
+      if (standaloneNumMatch && standaloneNumMatch[1]) {
+        const n = parseInt(standaloneNumMatch[1], 10);
+        if (!isNaN(n) && n >= 1 && n <= 1000) return n;
+      }
+
+      // 3. Procura tokens por extenso (ex: "seis", "nove", "vinte e tres")
       const tokens = cleaned
         .replace(/[^\w\s-]/g, ' ')
         .replace(/\s+e\s+/g, ' ')
         .split(/[\s-]+/)
         .filter(Boolean);
 
-      if (!tokens.length) return null;
+      for (let i = 0; i < tokens.length; i++) {
+        const tok = tokens[i];
+        if (!Object.prototype.hasOwnProperty.call(NUMBER_WORD_MAP, tok)) continue;
 
-      const wordMap = {
-        'um': 1, 'uma': 1, 'primeiro': 1, 'primeira': 1,
-        'dois': 2, 'duas': 2, 'segundo': 2, 'segunda': 2,
-        'tres': 3, 'terceiro': 3, 'terceira': 3,
-        'quatro': 4, 'quarto': 4, 'quarta': 4,
-        'cinco': 5, 'quinto': 5, 'quinta': 5,
-        'seis': 6, 'sexto': 6, 'sexta': 6,
-        'sete': 7, 'setimo': 7, 'setima': 7,
-        'oito': 8, 'oitavo': 8, 'oitava': 8,
-        'nove': 9, 'nono': 9, 'nona': 9,
-        'dez': 10, 'decimo': 10, 'decima': 10,
-        'onze': 11, 'doze': 12, 'treze': 13, 'quatorze': 14, 'catorze': 14,
-        'quinze': 15, 'dezesseis': 16, 'dezasseis': 16, 'dezessete': 17, 'dezassete': 17,
-        'dezoito': 18, 'dezenove': 19, 'dezanove': 19,
-        'vinte': 20, 'vigesimo': 20, 'vigesima': 20,
-        'trinta': 30, 'trigesimo': 30, 'trigesima': 30,
-        'quarenta': 40, 'quadragesimo': 40, 'quadragesima': 40,
-        'cinquenta': 50, 'quinquagesimo': 50, 'quinquagesima': 50,
-        'sessenta': 60, 'sexagesimo': 60, 'sexagesima': 60,
-        'setenta': 70, 'septuagesimo': 70, 'septuagesima': 70,
-        'oitenta': 80, 'octogesimo': 80, 'octogesima': 80,
-        'noventa': 90, 'nonagesimo': 90, 'nonagesima': 90,
-        'cem': 100, 'cento': 100, 'centesimo': 100, 'centesima': 100,
-        'duzentos': 200, 'duzentas': 200, 'ducentesimo': 200, 'ducentesima': 200,
-        'trezentos': 300, 'trezentas': 300, 'trecentesimo': 300, 'trecentesima': 300,
-        'quatrocentos': 400, 'quatrocentas': 400, 'quadringentesimo': 400, 'quadringentesima': 400,
-        'quinhentos': 500, 'quinhentas': 500, 'quingentesimo': 500, 'quingentesima': 500,
-        'seiscentos': 600, 'seiscentas': 600, 'seiscentesimo': 600, 'seiscentesima': 600,
-        'setecentos': 700, 'setecentas': 700, 'septingentesimo': 700, 'septingentesima': 700,
-        'oitocentos': 800, 'oitocentas': 800, 'octingentesimo': 800, 'octingentesima': 800,
-        'novecentos': 900, 'novecentas': 900, 'nongentesimo': 900, 'nongentesima': 900,
-        'mil': 1000, 'milesimo': 1000, 'milesima': 1000
-      };
-
-      let total = 0;
-      let matchedAny = false;
-
-      for (const tok of tokens) {
-        if (Object.prototype.hasOwnProperty.call(wordMap, tok)) {
-          total += wordMap[tok];
-          matchedAny = true;
+        let val = NUMBER_WORD_MAP[tok];
+        const nextTok = tokens[i + 1];
+        if (nextTok && Object.prototype.hasOwnProperty.call(NUMBER_WORD_MAP, nextTok)) {
+          const nextVal = NUMBER_WORD_MAP[nextTok];
+          if (val >= 20 && val < 100 && nextVal < 10) {
+            val += nextVal;
+            i++;
+          } else if (val >= 100 && val < 1000 && nextVal < 100) {
+            val += nextVal;
+            i++;
+          }
         }
+        if (val >= 1 && val <= 1000) return val;
       }
 
-      if (matchedAny && total >= 1 && total <= 1000) return total;
+      // 4. Fallback para dígito isolado na frase se não houver palavra por extenso
+      const anyDigitMatch = cleaned.match(/\b0*(\d{1,4})(?:º|ª|o|a)?\b/);
+      if (anyDigitMatch && anyDigitMatch[1]) {
+        const n = parseInt(anyDigitMatch[1], 10);
+        if (!isNaN(n) && n >= 1 && n <= 1000) return n;
+      }
+
       return null;
     }
 
@@ -1928,24 +1950,25 @@
       return 'Fim de semana';
     }
 
+    // Lê primeiro #número ou "número/posição X" na legenda do desafio; só lê palavra por extenso se não houver "#"
     function extractRequestedChallengeNumber(directiveText) {
-      const text = String(directiveText || '');
-      if (!text.trim()) return null;
+      const text = String(directiveText || '').trim();
+      if (!text) return null;
 
-      const patterns = [
-        /(?:n[úu]mero|n[º°o]\.?|posi[çc][ãa]o|posto|coloca[çc][ãa]o)\s*[:\-]?\s*#?\s*(\d{1,4})\b/i,
-        /#\s*(\d{1,4})\b/
-      ];
+      const hashOrLabelMatch = text.match(/(?:#|n[úu]mero|n[º°o]\.?|posi[çc][ãa]o|posto|coloca[çc][ãa]o)\s*[:\-]?\s*0*(\d{1,4})\b/i);
+      if (hashOrLabelMatch && hashOrLabelMatch[1]) {
+        const parsed = parseInt(hashOrLabelMatch[1], 10);
+        if (!isNaN(parsed) && parsed >= 1 && parsed <= 1000) return parsed;
+      }
 
-      for (const regex of patterns) {
-        const match = text.match(regex);
-        if (match && match[1]) {
-          const parsed = parseInt(match[1], 10);
-          if (!isNaN(parsed) && parsed >= 1 && parsed <= 1000) {
-            return parsed;
-          }
+      if (text.includes('#')) {
+        const anyHash = text.match(/#\s*0*(\d{1,4})\b/);
+        if (anyHash && anyHash[1]) {
+          const parsed = parseInt(anyHash[1], 10);
+          if (!isNaN(parsed) && parsed >= 1 && parsed <= 1000) return parsed;
         }
       }
+
       return parseNumberFromQuery(text);
     }
 
@@ -4192,32 +4215,33 @@
         return;
       }
 
+      const d = appState.directives || {};
       showSherBlussModal({
         title: 'Painel: Desafios (Segunda a Sexta)',
         htmlBody: `
           <div class="form-group">
             <label class="form-label">Segunda-feira</label>
-            <input type="text" id="admSeg" class="glass-input" value="" placeholder="Escreva o desafio de segunda...">
+            <input type="text" id="admSeg" class="glass-input" value="${escapeAttr(d.segunda || '')}" placeholder="Ex: Envie a foto do seu #6">
           </div>
           <div class="form-group">
             <label class="form-label">Terça-feira</label>
-            <input type="text" id="admTer" class="glass-input" value="" placeholder="Escreva o desafio de terça...">
+            <input type="text" id="admTer" class="glass-input" value="${escapeAttr(d.terca || '')}" placeholder="Escreva o desafio de terça...">
           </div>
           <div class="form-group">
             <label class="form-label">Quarta-feira</label>
-            <input type="text" id="admQua" class="glass-input" value="" placeholder="Escreva o desafio de quarta...">
+            <input type="text" id="admQua" class="glass-input" value="${escapeAttr(d.quarta || '')}" placeholder="Escreva o desafio de quarta...">
           </div>
           <div class="form-group">
             <label class="form-label">Quinta-feira</label>
-            <input type="text" id="admQui" class="glass-input" value="" placeholder="Escreva o desafio de quinta...">
+            <input type="text" id="admQui" class="glass-input" value="${escapeAttr(d.quinta || '')}" placeholder="Escreva o desafio de quinta...">
           </div>
           <div class="form-group">
             <label class="form-label">Sexta-feira</label>
-            <input type="text" id="admSex" class="glass-input" value="" placeholder="Escreva o desafio de sexta...">
+            <input type="text" id="admSex" class="glass-input" value="${escapeAttr(d.sexta || '')}" placeholder="Escreva o desafio de sexta...">
           </div>
           <div class="form-group">
             <label class="form-label">Sábado / Domingo</label>
-            <input type="text" id="admSabDom" class="glass-input" value="" placeholder="Escreva o aviso de fim de semana...">
+            <input type="text" id="admSabDom" class="glass-input" value="${escapeAttr(d.sabadoDomingo || '')}" placeholder="Escreva o aviso de fim de semana...">
           </div>
         `,
         buttons: [
@@ -4280,7 +4304,6 @@
       const myList = biasesDatabase.filter(b => b.registeredByUid === appState.user.uid);
       const parsedNum = parseNumberFromQuery(val);
 
-      // Se o usuário apagou tudo, limpa o bias selecionado para não prender nenhum número anterior
       if (!q) {
         appState.bias = { name: '', role: 'Ator', id: null, frontalUrl: '', lastUpdated: 0 };
         saveLocal();
