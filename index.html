@@ -4,7 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google" content="notranslate">
-  <title translate="no">Sher Bluss</title>
+
+  <!-- =====================================================================
+       1. GOOGLE SEARCH CONSOLE & GOOGLE ANALYTICS
+       Cole abaixo sua <meta name="google-site-verification" content="..." />
+       e/ou o script do Google Analytics (gtag.js) quando gerar na conta.
+       ===================================================================== -->
+  <!-- COLE AQUI A TAG DO GOOGLE SEARCH CONSOLE (SE USAR META TAG) -->
+  <!-- COLE AQUI O SCRIPT DO GOOGLE ANALYTICS (SE USAR GA4) -->
+
+  <!-- =====================================================================
+       2. TÍTULO, DESCRIÇÃO E PRÉVIA DE COMPARTILHAMENTO (SHER BLUSS)
+       ===================================================================== -->
+  <title translate="no">Sher Bluss — Um desabrochar a cada compartilhamento</title>
+  <meta
+    name="description"
+    content="SHER BLUSS: UM DESABROCHAR A CADA COMPARTILHAMENTO — Feito com carinho para cada dorameira e fã de k-pop."
+  />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sher-bluss.vercel.app/" />
+  <meta
+    property="og:title"
+    content="SHER BLUSS: UM DESABROCHAR A CADA COMPARTILHAMENTO"
+  />
+  <meta
+    property="og:description"
+    content="Feito com carinho para cada dorameira e fã de k-pop."
+  />
+  <meta property="og:image" content="https://sher-bluss.vercel.app/logo.png" />
+  <meta property="og:locale" content="pt_BR" />
+
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:url" content="https://sher-bluss.vercel.app/" />
+  <meta
+    name="twitter:title"
+    content="SHER BLUSS: UM DESABROCHAR A CADA COMPARTILHAMENTO"
+  />
+  <meta
+    name="twitter:description"
+    content="Feito com carinho para cada dorameira e fã de k-pop."
+  />
+  <meta name="twitter:image" content="https://sher-bluss.vercel.app/logo.png" />
 
   <link rel="manifest" href="./manifest.json">
   <meta name="theme-color" content="#060a1e">
@@ -1838,7 +1879,6 @@
       'mil': 1000, 'milesimo': 1000, 'milesima': 1000
     };
 
-    // Extrai número de forma limpa (ex: "#6", "6", "número 6", "seis") sem somar palavras soltas de forma errada
     function parseNumberFromQuery(rawInput) {
       const cleaned = String(rawInput || '')
         .toLowerCase()
@@ -1848,21 +1888,18 @@
 
       if (!cleaned) return null;
 
-      // 1. Se tiver #6, #9, etc. ou "número 6" / "posição 6" / "nº 6"
       const explicitTagMatch = cleaned.match(/(?:#|n[úu]mero|n[º°o]\.?|posi[çc][ãa]o|posto|coloca[çc][ãa]o)\s*[:\-]?\s*0*(\d{1,4})\b/);
       if (explicitTagMatch && explicitTagMatch[1]) {
         const n = parseInt(explicitTagMatch[1], 10);
         if (!isNaN(n) && n >= 1 && n <= 1000) return n;
       }
 
-      // 2. Se for um número puro ou ordinal simples (ex: "5", "6º", "9a")
       const standaloneNumMatch = cleaned.match(/^0*(\d{1,4})(?:º|ª|o|a)?$/);
       if (standaloneNumMatch && standaloneNumMatch[1]) {
         const n = parseInt(standaloneNumMatch[1], 10);
         if (!isNaN(n) && n >= 1 && n <= 1000) return n;
       }
 
-      // 3. Procura tokens por extenso (ex: "seis", "nove", "vinte e tres")
       const tokens = cleaned
         .replace(/[^\w\s-]/g, ' ')
         .replace(/\s+e\s+/g, ' ')
@@ -1888,7 +1925,6 @@
         if (val >= 1 && val <= 1000) return val;
       }
 
-      // 4. Fallback para dígito isolado na frase se não houver palavra por extenso
       const anyDigitMatch = cleaned.match(/\b0*(\d{1,4})(?:º|ª|o|a)?\b/);
       if (anyDigitMatch && anyDigitMatch[1]) {
         const n = parseInt(anyDigitMatch[1], 10);
@@ -1950,7 +1986,6 @@
       return 'Fim de semana';
     }
 
-    // Lê primeiro #número ou "número/posição X" na legenda do desafio; só lê palavra por extenso se não houver "#"
     function extractRequestedChallengeNumber(directiveText) {
       const text = String(directiveText || '').trim();
       if (!text) return null;
