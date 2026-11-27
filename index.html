@@ -17,7 +17,7 @@
   <meta property="og:url" content="https://sher-bluss.vercel.app/" />
   <meta
     property="og:title"
-    content="SHER BLUSS: UM DESABROCHAR A CADA COMPARTILHAMENTO"
+    content="SHER BLUSS: UM DESABROCHAR a cada compartilhamento"
   />
   <meta
     name="og:description"
@@ -2781,7 +2781,6 @@
       });
     }
 
-    // Envio direto para o Cloudinary sem MediaRecorder/captureStream (evita vídeo com tela preta e só áudio)
     async function prepareMediaFile(file) {
       if (!file) return null;
       if (!validMediaFile(file)) {
@@ -2808,12 +2807,9 @@
       return file;
     }
 
+    // Retorna a URL exata salva no Cloudinary sem alterar parâmetros na URL
     function normalizePlaybackUrl(url, type) {
-      if (!url) return '';
-      if (type === 'video' && url.includes('res.cloudinary.com') && url.includes('/video/upload/')) {
-        return url.replace('/video/upload/', '/video/upload/f_mp4,vc_h264,ac_aac/');
-      }
-      return url;
+      return url || '';
     }
 
     async function uploadMediaToCloudinary(file) {
@@ -2835,7 +2831,7 @@
 
         if (d.secure_url) {
           return {
-            url: normalizePlaybackUrl(d.secure_url, rt),
+            url: d.secure_url,
             type: rt
           };
         }
@@ -4075,7 +4071,7 @@
           const mediaSrc = normalizePlaybackUrl(m.media, m.mediaType);
           const media = mediaSrc
             ? m.mediaType === 'video'
-              ? `<video src="${escapeAttr(mediaSrc)}" controls preload="auto" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
+              ? `<video src="${escapeAttr(mediaSrc)}" controls preload="metadata" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
               : `<img src="${escapeAttr(mediaSrc)}" onclick="openLightbox('${escapeAttr(mediaSrc)}','image','')">`
             : '';
           return `<div class="chat-msg ${mine ? 'mine' : 'theirs'}">${m.text ? escapeHtml(m.text) : ''}${media}</div>`;
@@ -4199,7 +4195,7 @@
                     ${
                       mSrc
                         ? item.mediaType === 'video'
-                          ? `<video src="${escapeAttr(mSrc)}" controls preload="auto" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
+                          ? `<video src="${escapeAttr(mSrc)}" controls preload="metadata" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
                           : `<img src="${escapeAttr(mSrc)}" style="width:100%;max-height:320px;object-fit:contain;border-radius:10px;">`
                         : ''
                     }
@@ -4236,7 +4232,7 @@
               ${
                 mSrc
                   ? item.mediaType === 'video'
-                    ? `<video src="${escapeAttr(mSrc)}" controls preload="auto" playsinline style="width:100%;max-height:280px;border-radius:10px;background:#000;"></video>`
+                    ? `<video src="${escapeAttr(mSrc)}" controls preload="metadata" playsinline style="width:100%;max-height:280px;border-radius:10px;background:#000;"></video>`
                     : `<img src="${escapeAttr(mSrc)}" style="width:100%;max-height:280px;object-fit:contain;border-radius:10px;">`
                   : ''
               }
@@ -5794,7 +5790,7 @@
       const playSrc = normalizePlaybackUrl(src, type);
 
       container.innerHTML = type === 'video'
-        ? `<video src="${escapeAttr(playSrc)}" class="lightbox-media" controls autoplay preload="auto" playsinline></video>`
+        ? `<video src="${escapeAttr(playSrc)}" class="lightbox-media" controls autoplay preload="metadata" playsinline></video>`
         : `<img src="${escapeAttr(playSrc)}" class="lightbox-media" alt="">`;
 
       lb.classList.add('open');
@@ -5844,7 +5840,7 @@
       const playMedia = normalizePlaybackUrl(post.media, post.mediaType);
       const mediaHtml = playMedia
         ? post.mediaType === 'video'
-          ? `<video src="${escapeAttr(playMedia)}" class="post-media" controls preload="auto" playsinline></video>`
+          ? `<video src="${escapeAttr(playMedia)}" class="post-media" controls preload="metadata" playsinline></video>`
           : `<img src="${escapeAttr(playMedia)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(playMedia)}','image','${escapeAttr(post.author)}')">`
         : '';
 
