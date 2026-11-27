@@ -1439,13 +1439,6 @@
       margin-bottom: 18px;
     }
 
-    .day-slot-label {
-      font-size: 14px;
-      font-weight: 700;
-      color: var(--gold-accent);
-      padding: 4px 2px;
-    }
-
     .day-slot-mount {
       min-height: 24px;
       cursor: pointer;
@@ -1894,37 +1887,65 @@
       </div>
 
       <div class="day-slot-block" id="slot-segunda">
-        <div class="day-slot-label">Segunda-feira</div>
+        <!--
+        ========================================
+        ========================================
+        Segunda-feira
+        -->
         <div class="day-slot-mount" id="mount-segunda" onclick="expandDayGameToFullTab('segunda')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-terca">
-        <div class="day-slot-label">Terça-feira</div>
+        <!--
+        ========================================
+        ========================================
+        Terça-feira
+        -->
         <div class="day-slot-mount" id="mount-terca" onclick="expandDayGameToFullTab('terca')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-quarta">
-        <div class="day-slot-label">Quarta-feira</div>
+        <!--
+        ========================================
+        ========================================
+        Quarta-feira
+        -->
         <div class="day-slot-mount" id="mount-quarta" onclick="expandDayGameToFullTab('quarta')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-quinta">
-        <div class="day-slot-label">Quinta-feira</div>
+        <!--
+        ========================================
+        ========================================
+        Quinta-feira
+        -->
         <div class="day-slot-mount" id="mount-quinta" onclick="expandDayGameToFullTab('quinta')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-sexta">
-        <div class="day-slot-label">Sexta-feira</div>
+        <!--
+        ========================================
+        ========================================
+        Sexta-feira
+        -->
         <div class="day-slot-mount" id="mount-sexta" onclick="expandDayGameToFullTab('sexta')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-sabado">
-        <div class="day-slot-label">Sábado</div>
+        <!--
+        ========================================
+        ========================================
+        Sábado
+        -->
         <div class="day-slot-mount" id="mount-sabado" onclick="expandDayGameToFullTab('sabado')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-domingo">
-        <div class="day-slot-label">Domingo</div>
+        <!--
+        ========================================
+        ========================================
+        Domingo
+        -->
         <div class="day-slot-mount" id="mount-domingo" onclick="expandDayGameToFullTab('domingo')"></div>
       </div>
     </section>
@@ -2074,7 +2095,6 @@
 
     let activeExpandedDayKey = null;
 
-    // Quando você colocar um jogo em um dia, passe também { thumbUrl: './caminho/da/imagem.png' } se quiser mostrar o quadradinho da imagem do jogo.
     window.mountDayGame = function(dayKey, gameNode, options = {}) {
       const mountEl = document.getElementById('mount-' + dayKey);
       if (!mountEl || !gameNode) return;
@@ -2105,6 +2125,66 @@
         mountEl.appendChild(gameNode);
       }
     };
+
+    // Detecta automaticamente qualquer <script> ou elemento de jogo colado dentro de #slot-<dia>
+    // e monta o jogo + quadradinho da imagem dele em #mount-<dia> sem exibir os marcadores na tela.
+    (function initAutoDayGameSlots() {
+      const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+
+      function hydrateDaySlot(dayKey) {
+        const slotEl = document.getElementById('slot-' + dayKey);
+        const mountEl = document.getElementById('mount-' + dayKey);
+        if (!slotEl || !mountEl) return;
+
+        const strayScripts = Array.from(slotEl.querySelectorAll('script'));
+        const strayNodes = Array.from(slotEl.children).filter(
+          el => !el.classList.contains('day-slot-mount') && el.tagName !== 'SCRIPT'
+        );
+
+        if (!strayScripts.length && !strayNodes.length) return;
+
+        let thumbUrl = '';
+        const box = document.createElement('div');
+        box.style.display = 'flex';
+        box.style.alignItems = 'center';
+        box.style.gap = '10px';
+        box.style.padding = '8px';
+        box.style.background = '#0e1222';
+        box.style.border = '1px solid var(--gold-border)';
+        box.style.borderRadius = '14px';
+
+        strayNodes.forEach(node => {
+          const foundImg = node.matches?.('img') ? node : node.querySelector?.('img');
+          if (foundImg && foundImg.src) thumbUrl = foundImg.src;
+          box.appendChild(node);
+        });
+
+        strayScripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.textContent = oldScript.textContent;
+          oldScript.remove();
+          box.appendChild(newScript);
+        });
+
+        const mountedImg = box.querySelector('img');
+        if (mountedImg && mountedImg.src && !thumbUrl) thumbUrl = mountedImg.src;
+
+        if (thumbUrl) {
+          const thumb = document.createElement('img');
+          thumb.src = thumbUrl;
+          thumb.alt = '';
+          thumb.className = 'game-thumb-square';
+          thumb.onerror = function() { this.style.display = 'none'; };
+          box.prepend(thumb);
+        }
+
+        mountEl.innerHTML = '';
+        mountEl.appendChild(box);
+      }
+
+      days.forEach(hydrateDaySlot);
+    })();
 
     window.expandDayGameToFullTab = function(dayKey) {
       pauseAllVideos();
@@ -6085,80 +6165,82 @@
         : `<div class="glass-panel empty-state-box">Você ainda não tem amigas adicionadas.</div>`;
     }
 
-    function enableDesktopCarouselDragAndWheel() {
-      const carousel = document.getElementById('carouselWrapper');
-      if (!carousel) return;
-
+    function enableDesktopCarouselDrag(el) {
       let isMouseDown = false;
       let startX = 0;
-      let startScrollLeft = 0;
-      let draggedDistance = 0;
+      let scrollLeftStart = 0;
+      let wasDragged = false;
 
-      carousel.addEventListener('mousedown', e => {
+      el.addEventListener('mousedown', e => {
         if (e.button !== 0) return;
         isMouseDown = true;
-        draggedDistance = 0;
-        startX = e.pageX - carousel.offsetLeft;
-        startScrollLeft = carousel.scrollLeft;
-        carousel.classList.add('is-dragging');
+        wasDragged = false;
+        startX = e.pageX - el.offsetLeft;
+        scrollLeftStart = el.scrollLeft;
+        el.classList.add('is-dragging');
       });
 
       window.addEventListener('mouseup', () => {
         if (!isMouseDown) return;
         isMouseDown = false;
-        carousel.classList.remove('is-dragging');
-        setTimeout(() => {
-          draggedDistance = 0;
-        }, 50);
+        el.classList.remove('is-dragging');
+        if (wasDragged) {
+          setTimeout(() => { wasDragged = false; }, 60);
+        }
       });
 
-      carousel.addEventListener('mousemove', e => {
+      el.addEventListener('mousemove', e => {
         if (!isMouseDown) return;
         e.preventDefault();
-        const x = e.pageX - carousel.offsetLeft;
+        const x = e.pageX - el.offsetLeft;
         const walk = (x - startX) * 1.4;
-        draggedDistance = Math.max(draggedDistance, Math.abs(x - startX));
-        carousel.scrollLeft = startScrollLeft - walk;
+        if (Math.abs(walk) > 5) wasDragged = true;
+        el.scrollLeft = scrollLeftStart - walk;
       });
 
-      carousel.addEventListener('click', e => {
-        if (draggedDistance > 6) {
+      el.addEventListener('click', e => {
+        if (wasDragged) {
           e.preventDefault();
           e.stopPropagation();
         }
       }, true);
-
-      carousel.addEventListener('wheel', e => {
-        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-          carousel.scrollLeft += e.deltaY;
-          e.preventDefault();
-        }
-      }, { passive: false });
     }
 
-    let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-      const currentY = window.scrollY;
+    document.addEventListener('DOMContentLoaded', () => {
+      applyUserTheme();
+      startMidnightCountdown();
+      initFirebaseSync();
+      renderAll();
+
       const carousel = document.getElementById('carouselWrapper');
-      const titleCenter = document.getElementById('topBarCenterTitle');
+      if (carousel) enableDesktopCarouselDrag(carousel);
 
-      if (!carousel) return;
-      if (currentY > 36) carousel.classList.add('scrolled');
-      else if (currentY < 16) carousel.classList.remove('scrolled');
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+        const c = document.getElementById('carouselWrapper');
+        const t = document.getElementById('topBarCenterTitle');
+        const isFeedActive = document.getElementById('view-feed').classList.contains('active');
 
-      if (titleCenter) {
-        if (currentY > 28) titleCenter.classList.add('hidden-title');
-        else if (currentY < 14) titleCenter.classList.remove('hidden-title');
+        if (!isFeedActive) {
+          if (c) c.classList.add('scrolled');
+          if (t) t.classList.remove('hidden-title');
+          return;
+        }
+
+        if (y > 40) {
+          if (c) c.classList.add('scrolled');
+          if (t) t.classList.remove('hidden-title');
+        } else if (y < 15) {
+          if (c) c.classList.remove('scrolled');
+          if (t) t.classList.add('hidden-title');
+        }
+      });
+
+      if (document.getElementById('view-feed').classList.contains('active') && window.scrollY < 15) {
+        const t = document.getElementById('topBarCenterTitle');
+        if (t) t.classList.add('hidden-title');
       }
-
-      lastScrollY = currentY;
-    }, { passive: true });
-
-    enableDesktopCarouselDragAndWheel();
-    applyUserTheme();
-    startMidnightCountdown();
-    renderAll();
-    initFirebaseSync();
+    });
   </script>
 </body>
 </html>
