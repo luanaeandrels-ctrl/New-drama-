@@ -95,6 +95,12 @@
       -webkit-tap-highlight-color: transparent;
     }
 
+    ::-webkit-scrollbar {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+
     body,
     input,
     button,
@@ -125,6 +131,8 @@
       color: var(--text-main);
       overflow-x: hidden;
       color-scheme: dark;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
     .glass-panel {
@@ -1361,7 +1369,7 @@
       flex-direction: column;
       gap: 10px;
       padding-bottom: 90px;
-      scrollbar-width: thin;
+      scrollbar-width: none;
     }
 
     .chat-msg {
@@ -1436,41 +1444,73 @@
       z-index: 3;
     }
 
-    .games-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin-bottom: 14px;
+    .day-divider-line {
+      font-family: "Optimistic Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: rgba(251, 191, 36, 0.55);
+      overflow: hidden;
+      white-space: nowrap;
+      user-select: none;
+      line-height: 1.25;
     }
 
-    .game-card-panel {
-      padding: 16px;
-      background: #0e1222;
-      border: 1px solid var(--gold-border);
-      border-radius: 18px;
-      display: flex;
+    .day-slot-block {
+      margin-bottom: 16px;
+    }
+
+    .day-slot-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--gold-accent);
+      padding: 6px 2px;
+    }
+
+    .day-slot-mount {
+      padding: 6px 0;
+      cursor: pointer;
+    }
+
+    #fullGameStageOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 180;
+      background: #060a1e;
+      width: 100vw;
+      height: 100dvh;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 10px;
+      overflow-y: auto;
     }
 
-    .kidnap-list {
+    body.full-game-mode #fullGameStageOverlay {
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin: 12px 0;
     }
 
-    .kidnap-row {
+    body.full-game-mode .app-shell,
+    body.full-game-mode #unifiedTopBar,
+    body.full-game-mode .floating-composer-wrapper,
+    body.full-game-mode .app-footer {
+      display: none !important;
+    }
+
+    .full-game-topbar {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
-      padding: 10px 12px;
-      border-radius: 12px;
-      background: #141b34;
-      border: 1px solid rgba(251, 191, 36, .22);
-      font-size: 13px;
+      padding: 12px 18px;
+      background: rgba(14, 18, 34, 0.96);
+      border-bottom: 1px solid var(--gold-border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    #fullGameMountBody {
+      flex: 1;
+      width: 100%;
+      min-height: calc(100dvh - 58px);
+      padding: 16px;
     }
   </style>
 </head>
@@ -1859,44 +1899,82 @@
 
     <section class="view-section" id="view-jogos">
       <div class="glass-panel section-header-bar">
-        <span class="section-title">Jogos do Sher Bluss</span>
+        <span class="section-title">Jogos</span>
         <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
       </div>
 
-      <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
-        <h3 style="font-size:15px;color:var(--gold-accent);margin-bottom:6px;">Central de Jogos</h3>
-        <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
-          Espaço reservado para os jogos da comunidade, incluindo o <strong>Sequestro de Bias</strong> (pasta <code>jogos/sequestro-de-bias</code>) e o jogo de pares de doramas.
-        </p>
+      <div class="day-slot-block" id="slot-segunda">
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-slot-label">Segunda-feira</div>
+        <div class="day-slot-mount" id="mount-segunda" onclick="expandDayGameToFullTab('segunda')"></div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
 
-      <div class="games-grid">
-        <div class="game-card-panel">
-          <div>
-            <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:4px;">Sequestro de Bias</h4>
-            <p style="font-size:12px;color:var(--text-muted);line-height:1.45;">
-              Escolha os participantes e monte sua rodada de sequestro para jogar com a galera.
-            </p>
-          </div>
-          <button type="button" class="btn-gold" onclick="openSequestroBiasPreview()">Abrir Sequestro de Bias</button>
-        </div>
-
-        <div class="game-card-panel">
-          <div>
-            <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:4px;">Pares de Dorama</h4>
-            <p style="font-size:12px;color:var(--text-muted);line-height:1.45;">
-              Combine cenas, casais e trilhas marcantes dos doramas em partidas rápidas.
-            </p>
-          </div>
-          <button type="button" class="btn-pill-gold" style="width:100%;padding:10px 14px;" onclick="openDramaPairsPreview()">
-            Abrir Pares de Dorama
-          </button>
-        </div>
+      <div class="day-slot-block" id="slot-terca">
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-slot-label">Terça-feira</div>
+        <div class="day-slot-mount" id="mount-terca" onclick="expandDayGameToFullTab('terca')"></div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
 
-      <div id="gamesArenaContainer" class="glass-panel" style="padding:16px;display:none;"></div>
+      <div class="day-slot-block" id="slot-quarta">
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-slot-label">Quarta-feira</div>
+        <div class="day-slot-mount" id="mount-quarta" onclick="expandDayGameToFullTab('quarta')"></div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+      </div>
+
+      <div class="day-slot-block" id="slot-quinta">
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-slot-label">Quinta-feira</div>
+        <div class="day-slot-mount" id="mount-quinta" onclick="expandDayGameToFullTab('quinta')"></div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+      </div>
+
+      <div class="day-slot-block" id="slot-sexta">
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-slot-label">Sexta-feira</div>
+        <div class="day-slot-mount" id="mount-sexta" onclick="expandDayGameToFullTab('sexta')"></div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+      </div>
+
+      <div class="day-slot-block" id="slot-sabado">
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-slot-label">Sábado</div>
+        <div class="day-slot-mount" id="mount-sabado" onclick="expandDayGameToFullTab('sabado')"></div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+      </div>
+
+      <div class="day-slot-block" id="slot-domingo">
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-slot-label">Domingo</div>
+        <div class="day-slot-mount" id="mount-domingo" onclick="expandDayGameToFullTab('domingo')"></div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+        <div class="day-divider-line">========================================================================================================================================================================================================</div>
+      </div>
     </section>
   </div>
+
+  <section id="fullGameStageOverlay">
+    <div class="full-game-topbar">
+      <span class="section-title" id="fullGameStageTitle">Jogo</span>
+      <button type="button" class="btn-pill-gold" onclick="collapseFullGameStage()">Voltar</button>
+    </div>
+    <div id="fullGameMountBody"></div>
+  </section>
 
   <section class="view-section" id="view-chat">
     <div class="glass-panel chat-header-fixed" style="display:flex;align-items:center;justify-content:space-between;">
@@ -2006,8 +2084,52 @@
     const LONG_PRESS_DURATION_MS = 10000;
     const SCROLL_CANCEL_THRESHOLD_PX = 4;
 
-    // Nota: em jogos com bola/projétil, podemos usar imagem PNG dedicada (ex: ./jogos/sequestro-de-bias/bola.png)
+    // Imagem PNG da bola do jogo (ex: ./jogos/sequestro-de-bias/bola.png)
     const GAME_BALL_PNG_URL = './jogos/sequestro-de-bias/bola.png';
+
+    const DAY_SLOT_TITLES = {
+      segunda: 'Segunda-feira',
+      terca: 'Terça-feira',
+      quarta: 'Quarta-feira',
+      quinta: 'Quinta-feira',
+      sexta: 'Sexta-feira',
+      sabado: 'Sábado',
+      domingo: 'Domingo'
+    };
+
+    let activeExpandedDayKey = null;
+
+    window.expandDayGameToFullTab = function(dayKey) {
+      const mountEl = document.getElementById('mount-' + dayKey);
+      const stageBody = document.getElementById('fullGameMountBody');
+      const stageTitle = document.getElementById('fullGameStageTitle');
+      if (!mountEl || !stageBody) return;
+
+      activeExpandedDayKey = dayKey;
+      stageTitle.textContent = DAY_SLOT_TITLES[dayKey] || 'Jogo';
+      stageBody.innerHTML = '';
+
+      while (mountEl.firstChild) {
+        stageBody.appendChild(mountEl.firstChild);
+      }
+
+      document.body.classList.add('full-game-mode');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+
+    window.collapseFullGameStage = function() {
+      const stageBody = document.getElementById('fullGameMountBody');
+      if (activeExpandedDayKey && stageBody) {
+        const mountEl = document.getElementById('mount-' + activeExpandedDayKey);
+        if (mountEl) {
+          while (stageBody.firstChild) {
+            mountEl.appendChild(stageBody.firstChild);
+          }
+        }
+      }
+      activeExpandedDayKey = null;
+      document.body.classList.remove('full-game-mode');
+    };
 
     const BLOCKED_TERMS = [
       'pedofilia', 'pedofilo', 'pedófilo', 'abuso infantil', 'pornografia infantil',
@@ -2824,7 +2946,6 @@
     let activeChatName = 'Bate-papo';
     let chatUnsub = null;
     let isInitialFeedLoaded = false;
-    let kidnappedTargets = [];
 
     function saveLocal() {
       localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -5030,81 +5151,8 @@
       container.innerHTML = html;
     };
 
-    function renderKidnapListHtml() {
-      if (!kidnappedTargets.length) {
-        return `<p style="font-size:12px;color:var(--text-muted);margin:10px 0;">Nenhum bias sequestrado nesta rodada ainda.</p>`;
-      }
-      return `
-        <div class="kidnap-list">
-          ${kidnappedTargets.map((item, idx) => `
-            <div class="kidnap-row">
-              <span>🔒 <strong>${escapeHtml(item.name)}</strong> <span style="color:var(--text-muted);">(${escapeHtml(item.role)})</span></span>
-              <button type="button" class="delicate-x-btn" onclick="releaseKidnappedTarget(${idx})" title="Soltar">✕</button>
-            </div>
-          `).join('')}
-        </div>
-      `;
-    }
-
-    window.addKidnappedTarget = function() {
-      const input = document.getElementById('kidnapTargetInput');
-      const roleSelect = document.getElementById('kidnapTargetRole');
-      if (!input) return;
-      const name = input.value.trim();
-      if (!name) return;
-      if (!assertCleanContent(name, 'o nome')) return;
-      kidnappedTargets.push({ name, role: roleSelect ? roleSelect.value : 'Bias' });
-      input.value = '';
-      openSequestroBiasPreview();
-    };
-
-    window.releaseKidnappedTarget = function(index) {
-      kidnappedTargets.splice(index, 1);
-      openSequestroBiasPreview();
-    };
-
-    window.openSequestroBiasPreview = function() {
-      const arena = document.getElementById('gamesArenaContainer');
-      if (!arena) return;
-      arena.style.display = 'block';
-      arena.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <h4 style="font-size:14px;color:var(--gold-accent);">Sequestro de Bias — Pasta jogos/sequestro-de-bias</h4>
-          <button type="button" class="delicate-x-btn" onclick="document.getElementById('gamesArenaContainer').style.display='none'">✕</button>
-        </div>
-        <p style="font-size:12px;color:var(--text-muted);line-height:1.45;margin-bottom:10px;">
-          Adicione os alvos da rodada (imagem de bola/marcador configurada em <code>${escapeHtml(GAME_BALL_PNG_URL)}</code>).
-        </p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
-          <input type="text" id="kidnapTargetInput" class="glass-input" style="flex:1;min-width:160px;" placeholder="Nome do bias ou idol...">
-          <select id="kidnapTargetRole" class="glass-select" style="width:auto;">
-            <option value="Bias">Bias</option>
-            <option value="Ator">Ator</option>
-            <option value="Atriz">Atriz</option>
-            <option value="K-popper">K-popper</option>
-          </select>
-          <button type="button" class="btn-gold" style="width:auto;padding:10px 14px;" onclick="addKidnappedTarget()">Sequestrar</button>
-        </div>
-        ${renderKidnapListHtml()}
-      `;
-    };
-
-    window.openDramaPairsPreview = function() {
-      const arena = document.getElementById('gamesArenaContainer');
-      if (!arena) return;
-      arena.style.display = 'block';
-      arena.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <h4 style="font-size:14px;color:var(--gold-accent);">Pares de Dorama — Arena</h4>
-          <button type="button" class="delicate-x-btn" onclick="document.getElementById('gamesArenaContainer').style.display='none'">✕</button>
-        </div>
-        <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
-          Área pronta para montar as cartas de pares dos doramas na tela inteira de Jogos.
-        </p>
-      `;
-    };
-
     window.switchView = function(viewName) {
+      collapseFullGameStage();
       activeVisitedUserUid = null;
       applyUserTheme();
 
@@ -6028,73 +6076,72 @@
       let startX = 0;
       let startScrollLeft = 0;
       let draggedDistance = 0;
-      let suppressNextClick = false;
 
       carousel.addEventListener('mousedown', e => {
         if (e.button !== 0) return;
         isMouseDown = true;
         draggedDistance = 0;
-        startX = e.pageX;
+        startX = e.pageX - carousel.offsetLeft;
         startScrollLeft = carousel.scrollLeft;
         carousel.classList.add('is-dragging');
-      });
-
-      window.addEventListener('mousemove', e => {
-        if (!isMouseDown) return;
-        const dx = e.pageX - startX;
-        draggedDistance = Math.max(draggedDistance, Math.abs(dx));
-        if (draggedDistance > 5) {
-          suppressNextClick = true;
-        }
-        carousel.scrollLeft = startScrollLeft - dx * 1.15;
       });
 
       window.addEventListener('mouseup', () => {
         if (!isMouseDown) return;
         isMouseDown = false;
         carousel.classList.remove('is-dragging');
-        if (suppressNextClick) {
-          setTimeout(() => {
-            suppressNextClick = false;
-          }, 40);
-        }
+        setTimeout(() => {
+          draggedDistance = 0;
+        }, 50);
+      });
+
+      carousel.addEventListener('mousemove', e => {
+        if (!isMouseDown) return;
+        e.preventDefault();
+        const x = e.pageX - carousel.offsetLeft;
+        const walk = (x - startX) * 1.4;
+        draggedDistance = Math.max(draggedDistance, Math.abs(x - startX));
+        carousel.scrollLeft = startScrollLeft - walk;
       });
 
       carousel.addEventListener('click', e => {
-        if (suppressNextClick) {
+        if (draggedDistance > 6) {
           e.preventDefault();
           e.stopPropagation();
-          suppressNextClick = false;
         }
       }, true);
 
       carousel.addEventListener('wheel', e => {
-        if (carousel.scrollWidth <= carousel.clientWidth) return;
-        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-        if (delta !== 0) {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          carousel.scrollLeft += e.deltaY;
           e.preventDefault();
-          carousel.scrollLeft += delta;
         }
       }, { passive: false });
     }
 
+    let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
-      const c = document.getElementById('carouselWrapper');
-      const t = document.getElementById('topBarCenterTitle');
-      if (window.scrollY > 45) {
-        c.classList.add('scrolled');
-        if (t) t.classList.remove('hidden-title');
-      } else {
-        c.classList.remove('scrolled');
-        if (t) t.classList.add('hidden-title');
+      const currentY = window.scrollY;
+      const carousel = document.getElementById('carouselWrapper');
+      const titleCenter = document.getElementById('topBarCenterTitle');
+
+      if (!carousel) return;
+      if (currentY > 36) carousel.classList.add('scrolled');
+      else if (currentY < 16) carousel.classList.remove('scrolled');
+
+      if (titleCenter) {
+        if (currentY > 28) titleCenter.classList.add('hidden-title');
+        else if (currentY < 14) titleCenter.classList.remove('hidden-title');
       }
-    });
+
+      lastScrollY = currentY;
+    }, { passive: true });
 
     enableDesktopCarouselDragAndWheel();
     applyUserTheme();
     startMidnightCountdown();
-    renderAll();
     initFirebaseSync();
+    renderAll();
   </script>
 </body>
 </html>
