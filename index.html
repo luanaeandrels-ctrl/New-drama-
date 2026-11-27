@@ -54,7 +54,10 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  >
 
   <style>
     @font-face {
@@ -71,14 +74,6 @@
       font-weight: 400;
       font-display: swap;
       src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-    }
-
-    :where(html) {
-      font-family: "Optimistic", system-ui, sans-serif;
-    }
-
-    :where(code, pre, kbd, samp) {
-      font-family: "Optimistic Mono", ui-monospace, monospace;
     }
 
     :root {
@@ -98,7 +93,27 @@
       margin: 0;
       padding: 0;
       -webkit-tap-highlight-color: transparent;
-      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    }
+
+    body,
+    input,
+    button,
+    select,
+    textarea,
+    label,
+    div,
+    span,
+    p,
+    h1,
+    h2,
+    h3,
+    h4,
+    a {
+      font-family: 'Plus Jakarta Sans', 'Optimistic', system-ui, -apple-system, sans-serif;
+    }
+
+    :where(code, pre, kbd, samp) {
+      font-family: "Optimistic Mono", ui-monospace, monospace;
     }
 
     html,
@@ -294,21 +309,39 @@
     .main-carousel-wrapper {
       width: 100%;
       max-width: 760px;
+      margin: 0 auto;
       padding: 10px 20px 14px;
       display: flex;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
       gap: 16px;
       overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      scrollbar-width: none;
+      overflow-y: hidden;
+      scroll-snap-type: x proximity;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(251, 191, 36, .45) transparent;
       align-items: center;
-      max-height: 170px;
+      max-height: 175px;
       opacity: 1;
       transform: translateY(0);
+      cursor: grab;
+      user-select: none;
+      -webkit-user-select: none;
       transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease, transform 0.3s ease;
     }
 
+    .main-carousel-wrapper.is-dragging {
+      cursor: grabbing;
+      scroll-snap-type: none;
+    }
+
     .main-carousel-wrapper::-webkit-scrollbar {
-      display: none;
+      height: 5px;
+    }
+
+    .main-carousel-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(251, 191, 36, .45);
+      border-radius: 999px;
     }
 
     .main-carousel-wrapper.scrolled,
@@ -324,9 +357,9 @@
 
     @media (min-width: 769px) {
       .main-carousel-wrapper {
-        justify-content: center;
-        gap: 22px;
-        max-width: 1200px;
+        justify-content: flex-start;
+        gap: 20px;
+        max-width: 760px;
         margin: 0 auto;
       }
     }
@@ -375,6 +408,7 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
+      pointer-events: none;
     }
 
     .podium-label-clean {
@@ -440,12 +474,16 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      border-radius: 20px;
+      background: rgba(14, 18, 34, .65);
+      border: 1px solid var(--gold-border);
     }
 
     .tab-icon-free img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      pointer-events: none;
     }
 
     .tab-label-clean {
@@ -1398,8 +1436,27 @@
       border-radius: 50%;
       z-index: 3;
     }
+
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-bottom: 14px;
+    }
+
+    .game-card-panel {
+      padding: 16px;
+      background: #0e1222;
+      border: 1px solid var(--gold-border);
+      border-radius: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
   </style>
 </head>
+
 <body class="notranslate">
 
   <input type="file" id="aconchegoCoverInput" accept="image/*" style="display:none;">
@@ -1412,11 +1469,24 @@
       <p style="font-size:12.5px;color:var(--text-muted);margin-bottom:20px;">
         Entre com sua conta para curtir, comentar e publicar no <strong translate="no">Sher Bluss</strong>.
       </p>
+
       <div style="display:flex;flex-direction:column;gap:10px;">
-        <button class="btn-gold" style="background:#1e293b;border-color:#4285f4;color:#8ab4f8;" onclick="loginWithGoogle()">🔑 Continuar com o Google</button>
-        <button class="btn-gold" onclick="showManualRegisterForm()">📝 Criar Conta com E-mail e Senha</button>
-        <button class="btn-pill-gold" style="width:100%;margin-top:4px;" onclick="showManualLoginForm()">Já tem uma conta? Entrar</button>
-        <button class="btn-pill-gold" style="width:100%;background:transparent;border-color:rgba(255,255,255,.2);color:var(--text-muted);" onclick="closeAuthGate()">Continuar navegando como visitante</button>
+        <button class="btn-gold" style="background:#1e293b;border-color:#4285f4;color:#8ab4f8;" onclick="loginWithGoogle()">
+          🔑 Continuar com o Google
+        </button>
+        <button class="btn-gold" onclick="showManualRegisterForm()">
+          📝 Criar Conta com E-mail e Senha
+        </button>
+        <button class="btn-pill-gold" style="width:100%;margin-top:4px;" onclick="showManualLoginForm()">
+          Já tem uma conta? Entrar
+        </button>
+        <button
+          class="btn-pill-gold"
+          style="width:100%;background:transparent;border-color:rgba(255,255,255,.2);color:var(--text-muted);"
+          onclick="closeAuthGate()"
+        >
+          Continuar navegando como visitante
+        </button>
       </div>
     </div>
   </div>
@@ -1424,13 +1494,21 @@
   <div class="unified-top-bar" id="unifiedTopBar">
     <button class="header-left-btn" id="headerProfileBtn" onclick="switchToProfileSection()" title="Meu Perfil & Aconchego">
       <div class="avatar-container" style="width:100%;height:100%;">
-        <img id="headerUserAvatar" src="./aconchego.png" alt="" onerror="this.src='./logo.png'" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">
+        <img
+          id="headerUserAvatar"
+          src="./aconchego.png"
+          alt=""
+          onerror="this.src='./logo.png'"
+          style="width:100%;height:100%;border-radius:50%;object-fit:cover;"
+        >
       </div>
       <span class="droplet-badge-overlay" id="notifBadge" onclick="event.stopPropagation();openNotificationsModal()">
         <span id="notifBadgeCount">0</span>
       </span>
     </button>
+
     <div class="top-bar-title-center notranslate" id="topBarCenterTitle" translate="no">Sher Bluss</div>
+
     <div class="search-balao-fininho" id="searchBalaoContainer">
       <input type="text" id="globalSearchInput" class="search-input-fin" placeholder="@seu_arroba">
       <button class="search-action-btn" onclick="toggleSearchExpansion()" title="Buscar">🔍</button>
@@ -1484,6 +1562,13 @@
         </div>
         <span class="tab-label-clean">Amigos</span>
       </div>
+
+      <div class="carousel-item-clean tab-item-box" onclick="switchView('jogos')">
+        <div class="tab-icon-free">
+          <img src="./jogos.png" alt="Jogos" onerror="this.onerror=null;this.src='./logo.png';">
+        </div>
+        <span class="tab-label-clean">Jogos</span>
+      </div>
     </nav>
 
     <main class="view-section active" id="view-feed">
@@ -1503,12 +1588,18 @@
               <button class="discrete-edit-btn" onclick="toggleProfileEditMode()">editar</button>
             </div>
           </div>
+
           <button class="btn-pill-gold" onclick="switchView('feed')">Voltar ao Feed</button>
         </div>
 
         <div class="bio-universe-box">
           <label class="bio-universe-label" for="myUniverseBioInput">✨ Como entrou nesse universo?</label>
-          <textarea id="myUniverseBioInput" class="bio-universe-input" rows="2" placeholder="Conte qual dorama ou grupo de K-pop conquistou seu coração..."></textarea>
+          <textarea
+            id="myUniverseBioInput"
+            class="bio-universe-input"
+            rows="2"
+            placeholder="Conte qual dorama ou grupo de K-pop conquistou seu coração..."
+          ></textarea>
           <div style="display:flex;align-items:center;gap:8px;margin-top:8px;">
             <button type="button" class="bio-send-btn" onclick="saveUniverseBioFromButton()" title="Enviar">OK</button>
             <span id="bioSavedHint" style="font-size:12px;color:var(--gold-accent);"></span>
@@ -1599,18 +1690,23 @@
             <h3 id="visitedProfileTitleName" class="profile-name-under-130">Coleguinha</h3>
             <span id="visitedProfileHandleSub" class="profile-handle-under-130 notranslate">@arroba</span>
           </div>
+
           <button class="btn-pill-gold" onclick="closeVisitedUserProfile()">Voltar ao Feed</button>
         </div>
 
         <div class="bio-universe-box">
           <span class="bio-universe-label">✨ Como entrou nesse universo?</span>
-          <p id="visitedProfileUniverseBio" style="font-size:13px;line-height:1.4;">Ainda não preencheu sua história no universo K-pop/doramas.</p>
+          <p id="visitedProfileUniverseBio" style="font-size:13px;line-height:1.4;">
+            Ainda não preencheu sua história no universo K-pop/doramas.
+          </p>
         </div>
 
         <div id="visitedFriendActionBox" style="margin-bottom:14px;"></div>
 
         <div style="margin-top:8px;">
-          <span style="font-size:12px;font-weight:700;color:var(--gold-accent);display:block;margin-bottom:6px;">🏠 Meu Aconchego (Vitrine)</span>
+          <span style="font-size:12px;font-weight:700;color:var(--gold-accent);display:block;margin-bottom:6px;">
+            🏠 Meu Aconchego (Vitrine)
+          </span>
           <div class="aconchego-showcase-row" id="visitedAconchegoShowcaseRow"></div>
         </div>
       </div>
@@ -1626,9 +1722,13 @@
 
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <p style="font-size:11.5px;color:var(--gold-accent);font-weight:700;">DIRETRIZ DA SEMANA</p>
-        <p id="weeklyDirectiveText" style="font-size:13.5px;margin:6px 0 12px;line-height:1.5;">Segunda, terça, quarta, quinta e sexta</p>
+        <p id="weeklyDirectiveText" style="font-size:13.5px;margin:6px 0 12px;line-height:1.5;">
+          Segunda, terça, quarta, quinta e sexta
+        </p>
         <div id="requiredNumberBanner" style="font-size:12px;color:var(--gold-accent);font-weight:600;margin-bottom:10px;"></div>
-        <div style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);border-top:1px solid rgba(251,191,36,.18);padding-top:8px;">
+        <div
+          style="display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--text-muted);border-top:1px solid rgba(251,191,36,.18);padding-top:8px;"
+        >
           <span>Votos hoje: <strong id="dailyVotesCounter" style="color:var(--gold-accent);">3/3</strong></span>
           <span>Reinicia em: <strong id="midnightCountdownTimer" style="color:var(--gold-accent);">--h --m --s</strong></span>
         </div>
@@ -1639,11 +1739,13 @@
         <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
           Segure o nome por 10 segundos sem arrastar para alterar a foto de rosto ou excluir (a posição fica bloqueada por 30 dias após salvar ou excluir).
         </p>
+
         <div class="form-group" style="margin-bottom:10px;">
           <label class="form-label">Nome do Bias</label>
           <input type="text" id="biasNameInput" class="glass-input" placeholder="Ex: seu bias favorito..." autocomplete="off">
           <div class="bias-country-dropdown" id="biasCountryDropdown"></div>
         </div>
+
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
           <div>
             <label class="form-label">Função</label>
@@ -1658,6 +1760,7 @@
             <input type="number" id="biasIdInput" class="glass-input" min="1" max="1000" placeholder="Ex: 6">
           </div>
         </div>
+
         <div style="display:flex;gap:10px;align-items:center;">
           <button class="btn-gold" style="flex:1;" onclick="saveBiasRegistration()">Salvar na Minha Lista</button>
           <label for="biasFrontalFile" class="photo-square-picker" id="biasSquarePreview" title="Escolher foto de rosto">
@@ -1665,19 +1768,28 @@
           </label>
           <input type="file" id="biasFrontalFile" accept="image/*" style="display:none;">
         </div>
+
         <span style="font-size:11px;color:var(--gold-accent);display:block;margin-top:6px;">Foto de rosto</span>
       </div>
 
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:6px;text-align:center;">Participar do Desafio</h4>
         <div class="form-group">
-          <input type="text" id="challengeSelectedBiasInput" class="glass-input" placeholder="Digite 5, cinco, 4, #6, 6º ou escolha da lista..." autocomplete="off">
+          <input
+            type="text"
+            id="challengeSelectedBiasInput"
+            class="glass-input"
+            placeholder="Digite 5, cinco, 4, #6, 6º ou escolha da lista..."
+            autocomplete="off"
+          >
           <div class="bias-country-dropdown" id="challengeBiasDropdown"></div>
         </div>
+
         <div style="display:flex;gap:10px;">
           <button class="btn-gold" style="flex:1;" onclick="triggerChallengeMedia('camera')">📸 Câmera</button>
           <button class="btn-pill-gold" style="flex:1;" onclick="triggerChallengeMedia('gallery')">🖼️ Foto / Vídeo</button>
         </div>
+
         <input type="file" id="challengeCameraInput" accept="image/*,video/*" capture="environment" style="display:none;">
         <input type="file" id="challengeGalleryInput" accept="image/*,video/*" style="display:none;">
       </div>
@@ -1697,19 +1809,25 @@
     </section>
 
     <section class="view-section" id="view-inside-fandom">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px 14px;border-bottom:1px solid rgba(251,191,36,.2);margin-bottom:12px;">
+      <div
+        style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px 14px;border-bottom:1px solid rgba(251,191,36,.2);margin-bottom:12px;"
+      >
         <div style="display:flex;align-items:center;gap:8px;">
           <span style="font-size:16px;">🔒</span>
           <div>
             <span id="insideFandomTitle" style="font-size:15px;font-weight:700;color:var(--gold-accent);">Fandom</span>
-            <span id="insideFandomActiveCount" style="font-size:11px;color:var(--text-muted);display:block;">• Espaço Privado Isolado</span>
+            <span id="insideFandomActiveCount" style="font-size:11px;color:var(--text-muted);display:block;">
+              • Espaço Privado Isolado
+            </span>
           </div>
         </div>
+
         <div style="display:flex;align-items:center;gap:8px;">
           <button class="dots-menu-btn" onclick="openFandomOptionsMenu()" title="Opções">•••</button>
           <button onclick="closeCurrentFandom()" class="delicate-x-btn" style="font-size:18px;" title="Fechar">✕</button>
         </div>
       </div>
+
       <div class="feed-list" id="insideFandomFeedList"></div>
     </section>
 
@@ -1720,6 +1838,46 @@
       </div>
       <div class="feed-list" id="friendsListContainer"></div>
     </section>
+
+    <section class="view-section" id="view-jogos">
+      <div class="glass-panel section-header-bar">
+        <span class="section-title">Jogos do Sher Bluss</span>
+        <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
+      </div>
+
+      <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
+        <h3 style="font-size:15px;color:var(--gold-accent);margin-bottom:6px;">Central de Jogos</h3>
+        <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
+          Espaço reservado para os jogos da comunidade, incluindo o <strong>Sequestro de Bias</strong> e o jogo de pares de doramas.
+        </p>
+      </div>
+
+      <div class="games-grid">
+        <div class="game-card-panel">
+          <div>
+            <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:4px;">Sequestro de Bias</h4>
+            <p style="font-size:12px;color:var(--text-muted);line-height:1.45;">
+              Escolha os participantes e monte sua rodada de sequestro para jogar com a galera.
+            </p>
+          </div>
+          <button type="button" class="btn-gold" onclick="openSequestroBiasPreview()">Abrir Sequestro de Bias</button>
+        </div>
+
+        <div class="game-card-panel">
+          <div>
+            <h4 style="font-size:14px;color:var(--gold-accent);margin-bottom:4px;">Pares de Dorama</h4>
+            <p style="font-size:12px;color:var(--text-muted);line-height:1.45;">
+              Combine cenas, casais e trilhas marcantes dos doramas em partidas rápidas.
+            </p>
+          </div>
+          <button type="button" class="btn-pill-gold" style="width:100%;padding:10px 14px;" onclick="openDramaPairsPreview()">
+            Abrir Pares de Dorama
+          </button>
+        </div>
+      </div>
+
+      <div id="gamesArenaContainer" class="glass-panel" style="padding:16px;display:none;"></div>
+    </section>
   </div>
 
   <section class="view-section" id="view-chat">
@@ -1727,17 +1885,30 @@
       <span class="section-title" id="chatTitle">Bate-papo</span>
       <button class="btn-pill-gold" onclick="switchView('amigos')">Voltar</button>
     </div>
+
     <div id="chatMessagesList" class="chat-list"></div>
+
     <div class="chat-composer">
-      <button type="button" class="composer-plus-btn" onclick="document.getElementById('chatMediaInput').click()" title="Foto / Vídeo">+</button>
+      <button type="button" class="composer-plus-btn" onclick="document.getElementById('chatMediaInput').click()" title="Foto / Vídeo">
+        +
+      </button>
       <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
       <input type="text" id="chatInput" placeholder="Escreva...">
-      <button type="button" class="composer-send-btn" onclick="sendChatMessage()" title="Enviar" style="font-size:11px;width:auto;padding:0 10px;">Enviar</button>
+      <button
+        type="button"
+        class="composer-send-btn"
+        onclick="sendChatMessage()"
+        title="Enviar"
+        style="font-size:11px;width:auto;padding:0 10px;"
+      >
+        Enviar
+      </button>
     </div>
   </section>
 
   <div class="floating-composer-wrapper" id="floatingComposerWrapper">
     <button type="button" class="composer-toggle-fab" onclick="toggleComposerPanel()" title="Abrir painel de envio">➤</button>
+
     <div class="gemini-composer">
       <button type="button" class="composer-plus-btn" onclick="openMediaActionSheet()" title="Câmera e Galeria">+</button>
       <input type="file" id="universalMediaInput" accept="image/*,video/*" style="display:none;">
@@ -1781,7 +1952,6 @@
       doc,
       onSnapshot,
       query,
-      orderBy,
       where,
       updateDoc,
       serverTimestamp,
@@ -1912,6 +2082,7 @@
 
         let val = NUMBER_WORD_MAP[tok];
         const nextTok = tokens[i + 1];
+
         if (nextTok && Object.prototype.hasOwnProperty.call(NUMBER_WORD_MAP, nextTok)) {
           const nextVal = NUMBER_WORD_MAP[nextTok];
           if (val >= 20 && val < 100 && nextVal < 10) {
@@ -1922,6 +2093,7 @@
             i++;
           }
         }
+
         if (val >= 1 && val <= 1000) return val;
       }
 
@@ -1937,12 +2109,14 @@
     function findBlockedTerm(rawText) {
       const norm = normalizeTextForModeration(rawText);
       if (!norm) return null;
+
       const compact = norm.replace(/\s+/g, '');
       const words = norm.split(' ');
 
       for (const term of BLOCKED_TERMS) {
         const normTerm = normalizeTextForModeration(term);
         if (!normTerm) continue;
+
         const compactTerm = normTerm.replace(/\s+/g, '');
 
         if (normTerm.length <= 3) {
@@ -1951,6 +2125,7 @@
           if (norm.includes(normTerm) || compact.includes(compactTerm)) return term;
         }
       }
+
       return null;
     }
 
@@ -2014,6 +2189,7 @@
         const parsed = parseInt(matchInInput[1], 10);
         if (!isNaN(parsed)) return parsed;
       }
+
       const parsedFromText = parseNumberFromQuery(rawInput);
       if (parsedFromText) return parsedFromText;
 
@@ -2021,6 +2197,7 @@
         const parsed = parseInt(appState.bias.id, 10);
         if (!isNaN(parsed)) return parsed;
       }
+
       return null;
     }
 
@@ -2056,6 +2233,7 @@
     window.triggerChallengeMedia = function(sourceType) {
       requireAuthForAction(() => {
         if (!validateChallengeSelectionAgainstRequest()) return;
+
         if (!appState.bias.id || !appState.bias.name) {
           showSherBlussModal({
             title: 'Selecione seu Bias',
@@ -2063,6 +2241,7 @@
           });
           return;
         }
+
         const inputId = sourceType === 'camera' ? 'challengeCameraInput' : 'challengeGalleryInput';
         document.getElementById(inputId).click();
       });
@@ -2088,8 +2267,10 @@
     function getRemainingThirtyDayLock(biasItem) {
       const ts = getBiasTimestampMs(biasItem);
       if (!ts) return null;
+
       const diff = Date.now() - ts;
       if (diff >= THIRTY_DAYS_MS) return null;
+
       const remainingMs = THIRTY_DAYS_MS - diff;
       const daysLeft = Math.max(1, Math.ceil(remainingMs / (24 * 60 * 60 * 1000)));
       return { daysLeft, remainingMs };
@@ -2123,8 +2304,12 @@
             Se você excluir, o participante não poderá ser adicionado novamente dentro dos 30 dias (nem em outra posição).
           </p>
           <div style="display:flex;flex-direction:column;gap:8px;">
-            <button type="button" class="btn-gold" onclick="triggerBiasPhotoOnlyChange('${escapeAttr(item.docId)}')">🖼️ Alterar foto de rosto (mantém posição #${escapeHtml(item.id)})</button>
-            <button type="button" class="btn-pill-gold" style="width:100%;padding:10px;" onclick="deleteBiasFromLongPress('${escapeAttr(item.docId)}')">Excluir participante</button>
+            <button type="button" class="btn-gold" onclick="triggerBiasPhotoOnlyChange('${escapeAttr(item.docId)}')">
+              🖼️ Alterar foto de rosto (mantém posição #${escapeHtml(item.id)})
+            </button>
+            <button type="button" class="btn-pill-gold" style="width:100%;padding:10px;" onclick="deleteBiasFromLongPress('${escapeAttr(item.docId)}')">
+              Excluir participante
+            </button>
           </div>
         `,
         buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
@@ -2155,10 +2340,12 @@
           frontalUrl: up.url
         });
         item.frontalUrl = up.url;
+
         if (appState.bias && normalizeParticipantKey(appState.bias.name) === normalizeParticipantKey(item.name)) {
           appState.bias.frontalUrl = up.url;
           saveLocal();
         }
+
         showSherBlussModal({
           title: 'Foto de Rosto Atualizada 🌸',
           htmlBody: `A foto de rosto de <strong>${escapeHtml(item.name)}</strong> foi atualizada mantendo a posição <strong>#${escapeHtml(item.id)}</strong>.`
@@ -2182,8 +2369,10 @@
       if (!Array.isArray(appState.user.blockedBiasKeys)) {
         appState.user.blockedBiasKeys = [];
       }
+
       const existingIdx = appState.user.blockedBiasKeys.findIndex(x => x.key === key);
       const lockUntilMs = origTs + THIRTY_DAYS_MS;
+
       if (existingIdx !== -1) {
         appState.user.blockedBiasKeys[existingIdx].untilMs = Math.max(appState.user.blockedBiasKeys[existingIdx].untilMs || 0, lockUntilMs);
       } else {
@@ -2207,6 +2396,7 @@
         saveLocal();
         await saveUserDataToFirestore();
         closeSherBlussModal();
+
         showSherBlussModal({
           title: 'Participante Excluído',
           htmlBody: `<strong>${escapeHtml(item.name)}</strong> foi removido. Ele não poderá ser adicionado novamente dentro do prazo de 30 dias.`
@@ -2224,8 +2414,10 @@
       const list = Array.isArray(appState.user.blockedBiasKeys) ? appState.user.blockedBiasKeys : [];
       const found = list.find(x => x.key === key);
       if (!found || !found.untilMs) return null;
+
       const diff = found.untilMs - Date.now();
       if (diff <= 0) return null;
+
       const daysLeft = Math.max(1, Math.ceil(diff / (24 * 60 * 60 * 1000)));
       return { daysLeft, position: found.position };
     }
@@ -2242,10 +2434,12 @@
       if (!post || !appState.user.loggedIn || !appState.user.uid) return false;
       if (isModAdminUser()) return true;
       if (post.authorUid === appState.user.uid) return true;
+
       if (post.fandom && post.fandom !== 'Geral') {
         const fo = appState.fandoms.find(f => f.name === post.fandom || f.id === post.fandomDocId);
         if (fo && isFandomModerator(fo)) return true;
       }
+
       return false;
     }
 
@@ -2295,6 +2489,7 @@
 
     function normalizeComment(c) {
       if (!c) return null;
+
       if (typeof c === 'string') {
         const m = c.match(/^<strong>(.*?)<\/strong>:\s*(.*)$/s);
         if (m) {
@@ -2312,6 +2507,7 @@
           createdAt: 0
         };
       }
+
       return {
         text: c.text || '',
         authorName: c.authorName || c.name || '',
@@ -2398,6 +2594,12 @@
 
         v.onloadedmetadata = async () => {
           try {
+            if (typeof v.captureStream !== 'function' || typeof MediaRecorder === 'undefined') {
+              URL.revokeObjectURL(v.src);
+              res(file);
+              return;
+            }
+
             const w = Math.max(2, Math.round(v.videoWidth * scale / 2) * 2);
             const h = Math.max(2, Math.round(v.videoHeight * scale / 2) * 2);
             const c = document.createElement('canvas');
@@ -2405,19 +2607,28 @@
             c.height = h;
             const ctx = c.getContext('2d');
             const stream = c.captureStream(30);
-            const rec = new MediaRecorder(stream, {
-              mimeType: 'video/webm;codecs=vp9',
-              videoBitsPerSecond: bitrate
-            });
+
+            const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+              ? 'video/webm;codecs=vp9'
+              : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
+
+            const rec = mimeType
+              ? new MediaRecorder(stream, { mimeType, videoBitsPerSecond: bitrate })
+              : new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
+
             const chunks = [];
 
             rec.ondataavailable = e => {
-              if (e.data.size) chunks.push(e.data);
+              if (e.data && e.data.size) chunks.push(e.data);
             };
 
             rec.onstop = () => {
               URL.revokeObjectURL(v.src);
-              res(new File(chunks, 'video.webm', { type: 'video/webm' }));
+              if (!chunks.length) {
+                res(file);
+                return;
+              }
+              res(new File(chunks, 'video.webm', { type: chunks[0].type || 'video/webm' }));
             };
 
             v.currentTime = 0;
@@ -2426,7 +2637,7 @@
             const draw = () => {
               if (v.ended || v.paused) {
                 try {
-                  rec.stop();
+                  if (rec.state !== 'inactive') rec.stop();
                 } catch (e) {}
                 return;
               }
@@ -2437,11 +2648,15 @@
             rec.start(250);
             draw();
           } catch (e) {
+            URL.revokeObjectURL(v.src);
             res(file);
           }
         };
 
-        v.onerror = () => res(file);
+        v.onerror = () => {
+          URL.revokeObjectURL(v.src);
+          res(file);
+        };
         v.src = URL.createObjectURL(file);
       });
     }
@@ -2503,12 +2718,14 @@
           body: fd
         });
         const d = await r.json();
+
         if (d.secure_url) {
           return {
             url: d.secure_url,
             type: rt
           };
         }
+
         throw new Error(d.error?.message || 'Falha no upload');
       } catch (e) {
         console.error(e);
@@ -2592,6 +2809,7 @@
 
     function startOnlineHeartbeat() {
       if (!appState.user.uid) return;
+
       updateDoc(doc(db, "users", appState.user.uid), {
         lastSeen: serverTimestamp()
       }).catch(() => {});
@@ -2629,6 +2847,7 @@
       let clean = (rawHandle || '').trim();
       if (!clean) clean = '@' + (fallbackAuthor || 'user').toLowerCase().replace(/[^a-z0-9]/g, '');
       if (!clean.startsWith('@')) clean = '@' + clean;
+
       const body = clean.slice(1);
       if (body.length <= 2) return '@' + body[0] + '**';
       if (body.length === 3) return '@' + body[0] + '**' + body[2];
@@ -2637,11 +2856,13 @@
 
     function isUserBlocked(handle, uid) {
       if (uid && (appState.user.blockedUids || []).includes(uid)) return true;
+
       const list = appState.user.blockedHandles || [];
       if (handle) {
         const c = handle.toLowerCase().startsWith('@') ? handle.toLowerCase() : '@' + handle.toLowerCase();
         if (list.includes(c)) return true;
       }
+
       if (uid) {
         const u = usersDirectory.find(x => x.uid === uid);
         if (u && u.handle) {
@@ -2649,6 +2870,7 @@
           if (list.includes(c)) return true;
         }
       }
+
       return false;
     }
 
@@ -2656,22 +2878,27 @@
       function tick() {
         const now = new Date();
         const today = now.toDateString();
+
         if (appState.dailyVotes.date !== today) {
           appState.dailyVotes = { date: today, used: 0 };
           saveLocal();
           const c = document.getElementById('dailyVotesCounter');
           if (c) c.textContent = '3/3';
         }
+
         const midnight = new Date(now);
         midnight.setHours(24, 0, 0, 0);
+
         const diff = midnight - now;
         const h = Math.floor(diff / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
         const s = Math.floor((diff % 60000) / 1000);
         const pad = n => String(n).padStart(2, '0');
+
         const el = document.getElementById('midnightCountdownTimer');
         if (el) el.textContent = `${pad(h)}h ${pad(m)}m ${pad(s)}s`;
       }
+
       tick();
       setInterval(tick, 1000);
     }
@@ -2730,10 +2957,12 @@
           try { window.__unsubPrivateMember(); } catch (e) {}
           window.__unsubPrivateMember = null;
         }
+
         if (window.__unsubPrivateAdmin) {
           try { window.__unsubPrivateAdmin(); } catch (e) {}
           window.__unsubPrivateAdmin = null;
         }
+
         privatePostsByMember = [];
         privatePostsByAdmin = [];
         mergePosts(false);
@@ -2775,8 +3004,10 @@
         if (window.__unsubBiases) {
           try { window.__unsubBiases(); } catch (e) {}
         }
+
         biasesDatabase = [];
         renderAll();
+
         if (!appState.user.uid) return;
 
         window.__unsubBiases = onSnapshot(
@@ -2797,6 +3028,7 @@
         snap.forEach(d => {
           const data = { uid: d.id, ...d.data() };
           usersDirectory.push(data);
+
           if (appState.user.uid && d.id === appState.user.uid) {
             appState.user.friends = data.friends || [];
             appState.user.pendingFriendRequests = data.pendingFriendRequests || [];
@@ -2814,6 +3046,7 @@
             applyUserTheme();
           }
         });
+
         syncAllNotifications();
         renderAll();
         if (activeVisitedUserUid) refreshVisitedUserHeaderAndButton();
@@ -2830,6 +3063,7 @@
 
     function renderWeeklyPodiumCarousel() {
       const topThree = getWeeklyTopThreePhotos();
+
       for (let i = 0; i < 3; i++) {
         const rank = i + 1;
         const winner = topThree[i];
@@ -3105,6 +3339,7 @@
       try {
         await signOut(auth);
       } catch (e) {}
+
       appState.user.loggedIn = false;
       appState.user.uid = '';
       appState.user.name = 'Usuária';
@@ -3201,19 +3436,31 @@
       }
     };
 
+    let bioHintTimeout = null;
+    function setBioSavedFeedback(msg = 'Salvo!') {
+      const h = document.getElementById('bioSavedHint');
+      if (!h) return;
+      h.textContent = msg;
+      clearTimeout(bioHintTimeout);
+      bioHintTimeout = setTimeout(() => {
+        if (h) h.textContent = '';
+      }, 2500);
+    }
+
     window.saveUniverseBioLive = async function(val) {
       if (!assertCleanContent(val, 'a bio')) return;
       appState.user.universeBio = val;
       saveLocal();
-      await updateDoc(doc(db, "users", appState.user.uid), { universeBio: val }).catch(() => {});
+      if (appState.user.uid) {
+        await updateDoc(doc(db, "users", appState.user.uid), { universeBio: val }).catch(() => {});
+      }
     };
 
     window.saveUniverseBioFromButton = function() {
       const v = document.getElementById('myUniverseBioInput').value;
       if (!assertCleanContent(v, 'a bio')) return;
       saveUniverseBioLive(v);
-      const h = document.getElementById('bioSavedHint');
-      if (h) h.textContent = 'Salvo!';
+      setBioSavedFeedback('Salvo!');
     };
 
     window.triggerAconchegoCoverChange = function(targetId, event) {
@@ -3225,6 +3472,7 @@
     document.getElementById('aconchegoCoverInput').addEventListener('change', async event => {
       const file = event.target.files[0];
       if (!file) return;
+
       if (!validMediaFile(file)) {
         showFileError(file);
         event.target.value = '';
@@ -3240,6 +3488,7 @@
           const grp = appState.user.aconchegoGroups.find(g => g.id === coverUploadTargetId);
           if (grp) grp.cover = url;
         }
+
         saveLocal();
         renderMyAconchegoShowcase();
         await saveUserDataToFirestore();
@@ -3252,7 +3501,9 @@
       showSherBlussModal({
         title: '✨ Novo Subgrupo no Aconchego',
         htmlBody: `
-          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Crie uma pasta personalizada para organizar seus itens salvos:</p>
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">
+            Crie uma pasta personalizada para organizar seus itens salvos:
+          </p>
           <div class="form-group">
             <label class="form-label">Nome do Subgrupo / Pasta</label>
             <input type="text" id="newSubgroupNameInput" class="glass-input" placeholder="Ex: Doramas Românticos...">
@@ -3267,11 +3518,13 @@
               const name = document.getElementById('newSubgroupNameInput').value.trim();
               if (!name) return;
               if (!assertCleanContent(name, 'o nome do subgrupo')) return;
+
               appState.user.aconchegoGroups.push({
                 id: 'sub_' + Date.now(),
                 name: name,
                 cover: './logo.png'
               });
+
               saveLocal();
               renderMyAconchegoShowcase();
               await saveUserDataToFirestore();
@@ -3305,7 +3558,10 @@
       const oficialInactive = selectedAconchegoFilterId && selectedAconchegoFilterId !== 'oficial';
 
       let html = `
-        <div class="aconchego-bubble-wrapper ${oficialActive ? 'active-bubble' : ''} ${oficialInactive ? 'inactive-bubble' : ''}" onclick="toggleSelectAconchegoBubble('oficial')">
+        <div
+          class="aconchego-bubble-wrapper ${oficialActive ? 'active-bubble' : ''} ${oficialInactive ? 'inactive-bubble' : ''}"
+          onclick="toggleSelectAconchegoBubble('oficial')"
+        >
           <div class="aconchego-circle-100">
             <img src="${escapeAttr(appState.user.aconchegoCover || './aconchego.png')}" onerror="this.src='./logo.png'">
             <span class="cover-edit-dot" onclick="triggerAconchegoCoverChange('oficial',event)"></span>
@@ -3318,7 +3574,10 @@
         const isAct = selectedAconchegoFilterId === grp.id;
         const isInact = selectedAconchegoFilterId && selectedAconchegoFilterId !== grp.id;
         html += `
-          <div class="aconchego-bubble-wrapper ${isAct ? 'active-bubble' : ''} ${isInact ? 'inactive-bubble' : ''}" onclick="toggleSelectAconchegoBubble('${escapeAttr(grp.id)}')">
+          <div
+            class="aconchego-bubble-wrapper ${isAct ? 'active-bubble' : ''} ${isInact ? 'inactive-bubble' : ''}"
+            onclick="toggleSelectAconchegoBubble('${escapeAttr(grp.id)}')"
+          >
             <div class="aconchego-circle-100">
               <img src="${escapeAttr(grp.cover || './logo.png')}" onerror="this.src='./logo.png'">
               <span class="cover-edit-dot" onclick="triggerAconchegoCoverChange('${escapeAttr(grp.id)}',event)"></span>
@@ -3365,6 +3624,7 @@
               onClick: async () => {
                 const reason = document.getElementById('reportReasonSelect').value;
                 const details = document.getElementById('reportDetailsInput').value.trim();
+
                 const summary =
                   `🚨 Denúncia recebida!\n` +
                   `Post ID: ${post.id}\n` +
@@ -3412,18 +3672,37 @@
       const isOwn = appState.user.loggedIn && post.authorUid === appState.user.uid;
       const canDeletePost = canDeleteSpecificPost(post);
       const subs = appState.user.aconchegoGroups || [];
+
       let subHtml = subs
-        .map(g => `<button class="btn-pill-gold" style="width:100%;text-align:left;margin-top:6px;" onclick="savePostToAconchego('${escapeAttr(postId)}','${escapeAttr(g.id)}','${escapeAttr(g.name)}')">📁 Salvar em: <strong>${escapeHtml(g.name)}</strong></button>`)
+        .map(g => `
+          <button
+            class="btn-pill-gold"
+            style="width:100%;text-align:left;margin-top:6px;"
+            onclick="savePostToAconchego('${escapeAttr(postId)}','${escapeAttr(g.id)}','${escapeAttr(g.name)}')"
+          >
+            📁 Salvar em: <strong>${escapeHtml(g.name)}</strong>
+          </button>
+        `)
         .join('');
 
       showSherBlussModal({
         title: 'Opções da Publicação',
         htmlBody: `
           <div style="display:flex;flex-direction:column;gap:6px;">
-            <button class="btn-gold" onclick="savePostToAconchego('${escapeAttr(postId)}','oficial','Meu Aconchego Oficial')">🏠 Salvar no Meu Aconchego</button>
+            <button class="btn-gold" onclick="savePostToAconchego('${escapeAttr(postId)}','oficial','Meu Aconchego Oficial')">
+              🏠 Salvar no Meu Aconchego
+            </button>
             ${subHtml}
-            ${!isOwn ? `<button class="btn-danger-pill" style="width:100%;padding:9px;margin-top:6px;" onclick="closeSherBlussModal();reportPostFromMenu('${escapeAttr(postId)}')">🚨 Denunciar publicação</button>` : ''}
-            ${canDeletePost ? `<button class="btn-danger-pill" style="width:100%;padding:10px;margin-top:8px;" onclick="closeSherBlussModal();confirmDeletePost('${escapeAttr(postId)}')">🗑️ ${isOwn ? 'Excluir minha publicação' : 'Excluir publicação (Moderação)'}</button>` : ''}
+            ${
+              !isOwn
+                ? `<button class="btn-danger-pill" style="width:100%;padding:9px;margin-top:6px;" onclick="closeSherBlussModal();reportPostFromMenu('${escapeAttr(postId)}')">🚨 Denunciar publicação</button>`
+                : ''
+            }
+            ${
+              canDeletePost
+                ? `<button class="btn-danger-pill" style="width:100%;padding:10px;margin-top:8px;" onclick="closeSherBlussModal();confirmDeletePost('${escapeAttr(postId)}')">🗑️ ${isOwn ? 'Excluir minha publicação' : 'Excluir publicação (Moderação)'}</button>`
+                : ''
+            }
           </div>
         `,
         buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
@@ -3461,6 +3740,7 @@
         saveLocal();
         await saveUserDataToFirestore();
         closeSherBlussModal();
+
         showSherBlussModal({
           title: 'Guardado com Carinho! 🏠',
           htmlBody: `Item salvo em <strong>${escapeHtml(folderName)}</strong>.`
@@ -3520,6 +3800,7 @@
         renderBlockedHandlesList();
         renderAll();
       }
+
       input.value = '';
     };
 
@@ -3573,6 +3854,9 @@
       document.getElementById('myProfilePageHandleDisplay').textContent = appState.user.handle;
       document.getElementById('myUniverseBioInput').value = appState.user.universeBio || '';
 
+      const bioHint = document.getElementById('bioSavedHint');
+      if (bioHint) bioHint.textContent = '';
+
       const hex = appState.user.accentColor || '#fbbf24';
       document.getElementById('profileColorWheel').value = hex;
       document.getElementById('profileColorHexLabel').textContent = hex.toUpperCase();
@@ -3604,7 +3888,11 @@
 
     document.getElementById('profileEditName').addEventListener('input', () => saveProfileChangesLive());
     document.getElementById('profileEditHandle').addEventListener('input', () => saveProfileChangesLive());
-    document.getElementById('myUniverseBioInput').addEventListener('input', e => saveUniverseBioLive(e.target.value));
+    document.getElementById('myUniverseBioInput').addEventListener('input', e => {
+      const h = document.getElementById('bioSavedHint');
+      if (h) h.textContent = '';
+      saveUniverseBioLive(e.target.value);
+    });
     document.getElementById('profileColorWheel').addEventListener('input', e => applyCustomAccentColor(e.target.value));
 
     document.getElementById('profileEditAvatarFile').addEventListener('change', async event => {
@@ -3783,7 +4071,9 @@
               .map(item => `
                 <div style="background:#0e1222;padding:12px;border-radius:14px;margin-bottom:10px;border:1px solid var(--gold-border);">
                   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <span style="font-size:11px;color:var(--gold-accent);font-weight:700;">Salvo de ${escapeHtml(item.author)} (${escapeHtml(item.authorHandle)})</span>
+                    <span style="font-size:11px;color:var(--gold-accent);font-weight:700;">
+                      Salvo de ${escapeHtml(item.author)} (${escapeHtml(item.authorHandle)})
+                    </span>
                     <button class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
                   </div>
                   ${item.text ? `<p style="font-size:13px;margin-bottom:8px;">${escapeHtml(item.text)}</p>` : ''}
@@ -3815,7 +4105,9 @@
         .map(item => `
           <div style="background:#141b34;padding:12px;border-radius:14px;margin-bottom:10px;border:1px dashed var(--gold-border);">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <span style="font-size:10.5px;color:var(--gold-accent);">🏠 Guardado em ${escapeHtml(item.folderName)} • Original de ${escapeHtml(item.author)}</span>
+              <span style="font-size:10.5px;color:var(--gold-accent);">
+                🏠 Guardado em ${escapeHtml(item.folderName)} • Original de ${escapeHtml(item.author)}
+              </span>
               <button class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
             </div>
             ${item.text ? `<p style="font-size:13px;margin-bottom:6px;">${escapeHtml(item.text)}</p>` : ''}
@@ -3865,6 +4157,7 @@
         switchToProfileSection();
         return;
       }
+
       if (isUserBlocked(handle, uid)) {
         showSherBlussModal({
           title: 'Perfil Bloqueado 🚫',
@@ -3881,6 +4174,7 @@
       await refreshVisitedUserHeaderAndButton(name, handle);
       const userPosts = postsFromFirebase.filter(p => p.authorUid === uid && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
       const c = document.getElementById('visitedProfileFeedList');
+
       c.innerHTML = userPosts.length
         ? userPosts.map(p => renderPostCardHTML(p)).join('')
         : '<div class="glass-panel empty-state-box">Esta coleguinha ainda não publicou nada no feed público.</div>';
@@ -3939,7 +4233,16 @@
       const isFriend = myFriends.some(f => f.uid === activeVisitedUserUid) || (userData.friends || []).some(f => f.uid === appState.user.uid);
       const sent = (appState.user.sentFriendRequests || []).includes(activeVisitedUserUid) || (userData.pendingFriendRequests || []).some(r => r.uid === appState.user.uid);
 
-      let chatBtn = `<button type="button" class="dorama-friend-btn" style="margin-left:8px;" onclick="openChatWith('${escapeAttr(activeVisitedUserUid)}','${escapeAttr(vName)}')">Bate-papo</button>`;
+      let chatBtn = `
+        <button
+          type="button"
+          class="dorama-friend-btn"
+          style="margin-left:8px;"
+          onclick="openChatWith('${escapeAttr(activeVisitedUserUid)}','${escapeAttr(vName)}')"
+        >
+          Bate-papo
+        </button>
+      `;
 
       if (isFriend) {
         box.innerHTML = chatBtn;
@@ -4026,6 +4329,7 @@
                 primary: true,
                 onClick: async () => {
                   appState.user.pendingFriendRequests = (appState.user.pendingFriendRequests || []).filter(r => r.uid !== notif.fromUid);
+
                   if (!appState.user.friends.some(f => f.uid === notif.fromUid)) {
                     appState.user.friends.push({
                       uid: notif.fromUid,
@@ -4037,7 +4341,6 @@
                   }
 
                   saveLocal();
-                  await saveUserDataToFirestore();
 
                   try {
                     await setDoc(doc(db, "users", notif.fromUid), {
@@ -4052,9 +4355,11 @@
                     }, { merge: true });
                   } catch (e) {}
 
+                  await saveUserDataToFirestore();
                   syncAllNotifications();
                   renderAll();
                   closeSherBlussModal();
+
                   showSherBlussModal({
                     title: 'Agora vocês são amigas! 🌸',
                     htmlBody: `Você e <strong>${escapeHtml(notif.fromName)}</strong> agora estão na lista de amigos!`
@@ -4163,6 +4468,7 @@
       pressStartX = event.clientX ?? 0;
       pressStartY = event.clientY ?? 0;
       clearTimeout(longPressTimer);
+
       longPressTimer = setTimeout(() => {
         if (pressMovedDuringScroll) return;
         longPressTriggered = true;
@@ -4174,6 +4480,7 @@
       if (!longPressTimer && !pressMovedDuringScroll) return;
       const cx = event.clientX ?? 0;
       const cy = event.clientY ?? 0;
+
       if (Math.hypot(cx - pressStartX, cy - pressStartY) > SCROLL_CANCEL_THRESHOLD_PX) {
         pressMovedDuringScroll = true;
         clearTimeout(longPressTimer);
@@ -4184,15 +4491,18 @@
     window.handleBiasItemPressEnd = function(docId, name, role, id, frontalUrl, lastUpdatedMs, isChallengeDropdown = false) {
       clearTimeout(longPressTimer);
       longPressTimer = null;
+
       if (longPressTriggered) {
         longPressTriggered = false;
         pressMovedDuringScroll = false;
         return;
       }
+
       if (pressMovedDuringScroll) {
         pressMovedDuringScroll = false;
         return;
       }
+
       if (isChallengeDropdown) {
         window.pickBiasForChallengePost(name, role, id, frontalUrl, lastUpdatedMs);
       } else {
@@ -4225,11 +4535,13 @@
 
       dropdown.innerHTML = matches
         .map(b => `
-          <div class="bias-dropdown-item"
+          <div
+            class="bias-dropdown-item"
             onpointerdown="handleBiasItemPressStart(event,'${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})"
             onpointermove="handleBiasItemPressMove(event)"
             onpointerup="handleBiasItemPressEnd('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)},false)"
-            onpointercancel="clearTimeout(longPressTimer);longPressTimer=null;pressMovedDuringScroll=true;">
+            onpointercancel="clearTimeout(longPressTimer);longPressTimer=null;pressMovedDuringScroll=true;"
+          >
             <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
             <div>
               <strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong>
@@ -4305,6 +4617,7 @@
                 saveLocal();
                 renderAll();
                 closeSherBlussModal();
+
                 showSherBlussModal({
                   title: 'Sucesso!',
                   htmlBody: 'Os desafios foram atualizados no servidor.'
@@ -4370,11 +4683,13 @@
 
       dropdown.innerHTML = matches
         .map(b => `
-          <div class="bias-dropdown-item"
+          <div
+            class="bias-dropdown-item"
             onpointerdown="handleBiasItemPressStart(event,'${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)})"
             onpointermove="handleBiasItemPressMove(event)"
             onpointerup="handleBiasItemPressEnd('${escapeAttr(b.docId)}','${escapeAttr(b.name)}','${escapeAttr(b.role)}',${b.id},'${escapeAttr(b.frontalUrl || './logo.png')}',${getBiasTimestampMs(b)},true)"
-            onpointercancel="clearTimeout(longPressTimer);longPressTimer=null;pressMovedDuringScroll=true;">
+            onpointercancel="clearTimeout(longPressTimer);longPressTimer=null;pressMovedDuringScroll=true;"
+          >
             <img src="${escapeAttr(b.frontalUrl || './logo.png')}" class="bias-dropdown-thumb" onerror="this.src='./logo.png'">
             <div>
               <strong style="color:var(--gold-accent);display:block;">${escapeHtml(b.name)}</strong>
@@ -4451,6 +4766,7 @@
 
         const nowMs = Date.now();
         const frontalUrl = tempBiasPhotoPreviewUrl || targetRecord?.frontalUrl || './logo.png';
+
         try {
           const slugId = targetRecord?.docId || `bias_${appState.user.uid}_${idNum}_${normalizedTargetName.replace(/[^a-z0-9]/g, '') || 'item'}`;
           await setDoc(doc(db, "biases_db", slugId), {
@@ -4490,6 +4806,7 @@
     window.handleUniversalMediaSelected = async function(event) {
       const file = event.target.files[0];
       if (!file) return;
+
       if (!validMediaFile(file)) {
         showFileError(file);
         event.target.value = '';
@@ -4498,6 +4815,7 @@
 
       const up = await uploadMediaToCloudinary(file);
       if (!up) return;
+
       await submitPostDirectlyWithMedia(up.url, up.type, false);
       event.target.value = '';
     };
@@ -4531,6 +4849,7 @@
         event.target.value = '';
         return;
       }
+
       await submitPostDirectlyWithMedia(up.url, up.type, true);
     };
 
@@ -4590,6 +4909,7 @@
     window.toggleSearchExpansion = function() {
       const c = document.getElementById('searchBalaoContainer');
       c.classList.toggle('expanded');
+
       if (c.classList.contains('expanded')) {
         document.getElementById('globalSearchInput').focus();
       } else {
@@ -4642,17 +4962,27 @@
       let html = `
         <div class="glass-panel" style="padding:10px 14px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;color:var(--gold-accent);font-size:12.5px;">
           <span>Buscando por: <strong>@${escapeHtml(q)}</strong></span>
-          <button class="btn-pill-gold" style="padding:3px 10px;font-size:11px;" onclick="document.getElementById('globalSearchInput').value='';renderAll();">Limpar</button>
+          <button class="btn-pill-gold" style="padding:3px 10px;font-size:11px;" onclick="document.getElementById('globalSearchInput').value='';renderAll();">
+            Limpar
+          </button>
         </div>
       `;
 
       if (matchedUsers.length) {
         html += matchedUsers
           .map(u => `
-            <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px;" onclick="visitUserProfile('${escapeAttr(u.uid)}','${escapeAttr(u.name || 'Usuária')}','${escapeAttr(u.handle || '@usuaria')}')">
+            <div
+              class="glass-panel"
+              style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:10px;"
+              onclick="visitUserProfile('${escapeAttr(u.uid)}','${escapeAttr(u.name || 'Usuária')}','${escapeAttr(u.handle || '@usuaria')}')"
+            >
               <div style="display:flex;align-items:center;gap:10px;">
                 <div class="avatar-container">
-                  <img src="${escapeAttr(u.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
+                  <img
+                    src="${escapeAttr(u.avatar || './aconchego.png')}"
+                    onerror="this.src='./logo.png'"
+                    style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;"
+                  >
                   ${renderOnlineDot(u)}
                 </div>
                 <div>
@@ -4677,6 +5007,36 @@
       container.innerHTML = html;
     };
 
+    window.openSequestroBiasPreview = function() {
+      const arena = document.getElementById('gamesArenaContainer');
+      if (!arena) return;
+      arena.style.display = 'block';
+      arena.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h4 style="font-size:14px;color:var(--gold-accent);">Sequestro de Bias — Arena</h4>
+          <button type="button" class="delicate-x-btn" onclick="document.getElementById('gamesArenaContainer').style.display='none'">✕</button>
+        </div>
+        <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
+          Área pronta para conectar as regras e cartas do <strong>Sequestro de Bias</strong> direto na tela inteira de Jogos.
+        </p>
+      `;
+    };
+
+    window.openDramaPairsPreview = function() {
+      const arena = document.getElementById('gamesArenaContainer');
+      if (!arena) return;
+      arena.style.display = 'block';
+      arena.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <h4 style="font-size:14px;color:var(--gold-accent);">Pares de Dorama — Arena</h4>
+          <button type="button" class="delicate-x-btn" onclick="document.getElementById('gamesArenaContainer').style.display='none'">✕</button>
+        </div>
+        <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
+          Área pronta para montar as cartas de pares dos doramas na tela inteira de Jogos.
+        </p>
+      `;
+    };
+
     window.switchView = function(viewName) {
       activeVisitedUserUid = null;
       applyUserTheme();
@@ -4691,6 +5051,7 @@
 
       const w = document.getElementById('floatingComposerWrapper');
       const showFab = viewName === 'feed' || viewName === 'inside-fandom';
+
       if (showFab) {
         w.classList.remove('hidden-in-challenge');
       } else {
@@ -4703,6 +5064,7 @@
       else if (viewName === 'fandom') inp.placeholder = "Selecione um Fandom...";
       else if (viewName === 'inside-fandom') inp.placeholder = `Escreva em ${activeFandomFilter} (Privado)...`;
       else if (viewName === 'amigos') inp.placeholder = "Mande uma mensagem...";
+      else if (viewName === 'jogos') inp.placeholder = "Escolha um jogo...";
 
       renderAll();
     };
@@ -4835,6 +5197,11 @@
         const post = postsFromFirebase.find(p => p.id === postId);
         if (!post) return;
 
+        const today = new Date().toDateString();
+        if (appState.dailyVotes.date !== today) {
+          appState.dailyVotes = { date: today, used: 0 };
+        }
+
         const already = (post.likedBy || []).includes(appState.user.uid);
         if (post.isChallenge && !already && appState.dailyVotes.used >= 3) {
           showSherBlussModal({
@@ -4844,26 +5211,29 @@
           return;
         }
 
+        const prevLikedBy = [...(post.likedBy || [])];
+        const prevLikes = post.likes || 0;
+        const prevDailyVotes = { ...appState.dailyVotes };
+
         const btnEl = document.querySelector(`#post_card_${postId} .like-umbrella-btn`);
-        if (btnEl) {
-          const spanCount = btnEl.querySelector('span:last-child');
-          const currentLikes = post.likes || 0;
-          if (already) {
-            btnEl.classList.remove('liked');
-            if (spanCount) spanCount.textContent = Math.max(0, currentLikes - 1);
-            post.likedBy = post.likedBy.filter(u => u !== appState.user.uid);
-            post.likes = Math.max(0, currentLikes - 1);
-          } else {
-            btnEl.classList.add('liked');
-            if (spanCount) spanCount.textContent = currentLikes + 1;
-            post.likedBy = [...(post.likedBy || []), appState.user.uid];
-            post.likes = currentLikes + 1;
-          }
+        const spanCount = btnEl ? btnEl.querySelector('span:last-child') : null;
+
+        if (already) {
+          if (btnEl) btnEl.classList.remove('liked');
+          if (spanCount) spanCount.textContent = Math.max(0, prevLikes - 1);
+          post.likedBy = prevLikedBy.filter(u => u !== appState.user.uid);
+          post.likes = Math.max(0, prevLikes - 1);
+        } else {
+          if (btnEl) btnEl.classList.add('liked');
+          if (spanCount) spanCount.textContent = prevLikes + 1;
+          post.likedBy = [...prevLikedBy, appState.user.uid];
+          post.likes = prevLikes + 1;
         }
 
         renderWeeklyPodiumCarousel();
 
         try {
+          let didToggleOnServer = false;
           await runTransaction(db, async t => {
             const ref = doc(db, "posts", postId);
             const snap = await t.get(ref);
@@ -4873,6 +5243,7 @@
             const likedBy = data.likedBy || [];
             const isLiked = likedBy.includes(appState.user.uid);
             const newLikedBy = isLiked ? likedBy.filter(u => u !== appState.user.uid) : [...likedBy, appState.user.uid];
+            didToggleOnServer = !isLiked;
 
             t.update(ref, {
               likedBy: newLikedBy,
@@ -4881,11 +5252,18 @@
           });
 
           if (post.isChallenge) {
-            if (!already) appState.dailyVotes.used += 1;
+            if (didToggleOnServer) appState.dailyVotes.used += 1;
             else appState.dailyVotes.used = Math.max(0, appState.dailyVotes.used - 1);
             saveLocal();
+            const counterEl = document.getElementById('dailyVotesCounter');
+            if (counterEl) counterEl.textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
           }
         } catch (e) {
+          post.likedBy = prevLikedBy;
+          post.likes = prevLikes;
+          appState.dailyVotes = prevDailyVotes;
+          saveLocal();
+          renderAll();
           console.error(e);
         }
       });
@@ -4976,7 +5354,9 @@
         showSherBlussModal({
           title: 'Criar Novo Fandom Particular 🔒',
           htmlBody: `
-            <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">Este espaço nasce trancado e totalmente isolado.</p>
+            <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
+              Este espaço nasce trancado e totalmente isolado.
+            </p>
             <div class="form-group">
               <label class="form-label">Nome do Fandom</label>
               <input type="text" id="newFandomNameInput" class="glass-input" placeholder="Ex: MeuFandomPrivado...">
@@ -5099,6 +5479,7 @@
       requireAuthForAction(() => {
         const f = appState.fandoms.find(x => x.id === fandomId);
         if (!f) return;
+
         const canDelete = f.creatorUid === appState.user.uid || isModAdminUser();
         if (!canDelete) return;
 
@@ -5117,6 +5498,7 @@
                   appState.fandoms = appState.fandoms.filter(x => x.id !== fandomId);
                   activeFandomFilter = null;
                   switchView('fandom');
+
                   showSherBlussModal({
                     title: 'Fandom Excluído 🌸',
                     htmlBody: `O fandom <strong>${escapeHtml(fandomName)}</strong> foi apagado com sucesso.`
@@ -5137,6 +5519,7 @@
     window.approveFandomRequestFromModal = async function(fandomName, requesterUid) {
       const f = appState.fandoms.find(x => x.name === fandomName);
       if (!f || !isFandomModerator(f)) return;
+
       const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
       try {
         await updateDoc(doc(db, "fandoms", f.id), {
@@ -5152,6 +5535,7 @@
     window.rejectFandomRequestFromModal = async function(fandomName, requesterUid) {
       const f = appState.fandoms.find(x => x.name === fandomName);
       if (!f || !isFandomModerator(f)) return;
+
       const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
       try {
         await updateDoc(doc(db, "fandoms", f.id), {
@@ -5230,7 +5614,9 @@
       if (canModerate && pending.length) {
         pendingHtml = `
           <div style="margin-bottom:14px;">
-            <p style="font-size:11.5px;font-weight:700;color:var(--gold-accent);margin-bottom:6px;">📩 Solicitações pendentes (${pending.length})</p>
+            <p style="font-size:11.5px;font-weight:700;color:var(--gold-accent);margin-bottom:6px;">
+              📩 Solicitações pendentes (${pending.length})
+            </p>
             ${pending.map(req => {
               const u = usersDirectory.find(x => x.uid === req.uid);
               const displayName = req.name || u?.name || `Membro (${req.uid.slice(0, 5)})`;
@@ -5238,8 +5624,12 @@
                 <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;background:#141b34;padding:8px 10px;border-radius:10px;margin-bottom:6px;border:1px solid var(--gold-border);">
                   <span style="font-size:12.5px;font-weight:600;flex:1;">${escapeHtml(displayName)}</span>
                   <div style="display:flex;gap:6px;">
-                    <button type="button" class="btn-pill-gold" style="padding:3px 9px;font-size:11px;" onclick="approveFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Aprovar</button>
-                    <button type="button" class="btn-danger-pill" style="padding:3px 9px;font-size:11px;" onclick="rejectFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Recusar</button>
+                    <button type="button" class="btn-pill-gold" style="padding:3px 9px;font-size:11px;" onclick="approveFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">
+                      Aprovar
+                    </button>
+                    <button type="button" class="btn-danger-pill" style="padding:3px 9px;font-size:11px;" onclick="rejectFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">
+                      Recusar
+                    </button>
                   </div>
                 </div>
               `;
@@ -5261,8 +5651,12 @@
             const actionsHtml = canModerate && !isCreator && uid !== ADMIN_UID
               ? `
                 <div style="display:flex;gap:6px;flex-shrink:0;">
-                  <button type="button" class="btn-pill-gold" style="padding:3px 8px;font-size:10.5px;" onclick="toggleFandomAdminRole('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">${isCoAdmin ? 'Tirar Admin' : 'Tornar Admin'}</button>
-                  <button type="button" class="btn-danger-pill" style="padding:3px 8px;font-size:10.5px;" onclick="banMemberFromFandom('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">Banir</button>
+                  <button type="button" class="btn-pill-gold" style="padding:3px 8px;font-size:10.5px;" onclick="toggleFandomAdminRole('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">
+                    ${isCoAdmin ? 'Tirar Admin' : 'Tornar Admin'}
+                  </button>
+                  <button type="button" class="btn-danger-pill" style="padding:3px 8px;font-size:10.5px;" onclick="banMemberFromFandom('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">
+                    Banir
+                  </button>
                 </div>
               `
               : `<span style="font-size:11px;color:var(--gold-accent);font-weight:700;">${roleTag}</span>`;
@@ -5321,10 +5715,12 @@
       if (!activeVisitedUserUid) {
         document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
       }
+
       if (appState.user.accentColor) {
         document.documentElement.style.setProperty('--gold-accent', appState.user.accentColor);
         document.documentElement.style.setProperty('--gold-border', hexToRgba(appState.user.accentColor, 0.45));
       }
+
       if (appState.user.customBgUrl) {
         document.documentElement.style.setProperty('--custom-bg-url', `url('${appState.user.customBgUrl}')`);
       }
@@ -5365,6 +5761,7 @@
             (c.authorUid && c.authorUid === appState.user.uid)
           );
           const label = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ${escapeHtml(c.text)}` : escapeHtml(c.text);
+
           return `
             <div class="comment-item-clean">
               <span style="flex:1;">${label}</span>
@@ -5387,7 +5784,10 @@
       return `
         <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
           <div class="post-header">
-            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid)}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
+            <div
+              class="post-author-box"
+              onclick="visitUserProfile('${escapeAttr(post.authorUid)}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')"
+            >
               <div class="avatar-container">
                 <img src="${escapeAttr(post.avatar)}" class="post-avatar" onerror="this.src='./aconchego.png'">
                 ${renderOnlineDot(authorUser)}
@@ -5397,6 +5797,7 @@
                 <div class="post-meta notranslate">${escapeHtml(post.authorHandle || '@usuaria')} • ${subLabel}</div>
               </div>
             </div>
+
             <div style="display:flex;align-items:center;gap:8px;">
               <span style="font-size:11px;color:var(--text-muted);font-weight:600;">📅 ${escapeHtml(formatPostDate(post.createdAt))}</span>
               <button type="button" class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')">⋮</button>
@@ -5417,7 +5818,13 @@
             ${commentsHtml}
             <div class="comment-input-row">
               <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Responder...">
-              <button class="btn-gold" style="width:auto;padding:4px 12px;font-size:11.5px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">Enviar</button>
+              <button
+                class="btn-gold"
+                style="width:auto;padding:4px 12px;font-size:11.5px;"
+                onclick="submitInlineComment('${escapeAttr(post.id)}')"
+              >
+                Enviar
+              </button>
             </div>
           </div>
         </article>
@@ -5446,7 +5853,6 @@
       }
 
       updateNotifBadge();
-
       renderWeeklyPodiumCarousel();
 
       const grid = document.getElementById('fandomsGridContainer');
@@ -5457,7 +5863,11 @@
           .map(f => {
             const unlocked = hasFandomAccess(f);
             return `
-              <div class="glass-panel fandom-box-card" style="border-color:${escapeAttr(f.borderColor || '#fbbf24')};" onclick="selectFandom('${escapeAttr(f.name)}')">
+              <div
+                class="glass-panel fandom-box-card"
+                style="border-color:${escapeAttr(f.borderColor || '#fbbf24')};"
+                onclick="selectFandom('${escapeAttr(f.name)}')"
+              >
                 <h4 style="color:var(--gold-accent);">
                   <span class="fandom-dot" style="background-color:${escapeAttr(f.dotColor || '#fbbf24')};"></span>
                   ${escapeHtml(f.name)}
@@ -5475,10 +5885,12 @@
           closeCurrentFandom();
           return;
         }
+
         const filtered = postsFromFirebase.filter(p =>
           !isUserBlocked(p.authorHandle, p.authorUid) &&
           (p.fandom === activeFandomFilter || p.fandomId === activeFandomFilter || (fo.id && p.fandomDocId === fo.id))
         );
+
         document.getElementById('insideFandomFeedList').innerHTML = filtered.length
           ? filtered.map(p => renderPostCardHTML(p)).join('')
           : `<div class="empty-state-box">Este fandom está silencioso.</div>`;
@@ -5510,22 +5922,91 @@
               const friendUser = usersDirectory.find(u => u.uid === f.uid);
               return `
                 <div class="glass-panel" style="padding:14px;display:flex;align-items:center;justify-content:space-between;">
-                  <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}','${escapeAttr(f.handle || '@amiga')}')">
+                  <div
+                    style="display:flex;align-items:center;gap:10px;cursor:pointer;"
+                    onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}','${escapeAttr(f.handle || '@amiga')}')"
+                  >
                     <div class="avatar-container">
-                      <img src="${escapeAttr(f.avatar || './amigos.png')}" onerror="this.src='./logo.png'" style="width:46px;height:46px;border-radius:50%;border:1px solid var(--gold-border);object-fit:cover;">
+                      <img
+                        src="${escapeAttr(f.avatar || './amigos.png')}"
+                        onerror="this.src='./logo.png'"
+                        style="width:46px;height:46px;border-radius:50%;border:1px solid var(--gold-border);object-fit:cover;"
+                      >
                       ${renderOnlineDot(friendUser)}
                     </div>
                     <div>
                       <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
-                      <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(f.handle || '@amiga')} • ${escapeHtml(f.status || 'Amizade ativa')}</div>
+                      <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">
+                        ${escapeHtml(f.handle || '@amiga')} • ${escapeHtml(f.status || 'Amizade ativa')}
+                      </div>
                     </div>
                   </div>
-                  <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}')">Bate-papo</button>
+                  <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}')">
+                    Bate-papo
+                  </button>
                 </div>
               `;
             })
             .join('')
         : `<div class="glass-panel empty-state-box">Você ainda não tem amigas adicionadas.</div>`;
+    }
+
+    function enableDesktopCarouselDragAndWheel() {
+      const carousel = document.getElementById('carouselWrapper');
+      if (!carousel) return;
+
+      let isMouseDown = false;
+      let startX = 0;
+      let startScrollLeft = 0;
+      let draggedDistance = 0;
+      let suppressNextClick = false;
+
+      carousel.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        isMouseDown = true;
+        draggedDistance = 0;
+        startX = e.pageX;
+        startScrollLeft = carousel.scrollLeft;
+        carousel.classList.add('is-dragging');
+      });
+
+      window.addEventListener('mousemove', e => {
+        if (!isMouseDown) return;
+        const dx = e.pageX - startX;
+        draggedDistance = Math.max(draggedDistance, Math.abs(dx));
+        if (draggedDistance > 5) {
+          suppressNextClick = true;
+        }
+        carousel.scrollLeft = startScrollLeft - dx * 1.15;
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        carousel.classList.remove('is-dragging');
+        if (suppressNextClick) {
+          setTimeout(() => {
+            suppressNextClick = false;
+          }, 40);
+        }
+      });
+
+      carousel.addEventListener('click', e => {
+        if (suppressNextClick) {
+          e.preventDefault();
+          e.stopPropagation();
+          suppressNextClick = false;
+        }
+      }, true);
+
+      carousel.addEventListener('wheel', e => {
+        if (carousel.scrollWidth <= carousel.clientWidth) return;
+        const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+        if (delta !== 0) {
+          e.preventDefault();
+          carousel.scrollLeft += delta;
+        }
+      }, { passive: false });
     }
 
     window.addEventListener('scroll', () => {
@@ -5542,6 +6023,7 @@
       }
     }, { passive: true });
 
+    enableDesktopCarouselDragAndWheel();
     applyUserTheme();
     startMidnightCountdown();
     initFirebaseSync();
