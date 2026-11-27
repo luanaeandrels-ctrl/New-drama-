@@ -1887,65 +1887,30 @@
       </div>
 
       <div class="day-slot-block" id="slot-segunda">
-        <!--
-        ========================================
-        ========================================
-        Segunda-feira
-        -->
         <div class="day-slot-mount" id="mount-segunda" onclick="expandDayGameToFullTab('segunda')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-terca">
-        <!--
-        ========================================
-        ========================================
-        Terça-feira
-        -->
         <div class="day-slot-mount" id="mount-terca" onclick="expandDayGameToFullTab('terca')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-quarta">
-        <!--
-        ========================================
-        ========================================
-        Quarta-feira
-        -->
         <div class="day-slot-mount" id="mount-quarta" onclick="expandDayGameToFullTab('quarta')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-quinta">
-        <!--
-        ========================================
-        ========================================
-        Quinta-feira
-        -->
         <div class="day-slot-mount" id="mount-quinta" onclick="expandDayGameToFullTab('quinta')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-sexta">
-        <!--
-        ========================================
-        ========================================
-        Sexta-feira
-        -->
         <div class="day-slot-mount" id="mount-sexta" onclick="expandDayGameToFullTab('sexta')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-sabado">
-        <!--
-        ========================================
-        ========================================
-        Sábado
-        -->
         <div class="day-slot-mount" id="mount-sabado" onclick="expandDayGameToFullTab('sabado')"></div>
       </div>
 
       <div class="day-slot-block" id="slot-domingo">
-        <!--
-        ========================================
-        ========================================
-        Domingo
-        -->
         <div class="day-slot-mount" id="mount-domingo" onclick="expandDayGameToFullTab('domingo')"></div>
       </div>
     </section>
@@ -2126,8 +2091,6 @@
       }
     };
 
-    // Detecta automaticamente qualquer <script> ou elemento de jogo colado dentro de #slot-<dia>
-    // e monta o jogo + quadradinho da imagem dele em #mount-<dia> sem exibir os marcadores na tela.
     (function initAutoDayGameSlots() {
       const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
 
@@ -2818,82 +2781,7 @@
       });
     }
 
-    async function compressVideoOnce(file, scale, bitrate) {
-      return new Promise(res => {
-        const v = document.createElement('video');
-        v.muted = true;
-        v.playsInline = true;
-        v.preload = 'auto';
-
-        v.onloadedmetadata = async () => {
-          try {
-            if (typeof v.captureStream !== 'function' || typeof MediaRecorder === 'undefined') {
-              URL.revokeObjectURL(v.src);
-              res(file);
-              return;
-            }
-
-            const w = Math.max(2, Math.round(v.videoWidth * scale / 2) * 2);
-            const h = Math.max(2, Math.round(v.videoHeight * scale / 2) * 2);
-            const c = document.createElement('canvas');
-            c.width = w;
-            c.height = h;
-            const ctx = c.getContext('2d');
-            const stream = c.captureStream(30);
-
-            const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
-              ? 'video/webm;codecs=vp9'
-              : (MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : '');
-
-            const rec = mimeType
-              ? new MediaRecorder(stream, { mimeType, videoBitsPerSecond: bitrate })
-              : new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
-
-            const chunks = [];
-
-            rec.ondataavailable = e => {
-              if (e.data && e.data.size) chunks.push(e.data);
-            };
-
-            rec.onstop = () => {
-              URL.revokeObjectURL(v.src);
-              if (!chunks.length) {
-                res(file);
-                return;
-              }
-              res(new File(chunks, 'video.webm', { type: chunks[0].type || 'video/webm' }));
-            };
-
-            v.currentTime = 0;
-            await v.play().catch(() => {});
-
-            const draw = () => {
-              if (v.ended || v.paused) {
-                try {
-                  if (rec.state !== 'inactive') rec.stop();
-                } catch (e) {}
-                return;
-              }
-              ctx.drawImage(v, 0, 0, w, h);
-              requestAnimationFrame(draw);
-            };
-
-            rec.start(250);
-            draw();
-          } catch (e) {
-            URL.revokeObjectURL(v.src);
-            res(file);
-          }
-        };
-
-        v.onerror = () => {
-          URL.revokeObjectURL(v.src);
-          res(file);
-        };
-        v.src = URL.createObjectURL(file);
-      });
-    }
-
+    // Envio direto para o Cloudinary sem MediaRecorder/captureStream (evita vídeo com tela preta e só áudio)
     async function prepareMediaFile(file) {
       if (!file) return null;
       if (!validMediaFile(file)) {
@@ -2910,22 +2798,7 @@
           });
           return null;
         }
-
-        if (file.size <= TOLERANCE_BYTES) return file;
-
-        let cur = file;
-        const tries = [
-          [0.75, 1000000],
-          [0.55, 600000],
-          [0.4, 300000]
-        ];
-
-        for (let i = 0; i < 3; i++) {
-          cur = await compressVideoOnce(cur, tries[i][0], tries[i][1]);
-          if (cur.size <= TOLERANCE_BYTES) return cur;
-        }
-
-        return cur;
+        return file;
       }
 
       if (file.type.startsWith('image/') && file.size > MAX_FILE_BYTES) {
@@ -2933,6 +2806,14 @@
       }
 
       return file;
+    }
+
+    function normalizePlaybackUrl(url, type) {
+      if (!url) return '';
+      if (type === 'video' && url.includes('res.cloudinary.com') && url.includes('/video/upload/')) {
+        return url.replace('/video/upload/', '/video/upload/f_mp4,vc_h264,ac_aac/');
+      }
+      return url;
     }
 
     async function uploadMediaToCloudinary(file) {
@@ -2954,7 +2835,7 @@
 
         if (d.secure_url) {
           return {
-            url: d.secure_url,
+            url: normalizePlaybackUrl(d.secure_url, rt),
             type: rt
           };
         }
@@ -2964,7 +2845,7 @@
         console.error(e);
         showSherBlussModal({
           title: 'Erro no upload',
-          htmlBody: 'Não foi possível enviar a mídia. O arquivo está muito pesado ou em formato incompatível. Tente um vídeo menor.'
+          htmlBody: 'Não foi possível enviar a mídia. Tente novamente com outro arquivo ou conexão estável.'
         });
         return null;
       }
@@ -3965,7 +3846,7 @@
           author: post.author,
           authorHandle: post.authorHandle || '@usuaria',
           text: post.text || '',
-          media: post.media || '',
+          media: normalizePlaybackUrl(post.media || '', post.mediaType || ''),
           mediaType: post.mediaType || '',
           savedAt: Date.now()
         });
@@ -4191,10 +4072,11 @@
       el.innerHTML = list
         .map(m => {
           const mine = m.senderUid === appState.user.uid;
-          const media = m.media
+          const mediaSrc = normalizePlaybackUrl(m.media, m.mediaType);
+          const media = mediaSrc
             ? m.mediaType === 'video'
-              ? `<video src="${escapeAttr(m.media)}" controls preload="metadata" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
-              : `<img src="${escapeAttr(m.media)}" onclick="openLightbox('${escapeAttr(m.media)}','image','')">`
+              ? `<video src="${escapeAttr(mediaSrc)}" controls preload="auto" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
+              : `<img src="${escapeAttr(mediaSrc)}" onclick="openLightbox('${escapeAttr(mediaSrc)}','image','')">`
             : '';
           return `<div class="chat-msg ${mine ? 'mine' : 'theirs'}">${m.text ? escapeHtml(m.text) : ''}${media}</div>`;
         })
@@ -4303,24 +4185,27 @@
 
         container.innerHTML = filtered.length
           ? filtered
-              .map(item => `
-                <div style="background:#0e1222;padding:12px;border-radius:14px;margin-bottom:10px;border:1px solid var(--gold-border);">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-                    <span style="font-size:11px;color:var(--gold-accent);font-weight:700;">
-                      Salvo de ${escapeHtml(item.author)} (${escapeHtml(item.authorHandle)})
-                    </span>
-                    <button class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
+              .map(item => {
+                const mSrc = normalizePlaybackUrl(item.media, item.mediaType);
+                return `
+                  <div style="background:#0e1222;padding:12px;border-radius:14px;margin-bottom:10px;border:1px solid var(--gold-border);">
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                      <span style="font-size:11px;color:var(--gold-accent);font-weight:700;">
+                        Salvo de ${escapeHtml(item.author)} (${escapeHtml(item.authorHandle)})
+                      </span>
+                      <button class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
+                    </div>
+                    ${item.text ? `<p style="font-size:13px;margin-bottom:8px;">${escapeHtml(item.text)}</p>` : ''}
+                    ${
+                      mSrc
+                        ? item.mediaType === 'video'
+                          ? `<video src="${escapeAttr(mSrc)}" controls preload="auto" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
+                          : `<img src="${escapeAttr(mSrc)}" style="width:100%;max-height:320px;object-fit:contain;border-radius:10px;">`
+                        : ''
+                    }
                   </div>
-                  ${item.text ? `<p style="font-size:13px;margin-bottom:8px;">${escapeHtml(item.text)}</p>` : ''}
-                  ${
-                    item.media
-                      ? item.mediaType === 'video'
-                        ? `<video src="${escapeAttr(item.media)}" controls preload="metadata" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
-                        : `<img src="${escapeAttr(item.media)}" style="width:100%;max-height:320px;object-fit:contain;border-radius:10px;">`
-                      : ''
-                  }
-                </div>
-              `)
+                `;
+              })
               .join('')
           : `<p style="font-size:12px;color:var(--text-muted);text-align:center;padding:14px 0;">Nenhum item salvo dentro de <strong>${escapeHtml(folderTitle)}</strong> ainda.</p>`;
         return;
@@ -4337,24 +4222,27 @@
 
       let html = myPosts.map(p => renderPostCardHTML(p)).join('');
       html += saved
-        .map(item => `
-          <div style="background:#141b34;padding:12px;border-radius:14px;margin-bottom:10px;border:1px dashed var(--gold-border);">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
-              <span style="font-size:10.5px;color:var(--gold-accent);">
-                🏠 Guardado em ${escapeHtml(item.folderName)} • Original de ${escapeHtml(item.author)}
-              </span>
-              <button class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
+        .map(item => {
+          const mSrc = normalizePlaybackUrl(item.media, item.mediaType);
+          return `
+            <div style="background:#141b34;padding:12px;border-radius:14px;margin-bottom:10px;border:1px dashed var(--gold-border);">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                <span style="font-size:10.5px;color:var(--gold-accent);">
+                  🏠 Guardado em ${escapeHtml(item.folderName)} • Original de ${escapeHtml(item.author)}
+                </span>
+                <button class="delicate-x-btn" onclick="removeSavedItemFromCantinho('${escapeAttr(item.saveId)}')">✕</button>
+              </div>
+              ${item.text ? `<p style="font-size:13px;margin-bottom:6px;">${escapeHtml(item.text)}</p>` : ''}
+              ${
+                mSrc
+                  ? item.mediaType === 'video'
+                    ? `<video src="${escapeAttr(mSrc)}" controls preload="auto" playsinline style="width:100%;max-height:280px;border-radius:10px;background:#000;"></video>`
+                    : `<img src="${escapeAttr(mSrc)}" style="width:100%;max-height:280px;object-fit:contain;border-radius:10px;">`
+                  : ''
+              }
             </div>
-            ${item.text ? `<p style="font-size:13px;margin-bottom:6px;">${escapeHtml(item.text)}</p>` : ''}
-            ${
-              item.media
-                ? item.mediaType === 'video'
-                  ? `<video src="${escapeAttr(item.media)}" controls preload="metadata" playsinline style="width:100%;max-height:280px;border-radius:10px;background:#000;"></video>`
-                  : `<img src="${escapeAttr(item.media)}" style="width:100%;max-height:280px;object-fit:contain;border-radius:10px;">`
-                : ''
-            }
-          </div>
-        `)
+          `;
+        })
         .join('');
 
       container.innerHTML = html;
@@ -5112,7 +5000,7 @@
           authorHandle: appState.user.handle,
           avatar: appState.user.avatar,
           text: text || (isChallenge ? `Representando ${appState.bias.name} (${challengeBiasRank || '#' + appState.bias.id}) no desafio de ${challengeDay}!` : ''),
-          media: mediaUrl || '',
+          media: normalizePlaybackUrl(mediaUrl || '', mediaType || ''),
           mediaType: mediaType || '',
           likes: 0,
           likedBy: [],
@@ -5903,10 +5791,11 @@
       const lb = document.getElementById('nativeMediaLightbox');
       const container = document.getElementById('lightboxMediaContainer');
       document.getElementById('lightboxCaption').textContent = caption;
+      const playSrc = normalizePlaybackUrl(src, type);
 
       container.innerHTML = type === 'video'
-        ? `<video src="${escapeAttr(src)}" class="lightbox-media" controls autoplay playsinline></video>`
-        : `<img src="${escapeAttr(src)}" class="lightbox-media" alt="">`;
+        ? `<video src="${escapeAttr(playSrc)}" class="lightbox-media" controls autoplay preload="auto" playsinline></video>`
+        : `<img src="${escapeAttr(playSrc)}" class="lightbox-media" alt="">`;
 
       lb.classList.add('open');
     };
@@ -5952,10 +5841,11 @@
     }
 
     function renderPostCardHTML(post) {
-      const mediaHtml = post.media
+      const playMedia = normalizePlaybackUrl(post.media, post.mediaType);
+      const mediaHtml = playMedia
         ? post.mediaType === 'video'
-          ? `<video src="${escapeAttr(post.media)}" class="post-media" controls preload="metadata" playsinline></video>`
-          : `<img src="${escapeAttr(post.media)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`
+          ? `<video src="${escapeAttr(playMedia)}" class="post-media" controls preload="auto" playsinline></video>`
+          : `<img src="${escapeAttr(playMedia)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(playMedia)}','image','${escapeAttr(post.author)}')">`
         : '';
 
       let isAdmin = false;
@@ -6244,7 +6134,7 @@
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
       });
     }
   </script>
