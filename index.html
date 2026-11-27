@@ -20,7 +20,7 @@
     content="SHER BLUSS: UM DESABROCHAR a cada compartilhamento"
   />
   <meta
-    name="og:description"
+    property="og:description"
     content="Feito com carinho para cada dorameira e fã de k-pop."
   />
   <meta property="og:image" content="https://sher-bluss.vercel.app/logo.png" />
@@ -2739,6 +2739,73 @@
       });
     }
 
+    function compressVideoOnce(file, scale, bitrate) {
+      return new Promise(res => {
+        const v = document.createElement('video');
+        v.muted = true;
+        v.playsInline = true;
+        v.preload = 'auto';
+
+        v.onloadedmetadata = () => {
+          const c = document.createElement('canvas');
+          c.width = Math.max(2, Math.round(v.videoWidth * scale / 2) * 2);
+          c.height = Math.max(2, Math.round(v.videoHeight * scale / 2) * 2);
+          const ctx = c.getContext('2d');
+
+          const stream = c.captureStream(30);
+          let rec;
+          try {
+            rec = new MediaRecorder(stream, {
+              mimeType: 'video/webm;codecs=vp9',
+              videoBitsPerSecond: bitrate
+            });
+          } catch (e) {
+            try {
+              rec = new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
+            } catch (e2) {
+              URL.revokeObjectURL(v.src);
+              res(file);
+              return;
+            }
+          }
+
+          const chunks = [];
+          rec.ondataavailable = e => {
+            if (e.data && e.data.size > 0) chunks.push(e.data);
+          };
+
+          rec.onstop = () => {
+            URL.revokeObjectURL(v.src);
+            const blob = new Blob(chunks, { type: 'video/webm' });
+            res(new File([blob], 'video.webm', { type: 'video/webm' }));
+          };
+
+          let active = true;
+          function drawFrame() {
+            if (!active || v.paused || v.ended) return;
+            ctx.drawImage(v, 0, 0, c.width, c.height);
+            requestAnimationFrame(drawFrame);
+          }
+
+          v.onended = () => {
+            active = false;
+            if (rec.state !== 'inactive') rec.stop();
+          };
+
+          rec.start(250);
+          v.play()
+            .then(() => drawFrame())
+            .catch(() => {
+              active = false;
+              if (rec.state !== 'inactive') rec.stop();
+            });
+        };
+
+        v.onerror = () => res(file);
+        v.src = URL.createObjectURL(file);
+      });
+    }
+
     function compressImageToTarget(file) {
       return new Promise(res => {
         const img = new Image();
@@ -2797,7 +2864,25 @@
           });
           return null;
         }
-        return file;
+
+        if (file.size <= TOLERANCE_BYTES) {
+          return file;
+        }
+
+        const tries = [
+          { scale: 0.75, bitrate: 1000000 },
+          { scale: 0.55, bitrate: 600000 },
+          { scale: 0.4, bitrate: 300000 }
+        ];
+
+        let out = file;
+        for (const t of tries) {
+          out = await compressVideoOnce(file, t.scale, t.bitrate);
+          if (out.size <= TOLERANCE_BYTES) {
+            return out;
+          }
+        }
+        return out;
       }
 
       if (file.type.startsWith('image/') && file.size > MAX_FILE_BYTES) {
@@ -2807,9 +2892,25 @@
       return file;
     }
 
-    // Retorna a URL exata salva no Cloudinary sem alterar parâmetros na URL
-    function normalizePlaybackUrl(url, type) {
+    function normalizePlaybackUrl(url) {
       return url || '';
+    }
+
+    function getVideoPosterUrl(url) {
+      if (!url) return '';
+      if (url.includes('res.cloudinary.com') && url.includes('/video/upload/')) {
+        return url
+          .replace('/video/upload/', '/video/upload/so_0/')
+          .replace(/\.(mp4|webm|mov|mkv|avi)(\?.*)?$/i, '.jpg$2');
+      }
+      return '';
+    }
+
+    function renderVideoTag(rawUrl, extraAttrs = '') {
+      const playSrc = normalizePlaybackUrl(rawUrl);
+      const posterSrc = getVideoPosterUrl(rawUrl);
+      const posterAttr = posterSrc ? ` poster="${escapeAttr(posterSrc)}"` : '';
+      return `<video src="${escapeAttr(playSrc)}"${posterAttr} ${extraAttrs} controls preload="auto" playsinline webkit-playsinline onloadeddata="if(this.currentTime===0){try{this.currentTime=0.1;}catch(e){}}"></video>`;
     }
 
     async function uploadMediaToCloudinary(file) {
@@ -3842,7 +3943,7 @@
           author: post.author,
           authorHandle: post.authorHandle || '@usuaria',
           text: post.text || '',
-          media: normalizePlaybackUrl(post.media || '', post.mediaType || ''),
+          media: post.media || '',
           mediaType: post.mediaType || '',
           savedAt: Date.now()
         });
@@ -4068,11 +4169,10 @@
       el.innerHTML = list
         .map(m => {
           const mine = m.senderUid === appState.user.uid;
-          const mediaSrc = normalizePlaybackUrl(m.media, m.mediaType);
-          const media = mediaSrc
+          const media = m.media
             ? m.mediaType === 'video'
-              ? `<video src="${escapeAttr(mediaSrc)}" controls preload="metadata" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
-              : `<img src="${escapeAttr(mediaSrc)}" onclick="openLightbox('${escapeAttr(mediaSrc)}','image','')">`
+              ? renderVideoTag(m.media, 'style="width:100%;max-height:320px;border-radius:10px;background:#000;"')
+              : `<img src="${escapeAttr(m.media)}" onclick="openLightbox('${escapeAttr(m.media)}','image','')">`
             : '';
           return `<div class="chat-msg ${mine ? 'mine' : 'theirs'}">${m.text ? escapeHtml(m.text) : ''}${media}</div>`;
         })
@@ -4182,7 +4282,6 @@
         container.innerHTML = filtered.length
           ? filtered
               .map(item => {
-                const mSrc = normalizePlaybackUrl(item.media, item.mediaType);
                 return `
                   <div style="background:#0e1222;padding:12px;border-radius:14px;margin-bottom:10px;border:1px solid var(--gold-border);">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
@@ -4193,10 +4292,10 @@
                     </div>
                     ${item.text ? `<p style="font-size:13px;margin-bottom:8px;">${escapeHtml(item.text)}</p>` : ''}
                     ${
-                      mSrc
+                      item.media
                         ? item.mediaType === 'video'
-                          ? `<video src="${escapeAttr(mSrc)}" controls preload="metadata" playsinline style="width:100%;max-height:320px;border-radius:10px;background:#000;"></video>`
-                          : `<img src="${escapeAttr(mSrc)}" style="width:100%;max-height:320px;object-fit:contain;border-radius:10px;">`
+                          ? renderVideoTag(item.media, 'style="width:100%;max-height:320px;border-radius:10px;background:#000;"')
+                          : `<img src="${escapeAttr(item.media)}" style="width:100%;max-height:320px;object-fit:contain;border-radius:10px;">`
                         : ''
                     }
                   </div>
@@ -4219,7 +4318,6 @@
       let html = myPosts.map(p => renderPostCardHTML(p)).join('');
       html += saved
         .map(item => {
-          const mSrc = normalizePlaybackUrl(item.media, item.mediaType);
           return `
             <div style="background:#141b34;padding:12px;border-radius:14px;margin-bottom:10px;border:1px dashed var(--gold-border);">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
@@ -4230,10 +4328,10 @@
               </div>
               ${item.text ? `<p style="font-size:13px;margin-bottom:6px;">${escapeHtml(item.text)}</p>` : ''}
               ${
-                mSrc
+                item.media
                   ? item.mediaType === 'video'
-                    ? `<video src="${escapeAttr(mSrc)}" controls preload="metadata" playsinline style="width:100%;max-height:280px;border-radius:10px;background:#000;"></video>`
-                    : `<img src="${escapeAttr(mSrc)}" style="width:100%;max-height:280px;object-fit:contain;border-radius:10px;">`
+                    ? renderVideoTag(item.media, 'style="width:100%;max-height:280px;border-radius:10px;background:#000;"')
+                    : `<img src="${escapeAttr(item.media)}" style="width:100%;max-height:280px;object-fit:contain;border-radius:10px;">`
                   : ''
               }
             </div>
@@ -4996,7 +5094,7 @@
           authorHandle: appState.user.handle,
           avatar: appState.user.avatar,
           text: text || (isChallenge ? `Representando ${appState.bias.name} (${challengeBiasRank || '#' + appState.bias.id}) no desafio de ${challengeDay}!` : ''),
-          media: normalizePlaybackUrl(mediaUrl || '', mediaType || ''),
+          media: mediaUrl || '',
           mediaType: mediaType || '',
           likes: 0,
           likedBy: [],
@@ -5787,11 +5885,10 @@
       const lb = document.getElementById('nativeMediaLightbox');
       const container = document.getElementById('lightboxMediaContainer');
       document.getElementById('lightboxCaption').textContent = caption;
-      const playSrc = normalizePlaybackUrl(src, type);
 
       container.innerHTML = type === 'video'
-        ? `<video src="${escapeAttr(playSrc)}" class="lightbox-media" controls autoplay preload="metadata" playsinline></video>`
-        : `<img src="${escapeAttr(playSrc)}" class="lightbox-media" alt="">`;
+        ? renderVideoTag(src, 'class="lightbox-media" autoplay')
+        : `<img src="${escapeAttr(src)}" class="lightbox-media" alt="">`;
 
       lb.classList.add('open');
     };
@@ -5837,11 +5934,10 @@
     }
 
     function renderPostCardHTML(post) {
-      const playMedia = normalizePlaybackUrl(post.media, post.mediaType);
-      const mediaHtml = playMedia
+      const mediaHtml = post.media
         ? post.mediaType === 'video'
-          ? `<video src="${escapeAttr(playMedia)}" class="post-media" controls preload="metadata" playsinline></video>`
-          : `<img src="${escapeAttr(playMedia)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(playMedia)}','image','${escapeAttr(post.author)}')">`
+          ? renderVideoTag(post.media, 'class="post-media"')
+          : `<img src="${escapeAttr(post.media)}" class="post-media" alt="" loading="lazy" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`
         : '';
 
       let isAdmin = false;
@@ -6066,67 +6162,57 @@
         el.classList.add('is-dragging');
       });
 
+      window.addEventListener('mousemove', e => {
+        if (!isMouseDown) return;
+        const x = e.pageX - el.offsetLeft;
+        const walk = x - startX;
+        if (Math.abs(walk) > 6) wasDragged = true;
+        el.scrollLeft = scrollLeftStart - walk;
+      });
+
       window.addEventListener('mouseup', () => {
         if (!isMouseDown) return;
         isMouseDown = false;
         el.classList.remove('is-dragging');
-        if (wasDragged) {
-          setTimeout(() => { wasDragged = false; }, 50);
-        }
-      });
-
-      el.addEventListener('mousemove', e => {
-        if (!isMouseDown) return;
-        e.preventDefault();
-        const x = e.pageX - el.offsetLeft;
-        const walk = (x - startX) * 1.4;
-        if (Math.abs(walk) > 5) wasDragged = true;
-        el.scrollLeft = scrollLeftStart - walk;
       });
 
       el.addEventListener('click', e => {
         if (wasDragged) {
           e.preventDefault();
           e.stopPropagation();
+          wasDragged = false;
         }
       }, true);
+
+      el.addEventListener('wheel', e => {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          el.scrollLeft += e.deltaY;
+          e.preventDefault();
+        }
+      }, { passive: false });
     }
 
-    (function initScrollCarouselBehavior() {
-      const carousel = document.getElementById('carouselWrapper');
-      const topTitle = document.getElementById('topBarCenterTitle');
-      if (!carousel) return;
+    const carouselWrapper = document.getElementById('carouselWrapper');
+    const topBarCenterTitle = document.getElementById('topBarCenterTitle');
+    enableDesktopCarouselDrag(carouselWrapper);
 
-      enableDesktopCarouselDrag(carousel);
+    window.addEventListener('scroll', () => {
+      if (document.getElementById('view-meu-perfil').classList.contains('active')) return;
+      if (document.getElementById('view-user-profile-feed').classList.contains('active')) return;
 
-      const HIDE_THRESHOLD = 45;
-      const SHOW_THRESHOLD = 10;
-      let isCarouselHidden = false;
-
-      window.addEventListener('scroll', () => {
-        if (document.getElementById('view-meu-perfil').classList.contains('active') || activeVisitedUserUid) {
-          carousel.classList.add('hidden-in-profile');
-          if (topTitle) topTitle.classList.remove('hidden-title');
-          return;
-        }
-
-        const curY = window.scrollY;
-        if (!isCarouselHidden && curY > HIDE_THRESHOLD) {
-          isCarouselHidden = true;
-          carousel.classList.add('scrolled');
-          if (topTitle) topTitle.classList.add('hidden-title');
-        } else if (isCarouselHidden && curY < SHOW_THRESHOLD) {
-          isCarouselHidden = false;
-          carousel.classList.remove('scrolled');
-          if (topTitle) topTitle.classList.remove('hidden-title');
-        }
-      }, { passive: true });
-    })();
+      if (window.scrollY > 36) {
+        carouselWrapper.classList.add('scrolled');
+        if (topBarCenterTitle) topBarCenterTitle.classList.add('hidden-title');
+      } else {
+        carouselWrapper.classList.remove('scrolled');
+        if (topBarCenterTitle) topBarCenterTitle.classList.remove('hidden-title');
+      }
+    }, { passive: true });
 
     applyUserTheme();
     startMidnightCountdown();
-    renderAll();
     initFirebaseSync();
+    renderAll();
 
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
