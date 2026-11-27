@@ -1881,7 +1881,7 @@
     </section>
 
     <section class="view-section" id="view-jogos">
-      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 2px 14px;">
+      <div class="glass-panel section-header-bar">
         <span class="section-title">Jogos</span>
         <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
       </div>
@@ -6185,7 +6185,7 @@
         isMouseDown = false;
         el.classList.remove('is-dragging');
         if (wasDragged) {
-          setTimeout(() => { wasDragged = false; }, 60);
+          setTimeout(() => { wasDragged = false; }, 50);
         }
       });
 
@@ -6206,41 +6206,47 @@
       }, true);
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      applyUserTheme();
-      startMidnightCountdown();
-      initFirebaseSync();
-      renderAll();
-
+    (function initScrollCarouselBehavior() {
       const carousel = document.getElementById('carouselWrapper');
-      if (carousel) enableDesktopCarouselDrag(carousel);
+      const topTitle = document.getElementById('topBarCenterTitle');
+      if (!carousel) return;
+
+      enableDesktopCarouselDrag(carousel);
+
+      const HIDE_THRESHOLD = 45;
+      const SHOW_THRESHOLD = 10;
+      let isCarouselHidden = false;
 
       window.addEventListener('scroll', () => {
-        const y = window.scrollY;
-        const c = document.getElementById('carouselWrapper');
-        const t = document.getElementById('topBarCenterTitle');
-        const isFeedActive = document.getElementById('view-feed').classList.contains('active');
-
-        if (!isFeedActive) {
-          if (c) c.classList.add('scrolled');
-          if (t) t.classList.remove('hidden-title');
+        if (document.getElementById('view-meu-perfil').classList.contains('active') || activeVisitedUserUid) {
+          carousel.classList.add('hidden-in-profile');
+          if (topTitle) topTitle.classList.remove('hidden-title');
           return;
         }
 
-        if (y > 40) {
-          if (c) c.classList.add('scrolled');
-          if (t) t.classList.remove('hidden-title');
-        } else if (y < 15) {
-          if (c) c.classList.remove('scrolled');
-          if (t) t.classList.add('hidden-title');
+        const curY = window.scrollY;
+        if (!isCarouselHidden && curY > HIDE_THRESHOLD) {
+          isCarouselHidden = true;
+          carousel.classList.add('scrolled');
+          if (topTitle) topTitle.classList.add('hidden-title');
+        } else if (isCarouselHidden && curY < SHOW_THRESHOLD) {
+          isCarouselHidden = false;
+          carousel.classList.remove('scrolled');
+          if (topTitle) topTitle.classList.remove('hidden-title');
         }
-      });
+      }, { passive: true });
+    })();
 
-      if (document.getElementById('view-feed').classList.contains('active') && window.scrollY < 15) {
-        const t = document.getElementById('topBarCenterTitle');
-        if (t) t.classList.add('hidden-title');
-      }
-    });
+    applyUserTheme();
+    startMidnightCountdown();
+    renderAll();
+    initFirebaseSync();
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e));
+      });
+    }
   </script>
 </body>
 </html>
