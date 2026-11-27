@@ -82,7 +82,7 @@
       --gold-border: rgba(251, 191, 36, .45);
       --gold-accent: #fbbf24;
       --text-main: #f8fafc;
-      --text-muted: rgba(226, 232, 40, .7);
+      --text-muted: rgba(226, 232, 240, .72);
       --danger: #f43f5e;
       --theme-color-accent: #060a1e;
       --custom-bg-url: url('./fundo.png');
@@ -1453,6 +1453,25 @@
       justify-content: space-between;
       gap: 10px;
     }
+
+    .kidnap-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0;
+    }
+
+    .kidnap-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: #141b34;
+      border: 1px solid rgba(251, 191, 36, .22);
+      font-size: 13px;
+    }
   </style>
 </head>
 
@@ -1847,7 +1866,7 @@
       <div class="glass-panel" style="padding:16px;margin-bottom:14px;">
         <h3 style="font-size:15px;color:var(--gold-accent);margin-bottom:6px;">Central de Jogos</h3>
         <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
-          Espaço reservado para os jogos da comunidade, incluindo o <strong>Sequestro de Bias</strong> e o jogo de pares de doramas.
+          Espaço reservado para os jogos da comunidade, incluindo o <strong>Sequestro de Bias</strong> (pasta <code>jogos/sequestro-de-bias</code>) e o jogo de pares de doramas.
         </p>
       </div>
 
@@ -1952,6 +1971,7 @@
       onSnapshot,
       query,
       where,
+      orderBy,
       updateDoc,
       serverTimestamp,
       setDoc,
@@ -1985,6 +2005,9 @@
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
     const LONG_PRESS_DURATION_MS = 10000;
     const SCROLL_CANCEL_THRESHOLD_PX = 4;
+
+    // Nota: em jogos com bola/projétil, podemos usar imagem PNG dedicada (ex: ./jogos/sequestro-de-bias/bola.png)
+    const GAME_BALL_PNG_URL = './jogos/sequestro-de-bias/bola.png';
 
     const BLOCKED_TERMS = [
       'pedofilia', 'pedofilo', 'pedófilo', 'abuso infantil', 'pornografia infantil',
@@ -2801,6 +2824,7 @@
     let activeChatName = 'Bate-papo';
     let chatUnsub = null;
     let isInitialFeedLoaded = false;
+    let kidnappedTargets = [];
 
     function saveLocal() {
       localStorage.setItem(LOCAL_KEY, JSON.stringify(appState));
@@ -5006,18 +5030,62 @@
       container.innerHTML = html;
     };
 
+    function renderKidnapListHtml() {
+      if (!kidnappedTargets.length) {
+        return `<p style="font-size:12px;color:var(--text-muted);margin:10px 0;">Nenhum bias sequestrado nesta rodada ainda.</p>`;
+      }
+      return `
+        <div class="kidnap-list">
+          ${kidnappedTargets.map((item, idx) => `
+            <div class="kidnap-row">
+              <span>🔒 <strong>${escapeHtml(item.name)}</strong> <span style="color:var(--text-muted);">(${escapeHtml(item.role)})</span></span>
+              <button type="button" class="delicate-x-btn" onclick="releaseKidnappedTarget(${idx})" title="Soltar">✕</button>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+
+    window.addKidnappedTarget = function() {
+      const input = document.getElementById('kidnapTargetInput');
+      const roleSelect = document.getElementById('kidnapTargetRole');
+      if (!input) return;
+      const name = input.value.trim();
+      if (!name) return;
+      if (!assertCleanContent(name, 'o nome')) return;
+      kidnappedTargets.push({ name, role: roleSelect ? roleSelect.value : 'Bias' });
+      input.value = '';
+      openSequestroBiasPreview();
+    };
+
+    window.releaseKidnappedTarget = function(index) {
+      kidnappedTargets.splice(index, 1);
+      openSequestroBiasPreview();
+    };
+
     window.openSequestroBiasPreview = function() {
       const arena = document.getElementById('gamesArenaContainer');
       if (!arena) return;
       arena.style.display = 'block';
       arena.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-          <h4 style="font-size:14px;color:var(--gold-accent);">Sequestro de Bias — Arena</h4>
+          <h4 style="font-size:14px;color:var(--gold-accent);">Sequestro de Bias — Pasta jogos/sequestro-de-bias</h4>
           <button type="button" class="delicate-x-btn" onclick="document.getElementById('gamesArenaContainer').style.display='none'">✕</button>
         </div>
-        <p style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
-          Área pronta para conectar as regras e cartas do <strong>Sequestro de Bias</strong> direto na tela inteira de Jogos.
+        <p style="font-size:12px;color:var(--text-muted);line-height:1.45;margin-bottom:10px;">
+          Adicione os alvos da rodada (imagem de bola/marcador configurada em <code>${escapeHtml(GAME_BALL_PNG_URL)}</code>).
         </p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">
+          <input type="text" id="kidnapTargetInput" class="glass-input" style="flex:1;min-width:160px;" placeholder="Nome do bias ou idol...">
+          <select id="kidnapTargetRole" class="glass-select" style="width:auto;">
+            <option value="Bias">Bias</option>
+            <option value="Ator">Ator</option>
+            <option value="Atriz">Atriz</option>
+            <option value="K-popper">K-popper</option>
+          </select>
+          <button type="button" class="btn-gold" style="width:auto;padding:10px 14px;" onclick="addKidnappedTarget()">Sequestrar</button>
+        </div>
+        ${renderKidnapListHtml()}
       `;
     };
 
@@ -6011,23 +6079,21 @@
     }
 
     window.addEventListener('scroll', () => {
-      const carousel = document.getElementById('carouselWrapper');
-      const title = document.getElementById('topBarCenterTitle');
-      const isInProfile = document.getElementById('view-meu-perfil').classList.contains('active') || document.getElementById('view-user-profile-feed').classList.contains('active');
-
-      if (window.scrollY > 25) {
-        if (!isInProfile) carousel.classList.add('scrolled');
-        if (title) title.classList.add('hidden-title');
+      const c = document.getElementById('carouselWrapper');
+      const t = document.getElementById('topBarCenterTitle');
+      if (window.scrollY > 45) {
+        c.classList.add('scrolled');
+        if (t) t.classList.remove('hidden-title');
       } else {
-        if (!isInProfile) carousel.classList.remove('scrolled');
-        if (title) title.classList.remove('hidden-title');
+        c.classList.remove('scrolled');
+        if (t) t.classList.add('hidden-title');
       }
     });
 
     enableDesktopCarouselDragAndWheel();
     applyUserTheme();
-    renderAll();
     startMidnightCountdown();
+    renderAll();
     initFirebaseSync();
   </script>
 </body>
