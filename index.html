@@ -5,17 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google" content="notranslate">
 
-  <!-- =====================================================================
-       1. GOOGLE SEARCH CONSOLE & GOOGLE ANALYTICS
-       Cole abaixo sua <meta name="google-site-verification" content="..." />
-       e/ou o script do Google Analytics (gtag.js) quando gerar na conta.
-       ===================================================================== -->
   <meta name="google-site-verification" content="-JhnsG1tukNDzlhCkqE_bwHIK5IYsgaOgTIoWJexRFY" />
-  <!-- COLE AQUI O SCRIPT DO GOOGLE ANALYTICS (SE USAR GA4) -->
 
-  <!-- =====================================================================
-       2. TÍTULO, DESCRIÇÃO E PRÉVIA DE COMPARTILHAMENTO (SHER BLUSS)
-       ===================================================================== -->
   <title translate="no">Sher Bluss — Um desabrochar a cada compartilhamento</title>
   <meta
     name="description"
@@ -29,7 +20,7 @@
     content="SHER BLUSS: UM DESABROCHAR A CADA COMPARTILHAMENTO"
   />
   <meta
-    property="og:description"
+    name="og:description"
     content="Feito com carinho para cada dorameira e fã de k-pop."
   />
   <meta property="og:image" content="https://sher-bluss.vercel.app/logo.png" />
@@ -1444,31 +1435,30 @@
       z-index: 3;
     }
 
-    .day-divider-line {
-      font-family: "Optimistic Mono", ui-monospace, monospace;
-      font-size: 11px;
-      letter-spacing: 0.04em;
-      color: rgba(251, 191, 36, 0.55);
-      overflow: hidden;
-      white-space: nowrap;
-      user-select: none;
-      line-height: 1.25;
-    }
-
     .day-slot-block {
-      margin-bottom: 16px;
+      margin-bottom: 18px;
     }
 
     .day-slot-label {
       font-size: 14px;
       font-weight: 700;
       color: var(--gold-accent);
-      padding: 6px 2px;
+      padding: 4px 2px;
     }
 
     .day-slot-mount {
-      padding: 6px 0;
+      min-height: 24px;
       cursor: pointer;
+    }
+
+    .game-thumb-square {
+      width: 56px;
+      height: 56px;
+      border-radius: 10px;
+      border: 1px solid var(--gold-border);
+      object-fit: cover;
+      background: #0e1222;
+      flex-shrink: 0;
     }
 
     #fullGameStageOverlay {
@@ -1898,72 +1888,44 @@
     </section>
 
     <section class="view-section" id="view-jogos">
-      <div class="glass-panel section-header-bar">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 2px 14px;">
         <span class="section-title">Jogos</span>
         <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
       </div>
 
       <div class="day-slot-block" id="slot-segunda">
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
         <div class="day-slot-label">Segunda-feira</div>
         <div class="day-slot-mount" id="mount-segunda" onclick="expandDayGameToFullTab('segunda')"></div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
 
       <div class="day-slot-block" id="slot-terca">
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
         <div class="day-slot-label">Terça-feira</div>
         <div class="day-slot-mount" id="mount-terca" onclick="expandDayGameToFullTab('terca')"></div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
 
       <div class="day-slot-block" id="slot-quarta">
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
         <div class="day-slot-label">Quarta-feira</div>
         <div class="day-slot-mount" id="mount-quarta" onclick="expandDayGameToFullTab('quarta')"></div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
 
       <div class="day-slot-block" id="slot-quinta">
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
         <div class="day-slot-label">Quinta-feira</div>
         <div class="day-slot-mount" id="mount-quinta" onclick="expandDayGameToFullTab('quinta')"></div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
 
       <div class="day-slot-block" id="slot-sexta">
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
         <div class="day-slot-label">Sexta-feira</div>
         <div class="day-slot-mount" id="mount-sexta" onclick="expandDayGameToFullTab('sexta')"></div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
 
       <div class="day-slot-block" id="slot-sabado">
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
         <div class="day-slot-label">Sábado</div>
         <div class="day-slot-mount" id="mount-sabado" onclick="expandDayGameToFullTab('sabado')"></div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
 
       <div class="day-slot-block" id="slot-domingo">
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
         <div class="day-slot-label">Domingo</div>
         <div class="day-slot-mount" id="mount-domingo" onclick="expandDayGameToFullTab('domingo')"></div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
-        <div class="day-divider-line">========================================================================================================================================================================================================</div>
       </div>
     </section>
   </div>
@@ -2084,8 +2046,21 @@
     const LONG_PRESS_DURATION_MS = 10000;
     const SCROLL_CANCEL_THRESHOLD_PX = 4;
 
-    // Imagem PNG da bola do jogo (ex: ./jogos/sequestro-de-bias/bola.png)
-    const GAME_BALL_PNG_URL = './jogos/sequestro-de-bias/bola.png';
+    function pauseAllVideos(exceptVideo = null) {
+      document.querySelectorAll('video').forEach(vid => {
+        if (exceptVideo && vid === exceptVideo) return;
+        if (!vid.paused) {
+          try { vid.pause(); } catch (e) {}
+        }
+      });
+    }
+
+    document.addEventListener('play', event => {
+      const target = event.target;
+      if (target && target.tagName === 'VIDEO') {
+        pauseAllVideos(target);
+      }
+    }, true);
 
     const DAY_SLOT_TITLES = {
       segunda: 'Segunda-feira',
@@ -2099,11 +2074,44 @@
 
     let activeExpandedDayKey = null;
 
+    // Quando você colocar um jogo em um dia, passe também { thumbUrl: './caminho/da/imagem.png' } se quiser mostrar o quadradinho da imagem do jogo.
+    window.mountDayGame = function(dayKey, gameNode, options = {}) {
+      const mountEl = document.getElementById('mount-' + dayKey);
+      if (!mountEl || !gameNode) return;
+      mountEl.innerHTML = '';
+
+      if (options.thumbUrl) {
+        const wrap = document.createElement('div');
+        wrap.style.display = 'flex';
+        wrap.style.alignItems = 'center';
+        wrap.style.gap = '10px';
+        wrap.style.padding = '6px 0';
+
+        const img = document.createElement('img');
+        img.src = options.thumbUrl;
+        img.alt = '';
+        img.className = 'game-thumb-square';
+        img.onerror = function() { this.style.display = 'none'; };
+
+        const holder = document.createElement('div');
+        holder.style.flex = '1';
+        holder.style.minWidth = '0';
+        holder.appendChild(gameNode);
+
+        wrap.appendChild(img);
+        wrap.appendChild(holder);
+        mountEl.appendChild(wrap);
+      } else {
+        mountEl.appendChild(gameNode);
+      }
+    };
+
     window.expandDayGameToFullTab = function(dayKey) {
+      pauseAllVideos();
       const mountEl = document.getElementById('mount-' + dayKey);
       const stageBody = document.getElementById('fullGameMountBody');
       const stageTitle = document.getElementById('fullGameStageTitle');
-      if (!mountEl || !stageBody) return;
+      if (!mountEl || !stageBody || !mountEl.firstChild) return;
 
       activeExpandedDayKey = dayKey;
       stageTitle.textContent = DAY_SLOT_TITLES[dayKey] || 'Jogo';
@@ -2118,6 +2126,7 @@
     };
 
     window.collapseFullGameStage = function() {
+      pauseAllVideos();
       const stageBody = document.getElementById('fullGameMountBody');
       if (activeExpandedDayKey && stageBody) {
         const mountEl = document.getElementById('mount-' + activeExpandedDayKey);
@@ -3977,6 +3986,7 @@
     }
 
     window.switchToProfileSection = function() {
+      pauseAllVideos();
       if (!appState.user.loggedIn) {
         document.getElementById('authGateOverlay').style.display = 'flex';
         return;
@@ -4115,6 +4125,7 @@
     }
 
     window.openChatWith = function(uid, name) {
+      pauseAllVideos();
       requireAuthForAction(() => {
         if (!uid || uid === appState.user.uid) return;
         activeChatUid = uid;
@@ -4296,6 +4307,7 @@
     }
 
     window.visitUserProfile = async function(uid, name, handle) {
+      pauseAllVideos();
       if (!uid) return;
       if (appState.user.loggedIn && uid === appState.user.uid) {
         switchToProfileSection();
@@ -4432,6 +4444,7 @@
     };
 
     window.closeVisitedUserProfile = function() {
+      pauseAllVideos();
       activeVisitedUserUid = null;
       applyUserTheme();
       switchView('feed');
@@ -5152,6 +5165,7 @@
     };
 
     window.switchView = function(viewName) {
+      pauseAllVideos();
       collapseFullGameStage();
       activeVisitedUserUid = null;
       applyUserTheme();
@@ -5798,12 +5812,14 @@
     };
 
     window.closeCurrentFandom = function() {
+      pauseAllVideos();
       activeFandomFilter = null;
       switchView('fandom');
     };
 
     window.openLightbox = function(src, type, caption = '') {
       if (!src) return;
+      pauseAllVideos();
       const lb = document.getElementById('nativeMediaLightbox');
       const container = document.getElementById('lightboxMediaContainer');
       document.getElementById('lightboxCaption').textContent = caption;
@@ -5816,6 +5832,7 @@
     };
 
     window.closeLightbox = function() {
+      pauseAllVideos();
       document.getElementById('nativeMediaLightbox').classList.remove('open');
       document.getElementById('lightboxMediaContainer').innerHTML = '';
     };
@@ -6140,8 +6157,8 @@
     enableDesktopCarouselDragAndWheel();
     applyUserTheme();
     startMidnightCountdown();
-    initFirebaseSync();
     renderAll();
+    initFirebaseSync();
   </script>
 </body>
 </html>
