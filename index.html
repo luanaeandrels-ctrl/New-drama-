@@ -2321,8 +2321,8 @@
     const CLOUDINARY_CLOUD_NAME = 'l6tlvzln';
     const CLOUDINARY_UPLOAD_PRESET = 'umbrella';
     const LOCAL_KEY = 'sherbluss_state_v3';
-    const MAX_FILE_BYTES = 10 * 1024 * 1024;
-    const TOLERANCE_BYTES = 10 * 1024 * 1024;
+    const MAX_FILE_BYTES = 25 * 1024 * 1024;
+    const TOLERANCE_BYTES = 25 * 1024 * 1024;
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
     const LONG_PRESS_DURATION_MS = 10000;
@@ -2442,53 +2442,10 @@
       });
     }
 
+    // Aceita arquivos de vídeo incluindo formatos/streams H.264
     async function checkH264Compatibility(file) {
       if (!file || !file.type.startsWith('video/')) return { ok: true };
-      const nameLower = (file.name || '').toLowerCase();
-      const mimeLower = (file.type || '').toLowerCase();
-
-      if (mimeLower.includes('avc') || mimeLower.includes('h264') || mimeLower.includes('h.264')) {
-        return { ok: false, reason: 'O formato/codec H.264 não é compatível com o envio atual. Converta o vídeo para HEVC/H.265 ou outro formato suportado.' };
-      }
-
-      const testVideo = document.createElement('video');
-      testVideo.preload = 'metadata';
-      testVideo.muted = true;
-      testVideo.playsInline = true;
-
-      if (nameLower.endsWith('.mp4') || nameLower.endsWith('.m4v') || mimeLower === 'video/mp4') {
-        const canPlayMp4 = testVideo.canPlayType('video/mp4; codecs="avc1.42E01E"') || testVideo.canPlayType('video/mp4');
-        if (!canPlayMp4) {
-          return { ok: false, reason: 'O formato/codec H.264 não é compatível neste dispositivo ou navegador.' };
-        }
-      }
-
-      return new Promise(resolve => {
-        const blobUrl = URL.createObjectURL(file);
-        const timer = setTimeout(() => {
-          URL.revokeObjectURL(blobUrl);
-          resolve({ ok: true });
-        }, 2500);
-
-        testVideo.onloadedmetadata = () => {
-          clearTimeout(timer);
-          const hasVideoTrack = testVideo.videoWidth > 0 && testVideo.videoHeight > 0;
-          URL.revokeObjectURL(blobUrl);
-          if (!hasVideoTrack) {
-            resolve({ ok: false, reason: 'Não foi possível ler o stream de vídeo (possível incompatibilidade de codec H.264).' });
-          } else {
-            resolve({ ok: true });
-          }
-        };
-
-        testVideo.onerror = () => {
-          clearTimeout(timer);
-          URL.revokeObjectURL(blobUrl);
-          resolve({ ok: false, reason: 'Vídeo incompatível ou codec H.264 não suportado para este envio.' });
-        };
-
-        testVideo.src = blobUrl;
-      });
+      return { ok: true };
     }
 
     function normalizeTextForModeration(rawText) {
@@ -3121,7 +3078,7 @@
         const h264Check = await checkH264Compatibility(file);
         if (!h264Check.ok) {
           showSpecificUploadError(
-            'Incompatibilidade de vídeo (H.264)',
+            'Incompatibilidade de vídeo',
             escapeHtml(h264Check.reason)
           );
           return null;
@@ -3139,9 +3096,9 @@
         if (file.size > TOLERANCE_BYTES) {
           let cur = file;
           const tries = [
-            [0.75, 1000000],
-            [0.55, 600000],
-            [0.4, 300000]
+            [0.75, 1200000],
+            [0.55, 750000],
+            [0.4, 450000]
           ];
 
           for (let i = 0; i < 3; i++) {
@@ -3159,8 +3116,8 @@
 
           if (cur.size > TOLERANCE_BYTES) {
             showSpecificUploadError(
-              'Limite de tamanho excedido (10 MB)',
-              `O arquivo excede o limite de 10 MB mesmo após compressão (${(cur.size / (1024 * 1024)).toFixed(1)} MB).`
+              'Limite de tamanho excedido (25 MB)',
+              `O arquivo excede o limite de 25 MB mesmo após compressão (${(cur.size / (1024 * 1024)).toFixed(1)} MB).`
             );
             return null;
           }
@@ -3174,8 +3131,8 @@
         const compressedImg = await compressImageToTarget(file);
         if (!compressedImg || compressedImg.size > MAX_FILE_BYTES) {
           showSpecificUploadError(
-            'Limite de tamanho excedido (10 MB)',
-            'A imagem ultrapassa o limite permitido de 10 MB.'
+            'Limite de tamanho excedido (25 MB)',
+            'A imagem ultrapassa o limite permitido de 25 MB.'
           );
           return null;
         }
@@ -3208,17 +3165,10 @@
           };
         }
         const errMsg = String(d.error?.message || '').toLowerCase();
-        if (errMsg.includes('h264') || errMsg.includes('h.264') || errMsg.includes('codec')) {
+        if (errMsg.includes('file size too large') || errMsg.includes('too large')) {
           showSpecificUploadError(
-            'Incompatibilidade de vídeo (H.264)',
-            'O vídeo enviado usa formato ou codec H.264 incompatível com o envio.'
-          );
-          return null;
-        }
-        if (errMsg.includes('file size too large') || errMsg.includes('too large') || errMsg.includes('10485760')) {
-          showSpecificUploadError(
-            'Limite de tamanho excedido (10 MB)',
-            'O arquivo excede o tamanho máximo permitido de 10 MB.'
+            'Limite de tamanho excedido (25 MB)',
+            'O arquivo excede o tamanho máximo permitido de 25 MB.'
           );
           return null;
         }
@@ -5213,7 +5163,7 @@
         const h264Check = await checkH264Compatibility(file);
         if (!h264Check.ok) {
           showSpecificUploadError(
-            'Incompatibilidade de vídeo (H.264)',
+            'Incompatibilidade de vídeo',
             escapeHtml(h264Check.reason)
           );
           return;
@@ -5263,7 +5213,7 @@
         const h264Check = await checkH264Compatibility(file);
         if (!h264Check.ok) {
           showSpecificUploadError(
-            'Incompatibilidade de vídeo (H.264)',
+            'Incompatibilidade de vídeo',
             escapeHtml(h264Check.reason)
           );
           return;
@@ -6114,147 +6064,56 @@
       }
     }
 
-    // 3. Renderização de card com player de vídeo transparente (sem bolinha branca piscando)
-    function renderPostCardHTML(post) {
-      const isOwn = appState.user.loggedIn && post.authorUid === appState.user.uid;
-      const canDeletePost = canDeleteSpecificPost(post);
-      const isLiked = appState.user.loggedIn && (post.likedBy || []).includes(appState.user.uid);
-      const isAdminAuthor = post.authorUid === ADMIN_UID;
-      const authorObj = usersDirectory.find(u => u.uid === post.authorUid);
-      const postAvatarSrc = isOwn ? appState.user.avatar : (authorObj?.avatar || post.avatar || './aconchego.png');
-
-      let mediaHtml = '';
-      if (post.media) {
-        if (post.mediaType === 'video') {
-          mediaHtml = `
-            <div class="sb-video-stage">
-              <video src="${escapeAttr(post.media)}" class="post-media" preload="metadata" playsinline onclick="openLightbox('${escapeAttr(post.media)}','video','${escapeAttr(post.author)}')"></video>
-              <div class="sb-video-overlay">
-                <button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button>
-              </div>
-            </div>
-          `;
-        } else {
-          mediaHtml = `<img src="${escapeAttr(post.media)}" class="post-media" loading="lazy" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')" onerror="this.style.display='none'">`;
-        }
-      }
-
-      const comments = (post.comments || [])
-        .map((raw, idx) => {
-          const c = normalizeComment(raw);
-          if (!c) return '';
-          const canDeleteComment = isModAdminUser() || isOwn || (appState.user.loggedIn && c.authorUid && c.authorUid === appState.user.uid);
-          const delBtn = canDeleteComment
-            ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">✕</button>`
-            : '';
-          return `
-            <div class="comment-item-clean">
-              <span style="flex:1;">${c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ` : ''}${escapeHtml(c.text)}</span>
-              ${delBtn}
-            </div>
-          `;
-        })
-        .join('');
-
-      const rankDisplay = post.challengeBiasRank || (post.biasId ? `#${post.biasId}` : '');
-      const challengeTag = post.isChallenge
-        ? `<span style="font-size:10px;color:var(--gold-accent);background:#141b34;border:1px solid var(--gold-border);padding:1px 7px;border-radius:99px;margin-left:6px;">Desafio${post.challengeDay ? ` • ${escapeHtml(post.challengeDay)}` : ''}${rankDisplay ? ` • ${escapeHtml(rankDisplay)}` : ''}${post.biasName ? ` • ${escapeHtml(post.biasName)}` : ''}</span>`
-        : '';
-
-      const dotsMenuBtn = `<button class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>`;
-
-      return `
-        <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
-          <div class="post-header">
-            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid || '')}','${escapeAttr(post.author || 'Usuária')}','${escapeAttr(post.authorHandle || '@usuaria')}')">
-              <div class="avatar-container">
-                <img src="${escapeAttr(postAvatarSrc)}" class="post-avatar" onerror="this.src='./logo.png'">
-                ${renderOnlineDot(authorObj)}
-              </div>
-              <div>
-                <div class="post-author-name">
-                  <span>${escapeHtml(post.author)}</span>
-                  ${isAdminAuthor ? `<span class="admin-badge">Admin</span>` : ''}
-                  ${challengeTag}
-                </div>
-                <div class="post-meta">
-                  <span class="notranslate">${escapeHtml(post.authorHandle || '@usuaria')}</span>
-                  ${post.fandom && post.fandom !== 'Geral' ? ` • 🔒 ${escapeHtml(post.fandom)}` : ''}
-                </div>
-              </div>
-            </div>
-            ${dotsMenuBtn}
-          </div>
-          ${post.text ? `<div class="post-text">${escapeHtml(post.text)}</div>` : ''}
-          ${mediaHtml}
-          <div class="post-actions-clean">
-            <button class="like-umbrella-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikeUmbrella('${escapeAttr(post.id)}')">
-              <span>🌸</span><span>${post.likes || 0}</span>
-            </button>
-          </div>
-          <div class="comments-section-clean">
-            ${comments}
-            <div class="comment-input-row">
-              <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Escreva um comentário...">
-              <button class="btn-pill-gold" style="padding:5px 12px;font-size:11px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">Enviar</button>
-            </div>
-          </div>
-        </article>
-      `;
-    }
-
     function renderAll() {
-      const c = document.getElementById('carouselChallengeText');
-      if (c) c.textContent = getCurrentDayDirective();
+      const directiveText = getCurrentDayDirective();
+      document.getElementById('carouselChallengeText').textContent = directiveText;
+      document.getElementById('weeklyDirectiveText').textContent = directiveText;
 
-      const w = document.getElementById('weeklyDirectiveText');
-      if (w) w.textContent = getCurrentDayDirective();
-
-      const reqNumBanner = document.getElementById('requiredNumberBanner');
-      if (reqNumBanner) {
-        const reqNum = extractRequestedChallengeNumber(getCurrentDayDirective());
-        reqNumBanner.textContent = reqNum
-          ? `Posição exigida hoje: #${reqNum}`
-          : '';
+      const reqNum = extractRequestedChallengeNumber(directiveText);
+      const bannerEl = document.getElementById('requiredNumberBanner');
+      if (bannerEl) {
+        bannerEl.textContent = reqNum ? `Número exigido no desafio: #${reqNum}` : '';
       }
 
-      const v = document.getElementById('dailyVotesCounter');
-      if (v) v.textContent = `${3 - (appState.dailyVotes?.used || 0)}/3`;
+      document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
 
       renderWeeklyPodiumCarousel();
 
       const feedList = document.getElementById('mainFeedList');
-      if (feedList) {
-        const publicPosts = postsFromFirebase.filter(p =>
-          !isUserBlocked(p.authorHandle, p.authorUid) &&
-          !p.isPrivateFandom &&
-          (!p.fandom || p.fandom === 'Geral') &&
-          !p.isChallenge
-        );
+      const publicPosts = postsFromFirebase.filter(p =>
+        !isUserBlocked(p.authorHandle, p.authorUid) &&
+        !p.isPrivateFandom &&
+        (!p.fandom || p.fandom === 'Geral')
+      );
 
-        feedList.innerHTML = publicPosts.length
-          ? publicPosts.map(p => renderPostCardHTML(p)).join('')
-          : '<div class="glass-panel empty-state-box">Nenhuma publicação no feed geral ainda.</div>';
+      if (!publicPosts.length) {
+        feedList.innerHTML = `<div class="glass-panel empty-state-box">Nenhuma publicação ainda. Toque no botão ➤ para escrever no <strong translate="no">Sher Bluss</strong>.</div>`;
+      } else {
+        feedList.innerHTML = publicPosts.map(p => renderPostCardHTML(p)).join('');
       }
 
       const challengeList = document.getElementById('challengeFeedList');
-      if (challengeList) {
-        const cPosts = postsFromFirebase.filter(p => !isUserBlocked(p.authorHandle, p.authorUid) && p.isChallenge);
-        challengeList.innerHTML = cPosts.length
-          ? cPosts.map(p => renderPostCardHTML(p)).join('')
-          : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio hoje ainda. Seja a primeira!</div>';
-      }
+      const cPosts = postsFromFirebase.filter(p =>
+        p.isChallenge &&
+        !isUserBlocked(p.authorHandle, p.authorUid)
+      );
+
+      challengeList.innerHTML = cPosts.length
+        ? cPosts.map(p => renderPostCardHTML(p)).join('')
+        : `<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda. Seja a primeira!</div>`;
 
       const fGrid = document.getElementById('fandomsGridContainer');
-      if (fGrid) {
+      if (!appState.fandoms.length) {
+        fGrid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column:1 / -1;">Nenhum Fandom criado ainda. Toque em <strong>+ Criar Fandom</strong>.</div>`;
+      } else {
         fGrid.innerHTML = appState.fandoms
           .map(f => {
             const unlocked = hasFandomAccess(f);
-            const pendingCount = (f.pendingRequests || []).length;
+            const hasPending = (f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid))) && f.pendingRequests && f.pendingRequests.length > 0;
             return `
-              <div class="glass-panel fandom-box-card" style="border:1.5px solid ${escapeAttr(f.borderColor || '#fbbf24')};" onclick="selectFandom('${escapeAttr(f.name)}')">
-                <h4><span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')};"></span>${unlocked ? '🔓' : '🔒'} ${escapeHtml(f.name)}</h4>
-                <p>${unlocked ? `Acesso liberado${pendingCount ? ` • ${pendingCount} pedido(s)` : ''}` : `Espaço privado${pendingCount ? ` • ${pendingCount} pedido(s)` : ''}`}</p>
+              <div class="glass-panel fandom-box-card" onclick="selectFandom('${escapeAttr(f.name)}')">
+                <h4><span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')};"></span>${escapeHtml(f.name)} ${unlocked ? '🔓' : '🔒'}</h4>
+                <p>${unlocked ? 'Espaço Privado Liberado' : (hasPending ? '📩 Solicitação Pendente' : 'Trancado • Pedir Acesso')}</p>
               </div>
             `;
           })
@@ -6262,73 +6121,153 @@
       }
 
       if (activeFandomFilter) {
-        const fObj = appState.fandoms.find(x => x.name === activeFandomFilter);
         const fPosts = postsFromFirebase.filter(p =>
           !isUserBlocked(p.authorHandle, p.authorUid) &&
-          (p.fandom === activeFandomFilter || (fObj && p.fandomDocId === fObj.id)) &&
-          !p.isChallenge
+          p.fandom === activeFandomFilter
         );
-        const insideList = document.getElementById('insideFandomFeedList');
-        if (insideList) {
-          insideList.innerHTML = fPosts.length
-            ? fPosts.map(p => renderPostCardHTML(p)).join('')
-            : '<div class="glass-panel empty-state-box">Nenhuma publicação privada neste Fandom ainda.</div>';
-        }
+        document.getElementById('insideFandomFeedList').innerHTML = fPosts.length
+          ? fPosts.map(p => renderPostCardHTML(p)).join('')
+          : `<div class="glass-panel empty-state-box">Nenhuma publicação privada neste Fandom ainda.</div>`;
       }
 
-      const frList = document.getElementById('friendsListContainer');
-      if (frList) {
-        const friends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
-        frList.innerHTML = friends.length
-          ? friends
-              .map(f => {
-                const uObj = usersDirectory.find(u => u.uid === f.uid);
-                return `
-                  <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name)}','${escapeAttr(f.handle || '@coleguinha')}')">
-                    <div style="display:flex;align-items:center;gap:10px;">
-                      <div class="avatar-container">
-                        <img src="${escapeAttr(uObj?.avatar || f.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
-                        ${renderOnlineDot(uObj)}
-                      </div>
-                      <div>
-                        <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
-                        <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(f.status || 'Assistindo doramas juntas')}</div>
-                      </div>
-                    </div>
-                    <button type="button" class="btn-pill-gold" style="padding:5px 12px;font-size:11px;" onclick="event.stopPropagation();openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name)}')">Bate-papo</button>
+      const friendsContainer = document.getElementById('friendsListContainer');
+      const myFriends = (appState.user.friends || []).filter(fr => !isUserBlocked(fr.handle, fr.uid));
+
+      if (!myFriends.length) {
+        friendsContainer.innerHTML = `<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras. Toque no perfil de alguém e clique em <strong>🎬 Quero assistir um dorama</strong>!</div>`;
+      } else {
+        friendsContainer.innerHTML = myFriends
+          .map(fr => {
+            const liveUser = usersDirectory.find(u => u.uid === fr.uid);
+            const onlineDot = renderOnlineDot(liveUser);
+            return `
+              <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(fr.uid)}','${escapeAttr(fr.name)}','${escapeAttr(fr.handle || '@coleguinha')}')">
+                <div style="display:flex;align-items:center;gap:10px;">
+                  <div class="avatar-container">
+                    <img src="${escapeAttr(fr.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--gold-accent);object-fit:cover;">
+                    ${onlineDot}
                   </div>
-                `;
-              })
-              .join('')
-          : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras. Toque no perfil de alguém e clique em "Quero assistir um dorama"!</div>';
+                  <div>
+                    <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(fr.name)}</div>
+                    <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(fr.status || 'Assistindo doramas juntas')}</div>
+                  </div>
+                </div>
+                <span style="font-size:12px;color:var(--gold-accent);">Ver Perfil</span>
+              </div>
+            `;
+          })
+          .join('');
       }
     }
 
-    window.openLightbox = function(src, type, caption) {
-      pauseAllVideos();
-      const overlay = document.getElementById('nativeMediaLightbox');
-      const container = document.getElementById('lightboxMediaContainer');
-      document.getElementById('lightboxCaption').textContent = caption || '';
+    function renderPostCardHTML(post) {
+      const isLiked = (post.likedBy || []).includes(appState.user.uid);
+      const isAdminAuthor = post.authorUid === ADMIN_UID;
+      const canDeleteCommentPermission = isModAdminUser() || (appState.user.loggedIn && post.authorUid === appState.user.uid);
 
-      if (type === 'video') {
-        container.innerHTML = `<video src="${escapeAttr(src)}" controls autoplay playsinline class="lightbox-media"></video>`;
-      } else {
-        container.innerHTML = `<img src="${escapeAttr(src)}" class="lightbox-media">`;
+      let mediaHTML = '';
+      if (post.media) {
+        if (post.mediaType === 'video') {
+          mediaHTML = `
+            <div class="sb-video-stage">
+              <video class="post-media" src="${escapeAttr(post.media)}" preload="metadata" playsinline></video>
+              <div class="sb-video-overlay">
+                <button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button>
+              </div>
+            </div>
+          `;
+        } else {
+          mediaHTML = `<img class="post-media" src="${escapeAttr(post.media)}" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`;
+        }
       }
-      overlay.classList.add('open');
+
+      const commentsArray = post.comments || [];
+      let commentsHTML = '<div class="comments-section-clean">';
+      commentsArray.forEach((rawC, idx) => {
+        const c = normalizeComment(rawC);
+        if (!c) return;
+        const canDelThis = canDeleteCommentPermission || (appState.user.loggedIn && c.authorUid && c.authorUid === appState.user.uid);
+        const delBtn = canDelThis
+          ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})" title="Apagar comentário">✕</button>`
+          : '';
+        const authorPrefix = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ` : '';
+        commentsHTML += `<div class="comment-item-clean"><span style="flex:1;">${authorPrefix}${escapeHtml(c.text)}</span>${delBtn}</div>`;
+      });
+
+      commentsHTML += `
+        <div class="comment-input-row">
+          <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Escreva um comentário..." onkeydown="if(event.key==='Enter'){event.preventDefault();submitInlineComment('${escapeAttr(post.id)}')}">
+          <button class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">Enviar</button>
+        </div>
+      </div>`;
+
+      const liveAuthor = usersDirectory.find(u => u.uid === post.authorUid);
+      const onlineDot = renderOnlineDot(liveAuthor);
+      const isChallenge = !!post.isChallenge;
+      const challengeDayLabel = isChallenge ? (post.challengeDay || getChallengeDayLabel(post.createdAt?.toDate ? post.createdAt.toDate() : new Date())) : '';
+      const challengeRankLabel = isChallenge ? (post.challengeBiasRank || '') : '';
+      const challengeTitle = isChallenge ? (post.biasName || 'Participante do Desafio') : '';
+
+      const challengeHeaderBlock = isChallenge
+        ? `
+          <div style="font-size:11px;font-weight:700;color:var(--gold-accent);margin-bottom:4px;text-transform:uppercase;">
+            ${escapeHtml(challengeDayLabel)}${challengeRankLabel ? ` • ${escapeHtml(challengeRankLabel)}` : ''}
+          </div>
+          <div style="font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:6px;">
+            ${escapeHtml(challengeTitle)}
+          </div>
+        `
+        : '';
+
+      return `
+        <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
+          <div class="post-header">
+            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid || '')}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
+              <div class="avatar-container">
+                <img class="post-avatar" src="${escapeAttr(post.avatar || './aconchego.png')}" onerror="this.src='./logo.png'">
+                ${onlineDot}
+              </div>
+              <div>
+                <div class="post-author-name">${escapeHtml(post.author)} ${isAdminAuthor ? '<span class="admin-badge">ADM</span>' : ''}</div>
+                <div class="post-meta notranslate">${escapeHtml(post.authorHandle || '@usuaria')} ${post.fandom && post.fandom !== 'Geral' ? '• ' + escapeHtml(post.fandom) : ''}</div>
+              </div>
+            </div>
+            <button class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>
+          </div>
+          ${challengeHeaderBlock}
+          ${post.text ? `<p class="post-text">${escapeHtml(post.text)}</p>` : ''}
+          ${mediaHTML}
+          <div class="post-actions-clean">
+            <button class="like-umbrella-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikeUmbrella('${escapeAttr(post.id)}')">
+              <span>🌸</span>
+              <span>${post.likes || 0}</span>
+            </button>
+          </div>
+          ${commentsHTML}
+        </article>
+      `;
+    }
+
+    window.openLightbox = function(mediaUrl, mediaType, caption) {
+      pauseAllVideos();
+      const c = document.getElementById('lightboxMediaContainer');
+      c.innerHTML = mediaType === 'video'
+        ? `<video class="lightbox-media" src="${escapeAttr(mediaUrl)}" controls autoplay playsinline></video>`
+        : `<img class="lightbox-media" src="${escapeAttr(mediaUrl)}">`;
+      document.getElementById('lightboxCaption').textContent = caption || '';
+      document.getElementById('nativeMediaLightbox').classList.add('open');
     };
 
     window.closeLightbox = function() {
       pauseAllVideos();
-      document.getElementById('nativeMediaLightbox').classList.remove('open');
       document.getElementById('lightboxMediaContainer').innerHTML = '';
+      document.getElementById('nativeMediaLightbox').classList.remove('open');
     };
 
     window.addEventListener('scroll', () => {
-      const car = document.getElementById('carouselWrapper');
-      if (!car) return;
-      if (window.scrollY > 18) car.classList.add('scrolled');
-      else car.classList.remove('scrolled');
+      const cw = document.getElementById('carouselWrapper');
+      if (window.scrollY > 40) cw.classList.add('scrolled');
+      else cw.classList.remove('scrolled');
     });
 
     applyUserTheme();
