@@ -955,13 +955,12 @@
       display: none;
       flex-direction: column;
       gap: 6px;
-      padding: 6px 10px;
-      margin-bottom: 6px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
       background: #0e1222;
       border: 1px solid var(--gold-border);
-      border-radius: 14px;
+      border-radius: 16px;
       pointer-events: auto;
-      width: 100%;
     }
 
     .sb-pending-bar.active {
@@ -977,9 +976,9 @@
 
     .sb-pending-thumb-box {
       position: relative;
-      width: 44px;
-      height: 44px;
-      border-radius: 9px;
+      width: 52px;
+      height: 52px;
+      border-radius: 10px;
       overflow: hidden;
       border: 1px solid var(--gold-accent);
       background: #000;
@@ -996,6 +995,7 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      cursor: zoom-in;
     }
 
     .sb-pending-meta {
@@ -1009,70 +1009,63 @@
       cursor: pointer;
     }
 
-    /* Tirinha fina na altura padrão do texto do chat com preenchimento de cor até 100% */
-    .sb-thin-strip {
+    .sb-compress-strip {
       position: relative;
       width: 100%;
-      min-height: 24px;
+      min-height: 30px;
+      border-radius: 10px;
+      overflow: hidden;
       background: #141b34;
       border: 1px solid var(--gold-border);
-      border-radius: 999px;
-      overflow: hidden;
-      cursor: pointer;
       display: flex;
       align-items: center;
+      cursor: pointer;
       user-select: none;
     }
 
-    .sb-thin-strip-fill {
+    .sb-compress-strip-fill {
       position: absolute;
       left: 0;
       top: 0;
       bottom: 0;
       width: 0%;
-      background: rgba(251, 191, 36, 0.28);
-      border-right: 1.5px solid var(--gold-accent);
+      background: linear-gradient(90deg, rgba(251, 191, 36, 0.34), rgba(251, 191, 36, 0.56));
       transition: width 0.2s ease;
       pointer-events: none;
-      z-index: 1;
     }
 
-    .sb-thin-strip-content {
+    .sb-compress-strip-content {
       position: relative;
-      z-index: 2;
+      z-index: 1;
       width: 100%;
-      padding: 3px 10px;
+      padding: 6px 10px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
       font-size: 11.5px;
-      line-height: 1.25;
+      font-weight: 600;
       color: var(--text-main);
     }
 
-    .sb-thin-strip-text {
-      flex: 1;
-      min-width: 0;
+    .sb-compress-strip-label {
+      color: var(--gold-accent);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      font-weight: 600;
-      color: var(--gold-accent);
     }
 
-    .sb-thin-strip-pct {
-      font-size: 10.5px;
+    .sb-compress-strip-pct {
+      font-size: 11px;
       font-weight: 700;
       color: var(--gold-accent);
       flex-shrink: 0;
     }
 
-    /* Painel expansível na altura da área de teclado ao clicar na tirinha */
-    .sb-keyboard-drawer {
+    .sb-compress-expanded-panel {
       width: 100%;
-      min-height: 220px;
-      max-height: 300px;
+      height: 220px;
+      max-height: 36dvh;
       background: #141b34;
       border: 1px solid var(--gold-accent);
       border-radius: 14px;
@@ -1083,17 +1076,20 @@
       gap: 8px;
     }
 
-    .sb-keyboard-drawer-header {
+    .sb-compress-expanded-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      font-size: 11.5px;
+    }
+
+    .sb-compress-expanded-title {
+      font-size: 12px;
       font-weight: 700;
       color: var(--gold-accent);
     }
 
-    .sb-keyboard-drawer-body {
+    .sb-compress-expanded-body {
       display: flex;
       align-items: center;
       gap: 12px;
@@ -1101,7 +1097,8 @@
       min-height: 0;
     }
 
-    .sb-keyboard-square-box {
+    .sb-compress-square-thumb {
+      position: relative;
       width: 96px;
       height: 96px;
       border-radius: 12px;
@@ -1109,32 +1106,35 @@
       border: 1.5px solid var(--gold-accent);
       background: #000;
       flex-shrink: 0;
-      cursor: zoom-in;
+      cursor: pointer;
     }
 
-    .sb-keyboard-square-box img,
-    .sb-keyboard-square-box video {
+    .sb-compress-square-thumb video,
+    .sb-compress-square-thumb img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .sb-keyboard-info-col {
-      flex: 1;
-      min-width: 0;
+    .sb-compress-info-lines {
       display: flex;
       flex-direction: column;
       gap: 4px;
       font-size: 12px;
       color: var(--text-main);
+      min-width: 0;
     }
 
-    .sb-keyboard-actions {
+    .sb-compress-info-lines strong {
+      color: var(--gold-accent);
+    }
+
+    .sb-compress-actions {
       display: flex;
-      align-items: center;
-      justify-content: flex-end;
       gap: 8px;
+      justify-content: flex-end;
+      align-items: center;
       flex-wrap: wrap;
     }
 
@@ -2244,7 +2244,7 @@
 
     function pauseOtherVideos(exceptVideo = null) {
       document.querySelectorAll('video').forEach(v => {
-        if (v !== exceptVideo && !v.dataset.sbProcessingVideo) {
+        if (v !== exceptVideo && !v.dataset.sbKeepAlive) {
           try {
             if (!v.paused) v.pause();
           } catch (e) {}
@@ -2259,7 +2259,7 @@
 
     document.addEventListener('play', (e) => {
       const target = e.target;
-      if (target && target.tagName === 'VIDEO' && !target.dataset.sbProcessingVideo) {
+      if (target && target.tagName === 'VIDEO') {
         pauseOtherVideos(target);
         syncPlayIconForVideo(target, true);
       }
@@ -2267,7 +2267,7 @@
 
     document.addEventListener('pause', (e) => {
       const target = e.target;
-      if (target && target.tagName === 'VIDEO' && !target.dataset.sbProcessingVideo) {
+      if (target && target.tagName === 'VIDEO') {
         syncPlayIconForVideo(target, false);
       }
     }, true);
@@ -2275,7 +2275,7 @@
     const feedViewportObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         const v = entry.target;
-        if (!entry.isIntersecting && v && !v.paused && !v.dataset.sbProcessingVideo) {
+        if (!entry.isIntersecting && v && !v.paused && !v.dataset.sbKeepAlive) {
           try { v.pause(); } catch (err) {}
           syncPlayIconForVideo(v, false);
         }
@@ -2545,11 +2545,11 @@
     const LOCAL_KEY = 'sherbluss_state_v3';
     const MAX_FILE_BYTES = 25 * 1024 * 1024;
     const TOLERANCE_BYTES = 25 * 1024 * 1024;
-    const MAX_VIDEO_DURATION_SECONDS = 300;
     const ADMIN_UID = "AwDFf16FsOg7u95ifzz8kvmJQIf2";
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
     const LONG_PRESS_DURATION_MS = 10000;
     const SCROLL_CANCEL_THRESHOLD_PX = 4;
+    const MAX_DURATION_SECONDS = 300;
 
     function getFlowerForLikes(likesCount) {
       const n = Number(likesCount) || 0;
@@ -2585,11 +2585,10 @@
       'fdp', 'filho da puta', 'desgraca', 'desgraça', 'merda', 'bosta', 'corno', 'vagabunda'
     ];
 
-    // 3 etapas progressivas de compressão sobre o arquivo já comprimido anteriormente
     const COMPRESSION_STEPS = [
-      { maxRes: 1080, fps: 30, videoBitrateKbps: 1200, audioBitrateKbps: 96, label: 'Compressão 1/3 (Alta qualidade)' },
-      { maxRes: 1080, fps: 24, videoBitrateKbps: 550, audioBitrateKbps: 64, label: 'Compressão 2/3 (Qualidade média)' },
-      { maxRes: 720, fps: 24, videoBitrateKbps: 260, audioBitrateKbps: 48, label: 'Compressão 3/3 (Compacta)' }
+      { maxRes: 1080, fps: 30, videoBitrateKbps: 1200, audioBitrateKbps: 96, label: 'Compressão 1/3' },
+      { maxRes: 1080, fps: 24, videoBitrateKbps: 550, audioBitrateKbps: 64, label: 'Compressão 2/3' },
+      { maxRes: 720, fps: 24, videoBitrateKbps: 260, audioBitrateKbps: 48, label: 'Compressão 3/3' }
     ];
 
     let toastTimeoutId = null;
@@ -2622,18 +2621,15 @@
     }
 
     function formatDurationLowercase(seconds) {
-      const secNum = Number(seconds);
-      if (!Number.isFinite(secNum) || secNum <= 0) return '0m00s';
-      const totalSec = Math.round(secNum);
+      const totalSec = Math.max(0, Math.round(Number(seconds) || 0));
       const mins = Math.floor(totalSec / 60);
-      const remSec = totalSec % 60;
-      return `${mins}m${String(remSec).padStart(2, '0')}s`;
+      const secs = totalSec % 60;
+      return `${mins}m${String(secs).padStart(2, '0')}s`;
     }
 
-    function formatSizeMbInteger(bytes) {
-      const b = Number(bytes);
-      if (!Number.isFinite(b) || b <= 0) return '0 MB';
-      return `${Math.round(b / (1024 * 1024))} MB`;
+    function formatSizeMbLabel(bytes) {
+      const mb = Math.round((Number(bytes) || 0) / (1024 * 1024));
+      return `${Math.max(1, mb)} MB`;
     }
 
     let pendingUploadState = {
@@ -2647,19 +2643,20 @@
         workingFile: null,
         url: '',
         isChallenge,
-        originalSizeMB: '',
-        originalSizeBytes: 0,
+        isVideo: false,
+        durationSec: 0,
         formattedDuration: '',
-        durationSeconds: 0,
-        compressedSizeMB: '',
-        compressedSizeBytes: 0,
-        compressionCompleted: false,
-        expandedDrawer: false,
+        originalSizeMB: 0,
+        originalSizeLabel: '',
+        finalSizeLabel: '',
         needsCompression: false,
+        awaitingUserChoice: false,
         attemptIndex: 0,
         progress: 0,
         statusText: '',
         isCompressing: false,
+        isCompleted: false,
+        isExpanded: false,
         readyToSend: false,
         compressionExhausted: false
       };
@@ -2731,11 +2728,11 @@
 
     window.clearPendingSlot = clearPendingSlot;
 
-    window.togglePendingStripDrawer = function(slotKey, event) {
+    window.toggleCompressionStripExpand = function(slotKey, event) {
       if (event) event.stopPropagation();
       const item = pendingUploadState[slotKey];
-      if (!item) return;
-      item.expandedDrawer = !item.expandedDrawer;
+      if (!item || !item.isVideo) return;
+      item.isExpanded = !item.isExpanded;
       renderPendingPreviewBars();
     };
 
@@ -2746,11 +2743,42 @@
       if (!item || !activeFile || !item.url) return;
       pauseAllVideos();
       const mediaType = activeFile.type.startsWith('video/') ? 'video' : 'image';
-      const sizeLabel = item.compressionCompleted && item.compressedSizeMB
-        ? item.compressedSizeMB
-        : (item.originalSizeMB || formatSizeMbInteger(activeFile.size));
-      const durLabel = item.formattedDuration ? ` • ${item.formattedDuration}` : '';
-      openLightbox(item.url, mediaType, `${activeFile.name} • ${sizeLabel}${durLabel}`);
+      const capParts = [activeFile.name];
+      if (item.formattedDuration) capParts.push(item.formattedDuration);
+      if (item.finalSizeLabel) capParts.push(item.finalSizeLabel);
+      else if (item.originalSizeLabel) capParts.push(item.originalSizeLabel);
+      openLightbox(item.url, mediaType, capParts.join(' • '));
+    };
+
+    window.startCompressionFromPrompt = async function(slotKey) {
+      const item = pendingUploadState[slotKey];
+      if (!item || !item.workingFile || item.isCompressing) return;
+      item.awaitingUserChoice = false;
+      item.needsCompression = true;
+      item.isCompleted = false;
+      item.attemptIndex = 0;
+      item.progress = 0;
+      item.statusText = 'Continue usando o Sher Bluss normalmente (não feche esta aba).';
+      renderPendingPreviewBars();
+      await runNextCompressionStep(slotKey);
+    };
+
+    window.declineCompressionFromPrompt = function(slotKey) {
+      const item = pendingUploadState[slotKey];
+      if (!item) return;
+      if (item.file && item.file.size > TOLERANCE_BYTES) {
+        clearPendingSlot(slotKey);
+        showSherBlussModal({
+          title: 'Compressão cancelada',
+          htmlBody: 'O vídeo excede 25 MB e não será enviado sem compressão.'
+        });
+        return;
+      }
+      item.awaitingUserChoice = false;
+      item.needsCompression = false;
+      item.readyToSend = true;
+      item.isCompleted = false;
+      renderPendingPreviewBars();
     };
 
     function renderPendingPreviewBars() {
@@ -2773,81 +2801,89 @@
 
         const isVid = activeFile.type.startsWith('video/');
         const mediaTag = isVid
-          ? `<video src="${escapeAttr(item.url)}" muted playsinline preload="metadata"></video>`
-          : `<img src="${escapeAttr(item.url)}" alt="Prévia">`;
+          ? `<video src="${escapeAttr(item.url)}" muted playsinline preload="metadata" data-sb-keep-alive="1" onclick="previewPendingSlotFullscreen('${key}',event)" title="Toque para abrir em tela cheia"></video>`
+          : `<img src="${escapeAttr(item.url)}" alt="Prévia" onclick="previewPendingSlotFullscreen('${key}',event)" title="Toque para abrir em tela cheia">`;
 
-        const origSizeStr = item.originalSizeMB || formatSizeMbInteger(item.file?.size || activeFile.size);
-        const durStr = item.formattedDuration || (isVid ? '0m00s' : '');
-        const finalSizeStr = item.compressedSizeMB || formatSizeMbInteger(activeFile.size);
+        const durSuffix = item.formattedDuration ? ` • ${item.formattedDuration}` : '';
+        const sizeDisplay = item.isCompleted && item.finalSizeLabel
+          ? item.finalSizeLabel
+          : (item.originalSizeLabel || formatSizeMbLabel(activeFile.size));
 
-        if (isVid && (item.isCompressing || item.compressionCompleted || item.needsCompression)) {
-          const pct = Math.max(0, Math.min(100, Math.round(item.progress || 0)));
-          const stripText = item.compressionCompleted
-            ? 'Compressão concluída'
-            : 'Continue usando o Sher Bluss normalmente (não feche esta aba)';
+        let extraHtml = '';
 
-          let drawerHtml = '';
-          if (item.expandedDrawer) {
-            const infoLines = item.compressionCompleted
-              ? `
-                <div><strong>Status:</strong> Compressão concluída</div>
-                <div><strong>Tamanho final:</strong> ${escapeHtml(finalSizeStr)} (original: ${escapeHtml(origSizeStr)})</div>
-                <div><strong>Duração:</strong> ${escapeHtml(durStr)}</div>
-              `
-              : `
-                <div><strong>Tamanho original:</strong> ${escapeHtml(origSizeStr)}</div>
-                <div><strong>Duração:</strong> ${escapeHtml(durStr)}</div>
-                <div><strong>Progresso:</strong> ${pct}%</div>
-              `;
-
-            let actionBtnHtml = '';
-            if (!item.compressionCompleted && !item.isCompressing && item.needsCompression && item.attemptIndex < COMPRESSION_STEPS.length) {
-              const nextStep = COMPRESSION_STEPS[item.attemptIndex];
-              const btnLabel = item.attemptIndex === 0 ? 'Comprimir (1/3)' : `Comprimir (${item.attemptIndex + 1}/3)`;
-              actionBtnHtml = `<button type="button" class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="event.stopPropagation();runNextCompressionStep('${key}')">${btnLabel} • ${escapeHtml(nextStep.label)}</button>`;
-            }
-
-            drawerHtml = `
-              <div class="sb-keyboard-drawer" onclick="event.stopPropagation()">
-                <div class="sb-keyboard-drawer-header">
-                  <span>${item.compressionCompleted ? 'Compressão concluída' : 'Detalhes da compressão'}</span>
-                  <button type="button" class="btn-pill-gold" style="padding:2px 9px;font-size:10.5px;" onclick="togglePendingStripDrawer('${key}',event)">Recolher</button>
-                </div>
-                <div class="sb-keyboard-drawer-body">
-                  <div class="sb-keyboard-square-box" onclick="previewPendingSlotFullscreen('${key}',event)" title="Ampliar vídeo">${mediaTag}</div>
-                  <div class="sb-keyboard-info-col">
-                    ${infoLines}
-                  </div>
-                </div>
-                <div class="sb-keyboard-actions">
-                  ${actionBtnHtml}
-                  <button type="button" class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="previewPendingSlotFullscreen('${key}',event)">Expandir vídeo</button>
-                </div>
+        if (item.awaitingUserChoice) {
+          extraHtml = `
+            <div class="sb-compress-expanded-panel" style="height:auto;max-height:none;">
+              <div class="sb-compress-expanded-header">
+                <span class="sb-compress-expanded-title">Deseja comprimir este vídeo?</span>
               </div>
-            `;
-          }
-
-          bar.innerHTML = `
-            ${drawerHtml}
-            <div class="sb-thin-strip" onclick="togglePendingStripDrawer('${key}',event)" title="Toque para expandir ou recolher">
-              <div class="sb-thin-strip-fill" style="width:${pct}%;"></div>
-              <div class="sb-thin-strip-content">
-                <span class="sb-thin-strip-text">${escapeHtml(stripText)}</span>
-                <span class="sb-thin-strip-pct">${pct}%</span>
+              <div style="font-size:12px;color:var(--text-main);">
+                Tamanho original: <strong>${escapeHtml(item.originalSizeLabel || formatSizeMbLabel(activeFile.size))}</strong> • Duração: <strong>${escapeHtml(item.formattedDuration || '0m00s')}</strong>
+              </div>
+              <div class="sb-compress-actions">
+                <button type="button" class="btn-pill-gold" style="padding:5px 12px;font-size:11.5px;" onclick="declineCompressionFromPrompt('${key}')">Não comprimir</button>
+                <button type="button" class="btn-gold" style="width:auto;padding:5px 14px;font-size:11.5px;" onclick="startCompressionFromPrompt('${key}')">Comprimir</button>
               </div>
             </div>
           `;
-          bar.classList.add('active');
-          return;
+        } else if (item.isCompressing || item.isCompleted || item.needsCompression) {
+          const pct = item.isCompleted ? 100 : Math.max(0, Math.min(100, Math.round(item.progress || 0)));
+          const stripText = item.isCompleted
+            ? 'Compressão concluída'
+            : 'Continue usando o Sher Bluss normalmente (não feche esta aba).';
+
+          const stripHtml = `
+            <div class="sb-compress-strip" onclick="toggleCompressionStripExpand('${key}',event)" title="Toque para expandir ou recolher">
+              <div class="sb-compress-strip-fill" style="width:${pct}%;"></div>
+              <div class="sb-compress-strip-content">
+                <span class="sb-compress-strip-label">${escapeHtml(stripText)}</span>
+                <span class="sb-compress-strip-pct">${pct}%</span>
+              </div>
+            </div>
+          `;
+
+          if (item.isExpanded) {
+            const sizeLineHtml = item.isCompleted
+              ? `<div>Tamanho comprimido: <strong>${escapeHtml(item.finalSizeLabel || formatSizeMbLabel(activeFile.size))}</strong></div>`
+              : `<div>Tamanho original: <strong>${escapeHtml(item.originalSizeLabel || formatSizeMbLabel(activeFile.size))}</strong></div>`;
+            const durLineHtml = item.formattedDuration
+              ? `<div>Duração: <strong>${escapeHtml(item.formattedDuration)}</strong></div>`
+              : '';
+            const expandBtnHtml = item.isCompleted
+              ? `<button type="button" class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="previewPendingSlotFullscreen('${key}',event)">Expandir vídeo</button>`
+              : '';
+
+            extraHtml = `
+              ${stripHtml}
+              <div class="sb-compress-expanded-panel">
+                <div class="sb-compress-expanded-header">
+                  <span class="sb-compress-expanded-title">${escapeHtml(item.isCompleted ? 'Compressão concluída' : 'Comprimindo vídeo')}</span>
+                  <button type="button" class="btn-pill-gold" style="padding:3px 10px;font-size:11px;" onclick="toggleCompressionStripExpand('${key}',event)">Recolher</button>
+                </div>
+                <div class="sb-compress-expanded-body">
+                  <div class="sb-compress-square-thumb" onclick="previewPendingSlotFullscreen('${key}',event)">${mediaTag}</div>
+                  <div class="sb-compress-info-lines">
+                    ${sizeLineHtml}
+                    ${durLineHtml}
+                  </div>
+                </div>
+                <div class="sb-compress-actions">
+                  ${expandBtnHtml}
+                </div>
+              </div>
+            `;
+          } else {
+            extraHtml = stripHtml;
+          }
         }
 
-        const sizeMb = (activeFile.size / (1024 * 1024)).toFixed(1);
         bar.innerHTML = `
           <div class="sb-pending-top-row">
             <div class="sb-pending-thumb-box" onclick="previewPendingSlotFullscreen('${key}',event)" title="Abrir em tela cheia">${mediaTag}</div>
-            <div class="sb-pending-meta" onclick="previewPendingSlotFullscreen('${key}',event)" title="Toque para conferir em tela cheia"><strong>${escapeHtml(activeFile.name)}</strong> • ${sizeMb} MB${durStr ? ` • ${escapeHtml(durStr)}` : ''}</div>
+            <div class="sb-pending-meta" onclick="previewPendingSlotFullscreen('${key}',event)" title="Toque para conferir em tela cheia"><strong>${escapeHtml(activeFile.name)}</strong> • ${sizeDisplay}${durSuffix}</div>
             <button type="button" class="delicate-x-btn" onclick="clearPendingSlot('${key}')" title="Remover seleção">✕</button>
           </div>
+          ${extraHtml}
         `;
         bar.classList.add('active');
       });
@@ -2860,9 +2896,10 @@
 
       const step = COMPRESSION_STEPS[item.attemptIndex];
       item.isCompressing = true;
-      item.compressionCompleted = false;
-      item.statusText = `${step.label}...`;
-      item.progress = 15;
+      item.isCompleted = false;
+      item.needsCompression = true;
+      item.statusText = 'Continue usando o Sher Bluss normalmente (não feche esta aba).';
+      item.progress = 8;
       renderPendingPreviewBars();
 
       const compressed = await compressVideoWithStudioEngine(
@@ -2870,7 +2907,7 @@
         step,
         (pct) => {
           if (!item.isCompressing) return;
-          item.progress = Math.max(15, Math.min(99, pct));
+          item.progress = Math.max(8, Math.min(99, pct));
           renderPendingPreviewBars();
         }
       );
@@ -2879,15 +2916,15 @@
       item.attemptIndex += 1;
 
       if (!compressed || compressed === item.workingFile) {
-        item.progress = 100;
-        if (item.attemptIndex >= COMPRESSION_STEPS.length) {
-          showSpecificUploadError(
-            'Limite de 25 MB não atingido',
-            `Após as 3 compressões, o vídeo continua acima de 25 MB (${(item.workingFile.size / (1024 * 1024)).toFixed(1)} MB) ou não pôde ser reduzido.`
-          );
+        if (item.attemptIndex < COMPRESSION_STEPS.length) {
+          await runNextCompressionStep(slotKey);
           return;
         }
-        item.statusText = `${step.label} concluída (${(item.workingFile.size / (1024 * 1024)).toFixed(1)} MB > 25 MB)`;
+        item.progress = 100;
+        item.isCompleted = true;
+        item.needsCompression = false;
+        item.finalSizeLabel = formatSizeMbLabel(item.workingFile.size);
+        item.readyToSend = item.workingFile.size <= TOLERANCE_BYTES;
         renderPendingPreviewBars();
         return;
       }
@@ -2895,31 +2932,28 @@
       if (item.url && item.url.startsWith('blob:')) {
         try { URL.revokeObjectURL(item.url); } catch (e) {}
       }
-      // Sempre encadeia a próxima compressão em cima do arquivo recém-comprimido
       item.workingFile = compressed;
       item.url = URL.createObjectURL(compressed);
-      item.progress = 100;
-      item.compressedSizeBytes = compressed.size;
-      item.compressedSizeMB = formatSizeMbInteger(compressed.size);
+      item.finalSizeLabel = formatSizeMbLabel(compressed.size);
 
       if (compressed.size <= TOLERANCE_BYTES) {
+        item.progress = 100;
+        item.isCompleted = true;
         item.needsCompression = false;
         item.readyToSend = true;
-        item.compressionCompleted = true;
-        item.statusText = 'Compressão concluída';
         renderPendingPreviewBars();
         return;
       }
 
-      if (item.attemptIndex >= COMPRESSION_STEPS.length) {
-        showSpecificUploadError(
-          'Limite de 25 MB excedido',
-          `O vídeo ficou com ${(compressed.size / (1024 * 1024)).toFixed(1)} MB após as 3 compressões (limite: 25 MB).`
-        );
+      if (item.attemptIndex < COMPRESSION_STEPS.length) {
+        await runNextCompressionStep(slotKey);
         return;
       }
 
-      item.statusText = `${step.label} concluída: ${(compressed.size / (1024 * 1024)).toFixed(1)} MB (acima de 25 MB)`;
+      item.progress = 100;
+      item.isCompleted = true;
+      item.needsCompression = false;
+      item.readyToSend = false;
       renderPendingPreviewBars();
     };
 
@@ -2954,11 +2988,11 @@
 
       return new Promise((resolve) => {
         const procVideo = document.createElement('video');
-        procVideo.dataset.sbProcessingVideo = '1';
         procVideo.src = inputUrl;
         procVideo.playsInline = true;
         procVideo.muted = false;
         procVideo.preload = 'auto';
+        procVideo.dataset.sbKeepAlive = '1';
 
         let audioCtx = null;
         let rafId = null;
@@ -3006,7 +3040,6 @@
             const canvasStream = canvas.captureStream(stepConfig.fps);
             const combinedStream = new MediaStream([...canvasStream.getVideoTracks()]);
 
-            // Captura a faixa de áudio original via WebAudio mantendo o vídeo sem eco no alto-falante
             try {
               const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
               if (AudioCtxClass) {
@@ -3618,7 +3651,6 @@
     function getVideoDuration(file) {
       return new Promise(res => {
         const v = document.createElement('video');
-        v.dataset.sbProcessingVideo = '1';
         v.preload = 'metadata';
         let settled = false;
         const finish = (val) => {
@@ -3630,7 +3662,7 @@
         };
         v.onloadedmetadata = () => finish(v.duration);
         v.onerror = () => finish(0);
-        setTimeout(() => finish(0), 3000);
+        setTimeout(() => finish(0), 2500);
         v.src = URL.createObjectURL(file);
       });
     }
@@ -3695,10 +3727,10 @@
         }
 
         const dur = await getVideoDuration(file);
-        if (Number.isFinite(dur) && dur > MAX_VIDEO_DURATION_SECONDS) {
+        if (Number.isFinite(dur) && dur > MAX_DURATION_SECONDS) {
           showSpecificUploadError(
-            'Duração acima do permitido',
-            'O vídeo ultrapassou o limite máximo de 5 minutos.'
+            'Limite de 5 minutos',
+            'O vídeo ultrapassou o limite de 5 minutos.'
           );
           return null;
         }
@@ -5793,50 +5825,97 @@
     };
 
     async function setupPendingSlotFromFile(slotKey, file) {
+      if (!validMediaFile(file)) {
+        showFileError(file);
+        return;
+      }
+
+      const isVideo = file.type.startsWith('video/');
+      if (isVideo) {
+        const h264Check = await checkH264Compatibility(file);
+        if (!h264Check.ok) {
+          showSpecificUploadError(
+            'Incompatibilidade de vídeo',
+            escapeHtml(h264Check.reason)
+          );
+          return;
+        }
+
+        const durationSec = await getVideoDuration(file);
+        if (Number.isFinite(durationSec) && durationSec > MAX_DURATION_SECONDS) {
+          showSpecificUploadError(
+            'Limite de 5 minutos',
+            'O vídeo ultrapassou o limite de 5 minutos.'
+          );
+          return;
+        }
+
+        const originalSizeMB = Number((file.size / (1024 * 1024)).toFixed(1));
+        const originalSizeLabel = formatSizeMbLabel(file.size);
+        const formattedDuration = formatDurationLowercase(durationSec);
+
+        if (pendingUploadState[slotKey]?.url && pendingUploadState[slotKey].url.startsWith('blob:')) {
+          try { URL.revokeObjectURL(pendingUploadState[slotKey].url); } catch (e) {}
+        }
+
+        const previewUrl = URL.createObjectURL(file);
+        pendingUploadState[slotKey] = {
+          file: file,
+          workingFile: file,
+          url: previewUrl,
+          isChallenge: slotKey === 'challenge',
+          isVideo: true,
+          durationSec: durationSec,
+          formattedDuration: formattedDuration,
+          originalSizeMB: originalSizeMB,
+          originalSizeLabel: originalSizeLabel,
+          finalSizeLabel: '',
+          needsCompression: false,
+          awaitingUserChoice: true,
+          attemptIndex: 0,
+          progress: 0,
+          statusText: '',
+          isCompressing: false,
+          isCompleted: false,
+          isExpanded: false,
+          readyToSend: false,
+          compressionExhausted: false
+        };
+
+        if (slotKey === 'main') {
+          const wrap = document.getElementById('floatingComposerWrapper');
+          if (wrap) wrap.classList.add('expanded');
+        }
+        renderPendingPreviewBars();
+        return;
+      }
+
       if (pendingUploadState[slotKey]?.url && pendingUploadState[slotKey].url.startsWith('blob:')) {
         try { URL.revokeObjectURL(pendingUploadState[slotKey].url); } catch (e) {}
       }
 
-      const isVideo = file.type.startsWith('video/');
-      let durSec = 0;
-      let formattedDur = '';
-
-      if (isVideo) {
-        durSec = await getVideoDuration(file);
-        if (Number.isFinite(durSec) && durSec > MAX_VIDEO_DURATION_SECONDS) {
-          showSpecificUploadError(
-            'Duração acima do permitido',
-            'O vídeo ultrapassou o limite máximo de 5 minutos.'
-          );
-          return;
-        }
-        formattedDur = formatDurationLowercase(durSec);
-      }
-
       const previewUrl = URL.createObjectURL(file);
       const isOverLimit = file.size > TOLERANCE_BYTES;
-      const origMbStr = formatSizeMbInteger(file.size);
 
       pendingUploadState[slotKey] = {
         file: file,
         workingFile: file,
         url: previewUrl,
         isChallenge: slotKey === 'challenge',
-        originalSizeMB: origMbStr,
-        originalSizeBytes: file.size,
-        formattedDuration: formattedDur,
-        durationSeconds: durSec,
-        compressedSizeMB: isOverLimit ? '' : origMbStr,
-        compressedSizeBytes: isOverLimit ? 0 : file.size,
-        compressionCompleted: false,
-        expandedDrawer: false,
+        isVideo: false,
+        durationSec: 0,
+        formattedDuration: '',
+        originalSizeMB: Number((file.size / (1024 * 1024)).toFixed(1)),
+        originalSizeLabel: formatSizeMbLabel(file.size),
+        finalSizeLabel: '',
         needsCompression: isOverLimit,
+        awaitingUserChoice: false,
         attemptIndex: 0,
         progress: isOverLimit ? 0 : 100,
-        statusText: isOverLimit
-          ? 'Continue usando o Sher Bluss normalmente (não feche esta aba)'
-          : 'Pronto para enviar na setinha',
+        statusText: '',
         isCompressing: false,
+        isCompleted: false,
+        isExpanded: false,
         readyToSend: !isOverLimit,
         compressionExhausted: false
       };
@@ -5846,31 +5925,11 @@
         if (wrap) wrap.classList.add('expanded');
       }
       renderPendingPreviewBars();
-
-      if (isVideo && isOverLimit) {
-        runNextCompressionStep(slotKey);
-      }
     }
 
     window.handleUniversalMediaSelected = async function(event) {
       const file = event.target.files[0];
       if (!file) return;
-      if (!validMediaFile(file)) {
-        showFileError(file);
-        return;
-      }
-
-      if (file.type.startsWith('video/')) {
-        const h264Check = await checkH264Compatibility(file);
-        if (!h264Check.ok) {
-          showSpecificUploadError(
-            'Incompatibilidade de vídeo',
-            escapeHtml(h264Check.reason)
-          );
-          return;
-        }
-      }
-
       await setupPendingSlotFromFile('main', file);
     };
 
@@ -5892,22 +5951,6 @@
         return;
       }
 
-      if (!validMediaFile(file)) {
-        showFileError(file);
-        return;
-      }
-
-      if (file.type.startsWith('video/')) {
-        const h264Check = await checkH264Compatibility(file);
-        if (!h264Check.ok) {
-          showSpecificUploadError(
-            'Incompatibilidade de vídeo',
-            escapeHtml(h264Check.reason)
-          );
-          return;
-        }
-      }
-
       await setupPendingSlotFromFile('challenge', file);
     };
 
@@ -5915,6 +5958,16 @@
       const pending = pendingUploadState.challenge;
       if (!pending || !pending.workingFile) return;
       if (!validateChallengeSelectionAgainstRequest()) return;
+
+      if (pending.awaitingUserChoice) {
+        showSherBlussModal({
+          title: 'Escolha antes de enviar',
+          htmlBody: 'Selecione se deseja comprimir ou não o vídeo antes de enviar.'
+        });
+        return;
+      }
+
+      if (pending.isCompressing) return;
 
       if (pending.needsCompression && !pending.readyToSend) {
         await runNextCompressionStep('challenge');
@@ -6061,7 +6114,7 @@
                   <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(u.handle || '@usuaria')}</div>
                 </div>
               </div>
-              <span style="font-size:11.5px;color:var(--gold-accent);">Ver Perfil</span>
+              <span style="font-size:11.5px;color:var(--gold-accent);font-weight:600;">Ver perfil →</span>
             </div>
           `)
           .join('');
@@ -6072,65 +6125,34 @@
       }
 
       if (!matchedUsers.length && !matchedPosts.length) {
-        html += `<div class="glass-panel empty-state-box">Nenhum perfil ou publicação encontrada para <strong>@${escapeHtml(q)}</strong>.</div>`;
+        html += `<div class="glass-panel empty-state-box">Nenhuma conta ou publicação encontrada para <strong>@${escapeHtml(q)}</strong>.</div>`;
       }
 
       container.innerHTML = html;
       observeFeedVideos();
     };
 
-    window.switchView = function(viewName) {
-      pauseAllVideos();
-      if (document.body.classList.contains('full-game-mode')) {
-        collapseFullGameStage();
-      }
-      activeVisitedUserUid = null;
-      applyUserTheme();
-
-      document.getElementById('headerProfileBtn').classList.remove('hidden-in-profile-view');
-      document.getElementById('carouselWrapper').classList.remove('hidden-in-profile');
-      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
-
-      const t = document.getElementById('view-' + viewName);
-      if (t) t.classList.add('active');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-
-      const comp = document.getElementById('floatingComposerWrapper');
-      if (viewName === 'desafio' || viewName === 'amigos' || viewName === 'jogos' || viewName === 'fandom' || viewName === 'chat') {
-        comp.classList.add('hidden-in-challenge');
-      } else {
-        comp.classList.remove('hidden-in-challenge');
-      }
-
-      renderAll();
-      observeFeedVideos();
-    };
-
     window.submitPost = async function() {
       requireAuthForAction(async () => {
-        if (document.getElementById('view-desafio').classList.contains('active')) {
-          if (pendingUploadState.challenge.workingFile) {
-            await confirmChallengePendingUpload();
+        const challengePending = pendingUploadState.challenge;
+        if (challengePending && challengePending.workingFile) {
+          await confirmChallengePendingUpload();
+          return;
+        }
+
+        const mainPending = pendingUploadState.main;
+        if (mainPending && mainPending.workingFile) {
+          if (mainPending.awaitingUserChoice) {
+            showSherBlussModal({
+              title: 'Escolha antes de enviar',
+              htmlBody: 'Selecione se deseja comprimir ou não o vídeo antes de enviar.'
+            });
+            return;
           }
-          return;
-        }
 
-        const input = document.getElementById('mainComposerInput');
-        const text = input.value.trim();
-        const pendingMain = pendingUploadState.main;
+          if (mainPending.isCompressing) return;
 
-        if (!text && !pendingMain.workingFile) {
-          showSherBlussModal({
-            title: 'Publicação Vazia',
-            htmlBody: 'Escreva uma mensagem ou escolha uma foto/vídeo para publicar.'
-          });
-          return;
-        }
-
-        if (text && !assertCleanContent(text, 'a publicação')) return;
-
-        if (pendingMain.workingFile) {
-          if (pendingMain.needsCompression && !pendingMain.readyToSend) {
+          if (mainPending.needsCompression && !mainPending.readyToSend) {
             await runNextCompressionStep('main');
             return;
           }
@@ -6138,7 +6160,7 @@
           const sendBtn = document.getElementById('mainSendBtn');
           if (sendBtn) sendBtn.disabled = true;
 
-          const up = await uploadMediaToCloudinary(pendingMain.workingFile);
+          const up = await uploadMediaToCloudinary(mainPending.workingFile);
           if (!up) {
             if (sendBtn) sendBtn.disabled = false;
             return;
@@ -6150,101 +6172,109 @@
           return;
         }
 
+        const input = document.getElementById('mainComposerInput');
+        const text = input.value.trim();
+        if (!text) return;
+        if (!assertCleanContent(text, 'a publicação')) return;
+
         await submitPostDirectlyWithMedia('', '', false);
       });
     };
 
-    window.toggleLikePost = function(postId) {
+    window.toggleLikePost = async function(postId) {
       requireAuthForAction(async () => {
-        if (!appState.user.uid) return;
+        if (appState.dailyVotes.date !== new Date().toDateString()) {
+          appState.dailyVotes = { date: new Date().toDateString(), used: 0 };
+        }
+
         const post = postsFromFirebase.find(p => p.id === postId);
         if (!post) return;
 
-        const isChallengePost = !!post.isChallenge;
-        const today = new Date().toDateString();
-        if (appState.dailyVotes.date !== today) {
-          appState.dailyVotes = { date: today, used: 0 };
-        }
+        const likedBy = Array.isArray(post.likedBy) ? [...post.likedBy] : [];
+        const isAlreadyLiked = likedBy.includes(appState.user.uid);
 
-        const currentLikedBy = Array.isArray(post.likedBy) ? [...post.likedBy] : [];
-        const alreadyLiked = currentLikedBy.includes(appState.user.uid);
-        const currentLikes = Math.max(0, Number(post.likes) || 0);
-
-        if (isChallengePost && !alreadyLiked && appState.dailyVotes.used >= 3) {
+        if (!isAlreadyLiked && appState.dailyVotes.used >= 3) {
           showSherBlussModal({
-            title: 'Limite Diário de Votos Atingido',
-            htmlBody: 'Você já utilizou seus <strong>3 votos</strong> de hoje no desafio. Seu voto reseta à meia-noite.'
+            title: 'Limite de Curtidas Atingido',
+            htmlBody: 'Você já usou suas <strong>3 curtidas</strong> de hoje. Volta à meia-noite!'
           });
           return;
         }
 
-        const nextLiked = !alreadyLiked;
-        const nextCount = nextLiked ? currentLikes + 1 : Math.max(0, currentLikes - 1);
-        const nextLikedBy = nextLiked
-          ? [...new Set([...currentLikedBy, appState.user.uid])]
-          : currentLikedBy.filter(u => u !== appState.user.uid);
+        try {
+          const postRef = doc(db, "posts", postId);
+          await runTransaction(db, async tx => {
+            const snap = await tx.get(postRef);
+            if (!snap.exists()) return;
 
-        post.likes = nextCount;
-        post.likedBy = nextLikedBy;
-        updatePostLikeElementsInDom(postId, nextCount, nextLiked);
+            const data = snap.data();
+            const currentLiked = Array.isArray(data.likedBy) ? [...data.likedBy] : [];
+            const currentlyLiked = currentLiked.includes(appState.user.uid);
+            let nextLikes = Math.max(0, Number(data.likes) || 0);
 
-        if (isChallengePost) {
-          appState.dailyVotes.used = nextLiked
-            ? Math.min(3, appState.dailyVotes.used + 1)
-            : Math.max(0, appState.dailyVotes.used - 1);
+            if (currentlyLiked) {
+              const filtered = currentLiked.filter(u => u !== appState.user.uid);
+              nextLikes = Math.max(0, nextLikes - 1);
+              tx.update(postRef, { likedBy: filtered, likes: nextLikes });
+            } else {
+              currentLiked.push(appState.user.uid);
+              nextLikes += 1;
+              tx.update(postRef, { likedBy: currentLiked, likes: nextLikes });
+            }
+          });
+
+          if (!isAlreadyLiked) {
+            appState.dailyVotes.used += 1;
+            if (!likedBy.includes(appState.user.uid)) likedBy.push(appState.user.uid);
+            post.likes = (post.likes || 0) + 1;
+            post.likedBy = likedBy;
+            updatePostLikeElementsInDom(postId, post.likes, true);
+          } else {
+            appState.dailyVotes.used = Math.max(0, appState.dailyVotes.used - 1);
+            post.likes = Math.max(0, (post.likes || 1) - 1);
+            post.likedBy = likedBy.filter(u => u !== appState.user.uid);
+            updatePostLikeElementsInDom(postId, post.likes, false);
+          }
+
           saveLocal();
           const c = document.getElementById('dailyVotesCounter');
           if (c) c.textContent = `${3 - appState.dailyVotes.used}/3`;
-        }
-
-        renderWeeklyPodiumCarousel();
-
-        try {
-          const postRef = doc(db, "posts", postId);
-          await runTransaction(db, async (tx) => {
-            const snap = await tx.get(postRef);
-            if (!snap.exists()) return;
-            const data = snap.data();
-            const serverLikedBy = Array.isArray(data.likedBy) ? data.likedBy : [];
-            const serverCount = Math.max(0, Number(data.likes) || 0);
-            const hasLiked = serverLikedBy.includes(appState.user.uid);
-
-            if (nextLiked && !hasLiked) {
-              tx.update(postRef, {
-                likes: serverCount + 1,
-                likedBy: [...new Set([...serverLikedBy, appState.user.uid])]
-              });
-            } else if (!nextLiked && hasLiked) {
-              tx.update(postRef, {
-                likes: Math.max(0, serverCount - 1),
-                likedBy: serverLikedBy.filter(u => u !== appState.user.uid)
-              });
-            }
-          });
+          renderWeeklyPodiumCarousel();
         } catch (e) {
-          console.error(e);
+          showSherBlussModal({
+            title: 'Erro ao Curtir',
+            htmlBody: escapeHtml(e.message)
+          });
         }
       });
     };
 
-    window.addCommentToPost = function(postId) {
+    window.submitCommentOnPost = async function(postId) {
       requireAuthForAction(async () => {
-        const input = document.getElementById(`comment_input_${postId}`);
-        const text = input.value.trim();
+        const inp = document.getElementById(`comment_input_${postId}`);
+        const text = inp.value.trim();
         if (!text) return;
         if (!assertCleanContent(text, 'o comentário')) return;
 
-        input.value = '';
+        const commentObj = {
+          text,
+          authorName: appState.user.name,
+          authorUid: appState.user.uid,
+          createdAt: Date.now()
+        };
+
         try {
-          const newCommentObj = {
-            text: text,
-            authorName: appState.user.name,
-            authorUid: appState.user.uid,
-            createdAt: Date.now()
-          };
-          await updateDoc(doc(db, "posts", postId), {
-            comments: arrayUnion(newCommentObj)
-          });
+          await updateDoc(doc(db, "posts", postId), { comments: arrayUnion(commentObj) });
+          inp.value = '';
+          const p = postsFromFirebase.find(x => x.id === postId);
+          if (p) {
+            if (!Array.isArray(p.comments)) p.comments = [];
+            p.comments.push(commentObj);
+            const listEl = document.getElementById(`comments_list_${postId}`);
+            if (listEl) {
+              listEl.innerHTML = renderCommentsListHTML(p);
+            }
+          }
           showSentFeedbackToast('Enviado!');
         } catch (e) {
           showSherBlussModal({
@@ -6256,62 +6286,69 @@
     };
 
     window.deleteCommentFromPost = async function(postId, commentIndex) {
-      const post = postsFromFirebase.find(p => p.id === postId);
-      if (!post || !Array.isArray(post.comments)) return;
-      const target = normalizeComment(post.comments[commentIndex]);
-      if (!target) return;
+      requireAuthForAction(async () => {
+        const post = postsFromFirebase.find(p => p.id === postId);
+        if (!post || !Array.isArray(post.comments)) return;
 
-      const canDeleteComment = isModAdminUser() || (appState.user.uid && target.authorUid === appState.user.uid);
-      if (!canDeleteComment) {
-        showSherBlussModal({
-          title: 'Permissão necessária',
-          htmlBody: 'Você só pode excluir os seus próprios comentários.'
-        });
-        return;
-      }
+        const raw = post.comments[commentIndex];
+        if (!raw) return;
 
-      const updatedComments = post.comments.filter((_, idx) => idx !== commentIndex);
-      try {
-        await updateDoc(doc(db, "posts", postId), { comments: updatedComments });
-      } catch (e) {
-        showSherBlussModal({
-          title: 'Erro ao Excluir',
-          htmlBody: escapeHtml(e.message)
-        });
-      }
+        const norm = normalizeComment(raw);
+        const isAuthor = norm && norm.authorUid && norm.authorUid === appState.user.uid;
+        const canMod = isModAdminUser() || canDeleteSpecificPost(post);
+
+        if (!isAuthor && !canMod) {
+          showSherBlussModal({
+            title: 'Sem permissão',
+            htmlBody: 'Você só pode excluir seus próprios comentários.'
+          });
+          return;
+        }
+
+        const updatedComments = post.comments.filter((_, idx) => idx !== commentIndex);
+        try {
+          await updateDoc(doc(db, "posts", postId), { comments: updatedComments });
+          post.comments = updatedComments;
+          const listEl = document.getElementById(`comments_list_${postId}`);
+          if (listEl) {
+            listEl.innerHTML = renderCommentsListHTML(post);
+          }
+        } catch (e) {
+          showSherBlussModal({
+            title: 'Erro ao Excluir Comentário',
+            htmlBody: escapeHtml(e.message)
+          });
+        }
+      });
     };
 
     window.confirmDeletePost = function(postId) {
-      const post = postsFromFirebase.find(p => p.id === postId);
-      if (!canDeleteSpecificPost(post)) {
-        showSherBlussModal({
-          title: 'Ação não permitida',
-          htmlBody: 'Você não tem permissão para excluir esta publicação.'
-        });
-        return;
-      }
+      requireAuthForAction(() => {
+        const post = postsFromFirebase.find(p => p.id === postId);
+        if (!post || !canDeleteSpecificPost(post)) return;
 
-      showSherBlussModal({
-        title: 'Excluir Publicação',
-        htmlBody: 'Tem certeza que deseja excluir esta publicação permanentemente?',
-        buttons: [
-          { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
-          {
-            label: 'Excluir',
-            primary: true,
-            onClick: async () => {
-              try {
-                await deleteDoc(doc(db, "posts", postId));
-                closeSherBlussModal();
-              } catch (e) {
-                showSherBlussModal({
-                  title: 'Erro ao Excluir',
-                  htmlBody: escapeHtml(e.message)
-                });
+        showSherBlussModal({
+          title: 'Excluir Publicação',
+          htmlBody: 'Tem certeza que deseja apagar esta publicação para sempre?',
+          buttons: [
+            { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
+            {
+              label: 'Excluir',
+              primary: true,
+              onClick: async () => {
+                try {
+                  await deleteDoc(doc(db, "posts", postId));
+                  closeSherBlussModal();
+                } catch (e) {
+                  showSherBlussModal({
+                    title: 'Erro ao Excluir',
+                    htmlBody: escapeHtml(e.message)
+                  });
+                }
               }
             }
-          }
-        ]
+          ]
+        });
       });
     };
 
@@ -6322,41 +6359,34 @@
           htmlBody: `
             <div class="form-group">
               <label class="form-label">Nome do Fandom</label>
-              <input type="text" id="newFandomName" class="glass-input" placeholder="Ex: EXO-L, Dorama Lovers...">
+              <input type="text" id="newFandomNameInput" class="glass-input" placeholder="Ex: Dorameiras do Coração...">
             </div>
             <div class="form-group">
               <label class="form-label">Cor de Identificação</label>
-              <input type="color" id="newFandomColor" class="glass-input" style="height:44px;padding:4px;" value="#fbbf24">
+              <input type="color" id="newFandomColorInput" value="#fbbf24" style="width:44px;height:44px;border:none;background:transparent;">
             </div>
           `,
           buttons: [
             { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
             {
-              label: 'Criar',
+              label: 'Criar Fandom',
               primary: true,
               onClick: async () => {
-                const name = document.getElementById('newFandomName').value.trim();
-                const color = document.getElementById('newFandomColor').value;
+                const name = document.getElementById('newFandomNameInput').value.trim();
                 if (!name) return;
                 if (!assertCleanContent(name, 'o nome do fandom')) return;
+                const color = document.getElementById('newFandomColorInput').value;
 
-                try {
-                  const members = withAdminMember([appState.user.uid]);
-                  await addDoc(collection(db, "fandoms"), {
-                    name,
-                    color,
-                    creatorUid: appState.user.uid,
-                    admins: withAdminMember([appState.user.uid]),
-                    members: members,
-                    pendingRequests: []
-                  });
-                  closeSherBlussModal();
-                } catch (e) {
-                  showSherBlussModal({
-                    title: 'Erro ao Criar',
-                    htmlBody: escapeHtml(e.message)
-                  });
-                }
+                await addDoc(collection(db, "fandoms"), {
+                  name,
+                  color,
+                  creatorUid: appState.user.uid,
+                  admins: withAdminMember([appState.user.uid]),
+                  members: withAdminMember([appState.user.uid]),
+                  pendingRequests: [],
+                  createdAt: serverTimestamp()
+                });
+                closeSherBlussModal();
               }
             }
           ]
@@ -6364,49 +6394,54 @@
       });
     };
 
-    window.handleFandomCardClick = async function(fandomId) {
-      requireAuthForAction(async () => {
-        const f = appState.fandoms.find(x => x.id === fandomId);
-        if (!f) return;
+    window.openFandomDirect = function(fandomId) {
+      const f = appState.fandoms.find(x => x.id === fandomId);
+      if (!f) return;
 
-        const isMember = (f.members && f.members.includes(appState.user.uid)) || f.creatorUid === appState.user.uid || isModAdminUser();
-        if (isMember) {
-          activeFandomFilter = f.name;
-          document.getElementById('insideFandomTitle').textContent = f.name;
-          document.getElementById('floatingComposerWrapper').classList.remove('hidden-in-challenge');
-          switchView('inside-fandom');
-          return;
-        }
+      const isMember = appState.user.loggedIn && (
+        isModAdminUser() ||
+        (f.members && f.members.includes(appState.user.uid)) ||
+        f.creatorUid === appState.user.uid
+      );
 
-        const alreadyRequested = (f.pendingRequests || []).some(r => r.uid === appState.user.uid);
-        if (alreadyRequested) {
-          showSherBlussModal({
-            title: 'Solicitação Pendente',
-            htmlBody: `Seu pedido para entrar em <strong>${escapeHtml(f.name)}</strong> está aguardando aprovação da moderadora.`
-          });
-          return;
-        }
+      if (isMember) {
+        activeFandomFilter = f.name;
+        document.getElementById('insideFandomTitle').textContent = f.name;
+        switchView('inside-fandom');
+        return;
+      }
 
+      const alreadyRequested = appState.user.loggedIn && (f.pendingRequests || []).some(r => r.uid === appState.user.uid);
+      if (alreadyRequested) {
         showSherBlussModal({
-          title: `Fandom Privado: ${escapeHtml(f.name)}`,
-          htmlBody: 'Este espaço é particular. Deseja solicitar entrada para a criadora/moderadora do fandom?',
-          buttons: [
-            { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
-            {
-              label: 'Solicitar Entrada 🔒',
-              primary: true,
-              onClick: async () => {
+          title: 'Solicitação enviada 🔒',
+          htmlBody: `Seu pedido para entrar em <strong>${escapeHtml(f.name)}</strong> já foi enviado para os administradores do fandom.`
+        });
+        return;
+      }
+
+      showSherBlussModal({
+        title: `🔒 ${escapeHtml(f.name)}`,
+        htmlBody: 'Este fandom é particular. Deseja enviar uma solicitação para entrar?',
+        buttons: [
+          { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
+          {
+            label: 'Solicitar Entrada 🔒',
+            primary: true,
+            onClick: () => {
+              requireAuthForAction(async () => {
                 try {
-                  await updateDoc(doc(db, "fandoms", fandomId), {
+                  await updateDoc(doc(db, "fandoms", f.id), {
                     pendingRequests: arrayUnion({
                       uid: appState.user.uid,
-                      name: appState.user.name
+                      name: appState.user.name,
+                      handle: appState.user.handle
                     })
                   });
                   closeSherBlussModal();
                   showSherBlussModal({
-                    title: 'Solicitação Enviada!',
-                    htmlBody: 'O pedido foi enviado.'
+                    title: 'Solicitação Enviada! 🔒',
+                    htmlBody: `A criadora/administradora de <strong>${escapeHtml(f.name)}</strong> receberá o seu pedido.`
                   });
                 } catch (e) {
                   showSherBlussModal({
@@ -6414,10 +6449,176 @@
                     htmlBody: escapeHtml(e.message)
                   });
                 }
+              });
+            }
+          }
+        ]
+      });
+    };
+
+    window.openFandomOptionsMenu = function() {
+      const f = appState.fandoms.find(x => x.name === activeFandomFilter);
+      if (!f) return;
+
+      const isAdmin = isFandomModerator(f);
+      let html = `
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <button class="btn-pill-gold" style="width:100%;" onclick="closeSherBlussModal();leaveCurrentFandom('${escapeAttr(f.id)}')">Sair deste Fandom</button>
+      `;
+
+      if (isAdmin) {
+        html += `
+          <button class="btn-gold" onclick="closeSherBlussModal();openInviteUserToFandomModal('${escapeAttr(f.id)}')">+ Convidar usuário por @arroba</button>
+          <button class="btn-pill-gold" style="width:100%;" onclick="closeSherBlussModal();openManageFandomAdminsModal('${escapeAttr(f.id)}')">👑 Gerenciar Administradores</button>
+          <button class="btn-danger-pill" style="width:100%;padding:10px;" onclick="closeSherBlussModal();confirmDeleteFandom('${escapeAttr(f.id)}')">🗑️ Excluir Fandom</button>
+        `;
+      }
+
+      html += `</div>`;
+      showSherBlussModal({
+        title: `Opções • ${escapeHtml(f.name)}`,
+        htmlBody: html,
+        buttons: [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }]
+      });
+    };
+
+    window.leaveCurrentFandom = async function(fandomId) {
+      if (!appState.user.uid) return;
+      try {
+        await updateDoc(doc(db, "fandoms", fandomId), {
+          members: arrayRemove(appState.user.uid),
+          admins: arrayRemove(appState.user.uid)
+        });
+        closeCurrentFandom();
+      } catch (e) {}
+    };
+
+    window.openInviteUserToFandomModal = function(fandomId) {
+      const f = appState.fandoms.find(x => x.id === fandomId);
+      if (!f) return;
+
+      showSherBlussModal({
+        title: `Convidar para ${escapeHtml(f.name)}`,
+        htmlBody: `
+          <p style="font-size:12px;color:var(--text-muted);margin-bottom:10px;">Digite o @arroba da pessoa para adicionar diretamente ao fandom:</p>
+          <div class="form-group">
+            <input type="text" id="inviteFandomHandleInput" class="glass-input notranslate" placeholder="@coleguinha">
+          </div>
+        `,
+        buttons: [
+          { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
+          {
+            label: 'Adicionar ao Fandom',
+            primary: true,
+            onClick: async () => {
+              let raw = document.getElementById('inviteFandomHandleInput').value.trim().toLowerCase();
+              if (!raw) return;
+              if (!raw.startsWith('@')) raw = '@' + raw;
+              const target = usersDirectory.find(u => (u.handle || '').toLowerCase() === raw);
+              if (!target || !target.uid) {
+                showSherBlussModal({
+                  title: 'Usuário não encontrado',
+                  htmlBody: `Não encontramos nenhuma conta com o arroba <strong>${escapeHtml(raw)}</strong>.`
+                });
+                return;
+              }
+              try {
+                await updateDoc(doc(db, "fandoms", fandomId), {
+                  members: arrayUnion(target.uid)
+                });
+                const fPosts = postsFromFirebase.filter(p => p.fandomDocId === fandomId || p.fandom === f.name);
+                for (const p of fPosts) {
+                  await updateDoc(doc(db, "posts", p.id), {
+                    memberUids: arrayUnion(target.uid)
+                  }).catch(() => {});
+                }
+                closeSherBlussModal();
+                showSherBlussModal({
+                  title: 'Adicionado! 🌸',
+                  htmlBody: `<strong>${escapeHtml(target.name || raw)}</strong> (${escapeHtml(raw)}) agora faz parte do fandom <strong>${escapeHtml(f.name)}</strong>.`
+                });
+              } catch (e) {
+                showSherBlussModal({
+                  title: 'Erro ao Convidar',
+                  htmlBody: escapeHtml(e.message)
+                });
               }
             }
-          ]
+          }
+        ]
+      });
+    };
+
+    window.openManageFandomAdminsModal = function(fandomId) {
+      const f = appState.fandoms.find(x => x.id === fandomId);
+      if (!f) return;
+
+      const memberUids = [...new Set([...(f.members || []), f.creatorUid].filter(Boolean))];
+      const rowsHtml = memberUids.length
+        ? memberUids
+            .map(uid => {
+              const u = usersDirectory.find(x => x.uid === uid) || { name: uid, handle: '' };
+              const isAdm = f.creatorUid === uid || (f.admins && f.admins.includes(uid));
+              return `
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#141b34;border-radius:10px;margin-bottom:6px;">
+                  <div>
+                    <strong style="font-size:12.5px;color:var(--gold-accent);">${escapeHtml(u.name || uid)}</strong>
+                    <span style="font-size:11px;color:var(--text-muted);display:block;">${escapeHtml(u.handle || '')}</span>
+                  </div>
+                  ${
+                    f.creatorUid === uid
+                      ? `<span class="admin-badge">Criadora</span>`
+                      : `<button type="button" class="btn-pill-gold" style="font-size:11px;padding:4px 10px;" onclick="toggleFandomAdminRole('${escapeAttr(fandomId)}','${escapeAttr(uid)}',${!isAdm})">${isAdm ? 'Remover Admin' : 'Tornar Admin'}</button>`
+                  }
+                </div>
+              `;
+            })
+            .join('')
+        : '<p style="font-size:12px;color:var(--text-muted);">Nenhum membro encontrado.</p>';
+
+      showSherBlussModal({
+        title: `Administradores • ${escapeHtml(f.name)}`,
+        htmlBody: rowsHtml,
+        buttons: [{ label: 'Fechar', primary: true, onClick: closeSherBlussModal }]
+      });
+    };
+
+    window.toggleFandomAdminRole = async function(fandomId, targetUid, makeAdmin) {
+      try {
+        await updateDoc(doc(db, "fandoms", fandomId), {
+          admins: makeAdmin ? arrayUnion(targetUid) : arrayRemove(targetUid)
         });
+        const updated = appState.fandoms.find(x => x.id === fandomId);
+        if (updated) {
+          if (!Array.isArray(updated.admins)) updated.admins = [];
+          if (makeAdmin && !updated.admins.includes(targetUid)) updated.admins.push(targetUid);
+          if (!makeAdmin) updated.admins = updated.admins.filter(x => x !== targetUid);
+        }
+        openManageFandomAdminsModal(fandomId);
+      } catch (e) {}
+    };
+
+    window.confirmDeleteFandom = function(fandomId) {
+      const f = appState.fandoms.find(x => x.id === fandomId);
+      if (!f) return;
+
+      showSherBlussModal({
+        title: 'Excluir Fandom',
+        htmlBody: `Tem certeza que deseja excluir o fandom <strong>${escapeHtml(f.name)}</strong>?`,
+        buttons: [
+          { label: 'Cancelar', primary: false, onClick: closeSherBlussModal },
+          {
+            label: 'Excluir',
+            primary: true,
+            onClick: async () => {
+              try {
+                await deleteDoc(doc(db, "fandoms", fandomId));
+                closeCurrentFandom();
+                closeSherBlussModal();
+              } catch (e) {}
+            }
+          }
+        ]
       });
     };
 
@@ -6426,96 +6627,116 @@
       switchView('fandom');
     };
 
-    window.openFandomOptionsMenu = function() {
-      const f = appState.fandoms.find(x => x.name === activeFandomFilter);
-      if (!f) return;
-
-      const isMod = isFandomModerator(f);
-      let buttons = [{ label: 'Fechar', primary: false, onClick: closeSherBlussModal }];
-
-      if (isMod) {
-        buttons.unshift({
-          label: '🗑️ Excluir Fandom',
-          primary: true,
-          onClick: async () => {
-            try {
-              await deleteDoc(doc(db, "fandoms", f.id));
-              activeFandomFilter = null;
-              closeSherBlussModal();
-              switchView('fandom');
-            } catch (e) {
-              showSherBlussModal({
-                title: 'Erro',
-                htmlBody: escapeHtml(e.message)
-              });
-            }
-          }
-        });
-      }
-
-      showSherBlussModal({
-        title: `Opções • ${escapeHtml(f.name)}`,
-        htmlBody: `<p style="font-size:12.5px;color:var(--text-muted);">Membros participantes: ${(f.members || []).length}</p>`,
-        buttons
-      });
-    };
-
     window.openPodiumFullscreen = function(rank) {
-      pauseAllVideos();
       const topThree = getWeeklyTopThreePhotos();
-      const winner = topThree[rank - 1];
-      if (winner && winner.media) {
-        openLightbox(winner.media, 'image', `${rank}º Lugar da Semana • ${winner.author} (${winner.likes || 0} ${getFlowerForLikes(winner.likes || 0)})`);
-      } else {
+      const p = topThree[rank - 1];
+      if (!p || !p.media) {
         showSherBlussModal({
           title: `${rank}º Lugar do Pódio`,
-          htmlBody: 'Ainda não há foto suficiente nesta posição para o pódio da semana.'
+          htmlBody: 'Ainda não há foto suficiente nesta posição do pódio.'
         });
+        return;
       }
+
+      pauseAllVideos();
+      openLightbox(p.media, p.mediaType || 'image', `${rank}º Pódio • ${p.likes || 0} ${getFlowerForLikes(p.likes || 0)} • ${p.biasName || p.author}`);
     };
 
     window.openLightbox = function(src, type, caption) {
-      if (!src) return;
       pauseAllVideos();
       const overlay = document.getElementById('nativeMediaLightbox');
-      const box = document.getElementById('lightboxMediaContainer');
-      const cap = document.getElementById('lightboxCaption');
+      const container = document.getElementById('lightboxMediaContainer');
+      document.getElementById('lightboxCaption').textContent = caption || '';
 
       if (type === 'video') {
-        box.innerHTML = `<video src="${escapeAttr(src)}" class="lightbox-media" controls autoplay playsinline></video>`;
+        container.innerHTML = `<video src="${escapeAttr(src)}" class="lightbox-media" controls autoplay playsinline></video>`;
       } else {
-        box.innerHTML = `<img src="${escapeAttr(src)}" class="lightbox-media" alt="">`;
+        container.innerHTML = `<img src="${escapeAttr(src)}" class="lightbox-media" alt="">`;
       }
-
-      cap.textContent = caption || '';
       overlay.classList.add('open');
     };
 
     window.closeLightbox = function() {
-      pauseAllVideos();
-      const box = document.getElementById('lightboxMediaContainer');
-      if (box) box.innerHTML = '';
+      const vid = document.querySelector('#lightboxMediaContainer video');
+      if (vid) {
+        try { vid.pause(); } catch (e) {}
+      }
       document.getElementById('nativeMediaLightbox').classList.remove('open');
+      document.getElementById('lightboxMediaContainer').innerHTML = '';
     };
 
-    function renderPostCardHTML(post) {
-      if (isUserBlocked(post.authorHandle, post.authorUid)) return '';
+    window.switchView = function(viewName) {
+      pauseAllVideos();
+      if (viewName !== 'jogos' && document.body.classList.contains('full-game-mode')) {
+        collapseFullGameStage();
+      }
+      if (viewName !== 'chat' && chatUnsub) {
+        try { chatUnsub(); } catch (e) {}
+        chatUnsub = null;
+        activeChatUid = null;
+      }
 
-      const isLiked = (post.likedBy || []).includes(appState.user.uid);
-      const canDelete = canDeleteSpecificPost(post);
-      const commentsArr = Array.isArray(post.comments) ? post.comments : [];
-      const commentsHtml = commentsArr
-        .map((rawC, cIdx) => {
-          const c = normalizeComment(rawC);
-          if (!c || !c.text) return '';
-          const authorLabel = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ` : '';
-          const canDelC = isModAdminUser() || (appState.user.uid && c.authorUid === appState.user.uid);
-          const delBtn = canDelC
-            ? `<button type="button" class="delicate-x-btn" style="font-size:12px;padding:0 4px;" onclick="deleteCommentFromPost('${escapeAttr(post.id)}',${cIdx})" title="Excluir comentário">✕</button>`
-            : '';
-          return `<div class="comment-item-clean"><span style="flex:1;padding-right:6px;">${authorLabel}${escapeHtml(c.text)}</span>${delBtn}</div>`;
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(`view-${viewName}`);
+      if (target) target.classList.add('active');
+
+      const isProfile = viewName === 'meu-perfil' || viewName === 'user-profile-feed';
+      document.getElementById('headerProfileBtn').classList.toggle('hidden-in-profile-view', isProfile);
+      document.getElementById('carouselWrapper').classList.toggle('hidden-in-profile', isProfile || viewName === 'chat');
+
+      const composerWrap = document.getElementById('floatingComposerWrapper');
+      if (viewName === 'chat') {
+        composerWrap.classList.add('hidden-in-challenge');
+      } else {
+        composerWrap.classList.remove('hidden-in-challenge');
+      }
+
+      renderAll();
+      window.scrollTo({ top: 0, behavior: 'instant' });
+      observeFeedVideos();
+    };
+
+    function renderCommentsListHTML(post) {
+      const comments = Array.isArray(post.comments) ? post.comments : [];
+      return comments
+        .map((raw, idx) => {
+          const norm = normalizeComment(raw);
+          const authorLabel = norm?.authorName ? `<strong>${escapeHtml(norm.authorName)}</strong>: ` : '';
+          const commentText = escapeHtml(norm?.text || '');
+          const canDeleteComment = !!(appState.user.loggedIn && appState.user.uid && (
+            (norm?.authorUid && norm.authorUid === appState.user.uid) ||
+            isModAdminUser() ||
+            canDeleteSpecificPost(post)
+          ));
+
+          return `
+            <div class="comment-item-clean">
+              <span>${authorLabel}${commentText}</span>
+              ${
+                canDeleteComment
+                  ? `<button type="button" class="delicate-x-btn" style="padding:0 4px;font-size:12px;" onclick="deleteCommentFromPost('${escapeAttr(post.id)}',${idx})" title="Excluir comentário">✕</button>`
+                  : ''
+              }
+            </div>
+          `;
         })
         .join('');
+    }
+
+    function renderPostCardHTML(post) {
+      const isLiked = (post.likedBy || []).includes(appState.user.uid);
+      const likesCount = Math.max(0, Number(post.likes) || 0);
+      const flowerIcon = getFlowerForLikes(likesCount);
+      const isAdmin = post.authorUid === ADMIN_UID;
+      const timeLabel = formatPostTimestamp(post);
+      const challengeTag = post.isChallenge
+        ? ` • <span style="color:var(--gold-accent);font-weight:700;">Desafio (${escapeHtml(post.challengeDay || getChallengeDayLabel())}${post.challengeBiasRank ? ' • ' + escapeHtml(post.challengeBiasRank) : ''})</span>`
+        : '';
+
+      const authorUser = usersDirectory.find(u => u.uid === post.authorUid);
+      const displayAvatar = (authorUser && authorUser.avatar) || post.avatar || './aconchego.png';
+      const displayName = (authorUser && authorUser.name) || post.author || 'Usuária';
+      const displayHandle = (authorUser && authorUser.handle) || post.authorHandle || '@usuaria';
 
       let mediaHtml = '';
       if (post.media) {
@@ -6529,64 +6750,44 @@
             </div>
           `;
         } else {
-          mediaHtml = `<img src="${escapeAttr(post.media)}" class="post-media" loading="lazy" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`;
+          mediaHtml = `<img src="${escapeAttr(post.media)}" class="post-media" alt="" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(displayName)}')">`;
         }
       }
 
-      const authorUserObj = usersDirectory.find(u => u.uid === post.authorUid);
-      const authorAvatar = authorUserObj?.avatar || post.avatar || './aconchego.png';
-      const authorDisplayName = authorUserObj?.name || post.author;
-      const authorHandleMasked = maskHandle(authorUserObj?.handle || post.authorHandle, authorDisplayName);
-      const isAdminPost = post.authorUid === ADMIN_UID;
-      const formattedStamp = formatPostTimestamp(post);
-
-      const rankBadge = post.isChallenge && post.challengeBiasRank
-        ? ` • <strong style="color:var(--gold-accent);">${escapeHtml(post.challengeBiasRank)}</strong>`
-        : '';
-
-      const challengeBadge = post.isChallenge
-        ? `<span style="color:var(--gold-accent);font-weight:700;">🌸 ${escapeHtml(post.challengeDay || getChallengeDayLabel())} • ${escapeHtml(post.biasName || 'Bias')}${rankBadge}</span> • `
-        : '';
-
-      const likesCount = Math.max(0, Number(post.likes) || 0);
-      const flowerIcon = getFlowerForLikes(likesCount);
+      const commentsHtml = renderCommentsListHTML(post);
 
       return `
-        <article class="glass-panel post-card-clean" id="post_card_${escapeAttr(post.id)}">
+        <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
           <div class="post-header">
-            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid)}','${escapeAttr(authorDisplayName)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
+            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid || '')}','${escapeAttr(displayName)}','${escapeAttr(displayHandle)}')">
               <div class="avatar-container">
-                <img src="${escapeAttr(authorAvatar)}" class="post-avatar" onerror="this.src='./logo.png'">
-                ${renderOnlineDot(authorUserObj || { uid: post.authorUid })}
+                <img src="${escapeAttr(displayAvatar)}" class="post-avatar" alt="" onerror="this.src='./logo.png'">
+                ${renderOnlineDot(authorUser)}
               </div>
               <div>
                 <div class="post-author-name">
-                  <span>${escapeHtml(authorDisplayName)}</span>
-                  <span style="font-size:11px;color:var(--text-muted);font-weight:500;">${escapeHtml(authorHandleMasked)}</span>
-                  ${isAdminPost ? '<span class="admin-badge">ADM</span>' : ''}
+                  <span>${escapeHtml(displayName)}</span>
+                  ${isAdmin ? `<span class="admin-badge">ADM</span>` : ''}
                 </div>
-                <div class="post-meta">${challengeBadge}<span class="post-time-pill">${escapeHtml(formattedStamp)}</span></div>
+                <div class="post-meta">
+                  <span class="notranslate">${escapeHtml(displayHandle)}</span> • <span class="post-time-pill">${escapeHtml(timeLabel)}</span>${challengeTag}
+                </div>
               </div>
             </div>
-            <div style="display:flex;align-items:center;gap:6px;">
-              ${canDelete ? `<button class="btn-danger-pill" onclick="confirmDeletePost('${escapeAttr(post.id)}')">Excluir</button>` : ''}
-              <button class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>
-            </div>
+            <button type="button" class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>
           </div>
           ${post.text ? `<p class="post-text">${escapeHtml(post.text)}</p>` : ''}
           ${mediaHtml}
           <div class="post-actions-clean">
             <button type="button" class="like-umbrella-btn ${isLiked ? 'liked' : ''}" data-like-btn="${escapeAttr(post.id)}" onclick="toggleLikePost('${escapeAttr(post.id)}')">
-              <span class="like-flower-icon" style="font-size:16px;">${flowerIcon}</span>
+              <span class="like-flower-icon">${flowerIcon}</span>
               <span class="like-count-num">${likesCount}</span>
             </button>
           </div>
-          <div class="comments-section-clean">
-            ${commentsHtml}
-            <div class="comment-input-row">
-              <input type="text" id="comment_input_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Escreva um comentário...">
-              <button type="button" class="btn-pill-gold" style="padding:4px 12px;font-size:11px;" onclick="addCommentToPost('${escapeAttr(post.id)}')">Enviar</button>
-            </div>
+          <div class="comments-section-clean" id="comments_list_${escapeAttr(post.id)}">${commentsHtml}</div>
+          <div class="comment-input-row">
+            <input type="text" id="comment_input_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Escreva um comentário...">
+            <button type="button" class="btn-pill-gold" style="padding:5px 12px;font-size:11px;" onclick="submitCommentOnPost('${escapeAttr(post.id)}')">Enviar</button>
           </div>
         </article>
       `;
@@ -6594,152 +6795,158 @@
 
     function renderAll() {
       applyUserTheme();
-      updateNotifBadge();
-      renderWeeklyPodiumCarousel();
+      const dirText = getCurrentDayDirective();
+      document.getElementById('carouselChallengeText').textContent = dirText;
+      document.getElementById('weeklyDirectiveText').textContent = dirText;
 
-      const directive = getCurrentDayDirective();
-      const chTextEl = document.getElementById('carouselChallengeText');
-      if (chTextEl) chTextEl.textContent = directive;
-
-      const weeklyDirEl = document.getElementById('weeklyDirectiveText');
-      if (weeklyDirEl) weeklyDirEl.textContent = directive;
-
-      const reqNum = extractRequestedChallengeNumber(directive);
+      const reqNum = extractRequestedChallengeNumber(dirText);
       const reqBanner = document.getElementById('requiredNumberBanner');
       if (reqBanner) {
         reqBanner.textContent = reqNum
-          ? `Número exigido no desafio de hoje: #${reqNum} (selecione o nome correspondente na sua lista)`
+          ? `Posição exigida hoje: #${reqNum} (selecione o participante da posição #${reqNum} na sua lista)`
           : '';
       }
 
-      const votesLeft = Math.max(0, 3 - (appState.dailyVotes?.used || 0));
-      const votesEl = document.getElementById('dailyVotesCounter');
-      if (votesEl) votesEl.textContent = `${votesLeft}/3`;
-
-      if (appState.bias && appState.bias.name && appState.bias.id) {
-        const chInp = document.getElementById('challengeSelectedBiasInput');
-        if (chInp && !chInp.value) {
-          chInp.value = `${appState.bias.name} (#${appState.bias.id})`;
-        }
+      if (appState.dailyVotes.date !== new Date().toDateString()) {
+        appState.dailyVotes = { date: new Date().toDateString(), used: 0 };
+        saveLocal();
       }
 
-      const mainFeedEl = document.getElementById('mainFeedList');
-      if (mainFeedEl) {
-        const publicFeedPosts = postsFromFirebase.filter(p => !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
-        lastRenderedFeedSignature = getPostsStructuralSignature(publicFeedPosts);
-        mainFeedEl.innerHTML = publicFeedPosts.length
-          ? publicFeedPosts.map(p => renderPostCardHTML(p)).join('')
-          : '<div class="glass-panel empty-state-box">Nenhuma publicação no feed ainda.</div>';
-      }
+      document.getElementById('dailyVotesCounter').textContent = `${3 - appState.dailyVotes.used}/3`;
+      renderWeeklyPodiumCarousel();
 
-      const chFeedEl = document.getElementById('challengeFeedList');
-      if (chFeedEl) {
-        const challengePosts = postsFromFirebase.filter(p => p.isChallenge);
-        lastRenderedChallengeSignature = getPostsStructuralSignature(challengePosts);
-        chFeedEl.innerHTML = challengePosts.length
-          ? challengePosts.map(p => renderPostCardHTML(p)).join('')
-          : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda.</div>';
-      }
+      const mainFeedList = document.getElementById('mainFeedList');
+      const mainPosts = postsFromFirebase.filter(p =>
+        !isUserBlocked(p.authorHandle, p.authorUid) &&
+        !p.isPrivateFandom &&
+        (!p.fandom || p.fandom === 'Geral')
+      );
+
+      lastRenderedFeedSignature = getPostsStructuralSignature(mainPosts);
+      mainFeedList.innerHTML = mainPosts.length
+        ? mainPosts.map(p => renderPostCardHTML(p)).join('')
+        : '<div class="glass-panel empty-state-box">Nenhuma publicação no feed ainda. Toque na setinha ➤ e seja a primeira a compartilhar!</div>';
+
+      const chFeedList = document.getElementById('challengeFeedList');
+      const chPosts = postsFromFirebase.filter(p => !isUserBlocked(p.authorHandle, p.authorUid) && p.isChallenge);
+      lastRenderedChallengeSignature = getPostsStructuralSignature(chPosts);
+      chFeedList.innerHTML = chPosts.length
+        ? chPosts.map(p => renderPostCardHTML(p)).join('')
+        : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda.</div>';
 
       const fGrid = document.getElementById('fandomsGridContainer');
-      if (fGrid) {
-        fGrid.innerHTML = appState.fandoms.length
-          ? appState.fandoms
-              .map(f => {
-                const isMem = (f.members && f.members.includes(appState.user.uid)) || f.creatorUid === appState.user.uid || isModAdminUser();
-                const badgeText = isMem ? '• Membro (Entrar)' : '🔒 Privado • Solicitar';
-                return `
-                  <div class="glass-panel fandom-box-card" style="border-color:${escapeAttr(f.color || 'var(--gold-border)')};" onclick="handleFandomCardClick('${escapeAttr(f.id)}')">
-                    <h4><span class="fandom-dot" style="background:${escapeAttr(f.color || '#fbbf24')};"></span>${escapeHtml(f.name)}</h4>
-                    <p>${badgeText}</p>
-                  </div>
-                `;
-              })
-              .join('')
-          : '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom criado ainda.</div>';
-      }
+      const visibleFandoms = appState.fandoms.filter(f => !isUserBlocked(null, f.creatorUid));
+
+      fGrid.innerHTML = visibleFandoms.length
+        ? visibleFandoms
+            .map(f => {
+              const isMember = appState.user.loggedIn && (
+                isModAdminUser() ||
+                (f.members && f.members.includes(appState.user.uid)) ||
+                f.creatorUid === appState.user.uid
+              );
+              const statusLabel = isMember ? 'Membro • Entrar' : '🔒 Privado • Solicitar';
+              return `
+                <div class="glass-panel fandom-box-card" style="border-color:${escapeAttr(f.color || 'var(--gold-border)')};" onclick="openFandomDirect('${escapeAttr(f.id)}')">
+                  <h4><span class="fandom-dot" style="background:${escapeAttr(f.color || '#fbbf24')};"></span>${escapeHtml(f.name)}</h4>
+                  <p>${statusLabel}</p>
+                </div>
+              `;
+            })
+            .join('')
+        : '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom criado ainda.</div>';
 
       if (activeFandomFilter) {
-        const insideList = document.getElementById('insideFandomFeedList');
         const fObj = appState.fandoms.find(x => x.name === activeFandomFilter);
-        if (insideList) {
-          const fPosts = postsFromFirebase.filter(p => p.fandom === activeFandomFilter || (fObj && p.fandomDocId === fObj.id));
-          lastRenderedInsideSignature = getPostsStructuralSignature(fPosts);
-          insideList.innerHTML = fPosts.length
-            ? fPosts.map(p => renderPostCardHTML(p)).join('')
-            : '<div class="glass-panel empty-state-box">Nenhuma publicação neste fandom ainda.</div>';
-        }
+        const insidePosts = postsFromFirebase.filter(p =>
+          !isUserBlocked(p.authorHandle, p.authorUid) &&
+          (p.fandom === activeFandomFilter || (fObj && p.fandomDocId === fObj.id))
+        );
+        lastRenderedInsideSignature = getPostsStructuralSignature(insidePosts);
+        document.getElementById('insideFandomFeedList').innerHTML = insidePosts.length
+          ? insidePosts.map(p => renderPostCardHTML(p)).join('')
+          : '<div class="glass-panel empty-state-box">Nenhuma publicação neste fandom ainda.</div>';
       }
 
       const friendsContainer = document.getElementById('friendsListContainer');
-      if (friendsContainer) {
-        const friends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
-        friendsContainer.innerHTML = friends.length
-          ? friends
-              .map(fr => {
-                const liveU = usersDirectory.find(u => u.uid === fr.uid) || fr;
-                return `
-                  <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(fr.uid)}','${escapeAttr(liveU.name || fr.name)}','${escapeAttr(liveU.handle || fr.handle || '@coleguinha')}')">
-                    <div style="display:flex;align-items:center;gap:10px;">
-                      <div class="avatar-container">
-                        <img src="${escapeAttr(liveU.avatar || fr.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
-                        ${renderOnlineDot(liveU)}
-                      </div>
-                      <div>
-                        <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(liveU.name || fr.name)}</div>
-                        <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(liveU.handle || fr.handle || '@coleguinha')}</div>
-                      </div>
-                    </div>
-                    <button type="button" class="btn-pill-gold" onclick="event.stopPropagation();openChatWith('${escapeAttr(fr.uid)}','${escapeAttr(liveU.name || fr.name)}')">Bate-papo</button>
-                  </div>
-                `;
-              })
-              .join('')
-          : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras.</div>';
-      }
+      const myFriends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
 
-      renderPendingPreviewBars();
+      friendsContainer.innerHTML = myFriends.length
+        ? myFriends
+            .map(f => {
+              const liveUser = usersDirectory.find(u => u.uid === f.uid);
+              const fName = (liveUser && liveUser.name) || f.name;
+              const fHandle = (liveUser && liveUser.handle) || f.handle || '@coleguinha';
+              const fAvatar = (liveUser && liveUser.avatar) || f.avatar || './aconchego.png';
+
+              return `
+                <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(fName)}','${escapeAttr(fHandle)}')">
+                  <div style="display:flex;align-items:center;gap:10px;min-width:0;">
+                    <div class="avatar-container">
+                      <img src="${escapeAttr(fAvatar)}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
+                      ${renderOnlineDot(liveUser)}
+                    </div>
+                    <div style="min-width:0;">
+                      <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(fName)}</div>
+                      <div class="notranslate" style="font-size:11px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(fHandle)} • ${escapeHtml(f.status || 'Amiga de Dorama')}</div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-pill-gold" style="flex-shrink:0;" onclick="event.stopPropagation();openChatWith('${escapeAttr(f.uid)}','${escapeAttr(fName)}')">Bate-papo</button>
+                </div>
+              `;
+            })
+            .join('')
+        : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas de dorama. Visite o perfil de alguém e clique em <strong>🎬 Quero assistir um dorama</strong>!</div>';
+
+      updateNotifBadge();
       observeFeedVideos();
+    }
+
+    function updateNotifBadge() {
+      const badge = document.getElementById('notifBadge');
+      const countEl = document.getElementById('notifBadgeCount');
+      const count = appState.notifications.length;
+
+      if (count > 0) {
+        badge.style.display = 'flex';
+        countEl.textContent = count > 9 ? '9+' : String(count);
+      } else {
+        badge.style.display = 'none';
+      }
     }
 
     function applyUserTheme() {
       const accent = appState.user.accentColor || '#fbbf24';
       document.documentElement.style.setProperty('--gold-accent', accent);
       document.documentElement.style.setProperty('--gold-border', hexToRgba(accent, 0.45));
-
-      const bgUrl = appState.user.customBgUrl || './fundo.png';
-      document.documentElement.style.setProperty('--custom-bg-url', `url('${bgUrl}')`);
+      document.documentElement.style.setProperty(
+        '--custom-bg-url',
+        appState.user.customBgUrl ? `url('${appState.user.customBgUrl}')` : `url('./fundo.png')`
+      );
 
       if (!activeVisitedUserUid) {
-        const av = document.getElementById('headerUserAvatar');
-        if (av) av.src = appState.user.avatar || './aconchego.png';
+        document.getElementById('headerUserAvatar').src = appState.user.avatar || './aconchego.png';
       }
+      document.getElementById('myProfilePageAvatar').src = appState.user.avatar || './aconchego.png';
+      document.getElementById('myProfilePageNameDisplay').textContent = appState.user.name || 'Usuária';
+      document.getElementById('myProfilePageHandleDisplay').textContent = appState.user.handle || '@usuaria';
     }
 
-    function updateNotifBadge() {
-      const badge = document.getElementById('notifBadge');
-      const countEl = document.getElementById('notifBadgeCount');
-      if (!badge || !countEl) return;
-
-      const n = appState.notifications.length;
-      if (n > 0) {
-        countEl.textContent = String(n);
-        badge.style.display = 'flex';
-      } else {
-        badge.style.display = 'none';
-      }
-    }
-
+    let lastScrollY = 0;
     window.addEventListener('scroll', () => {
-      const w = document.getElementById('carouselWrapper');
-      if (!w || document.getElementById('view-meu-perfil').classList.contains('active') || document.getElementById('view-user-profile-feed').classList.contains('active')) return;
-      if (window.scrollY > 45) w.classList.add('scrolled');
-      else w.classList.remove('scrolled');
-    });
+      const curY = window.scrollY;
+      const carousel = document.getElementById('carouselWrapper');
+      if (curY > 40 && curY > lastScrollY) {
+        carousel.classList.add('scrolled');
+      } else if (curY <= 15) {
+        carousel.classList.remove('scrolled');
+      }
+      lastScrollY = curY;
+    }, { passive: true });
 
+    renderAll();
     startMidnightCountdown();
     initFirebaseSync();
-    renderAll();
   </script>
 </body>
 </html>
