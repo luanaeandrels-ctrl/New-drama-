@@ -30,7 +30,7 @@
   <meta name="twitter:url" content="https://sher-bluss.vercel.app/" />
   <meta
     name="twitter:title"
-    content="SHER BLUSS: UM DESABROCHAR A CADA COMPARTILHAMENTO"
+    content="SHER BLUSS: UM DESABROCHAR a cada compartilhamento"
   />
   <meta
     name="twitter:description"
@@ -2229,6 +2229,33 @@
       try { el.value = ''; } catch (e) {}
     }
 
+    function restoreComposerArrowNormal() {
+      const wrapper = document.getElementById('floatingComposerWrapper');
+      if (wrapper) {
+        const isChallenge = document.getElementById('view-desafio')?.classList.contains('active');
+        const isInside = document.getElementById('view-inside-fandom')?.classList.contains('active');
+        const isFeed = document.getElementById('view-feed')?.classList.contains('active');
+        if (isChallenge || isInside || isFeed) {
+          wrapper.classList.remove('hidden-in-challenge');
+        }
+        wrapper.classList.remove('expanded');
+      }
+      const sendBtn = document.getElementById('mainSendBtn');
+      if (sendBtn) {
+        sendBtn.disabled = false;
+        sendBtn.textContent = '➤';
+      }
+    }
+
+    function showFileRejectedModal(title, message) {
+      restoreComposerArrowNormal();
+      showSherBlussModal({
+        title: title || 'Arquivo incompatível',
+        htmlBody: message || 'Esse arquivo não é suportado ou é grande demais para essa plataforma. Escolha outro arquivo para enviar.',
+        buttons: [{ label: 'OK', primary: true, onClick: closeSherBlussModal }]
+      });
+    }
+
     function syncVideoPlayButtonState(videoEl, isPlaying) {
       if (!videoEl) return;
       const stage = videoEl.closest('.sb-video-stage');
@@ -2853,7 +2880,7 @@
       if (!item) return;
 
       const up = await uploadMediaToCloudinary(file);
-      if (!up) return;
+      if (!up || !up.url) return;
 
       try {
         await updateDoc(doc(db, "biases_db", docId), {
@@ -2871,10 +2898,7 @@
           htmlBody: `A foto de rosto de <strong>${escapeHtml(item.name)}</strong> foi atualizada mantendo a posição <strong>#${escapeHtml(item.id)}</strong>.`
         });
       } catch (e) {
-        showSherBlussModal({
-          title: 'Erro ao Atualizar Foto',
-          htmlBody: escapeHtml(e.message)
-        });
+        showFileRejectedModal('Erro ao atualizar foto', `Não foi possível salvar a foto: ${escapeHtml(e.message || 'tente outro arquivo')}.`);
       }
     });
 
@@ -3044,17 +3068,17 @@
 
     function showFileError(file) {
       if (!file) return;
-      showSherBlussModal({
-        title: 'Arquivo inválido',
-        htmlBody: 'Escolha apenas foto ou vídeo.'
-      });
+      showFileRejectedModal(
+        'Arquivo incompatível',
+        'Esse arquivo não é suportado ou é grande demais para essa plataforma. Tente outro arquivo.'
+      );
     }
 
     function showH264IncompatibleModal() {
-      showSherBlussModal({
-        title: 'Formato H.264 incompatível',
-        htmlBody: 'Esse vídeo no formato/codec <strong>H.264</strong> é incompatível com a plataforma no momento. Tente enviar outro vídeo compatível de até <strong>10 MB</strong>.'
-      });
+      showFileRejectedModal(
+        'Arquivo incompatível',
+        'Esse vídeo não é compatível com essa plataforma. Tente enviar outro vídeo.'
+      );
     }
 
     function isLikelyH264File(file) {
@@ -3138,7 +3162,7 @@
     function compressVideoOnce(file, scale, bitrate) {
       return new Promise(res => {
         if (typeof MediaRecorder === 'undefined') {
-          res({ file, compressed: false, h264Failed: isLikelyH264File(file) });
+          res({ file, compressed: false, h264Failed: isLikelyH264File(file), errorReason: 'compression' });
           return;
         }
 
@@ -3156,7 +3180,7 @@
         let rafId = null;
         let rvfcId = null;
 
-        const finish = (outFile, compressed, h264Failed = false) => {
+        const finish = (outFile, compressed, h264Failed = false, errorReason = '') => {
           if (settled) return;
           settled = true;
           if (rafId !== null) cancelAnimationFrame(rafId);
@@ -3165,10 +3189,10 @@
           }
           try { v.pause(); } catch (e) {}
           try { URL.revokeObjectURL(srcUrl); } catch (e) {}
-          res({ file: outFile, compressed, h264Failed });
+          res({ file: outFile, compressed, h264Failed, errorReason });
         };
 
-        const safetyTimer = setTimeout(() => finish(file, false, isLikelyH264File(file)), 45000);
+        const safetyTimer = setTimeout(() => finish(file, false, isLikelyH264File(file), 'compression'), 45000);
 
         v.onloadedmetadata = async () => {
           const vw = v.videoWidth || 640;
@@ -3180,7 +3204,7 @@
 
           if (!ctx || typeof c.captureStream !== 'function') {
             clearTimeout(safetyTimer);
-            finish(file, false, isLikelyH264File(file));
+            finish(file, false, isLikelyH264File(file), 'compression');
             return;
           }
 
@@ -3192,7 +3216,7 @@
             stream = c.captureStream(30);
           } catch (e) {
             clearTimeout(safetyTimer);
-            finish(file, false, isLikelyH264File(file));
+            finish(file, false, isLikelyH264File(file), 'compression');
             return;
           }
 
@@ -3210,7 +3234,7 @@
               rec = new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
             } catch (e2) {
               clearTimeout(safetyTimer);
-              finish(file, false, isLikelyH264File(file));
+              finish(file, false, isLikelyH264File(file), 'compression');
               return;
             }
           }
@@ -3226,9 +3250,9 @@
             clearTimeout(safetyTimer);
             const blob = new Blob(chunks, { type: rec.mimeType || outMime });
             if (blob.size > 0 && hasNonBlackFrame) {
-              finish(new File([blob], outExt, { type: blob.type || outMime }), true, false);
+              finish(new File([blob], outExt, { type: blob.type || outMime }), true, false, '');
             } else {
-              finish(file, false, isLikelyH264File(file));
+              finish(file, false, isLikelyH264File(file), 'compression');
             }
           };
 
@@ -3263,7 +3287,7 @@
             paintCurrentFrame();
             setTimeout(() => {
               if (rec.state !== 'inactive') {
-                try { rec.stop(); } catch (e) { finish(file, false, isLikelyH264File(file)); }
+                try { rec.stop(); } catch (e) { finish(file, false, isLikelyH264File(file), 'compression'); }
               }
             }, 120);
           };
@@ -3272,7 +3296,7 @@
             rec.start(250);
           } catch (e) {
             clearTimeout(safetyTimer);
-            finish(file, false, isLikelyH264File(file));
+            finish(file, false, isLikelyH264File(file), 'compression');
             return;
           }
 
@@ -3286,17 +3310,17 @@
             .catch(() => {
               active = false;
               if (rec.state !== 'inactive') {
-                try { rec.stop(); } catch (e) { finish(file, false, isLikelyH264File(file)); }
+                try { rec.stop(); } catch (e) { finish(file, false, isLikelyH264File(file), 'compression'); }
               } else {
                 clearTimeout(safetyTimer);
-                finish(file, false, isLikelyH264File(file));
+                finish(file, false, isLikelyH264File(file), 'compression');
               }
             });
         };
 
         v.onerror = () => {
           clearTimeout(safetyTimer);
-          finish(file, false, isLikelyH264File(file));
+          finish(file, false, isLikelyH264File(file), 'incompatible');
         };
         v.src = srcUrl;
       });
@@ -3355,42 +3379,36 @@
       });
     }
 
-    function showLimitReachedBlockModal(lastSizeBytes) {
-      const mbStr = ((lastSizeBytes || 0) / (1024 * 1024)).toFixed(2);
-      showSherBlussModal({
-        title: 'Limite de MB atingido',
-        htmlBody: `Não foi possível enviar o seu vídeo porque atingiu o limite de 10 MB (${escapeHtml(mbStr)} MB).`
-      });
+    function showLimitReachedBlockModal() {
+      showFileRejectedModal(
+        'Arquivo muito grande',
+        'Esse arquivo é grande demais para essa plataforma e não conseguiu ser enviado. Escolha outro vídeo ou foto para tentar de novo.'
+      );
     }
 
     async function prepareMediaFile(file) {
-      if (!file) return null;
+      if (!file) {
+        return { ok: false, file: null, reason: 'missing', title: 'Arquivo não encontrado', message: 'Não foi possível ler o arquivo selecionado. Escolha outro na galeria.' };
+      }
       if (!validMediaFile(file)) {
-        showFileError(file);
-        return null;
+        return { ok: false, file: null, reason: 'unsupported', title: 'Arquivo não suportado', message: 'Esse tipo de arquivo não é suportado por essa plataforma. Escolha uma foto ou vídeo compatível.' };
       }
 
       if (file.type.startsWith('video/')) {
         if (isLikelyH264File(file)) {
-          showH264IncompatibleModal();
-          return null;
+          return { ok: false, file: null, reason: 'incompatible', title: 'Arquivo incompatível', message: 'Esse vídeo não é compatível com essa plataforma. Escolha outro vídeo.' };
         }
 
         const dur = await getVideoDuration(file);
         if (dur < 0) {
-          showH264IncompatibleModal();
-          return null;
+          return { ok: false, file: null, reason: 'incompatible', title: 'Arquivo incompatível', message: 'Não foi possível reconhecer esse vídeo como compatível com a plataforma. Escolha outro arquivo.' };
         }
         if (dur > 300) {
-          showSherBlussModal({
-            title: 'Vídeo muito longo',
-            htmlBody: 'Vídeo só até 5 minutos.'
-          });
-          return null;
+          return { ok: false, file: null, reason: 'too_large', title: 'Arquivo muito grande', message: 'Esse vídeo é grande demais para essa plataforma. Escolha um vídeo menor para enviar.' };
         }
 
         if (file.size <= TOLERANCE_BYTES) {
-          return file;
+          return { ok: true, file, reason: '', title: '', message: '' };
         }
 
         const tries = [
@@ -3402,12 +3420,14 @@
         let out = file;
         let succeededUnderLimit = false;
         let hitH264Issue = false;
+        let lastReason = 'too_large';
 
         for (const t of tries) {
           const res = await compressVideoOnce(file, t.scale, t.bitrate);
           out = res.file;
           if (res.h264Failed) hitH264Issue = true;
-          if (res.compressed && out.size <= TOLERANCE_BYTES) {
+          if (res.errorReason) lastReason = res.errorReason;
+          if (res.compressed && out && out.size <= TOLERANCE_BYTES) {
             succeededUnderLimit = true;
             break;
           }
@@ -3415,21 +3435,26 @@
 
         if (!succeededUnderLimit) {
           if (hitH264Issue) {
-            showH264IncompatibleModal();
-            return null;
+            return { ok: false, file: null, reason: 'incompatible', title: 'Arquivo incompatível', message: 'Esse vídeo não é compatível com essa plataforma. Escolha outro vídeo.' };
           }
-          showLimitReachedBlockModal(out ? out.size : file.size);
-          return null;
+          if (lastReason === 'compression') {
+            return { ok: false, file: null, reason: 'compression', title: 'Erro na compressão', message: 'Ocorreu um erro ao preparar esse arquivo grande para envio. Tente outro vídeo ou foto.' };
+          }
+          return { ok: false, file: null, reason: 'too_large', title: 'Arquivo muito grande', message: 'Esse arquivo é grande demais para essa plataforma e não conseguiu ser enviado. Escolha outro arquivo.' };
         }
 
-        return out;
+        return { ok: true, file: out, reason: '', title: '', message: '' };
       }
 
       if (file.type.startsWith('image/') && file.size > MAX_FILE_BYTES) {
-        return await compressImageToTarget(file);
+        const compressedImg = await compressImageToTarget(file);
+        if (!compressedImg || compressedImg.size > TOLERANCE_BYTES) {
+          return { ok: false, file: null, reason: 'too_large', title: 'Arquivo muito grande', message: 'Essa imagem é grande demais para essa plataforma e não conseguiu ser enviada. Escolha outra foto.' };
+        }
+        return { ok: true, file: compressedImg, reason: '', title: '', message: '' };
       }
 
-      return file;
+      return { ok: true, file, reason: '', title: '', message: '' };
     }
 
     function normalizePlaybackUrl(url) {
@@ -3455,23 +3480,28 @@
     }
 
     async function uploadMediaToCloudinary(file) {
-      let ready = null;
+      let prep = null;
       try {
-        ready = await prepareMediaFile(file);
+        prep = await prepareMediaFile(file);
       } catch (e) {
         console.error(e);
         if (isLikelyH264File(file)) {
-          showH264IncompatibleModal();
-          return null;
+          return { ok: false, url: '', type: '', title: 'Arquivo incompatível', message: 'Esse vídeo não é compatível com essa plataforma. Escolha outro vídeo.' };
         }
-        showSherBlussModal({
-          title: 'Erro ao preparar mídia',
-          htmlBody: `Não foi possível processar o arquivo: ${escapeHtml(e.message || 'tente novamente')}.`
-        });
-        return null;
+        return { ok: false, url: '', type: '', title: 'Erro na compressão', message: 'Ocorreu um erro ao preparar o arquivo para envio. Tente outro arquivo.' };
       }
-      if (!ready) return null;
 
+      if (!prep || !prep.ok || !prep.file) {
+        return {
+          ok: false,
+          url: '',
+          type: '',
+          title: prep?.title || 'Arquivo incompatível',
+          message: prep?.message || 'Esse arquivo não é suportado ou é grande demais para essa plataforma. Escolha outro arquivo.'
+        };
+      }
+
+      const ready = prep.file;
       const isVideo = ready.type.startsWith('video/');
       const rt = isVideo ? 'video' : 'image';
       const fd = new FormData();
@@ -3487,8 +3517,11 @@
 
         if (d.secure_url) {
           return {
+            ok: true,
             url: d.secure_url,
-            type: rt
+            type: rt,
+            title: '',
+            message: ''
           };
         }
 
@@ -3496,14 +3529,15 @@
       } catch (e) {
         console.error(e);
         if (isVideo && (isLikelyH264File(ready) || isLikelyH264File(file))) {
-          showH264IncompatibleModal();
-          return null;
+          return { ok: false, url: '', type: '', title: 'Arquivo incompatível', message: 'Esse vídeo não é compatível com essa plataforma. Escolha outro vídeo.' };
         }
-        showSherBlussModal({
-          title: 'Erro no upload',
-          htmlBody: `Não foi possível enviar a mídia: ${escapeHtml(e.message || 'tente novamente')}.`
-        });
-        return null;
+        return {
+          ok: false,
+          url: '',
+          type: '',
+          title: 'Erro no envio',
+          message: 'Não foi possível enviar esse arquivo para a plataforma. O arquivo pode ser grande demais ou incompatível; tente outro arquivo.'
+        };
       }
     }
 
@@ -4144,6 +4178,7 @@
 
     window.closeSherBlussModal = function() {
       document.getElementById('customModalBackdrop').classList.remove('open');
+      restoreComposerArrowNormal();
     };
 
     function hexToRgba(hex, alpha) {
@@ -4677,7 +4712,10 @@
       }
 
       const up = await uploadMediaToCloudinary(file);
-      if (!up) return;
+      if (!up || !up.ok || !up.url) {
+        showFileRejectedModal(up?.title, up?.message);
+        return;
+      }
 
       document.getElementById('profileAvatarLabel').textContent = '✅ Foto de perfil atualizada';
       appState.user.avatar = up.url;
@@ -4787,7 +4825,10 @@
 
       if (st.file) {
         const up = await uploadMediaToCloudinary(st.file);
-        if (!up) return;
+        if (!up || !up.ok || !up.url) {
+          showFileRejectedModal(up?.title, up?.message);
+          return;
+        }
         mediaUrl = up.url;
         mediaType = up.type;
         clearStagedMedia('chat');
@@ -5233,7 +5274,10 @@
       }
 
       const up = await uploadMediaToCloudinary(file);
-      if (!up) return;
+      if (!up || !up.ok || !up.url) {
+        showFileRejectedModal(up?.title, up?.message);
+        return;
+      }
 
       tempBiasPhotoPreviewUrl = up.url;
       document.getElementById('biasSquarePreview').innerHTML = `<img src="${escapeAttr(up.url)}" alt="Foto de rosto">`;
@@ -5664,14 +5708,16 @@
         resetFileInputSafely('challengeCameraInput');
         resetFileInputSafely('challengeGalleryInput');
         resetFileInputSafely('universalMediaInput');
-        document.getElementById('floatingComposerWrapper').classList.remove('expanded');
+        restoreComposerArrowNormal();
         saveLocal();
         renderAll();
+        return true;
       } catch (e) {
-        showSherBlussModal({
-          title: 'Erro ao Enviar',
-          htmlBody: `Não foi possível publicar: ${escapeHtml(e.message)}`
-        });
+        showFileRejectedModal(
+          'Erro no envio',
+          `Não foi possível concluir o envio: ${escapeHtml(e.message || 'tente novamente')}.`
+        );
+        return false;
       }
     }
 
@@ -5834,18 +5880,20 @@
         const input = document.getElementById('mainComposerInput');
         const text = input.value.trim();
 
-        const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
-        const activeSlotKey = isChallengeView && stagedMediaSlots.challenge.file ? 'challenge' : 'main';
-        const staged = stagedMediaSlots[activeSlotKey];
+        const activeSlotKey = stagedMediaSlots.challenge.file
+          ? 'challenge'
+          : (stagedMediaSlots.main.file ? 'main' : null);
+        const staged = activeSlotKey ? stagedMediaSlots[activeSlotKey] : null;
 
-        if (!text && !staged.file) {
-          document.getElementById('floatingComposerWrapper').classList.remove('expanded');
+        if (!text && !staged) {
+          restoreComposerArrowNormal();
           return;
         }
 
         if (text && !assertCleanContent(text, 'a publicação')) return;
 
-        const isChallengePost = isChallengeView || !!staged.isChallenge;
+        const isChallengeView = document.getElementById('view-desafio').classList.contains('active');
+        const isChallengePost = isChallengeView || !!(staged && staged.isChallenge);
         if (isChallengePost && !validateChallengeSelectionAgainstRequest()) return;
 
         const isInside = document.getElementById('view-inside-fandom').classList.contains('active');
@@ -5864,9 +5912,16 @@
         let mediaUrl = '';
         let mediaType = '';
 
-        if (staged.file) {
+        if (staged && staged.file) {
           const up = await uploadMediaToCloudinary(staged.file);
-          if (!up) return;
+          if (!up || !up.ok || !up.url) {
+            clearStagedMedia(activeSlotKey);
+            showFileRejectedModal(
+              up?.title || 'Arquivo incompatível',
+              up?.message || 'Esse arquivo não é suportado ou é grande demais para essa plataforma. Escolha outro arquivo.'
+            );
+            return;
+          }
           mediaUrl = up.url;
           mediaType = up.type;
           clearStagedMedia(activeSlotKey);
@@ -6241,11 +6296,15 @@
       if (!f || !isFandomModerator(f)) return;
 
       const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
+      const updatedMembers = withAdminMember([...(f.members || []), requesterUid]);
+
       try {
         await updateDoc(doc(db, "fandoms", f.id), {
-          members: arrayUnion(requesterUid, ADMIN_UID),
+          members: updatedMembers,
           pendingRequests: updatedReqs
         });
+        f.members = updatedMembers;
+        f.pendingRequests = updatedReqs;
         openManageAdminsModal(fandomName);
       } catch (e) {
         showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
@@ -6257,433 +6316,505 @@
       if (!f || !isFandomModerator(f)) return;
 
       const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
+
       try {
         await updateDoc(doc(db, "fandoms", f.id), {
           pendingRequests: updatedReqs
         });
+        f.pendingRequests = updatedReqs;
         openManageAdminsModal(fandomName);
       } catch (e) {
         showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
       }
     };
 
-    window.toggleFandomAdminRole = async function(fandomName, targetUid) {
+    window.promoteFandomMemberToAdmin = async function(fandomName, memberUid) {
       const f = appState.fandoms.find(x => x.name === fandomName);
       if (!f || !isFandomModerator(f)) return;
-      if (targetUid === f.creatorUid) return;
 
-      const currentAdmins = Array.isArray(f.admins) ? [...f.admins] : [];
-      const isCurrentlyAdmin = currentAdmins.includes(targetUid);
-      const nextAdmins = withAdminMember(
-        isCurrentlyAdmin
-          ? currentAdmins.filter(id => id !== targetUid)
-          : [...currentAdmins, targetUid]
-      );
+      const updatedAdmins = withAdminMember([...(f.admins || []), memberUid]);
+      const updatedMembers = withAdminMember([...(f.members || []), memberUid]);
 
       try {
         await updateDoc(doc(db, "fandoms", f.id), {
-          admins: nextAdmins,
-          members: arrayUnion(targetUid, ADMIN_UID)
+          admins: updatedAdmins,
+          members: updatedMembers
         });
+        f.admins = updatedAdmins;
+        f.members = updatedMembers;
         openManageAdminsModal(fandomName);
       } catch (e) {
         showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
       }
     };
 
-    window.banMemberFromFandom = async function(fandomName, targetUid) {
+    window.removeFandomMemberOrAdmin = async function(fandomName, targetUid) {
       const f = appState.fandoms.find(x => x.name === fandomName);
       if (!f || !isFandomModerator(f)) return;
-      if (targetUid === f.creatorUid || targetUid === ADMIN_UID) return;
+      if (targetUid === ADMIN_UID || targetUid === f.creatorUid) return;
 
-      const nextMembers = withAdminMember((f.members || []).filter(id => id !== targetUid));
-      const nextAdmins = withAdminMember((f.admins || []).filter(id => id !== targetUid));
-      const nextPending = (f.pendingRequests || []).filter(r => r.uid !== targetUid);
+      const updatedMembers = (f.members || []).filter(u => u !== targetUid);
+      const updatedAdmins = (f.admins || []).filter(u => u !== targetUid);
 
       try {
         await updateDoc(doc(db, "fandoms", f.id), {
-          members: nextMembers,
-          admins: nextAdmins,
-          pendingRequests: nextPending
+          members: updatedMembers,
+          admins: updatedAdmins
         });
-
-        const fandomPosts = postsFromFirebase.filter(p => p.fandom === fandomName || p.fandomDocId === f.id);
-        for (const post of fandomPosts) {
-          if (Array.isArray(post.memberUids) && post.memberUids.includes(targetUid)) {
-            await updateDoc(doc(db, "posts", post.id), {
-              memberUids: arrayRemove(targetUid)
-            }).catch(() => {});
-          }
-        }
-
+        f.members = updatedMembers;
+        f.admins = updatedAdmins;
         openManageAdminsModal(fandomName);
       } catch (e) {
-        showSherBlussModal({ title: 'Erro ao banir', htmlBody: escapeHtml(e.message) });
+        showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
       }
     };
 
     window.openManageAdminsModal = function(fandomName) {
       const f = appState.fandoms.find(x => x.name === fandomName);
-      if (!f) return;
+      if (!f || !isFandomModerator(f)) return;
 
-      const canModerate = isFandomModerator(f);
-      const pending = Array.isArray(f.pendingRequests) ? f.pendingRequests : [];
-      const memberIds = Array.from(new Set([...(f.members || []), ...(f.admins || []), ...(f.creatorUid ? [f.creatorUid] : [])]));
+      const pendingList = f.pendingRequests || [];
+      const memberUids = withAdminMember(f.members || []);
+      const adminUids = withAdminMember(f.admins || []);
 
-      let pendingHtml = '';
-      if (canModerate && pending.length) {
-        pendingHtml = `
-          <div style="margin-bottom:14px;">
-            <p style="font-size:11.5px;color:var(--gold-accent);font-weight:700;margin-bottom:6px;">
-              📩 Solicitações Pendentes (${pending.length})
-            </p>
-            ${pending.map(req => `
-              <div style="display:flex;justify-content:space-between;align-items:center;background:#141b34;padding:8px 10px;border-radius:10px;margin-bottom:6px;border:1px solid var(--gold-border);">
-                <span style="font-size:12px;"><strong>${escapeHtml(req.name || 'Usuária')}</strong></span>
-                <div style="display:flex;gap:6px;">
-                  <button type="button" class="btn-gold" style="padding:4px 9px;font-size:11px;width:auto;" onclick="approveFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Aceitar</button>
-                  <button type="button" class="btn-danger-pill" style="padding:4px 9px;font-size:11px;" onclick="rejectFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Recusar</button>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        `;
-      }
-
-      const membersHtml = memberIds.length
-        ? memberIds.map(uid => {
-            const u = usersDirectory.find(item => item.uid === uid) || {};
-            const displayName = u.name || (uid === appState.user.uid ? appState.user.name : 'Membro');
-            const displayHandle = u.handle || '';
-            const isCreator = uid === f.creatorUid;
-            const isAdminMember = isCreator || uid === ADMIN_UID || (Array.isArray(f.admins) && f.admins.includes(uid));
-
-            let roleBadge = '<span style="font-size:10px;color:var(--text-muted);">Membro</span>';
-            if (isCreator) roleBadge = '<span class="admin-badge">Dono</span>';
-            else if (isAdminMember) roleBadge = '<span class="admin-badge">Admin</span>';
-
-            let controls = '';
-            if (canModerate && !isCreator) {
-              const promoteBtn = uid !== ADMIN_UID
-                ? `<button type="button" class="btn-pill-gold" style="padding:3px 8px;font-size:10.5px;" onclick="toggleFandomAdminRole('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">${isAdminMember ? 'Tirar Admin' : 'Tornar Admin'}</button>`
-                : '';
-              const banBtn = uid !== ADMIN_UID
-                ? `<button type="button" class="btn-danger-pill" style="padding:3px 8px;font-size:10.5px;" onclick="banMemberFromFandom('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">Banir</button>`
-                : '';
-              controls = `<div style="display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;">${promoteBtn}${banBtn}</div>`;
-            }
-
-            return `
-              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;background:#141b34;padding:8px 10px;border-radius:10px;margin-bottom:6px;border:1px solid var(--gold-border);">
-                <div style="min-width:0;">
-                  <div style="font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:6px;">
-                    <span>${escapeHtml(displayName)}</span>
-                    ${roleBadge}
+      const pendingHtml = pendingList.length
+        ? pendingList
+            .map(req => {
+              const uInfo = usersDirectory.find(u => u.uid === req.uid) || {};
+              const displayName = req.name || uInfo.name || 'Usuária';
+              const handleTxt = uInfo.handle || '@usuaria';
+              return `
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:#141b34;border:1px solid var(--gold-border);border-radius:10px;padding:8px 10px;margin-bottom:6px;">
+                  <div style="min-width:0;flex:1;">
+                    <div style="font-size:12.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(displayName)}</div>
+                    <div class="notranslate" style="font-size:11px;color:var(--text-muted);">${escapeHtml(handleTxt)}</div>
                   </div>
-                  ${displayHandle ? `<div class="notranslate" style="font-size:10.5px;color:var(--text-muted);">${escapeHtml(displayHandle)}</div>` : ''}
+                  <div style="display:flex;gap:6px;">
+                    <button type="button" class="btn-gold" style="width:auto;padding:5px 10px;font-size:11px;" onclick="approveFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Aceitar</button>
+                    <button type="button" class="btn-danger-pill" style="padding:5px 10px;font-size:11px;" onclick="rejectFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Recusar</button>
+                  </div>
                 </div>
-                ${controls}
-              </div>
-            `;
-          }).join('')
-        : '<p style="font-size:12px;color:var(--text-muted);">Nenhum membro listado.</p>';
+              `;
+            })
+            .join('')
+        : '<p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">Nenhuma solicitação pendente.</p>';
+
+      const membersHtml = memberUids.length
+        ? memberUids
+            .map(uid => {
+              const uInfo = usersDirectory.find(u => u.uid === uid) || {};
+              const displayName = uid === appState.user.uid
+                ? appState.user.name
+                : (uInfo.name || 'Membro');
+              const handleTxt = uid === appState.user.uid
+                ? appState.user.handle
+                : (uInfo.handle || '@usuaria');
+              const isAdm = adminUids.includes(uid) || uid === f.creatorUid || uid === ADMIN_UID;
+              const isProtected = uid === ADMIN_UID || uid === f.creatorUid;
+
+              return `
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;background:#141b34;border:1px solid var(--gold-border);border-radius:10px;padding:8px 10px;margin-bottom:6px;">
+                  <div style="min-width:0;flex:1;">
+                    <div style="font-size:12.5px;font-weight:700;color:var(--text-main);">
+                      ${escapeHtml(displayName)}
+                      ${isAdm ? '<span class="admin-badge" style="margin-left:6px;">ADMIN</span>' : ''}
+                    </div>
+                    <div class="notranslate" style="font-size:11px;color:var(--text-muted);">${escapeHtml(handleTxt)}</div>
+                  </div>
+                  <div style="display:flex;gap:6px;">
+                    ${
+                      !isAdm
+                        ? `<button type="button" class="btn-pill-gold" style="padding:5px 9px;font-size:11px;" onclick="promoteFandomMemberToAdmin('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">Tornar Admin</button>`
+                        : ''
+                    }
+                    ${
+                      !isProtected
+                        ? `<button type="button" class="btn-danger-pill" style="padding:5px 9px;font-size:11px;" onclick="removeFandomMemberOrAdmin('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">Remover</button>`
+                        : ''
+                    }
+                  </div>
+                </div>
+              `;
+            })
+            .join('')
+        : '<p style="font-size:11.5px;color:var(--text-muted);">Nenhum membro ainda.</p>';
 
       showSherBlussModal({
         title: `Membros & Admins • ${escapeHtml(fandomName)}`,
         htmlBody: `
-          ${pendingHtml}
-          <p style="font-size:11.5px;color:var(--gold-accent);font-weight:700;margin-bottom:6px;">
-            👥 Participantes (${memberIds.length})
-          </p>
-          ${membersHtml}
+          <div style="margin-bottom:12px;">
+            <div style="font-size:12px;font-weight:700;color:var(--gold-accent);margin-bottom:6px;">Solicitações pendentes</div>
+            ${pendingHtml}
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:var(--gold-accent);margin-bottom:6px;">Participantes no fandom</div>
+            ${membersHtml}
+          </div>
         `,
         buttons: [{ label: 'Fechar', primary: true, onClick: closeSherBlussModal }]
       });
     };
 
     window.closeCurrentFandom = function() {
+      pauseAllVideos();
       activeFandomFilter = null;
       switchView('fandom');
     };
 
-    window.openLightbox = function(url, type, caption) {
+    window.openLightbox = function(src, type, caption) {
       pauseAllVideos();
-      const c = document.getElementById('lightboxMediaContainer');
-      c.innerHTML = type === 'video'
-        ? renderVideoTag(url, 'autoplay controls class="lightbox-media"', false)
-        : `<img src="${escapeAttr(url)}" class="lightbox-media" onerror="this.src='./logo.png'">`;
+      const box = document.getElementById('lightboxMediaContainer');
+      box.innerHTML = type === 'video'
+        ? renderVideoTag(src, 'autoplay style="max-width:100%;max-height:82vh;border-radius:14px;background:#000;"', false)
+        : `<img src="${escapeAttr(src)}" class="lightbox-media">`;
       document.getElementById('lightboxCaption').textContent = caption || '';
       document.getElementById('nativeMediaLightbox').classList.add('open');
-      if (type === 'video') {
-        const vid = c.querySelector('video');
-        if (vid) syncVideoPlayButtonState(vid, true);
-      }
     };
 
     window.closeLightbox = function() {
       pauseAllVideos();
-      document.getElementById('lightboxMediaContainer').innerHTML = '';
       document.getElementById('nativeMediaLightbox').classList.remove('open');
+      document.getElementById('lightboxMediaContainer').innerHTML = '';
     };
 
-    function renderPostCardHTML(post) {
-      if (!post || !post.id) return '';
-      if (isUserBlocked(post.authorHandle, post.authorUid)) return '';
-
-      const comments = (post.comments || []).map(normalizeComment).filter(Boolean);
-      const isLiked = appState.user.uid && (post.likedBy || []).includes(appState.user.uid);
-      const isAdmin = post.authorUid === ADMIN_UID;
-
-      let badgeHtml = '';
-      if (post.isChallenge) {
-        const dayPart = post.challengeDay ? ` • ${post.challengeDay}` : '';
-        const biasPart = post.biasName ? ` • ${post.biasName}` : '';
-        const rankPart = post.challengeBiasRank ? ` (${post.challengeBiasRank})` : '';
-        badgeHtml = `<span style="font-size:10px;background:#141b34;border:1px solid var(--gold-accent);color:var(--gold-accent);padding:2px 7px;border-radius:99px;margin-bottom:6px;display:inline-block;">🌸 Desafio${escapeHtml(dayPart)}${escapeHtml(biasPart)}${escapeHtml(rankPart)}</span>`;
-      } else if (post.fandom && post.fandom !== 'Geral') {
-        badgeHtml = `<span style="font-size:10px;background:#141b34;border:1px solid var(--gold-border);color:var(--gold-accent);padding:2px 7px;border-radius:99px;margin-bottom:6px;display:inline-block;">🔒 ${escapeHtml(post.fandom)}</span>`;
-      }
+    function renderPostCardHTML(p) {
+      const liked = (p.likedBy || []).includes(appState.user.uid);
+      const isAdminAuthor = p.authorUid === ADMIN_UID;
+      const authorUserObj = usersDirectory.find(u => u.uid === p.authorUid) || {};
+      const liveAuthorAvatar = p.authorUid === appState.user.uid
+        ? (appState.user.avatar || p.avatar || './aconchego.png')
+        : (authorUserObj.avatar || p.avatar || './aconchego.png');
+      const liveAuthorName = p.authorUid === appState.user.uid
+        ? (appState.user.name || p.author || 'Usuária')
+        : (authorUserObj.name || p.author || 'Usuária');
+      const liveAuthorHandle = p.authorUid === appState.user.uid
+        ? (appState.user.handle || p.authorHandle || '@usuaria')
+        : (authorUserObj.handle || p.authorHandle || '@usuaria');
 
       let mediaHtml = '';
-      if (post.media) {
-        if (post.mediaType === 'video') {
-          mediaHtml = renderVideoTag(post.media, '', true);
+      if (p.media) {
+        if (p.mediaType === 'video') {
+          mediaHtml = renderVideoTag(p.media, '', true);
         } else {
-          mediaHtml = `<img src="${escapeAttr(post.media)}" class="post-media" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`;
+          mediaHtml = `<img src="${escapeAttr(p.media)}" class="post-media" onclick="openLightbox('${escapeAttr(p.media)}','image','${escapeAttr(p.text || '')}')">`;
         }
       }
 
-      const commentsHtml = comments
-        .map((c, idx) => {
-          const canDelComment = isModAdminUser() || (appState.user.loggedIn && ((c.authorUid && c.authorUid === appState.user.uid) || post.authorUid === appState.user.uid));
+      const rawComments = p.comments || [];
+      const commentsHtml = rawComments
+        .map((raw, idx) => {
+          const c = normalizeComment(raw);
+          if (!c) return '';
+
+          const canDelComment =
+            isModAdminUser() ||
+            (appState.user.loggedIn && p.authorUid === appState.user.uid) ||
+            (appState.user.loggedIn && c.authorUid && c.authorUid === appState.user.uid);
+
+          const cLabel = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ` : '';
+
           return `
             <div class="comment-item-clean">
-              <span style="flex:1;">${c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ` : ''}${escapeHtml(c.text)}</span>
-              ${canDelComment ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">✕</button>` : ''}
+              <span style="flex:1;">${cLabel}${escapeHtml(c.text)}</span>
+              ${
+                canDelComment
+                  ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(p.id)}',${idx})" title="Apagar comentário">✕</button>`
+                  : ''
+              }
             </div>
           `;
         })
         .join('');
 
-      const authorUserObj = usersDirectory.find(u => u.uid === post.authorUid) || {};
+      const rankBadge = p.isChallenge && p.challengeBiasRank
+        ? ` • ${escapeHtml(p.challengeBiasRank)}`
+        : '';
+
+      const challengeInfo = p.isChallenge
+        ? ` • Desafio${p.challengeDay ? ' (' + escapeHtml(p.challengeDay) + ')' : ''}${p.biasName ? ' • ' + escapeHtml(p.biasName) + rankBadge : ''}`
+        : '';
+
+      const fandomBadge = p.fandom && p.fandom !== 'Geral' ? ` • 🔒 ${escapeHtml(p.fandom)}` : '';
+      const authorAttr = `onclick="visitUserProfile('${escapeAttr(p.authorUid || '')}','${escapeAttr(liveAuthorName)}','${escapeAttr(liveAuthorHandle)}')"`;
 
       return `
-        <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
+        <article class="post-card-clean" id="post_card_${escapeAttr(p.id)}">
           <div class="post-header">
-            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid || '')}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
+            <div class="post-author-box" ${authorAttr}>
               <div class="avatar-container">
-                <img src="${escapeAttr(post.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" class="post-avatar">
+                <img src="${escapeAttr(liveAuthorAvatar)}" onerror="this.src='./logo.png'" class="post-avatar">
                 ${renderOnlineDot(authorUserObj)}
               </div>
               <div>
                 <div class="post-author-name">
-                  <span>${escapeHtml(post.author)}</span>
-                  ${isAdmin ? '<span class="admin-badge">ADM</span>' : ''}
+                  ${escapeHtml(liveAuthorName)}
+                  ${isAdminAuthor ? `<span class="admin-badge">ADMIN</span>` : ''}
                 </div>
-                <div class="post-meta">
-                  <span class="notranslate">${escapeHtml(post.authorHandle || '@usuaria')}</span> • ${escapeHtml(post.fandom || 'Geral')}
-                </div>
+                <div class="post-meta notranslate">${escapeHtml(liveAuthorHandle)}${challengeInfo}${fandomBadge}</div>
               </div>
             </div>
-
-            <button class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>
+            <button class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(p.id)}')" title="Mais opções">•••</button>
           </div>
-
-          ${badgeHtml}
-          ${post.text ? `<div class="post-text">${escapeHtml(post.text)}</div>` : ''}
+          ${p.text ? `<p class="post-text">${escapeHtml(p.text)}</p>` : ''}
           ${mediaHtml}
-
-          <div class="comments-section-clean">${commentsHtml}</div>
-
-          <div class="comment-input-row">
-            <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Escreva um comentário..." onkeydown="if(event.key==='Enter'){event.preventDefault();submitInlineComment('${escapeAttr(post.id)}');}">
-            <button type="button" class="btn-pill-gold" style="padding:5px 12px;font-size:11.5px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">Comentar</button>
-          </div>
-
-          <div class="post-actions-clean" style="margin-top:8px;">
-            <button type="button" class="like-umbrella-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikeUmbrella('${escapeAttr(post.id)}')">
+          <div class="post-actions-clean">
+            <button class="like-umbrella-btn ${liked ? 'liked' : ''}" onclick="toggleLikeUmbrella('${escapeAttr(p.id)}')">
               <span>🌸</span>
-              <span>${post.likes || 0}</span>
+              <span>${p.likes || 0}</span>
             </button>
+          </div>
+          <div class="comments-section-clean">
+            ${commentsHtml}
+            <div class="comment-input-row">
+              <input type="text" id="inlineCommentInput_${escapeAttr(p.id)}" class="comment-input-clean" placeholder="Escreva um comentário..." onkeydown="if(event.key==='Enter'){event.preventDefault();submitInlineComment('${escapeAttr(p.id)}');}">
+              <button class="btn-pill-gold" style="padding:4px 12px;font-size:11px;" onclick="submitInlineComment('${escapeAttr(p.id)}')">Enviar</button>
+            </div>
           </div>
         </article>
       `;
     }
 
     function renderAll() {
-      const hasAccount = appState.user.loggedIn && appState.user.uid;
-      const myAvatar = hasAccount ? (appState.user.avatar || './aconchego.png') : './aconchego.png';
-      const myName = hasAccount ? appState.user.name : 'Visitante';
-      const myHandle = hasAccount ? (appState.user.handle || '@visitante') : '@visitante';
-
-      if (!activeVisitedUserUid) {
-        document.getElementById('headerUserAvatar').src = myAvatar;
-      }
-
-      document.getElementById('myProfilePageAvatar').src = myAvatar;
-      document.getElementById('myProfilePageNameDisplay').textContent = myName;
-      document.getElementById('myProfilePageHandleDisplay').textContent = myHandle;
-
+      applyUserTheme();
+      updateNotifBadge();
       renderWeeklyPodiumCarousel();
 
-      const currentDirective = getCurrentDayDirective();
-      document.getElementById('carouselChallengeText').textContent = currentDirective;
-      document.getElementById('weeklyDirectiveText').textContent = currentDirective;
+      const directive = getCurrentDayDirective();
+      const requiredNum = extractRequestedChallengeNumber(directive);
 
-      const requestedNum = extractRequestedChallengeNumber(currentDirective);
+      const cText = document.getElementById('carouselChallengeText');
+      if (cText) cText.textContent = directive;
+
+      const wText = document.getElementById('weeklyDirectiveText');
+      if (wText) wText.textContent = directive;
+
       const reqBanner = document.getElementById('requiredNumberBanner');
       if (reqBanner) {
-        reqBanner.textContent = requestedNum
-          ? `Posição exigida hoje: #${requestedNum}`
+        reqBanner.textContent = requiredNum
+          ? `Posição exigida pelo desafio atual: #${requiredNum}`
           : '';
       }
 
-      const remainingVotes = Math.max(0, 3 - (appState.dailyVotes.date === new Date().toDateString() ? appState.dailyVotes.used : 0));
-      document.getElementById('dailyVotesCounter').textContent = `${remainingVotes}/3`;
+      const votesCounter = document.getElementById('dailyVotesCounter');
+      if (votesCounter) votesCounter.textContent = `${Math.max(0, 3 - (appState.dailyVotes.used || 0))}/3`;
 
-      if (appState.bias && appState.bias.id && appState.bias.name) {
-        document.getElementById('challengeSelectedBiasInput').value = `${appState.bias.name} (#${appState.bias.id})`;
+      const feedList = document.getElementById('mainFeedList');
+      if (feedList) {
+        const publicPosts = postsFromFirebase.filter(p =>
+          !p.isPrivateFandom &&
+          (!p.fandom || p.fandom === 'Geral') &&
+          !isUserBlocked(p.authorHandle, p.authorUid)
+        );
+        feedList.innerHTML = publicPosts.length
+          ? publicPosts.map(p => renderPostCardHTML(p)).join('')
+          : '<div class="glass-panel empty-state-box">Nenhuma publicação no feed ainda. Toque no + para começar.</div>';
       }
 
-      const feedContainer = document.getElementById('mainFeedList');
-      const feedPosts = postsFromFirebase.filter(p => !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
-      feedContainer.innerHTML = feedPosts.length
-        ? feedPosts.map(p => renderPostCardHTML(p)).join('')
-        : '<div class="glass-panel empty-state-box">Nenhuma publicação no feed geral ainda.</div>';
+      const challengeList = document.getElementById('challengeFeedList');
+      if (challengeList) {
+        const cPosts = postsFromFirebase.filter(p => p.isChallenge && !isUserBlocked(p.authorHandle, p.authorUid));
+        challengeList.innerHTML = cPosts.length
+          ? cPosts.map(p => renderPostCardHTML(p)).join('')
+          : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda.</div>';
+      }
 
-      const challengeContainer = document.getElementById('challengeFeedList');
-      const challengePosts = postsFromFirebase.filter(p => p.isChallenge);
-      challengeContainer.innerHTML = challengePosts.length
-        ? challengePosts.map(p => renderPostCardHTML(p)).join('')
-        : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda.</div>';
+      const fGrid = document.getElementById('fandomsGridContainer');
+      if (fGrid) {
+        fGrid.innerHTML = appState.fandoms.length
+          ? appState.fandoms
+              .map(f => {
+                const locked = !hasFandomAccess(f);
+                const pendingCount = (isFandomModerator(f) && f.pendingRequests && f.pendingRequests.length)
+                  ? ` • ${f.pendingRequests.length} pedido(s)`
+                  : '';
+                return `
+                  <div class="glass-panel fandom-box-card" style="border-color:${escapeAttr(f.borderColor || '#fbbf24')};" onclick="selectFandom('${escapeAttr(f.name)}')">
+                    <h4>
+                      <span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')};"></span>
+                      ${escapeHtml(f.name)} ${locked ? '🔒' : '🔓'}
+                    </h4>
+                    <p>${locked ? 'Fandom particular • Toque para solicitar' : `Acesso liberado${pendingCount}`}</p>
+                  </div>
+                `;
+              })
+              .join('')
+          : '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom particular criado ainda.</div>';
+      }
 
-      const fandomsGrid = document.getElementById('fandomsGridContainer');
-      fandomsGrid.innerHTML = appState.fandoms.length
-        ? appState.fandoms.map(f => {
-            const hasAcc = hasFandomAccess(f);
-            const hasPending = f.pendingRequests && f.pendingRequests.some(r => r.uid === appState.user.uid);
-            let statusTxt = '🔒 Privado • Toque para pedir entrada';
-            if (hasAcc) statusTxt = '✅ Membro aprovado • Abrir espaço';
-            else if (hasPending) statusTxt = '⏳ Solicitação pendente';
-
-            return `
-              <div class="glass-panel fandom-box-card" style="border-color:${escapeAttr(f.borderColor || 'var(--gold-border)')};" onclick="selectFandom('${escapeAttr(f.name)}')">
-                <h4><span class="fandom-dot" style="background:${escapeAttr(f.dotColor || 'var(--gold-accent)')};"></span>${escapeHtml(f.name)}</h4>
-                <p>${statusTxt}</p>
-              </div>
-            `;
-          }).join('')
-        : '<div class="glass-panel empty-state-box">Nenhum fandom criado ainda.</div>';
-
-      if (activeFandomFilter) {
+      const insideList = document.getElementById('insideFandomFeedList');
+      if (insideList && activeFandomFilter) {
         const fObj = appState.fandoms.find(x => x.name === activeFandomFilter);
-        const insideList = document.getElementById('insideFandomFeedList');
-        const insidePosts = postsFromFirebase.filter(p => p.fandom === activeFandomFilter && (!fObj || hasFandomAccess(fObj)));
-        insideList.innerHTML = insidePosts.length
-          ? insidePosts.map(p => renderPostCardHTML(p)).join('')
-          : `<div class="glass-panel empty-state-box">Nenhuma publicação em <strong>${escapeHtml(activeFandomFilter)}</strong> ainda.</div>`;
+        const fPosts = postsFromFirebase.filter(p =>
+          (p.fandom === activeFandomFilter || (fObj && p.fandomDocId === fObj.id)) &&
+          !isUserBlocked(p.authorHandle, p.authorUid)
+        );
+        insideList.innerHTML = fPosts.length
+          ? fPosts.map(p => renderPostCardHTML(p)).join('')
+          : `<div class="glass-panel empty-state-box">Nenhuma publicação privada em <strong>${escapeHtml(activeFandomFilter)}</strong> ainda.</div>`;
       }
 
-      const friendsContainer = document.getElementById('friendsListContainer');
-      const myFriends = appState.user.friends || [];
-      friendsContainer.innerHTML = myFriends.length
-        ? myFriends.map(fr => {
-            const fUserObj = usersDirectory.find(u => u.uid === fr.uid) || {};
-            const fAvatar = fUserObj.avatar || fr.avatar || './aconchego.png';
-            const fName = fUserObj.name || fr.name || 'Coleguinha';
-            const fHandle = fUserObj.handle || fr.handle || '@coleguinha';
-            return `
-              <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
-                <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(fr.uid)}','${escapeAttr(fName)}','${escapeAttr(fHandle)}')">
+      const friendsList = document.getElementById('friendsListContainer');
+      if (friendsList) {
+        const myFriends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
+        const allOtherUsers = usersDirectory.filter(u =>
+          u.uid !== appState.user.uid &&
+          !isUserBlocked(u.handle, u.uid)
+        );
+
+        let fHtml = '';
+        if (myFriends.length) {
+          fHtml += `<div style="font-size:12px;color:var(--gold-accent);font-weight:700;margin-bottom:6px;">Meus Amigos Dorameiros</div>`;
+          fHtml += myFriends
+            .map(f => {
+              const liveF = usersDirectory.find(u => u.uid === f.uid) || f;
+              return `
+                <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:8px;" onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(liveF.name || f.name)}','${escapeAttr(liveF.handle || f.handle || '@coleguinha')}')">
+                  <div style="display:flex;align-items:center;gap:10px;">
+                    <div class="avatar-container">
+                      <img src="${escapeAttr(liveF.avatar || f.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
+                      ${renderOnlineDot(liveF)}
+                    </div>
+                    <div>
+                      <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(liveF.name || f.name)}</div>
+                      <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(liveF.handle || f.handle || '@coleguinha')}</div>
+                    </div>
+                  </div>
+                  <button type="button" class="btn-pill-gold" style="padding:5px 10px;font-size:11px;" onclick="event.stopPropagation();openChatWith('${escapeAttr(f.uid)}','${escapeAttr(liveF.name || f.name)}')">
+                    Bate-papo
+                  </button>
+                </div>
+              `;
+            })
+            .join('');
+        }
+
+        if (allOtherUsers.length) {
+          fHtml += `<div style="font-size:12px;color:var(--gold-accent);font-weight:700;margin:10px 0 6px;">Comunidade Sher Bluss</div>`;
+          fHtml += allOtherUsers
+            .map(u => `
+              <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;margin-bottom:8px;" onclick="visitUserProfile('${escapeAttr(u.uid)}','${escapeAttr(u.name || 'Usuária')}','${escapeAttr(u.handle || '@usuaria')}')">
+                <div style="display:flex;align-items:center;gap:10px;">
                   <div class="avatar-container">
-                    <img src="${escapeAttr(fAvatar)}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
-                    ${renderOnlineDot(fUserObj)}
+                    <img src="${escapeAttr(u.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
+                    ${renderOnlineDot(u)}
                   </div>
                   <div>
-                    <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(fName)}</div>
-                    <div class="notranslate" style="font-size:11px;color:var(--text-muted);">${escapeHtml(fHandle)}</div>
+                    <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(u.name || 'Usuária')}</div>
+                    <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(u.handle || '@usuaria')}</div>
                   </div>
                 </div>
-                <button type="button" class="btn-pill-gold" onclick="openChatWith('${escapeAttr(fr.uid)}','${escapeAttr(fName)}')">Bate-papo</button>
+                <button type="button" class="btn-pill-gold" style="padding:5px 10px;font-size:11px;" onclick="event.stopPropagation();openChatWith('${escapeAttr(u.uid)}','${escapeAttr(u.name || 'Usuária')}')">
+                  Bate-papo
+                </button>
               </div>
-            `;
-          }).join('')
-        : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigos. Visite o perfil de alguém e clique em "Quero assistir um dorama"!</div>';
+            `)
+            .join('');
+        }
 
-      updateNotifBadge();
+        friendsList.innerHTML = fHtml || '<div class="glass-panel empty-state-box">Nenhum usuário encontrado no momento.</div>';
+      }
     }
 
     function updateNotifBadge() {
       const badge = document.getElementById('notifBadge');
       const countEl = document.getElementById('notifBadgeCount');
-      const count = appState.notifications.length;
+      const n = (appState.notifications || []).length;
+      if (!badge || !countEl) return;
 
-      if (count > 0) {
+      if (n > 0) {
+        countEl.textContent = n;
         badge.style.display = 'flex';
-        countEl.textContent = count;
       } else {
         badge.style.display = 'none';
       }
     }
 
     function applyUserTheme() {
-      const hex = appState.user.accentColor || '#fbbf24';
-      document.documentElement.style.setProperty('--gold-accent', hex);
-      document.documentElement.style.setProperty('--gold-border', hexToRgba(hex, 0.45));
-      document.documentElement.style.setProperty('--custom-bg-url', appState.user.customBgUrl ? `url('${appState.user.customBgUrl}')` : `url('./fundo.png')`);
+      const accent = appState.user.accentColor || '#fbbf24';
+      document.documentElement.style.setProperty('--gold-accent', accent);
+      document.documentElement.style.setProperty('--gold-border', hexToRgba(accent, 0.45));
+
+      const bgUrl = appState.user.customBgUrl ? `url('${appState.user.customBgUrl}')` : `url('./fundo.png')`;
+      document.documentElement.style.setProperty('--custom-bg-url', bgUrl);
+
+      if (!activeVisitedUserUid) {
+        const av = document.getElementById('headerUserAvatar');
+        if (av) av.src = appState.user.avatar || './aconchego.png';
+      }
     }
 
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY || window.pageYOffset;
+    (function enableCarouselDragScroll() {
       const carousel = document.getElementById('carouselWrapper');
-      const topTitle = document.getElementById('topBarCenterTitle');
+      if (!carousel) return;
 
-      if (y > 40) {
-        carousel.classList.add('scrolled');
-        if (topTitle) topTitle.classList.add('hidden-title');
+      let isPointerDown = false;
+      let hasDragged = false;
+      let startX = 0;
+      let startScrollLeft = 0;
+
+      carousel.addEventListener('pointerdown', e => {
+        if (e.button !== 0 && e.pointerType === 'mouse') return;
+        isPointerDown = true;
+        hasDragged = false;
+        startX = e.pageX - carousel.offsetLeft;
+        startScrollLeft = carousel.scrollLeft;
+        carousel.classList.add('is-dragging');
+      });
+
+      window.addEventListener('pointermove', e => {
+        if (!isPointerDown) return;
+        const x = e.pageX - carousel.offsetLeft;
+        const deltaX = x - startX;
+        if (Math.abs(deltaX) > 4) {
+          hasDragged = true;
+        }
+        if (hasDragged) {
+          carousel.scrollLeft = startScrollLeft - deltaX * 1.15;
+        }
+      });
+
+      const finishDrag = () => {
+        if (!isPointerDown) return;
+        isPointerDown = false;
+        carousel.classList.remove('is-dragging');
+        if (hasDragged) {
+          setTimeout(() => {
+            hasDragged = false;
+          }, 0);
+        }
+      };
+
+      window.addEventListener('pointerup', finishDrag);
+      window.addEventListener('pointercancel', finishDrag);
+
+      carousel.addEventListener('click', e => {
+        if (hasDragged) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      }, true);
+    })();
+
+    window.addEventListener('scroll', () => {
+      const c = document.getElementById('carouselWrapper');
+      const t = document.getElementById('topBarCenterTitle');
+      if (window.scrollY > 36) {
+        c.classList.add('scrolled');
+        if (t) t.classList.remove('hidden-title');
       } else {
-        carousel.classList.remove('scrolled');
-        if (topTitle) topTitle.classList.remove('hidden-title');
+        c.classList.remove('scrolled');
+        if (t) t.classList.add('hidden-title');
       }
     }, { passive: true });
 
-    (function enableDragToScrollCarousel() {
-      const slider = document.getElementById('carouselWrapper');
-      if (!slider) return;
-      let isDown = false;
-      let startX = 0;
-      let scrollLeft = 0;
-
-      slider.addEventListener('mousedown', e => {
-        if (e.button !== 0) return;
-        isDown = true;
-        slider.classList.add('is-dragging');
-        startX = e.pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-      });
-
-      window.addEventListener('mouseup', () => {
-        if (!isDown) return;
-        isDown = false;
-        slider.classList.remove('is-dragging');
-      });
-
-      slider.addEventListener('mousemove', e => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 1.3;
-        slider.scrollLeft = scrollLeft - walk;
-      });
-    })();
-
-    applyUserTheme();
+    initFirebaseSync();
     startMidnightCountdown();
     renderAll();
-    initFirebaseSync();
 
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js").catch(() => {});
+      });
     }
   </script>
 </body>
