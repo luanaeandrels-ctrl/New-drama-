@@ -230,12 +230,7 @@
       font-weight: 700;
       color: var(--gold-accent);
       text-align: center;
-      transition: opacity 0.2s ease;
-    }
-
-    .top-bar-title-center.hidden-title {
-      opacity: 0;
-      pointer-events: none;
+      opacity: 1 !important;
     }
 
     .search-balao-fininho {
@@ -2434,9 +2429,15 @@
         d = post.createdAt.toDate();
       } else if (typeof post?.createdAt === 'number') {
         d = new Date(post.createdAt);
+      } else if (typeof post?.clientCreatedAt === 'number') {
+        d = new Date(post.clientCreatedAt);
       }
-      if (!d || isNaN(d.getTime())) return '';
-      return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      if (!d || isNaN(d.getTime())) {
+        d = new Date();
+      }
+      const dateStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      const timeStr = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      return `${dateStr} às ${timeStr}`;
     }
 
     let pendingUploadState = {
@@ -3107,7 +3108,7 @@
       const candidates = postsFromFirebase.filter(p => {
         if (!p.media || p.mediaType === 'video') return false;
         if (isUserBlocked(p.authorHandle, p.authorUid)) return false;
-        const tsMs = p.createdAt?.toMillis ? p.createdAt.toMillis() : Date.now();
+        const tsMs = p.createdAt?.toMillis ? p.createdAt.toMillis() : (p.clientCreatedAt || Date.now());
         return tsMs >= startMs && tsMs <= endMs;
       });
 
@@ -3118,8 +3119,8 @@
       return [...sourceList].sort((a, b) => {
         const diffLikes = (b.likes || 0) - (a.likes || 0);
         if (diffLikes !== 0) return diffLikes;
-        const ta = a.createdAt?.toMillis?.() || 0;
-        const tb = b.createdAt?.toMillis?.() || 0;
+        const ta = a.createdAt?.toMillis?.() || a.clientCreatedAt || 0;
+        const tb = b.createdAt?.toMillis?.() || b.clientCreatedAt || 0;
         return tb - ta;
       }).slice(0, 3);
     }
@@ -3182,11 +3183,17 @@
       return new Promise(res => {
         const v = document.createElement('video');
         v.preload = 'metadata';
-        v.onloadedmetadata = () => {
-          URL.revokeObjectURL(v.src);
-          res(v.duration || 0);
+        let settled = false;
+        const finish = (val) => {
+          if (settled) return;
+          settled = true;
+          try { URL.revokeObjectURL(v.src); } catch (e) {}
+          const num = Number(val);
+          res(Number.isFinite(num) && num > 0 ? num : 0);
         };
-        v.onerror = () => res(0);
+        v.onloadedmetadata = () => finish(v.duration);
+        v.onerror = () => finish(0);
+        setTimeout(() => finish(0), 2500);
         v.src = URL.createObjectURL(file);
       });
     }
@@ -3314,7 +3321,7 @@
         }
 
         const dur = await getVideoDuration(file);
-        if (dur > 300) {
+        if (Number.isFinite(dur) && dur > 300) {
           showSpecificUploadError(
             'Duração acima do permitido',
             'O vídeo ultrapassou o limite máximo de 5 minutos.'
@@ -3575,15 +3582,16 @@
         const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
 
         postsFromFirebase = [...map.values()].map(p => {
-          if (p.isChallenge && p.createdAt && p.createdAt.toMillis) {
-            if (nowMs - p.createdAt.toMillis() > TWENTY_FOUR_HOURS) {
+          const tsMs = p.createdAt?.toMillis ? p.createdAt.toMillis() : (p.clientCreatedAt || 0);
+          if (p.isChallenge && tsMs > 0) {
+            if (nowMs - tsMs > TWENTY_FOUR_HOURS) {
               return { ...p, isChallenge: false, fandom: 'Geral', isPrivateFandom: false };
             }
           }
           return p;
         }).sort((a, b) => {
-          const ta = a.createdAt?.toMillis?.() || 0;
-          const tb = b.createdAt?.toMillis?.() || 0;
+          const ta = a.createdAt?.toMillis?.() || a.clientCreatedAt || 0;
+          const tb = b.createdAt?.toMillis?.() || b.clientCreatedAt || 0;
           return tb - ta;
         });
 
@@ -5500,6 +5508,7 @@
       const targetFandom = !isChallenge && isInside && activeFandomFilter ? activeFandomFilter : 'Geral';
       const challengeDay = isChallenge ? getChallengeDayLabel() : '';
       const challengeBiasRank = isChallenge ? getSelectedBiasRankLabel() : '';
+      const nowClientMs = Date.now();
 
       try {
         const fandomObj = targetFandom !== 'Geral' ? appState.fandoms.find(x => x.name === targetFandom) : null;
@@ -5524,6 +5533,7 @@
           challengeDay: challengeDay,
           challengeBiasRank: challengeBiasRank,
           biasName: isChallenge ? appState.bias.name : '',
+          clientCreatedAt: nowClientMs,
           createdAt: serverTimestamp(),
           comments: []
         });
@@ -5734,6 +5744,7 @@
           const baseMembers = withAdminMember([...(fandomObj?.members || []), appState.user.uid]);
           const challengeDay = isChallengeView ? getChallengeDayLabel() : '';
           const challengeBiasRank = isChallengeView ? getSelectedBiasRankLabel() : '';
+          const nowClientMs = Date.now();
 
           await addDoc(collection(db, "posts"), {
             author: appState.user.name,
@@ -5754,6 +5765,7 @@
             challengeDay: challengeDay,
             challengeBiasRank: challengeBiasRank,
             biasName: isChallengeView ? appState.bias.name || '' : '',
+            clientCreatedAt: nowClientMs,
             createdAt: serverTimestamp(),
             comments: []
           });
@@ -6121,43 +6133,75 @@
       const f = appState.fandoms.find(x => x.name === fandomName);
       if (!f) return;
 
-      const members = withAdminMember(f.members || []);
-      const admins = withAdminMember(f.admins || [f.creatorUid]);
-
-      let listHtml = members
+      const list = f.members || [];
+      let mHtml = list
         .map(uid => {
-          const u = usersDirectory.find(x => x.uid === uid) || { name: 'Coleguinha', handle: '@coleguinha' };
-          const isAdmin = admins.includes(uid);
+          const isAd = f.admins && f.admins.includes(uid);
+          const uObj = usersDirectory.find(x => x.uid === uid);
+          const label = uObj ? `${escapeHtml(uObj.name)} (${escapeHtml(uObj.handle || '')})` : (uid === appState.user.uid ? `${escapeHtml(appState.user.name)} (Você)` : uid.slice(0, 12) + '...');
+
+          let buttons = '';
+          if (uid !== f.creatorUid && uid !== ADMIN_UID) {
+            if (!isAd) {
+              buttons += `<button class="btn-pill-gold" style="padding:3px 9px;font-size:10.5px;" onclick="promoteMemberToAdmin('${escapeAttr(f.id)}','${escapeAttr(uid)}')">Tornar Admin</button>`;
+            }
+            if (uid !== appState.user.uid) {
+              buttons += `<button class="btn-danger-pill" style="padding:3px 9px;font-size:10.5px;margin-left:4px;" onclick="removeMemberFromFandom('${escapeAttr(f.id)}','${escapeAttr(uid)}')">Remover</button>`;
+            }
+          }
+
           return `
-            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#141b34;border-radius:10px;margin-bottom:6px;">
-              <div>
-                <strong style="font-size:12.5px;color:var(--gold-accent);">${escapeHtml(u.name)}</strong>
-                <span style="font-size:10.5px;color:var(--text-muted);display:block;">${escapeHtml(u.handle)}</span>
-              </div>
-              <button type="button" class="${isAdmin ? 'btn-gold' : 'btn-pill-gold'}" style="padding:4px 10px;font-size:11px;width:auto;" onclick="toggleFandomAdminRole('${escapeAttr(f.id)}','${escapeAttr(uid)}',${isAdmin})">
-                ${isAdmin ? '🛡️ Admin' : 'Tornar Admin'}
-              </button>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid rgba(251,191,36,.15);gap:6px;">
+              <span style="font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${label} ${isAd ? '<strong style="color:var(--gold-accent);">[Admin]</strong>' : ''}</span>
+              <div style="flex-shrink:0;">${buttons}</div>
             </div>
           `;
         })
         .join('');
 
       showSherBlussModal({
-        title: `Moderadores • ${escapeHtml(fandomName)}`,
-        htmlBody: listHtml || '<p style="font-size:12px;">Nenhum membro ainda.</p>',
-        buttons: [{ label: 'Fechar', primary: true, onClick: closeSherBlussModal }]
+        title: `Membros & Admins • ${escapeHtml(fandomName)}`,
+        htmlBody: `
+          <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">
+            Qualquer Admin pode aprovar entradas, remover membros e apagar publicações dentro deste fandom.
+          </p>
+          ${mHtml}
+        `,
+        buttons: [{ label: 'Concluir', primary: true, onClick: closeSherBlussModal }]
       });
     };
 
-    window.toggleFandomAdminRole = async function(fandomId, uid, currentlyAdmin) {
-      if (currentlyAdmin && uid === ADMIN_UID) return;
+    window.promoteMemberToAdmin = async function(fandomId, memberUid) {
       try {
         await updateDoc(doc(db, "fandoms", fandomId), {
-          admins: currentlyAdmin ? arrayRemove(uid) : arrayUnion(uid)
+          admins: arrayUnion(memberUid)
         });
-        openManageAdminsModal(activeFandomFilter);
+        closeSherBlussModal();
       } catch (e) {
         console.error(e);
+      }
+    };
+
+    window.removeMemberFromFandom = async function(fandomId, memberUid) {
+      const f = appState.fandoms.find(x => x.id === fandomId);
+      if (!f || !isFandomModerator(f)) return;
+      if (memberUid === f.creatorUid || memberUid === ADMIN_UID) return;
+
+      try {
+        await updateDoc(doc(db, "fandoms", fandomId), {
+          members: arrayRemove(memberUid),
+          admins: arrayRemove(memberUid)
+        });
+        closeSherBlussModal();
+        showSherBlussModal({
+          title: 'Membro Removido',
+          htmlBody: 'O participante foi removido deste fandom.'
+        });
+      } catch (e) {
+        showSherBlussModal({
+          title: 'Erro',
+          htmlBody: escapeHtml(e.message)
+        });
       }
     };
 
@@ -6167,8 +6211,8 @@
       document.getElementById('lightboxCaption').textContent = caption || '';
 
       container.innerHTML = type === 'video'
-        ? `<div class="sb-video-stage" style="max-width:92vw;"><video src="${escapeAttr(src)}" loop playsinline class="lightbox-media" style="max-height:82vh;"></video><div class="sb-video-overlay"><button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button></div></div>`
-        : `<img src="${escapeAttr(src)}" class="lightbox-media">`;
+        ? `<div class="sb-video-stage" style="max-width:100%;"><video class="lightbox-media" src="${escapeAttr(src)}" playsinline></video><div class="sb-video-overlay"><button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button></div></div>`
+        : `<img class="lightbox-media" src="${escapeAttr(src)}">`;
 
       overlay.classList.add('open');
     };
@@ -6179,231 +6223,245 @@
       document.getElementById('lightboxMediaContainer').innerHTML = '';
     };
 
-    function applyUserTheme() {
-      const c = appState.user.accentColor || '#fbbf24';
-      document.documentElement.style.setProperty('--gold-accent', c);
-      document.documentElement.style.setProperty('--gold-border', hexToRgba(c, 0.45));
-
-      const bg = appState.user.customBgUrl ? `url('${appState.user.customBgUrl}')` : `url('./fundo.png')`;
-      document.documentElement.style.setProperty('--custom-bg-url', bg);
-
-      const av = document.getElementById('headerUserAvatar');
-      if (av && !activeVisitedUserUid) {
-        av.src = appState.user.avatar || './aconchego.png';
-      }
-    }
-
-    function updateNotifBadge() {
-      const badge = document.getElementById('notifBadge');
-      const countEl = document.getElementById('notifBadgeCount');
-      const count = appState.notifications ? appState.notifications.length : 0;
-
-      if (count > 0) {
-        badge.style.display = 'flex';
-        countEl.textContent = count > 9 ? '9+' : String(count);
-      } else {
-        badge.style.display = 'none';
-      }
-    }
-
     function renderPostCardHTML(post) {
       if (isUserBlocked(post.authorHandle, post.authorUid)) return '';
 
-      const isAdminPost = post.authorUid === ADMIN_UID;
-      const isLiked = appState.user.uid && (post.likedBy || []).includes(appState.user.uid);
-      const isOwnPost = appState.user.loggedIn && post.authorUid === appState.user.uid;
-      const timeLabel = formatPostTimestamp(post);
+      const isLiked = appState.user.loggedIn && (post.likedBy || []).includes(appState.user.uid);
+      const isFandomPost = post.fandom && post.fandom !== 'Geral';
+      const fandomObj = isFandomPost ? appState.fandoms.find(x => x.name === post.fandom) : null;
+      const isAuthorFandomAdmin = fandomObj && fandomObj.admins && fandomObj.admins.includes(post.authorUid);
 
-      let mediaHtml = '';
-      if (post.media) {
-        const cap = `${post.author} • ${post.fandom || 'Geral'}`;
-        mediaHtml = post.mediaType === 'video'
-          ? `<div class="sb-video-stage"><video src="${escapeAttr(post.media)}" loop playsinline preload="metadata" class="post-media"></video><div class="sb-video-overlay"><button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button></div></div>`
-          : `<img src="${escapeAttr(post.media)}" class="post-media" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(cap)}')">`;
-      }
+      const postDateTime = formatPostTimestamp(post);
+      const metaText = post.isChallenge
+        ? [
+            post.challengeDay ? `${post.challengeDay}` : 'Desafio',
+            post.biasName || 'Bias',
+            post.challengeBiasRank || '',
+            postDateTime ? `<span class="post-time-pill">${postDateTime}</span>` : ''
+          ].filter(Boolean).join(' • ')
+        : [
+            post.authorHandle || '@usuaria',
+            postDateTime ? `<span class="post-time-pill">${postDateTime}</span>` : ''
+          ].filter(Boolean).join(' • ');
 
-      const commentsHtml = (post.comments || [])
-        .map((raw, idx) => {
-          const c = normalizeComment(raw);
-          if (!c) return '';
-          const canDelComment =
+      const comments = (post.comments || []).map(normalizeComment).filter(Boolean);
+      const canDeletePost = canDeleteSpecificPost(post);
+
+      const commentsHtml = comments
+        .map((c, idx) => {
+          const canDeleteComment = appState.user.loggedIn && (
             isModAdminUser() ||
-            isOwnPost ||
-            (appState.user.loggedIn && c.authorUid && c.authorUid === appState.user.uid);
-          const delBtn = canDelComment
-            ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">✕</button>`
-            : '';
-          const label = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ` : '';
-          return `<div class="comment-item-clean"><span style="flex:1;">${label}${escapeHtml(c.text)}</span>${delBtn}</div>`;
+            post.authorUid === appState.user.uid ||
+            (c.authorUid && c.authorUid === appState.user.uid)
+          );
+          const label = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ${escapeHtml(c.text)}` : escapeHtml(c.text);
+
+          return `
+            <div class="comment-item-clean">
+              <span style="flex:1;">${label}</span>
+              ${canDeleteComment ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">✕</button>` : ''}
+            </div>
+          `;
         })
         .join('');
 
-      const rankTag = post.isChallenge && post.challengeBiasRank ? ` • ${post.challengeBiasRank}` : '';
-      const challengeTag = post.isChallenge ? ` • 🌸 Desafio${rankTag}` : '';
-      const fandomTag = post.fandom && post.fandom !== 'Geral' ? ` • 🔒 ${post.fandom}` : '';
-      const clockSpan = timeLabel ? ` • <span class="post-time-pill">${escapeHtml(timeLabel)}</span>` : '';
+      let mediaHtml = '';
+      if (post.media) {
+        mediaHtml = post.mediaType === 'video'
+          ? `<div class="sb-video-stage"><video class="post-media" src="${escapeAttr(post.media)}" preload="metadata" playsinline></video><div class="sb-video-overlay"><button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button></div></div>`
+          : `<img class="post-media" src="${escapeAttr(post.media)}" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`;
+      }
+
+      const authorObj = usersDirectory.find(u => u.uid === post.authorUid);
 
       return `
         <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
           <div class="post-header">
-            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid || '')}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
+            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid)}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
               <div class="avatar-container">
-                <img src="${escapeAttr(post.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" class="post-avatar">
-                ${renderOnlineDot(usersDirectory.find(u => u.uid === post.authorUid))}
+                <img class="post-avatar" src="${escapeAttr(post.avatar || './aconchego.png')}" onerror="this.src='./logo.png'">
+                ${renderOnlineDot(authorObj)}
               </div>
               <div>
-                <div class="post-author-name">${escapeHtml(post.author)} ${isAdminPost ? '<span class="admin-badge">ADM</span>' : ''}</div>
-                <div class="post-meta notranslate">${escapeHtml(post.authorHandle || '@usuaria')}${fandomTag}${challengeTag}${clockSpan}</div>
+                <div class="post-author-name">
+                  <span>${escapeHtml(post.author)}</span>
+                  ${isAuthorFandomAdmin ? '<span class="admin-badge">Admin</span>' : ''}
+                </div>
+                <div class="post-meta">${metaText}</div>
               </div>
             </div>
-            <button type="button" class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${canDeletePost ? `<button class="delicate-x-btn" style="font-size:15px;" onclick="confirmDeletePost('${escapeAttr(post.id)}')" title="Excluir publicação">✕</button>` : ''}
+              <button class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>
+            </div>
           </div>
+
           ${post.text ? `<p class="post-text">${escapeHtml(post.text)}</p>` : ''}
           ${mediaHtml}
+
           <div class="post-actions-clean">
-            <button type="button" class="like-umbrella-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikeUmbrella('${escapeAttr(post.id)}')">
-              <span>🌸</span>
+            <button class="like-umbrella-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikeUmbrella('${escapeAttr(post.id)}')">
+              <span>${isLiked ? '☂️' : '🌂'}</span>
               <span>${post.likes || 0}</span>
             </button>
+            <span style="font-size:11px;color:var(--text-muted);">${comments.length} ${comments.length === 1 ? 'comentário' : 'comentários'}</span>
           </div>
-          <div class="comments-section-clean">
-            ${commentsHtml}
-            <div class="comment-input-row">
-              <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Comentar (use @arroba para marcar)...">
-              <button type="button" class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">OK</button>
-            </div>
+
+          <div class="comments-section-clean">${commentsHtml}</div>
+
+          <div class="comment-input-row">
+            <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Escreva um comentário..." onkeydown="if(event.key==='Enter')submitInlineComment('${escapeAttr(post.id)}')">
+            <button class="btn-pill-gold" style="padding:5px 12px;font-size:11.5px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">Enviar</button>
           </div>
         </article>
       `;
     }
 
-    function renderAll() {
-      const directive = getCurrentDayDirective();
-      document.getElementById('carouselChallengeText').textContent = directive;
-      document.getElementById('weeklyDirectiveText').textContent = directive;
+    function updateNotifBadge() {
+      const b = document.getElementById('notifBadge');
+      const cnt = document.getElementById('notifBadgeCount');
+      const total = appState.notifications.length;
 
-      const requiredNum = extractRequestedChallengeNumber(directive);
+      if (b && cnt) {
+        if (total > 0) {
+          cnt.textContent = total;
+          b.style.display = 'flex';
+        } else {
+          b.style.display = 'none';
+        }
+      }
+    }
+
+    function applyUserTheme() {
+      if (!activeVisitedUserUid) {
+        const av = appState.user.avatar || './aconchego.png';
+        const h = document.getElementById('headerUserAvatar');
+        if (h) h.src = av;
+      }
+
+      const hex = appState.user.accentColor || '#fbbf24';
+      document.documentElement.style.setProperty('--gold-accent', hex);
+      document.documentElement.style.setProperty('--gold-border', hexToRgba(hex, 0.45));
+
+      if (appState.user.customBgUrl) {
+        document.documentElement.style.setProperty('--custom-bg-url', `url('${appState.user.customBgUrl}')`);
+      } else {
+        document.documentElement.style.setProperty('--custom-bg-url', `url('./fundo.png')`);
+      }
+    }
+
+    function renderAll() {
+      applyUserTheme();
+      updateNotifBadge();
+      renderWeeklyPodiumCarousel();
+
+      const activeDirective = getCurrentDayDirective();
+      const carouselChallengeEl = document.getElementById('carouselChallengeText');
+      if (carouselChallengeEl) carouselChallengeEl.textContent = activeDirective;
+
+      const weeklyDirectiveEl = document.getElementById('weeklyDirectiveText');
+      if (weeklyDirectiveEl) weeklyDirectiveEl.textContent = activeDirective;
+
+      const requiredNum = extractRequestedChallengeNumber(activeDirective);
       const reqBanner = document.getElementById('requiredNumberBanner');
       if (reqBanner) {
         reqBanner.textContent = requiredNum
-          ? `Número exigido hoje: #${requiredNum} — selecione o participante da posição #${requiredNum} da sua lista.`
+          ? `Número exigido neste desafio: #${requiredNum} (selecione o participante #${requiredNum} da sua lista).`
           : '';
       }
 
-      document.getElementById('dailyVotesCounter').textContent = `${3 - appState.dailyVotes.used}/3`;
-
-      renderWeeklyPodiumCarousel();
-
-      const feedList = document.getElementById('mainFeedList');
-      const mainPosts = postsFromFirebase.filter(p => !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
-
-      if (!mainPosts.length) {
-        feedList.innerHTML = `<div class="glass-panel empty-state-box">Nenhuma publicação ainda no <strong translate="no">Sher Bluss</strong>.<br>Seja a primeira a publicar!</div>`;
-      } else {
-        feedList.innerHTML = mainPosts.map(p => renderPostCardHTML(p)).join('');
+      const mainFeedList = document.getElementById('mainFeedList');
+      if (mainFeedList) {
+        const generalPosts = postsFromFirebase.filter(p => !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
+        mainFeedList.innerHTML = generalPosts.length
+          ? generalPosts.map(p => renderPostCardHTML(p)).join('')
+          : '<div class="glass-panel empty-state-box">Nenhuma publicação no feed ainda.<br>Toque na setinha no canto inferior direito para começar!</div>';
       }
 
-      const cFeed = document.getElementById('challengeFeedList');
-      const chPosts = postsFromFirebase.filter(p => p.isChallenge);
-      cFeed.innerHTML = chPosts.length
-        ? chPosts.map(p => renderPostCardHTML(p)).join('')
-        : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda. Selecione seu Bias acima e envie!</div>';
-
-      const fGrid = document.getElementById('fandomsGridContainer');
-      if (!appState.fandoms.length) {
-        fGrid.innerHTML = '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom particular criado ainda. Toque em "+ Criar Fandom" acima!</div>';
-      } else {
-        fGrid.innerHTML = appState.fandoms
-          .map(f => {
-            const open = hasFandomAccess(f);
-            return `
-              <div class="glass-panel fandom-box-card" style="border-color:${escapeAttr(f.borderColor || 'var(--gold-border)')};" onclick="selectFandom('${escapeAttr(f.name)}')">
-                <h4><span class="fandom-dot" style="background:${escapeAttr(f.dotColor || 'var(--gold-accent)')};"></span>${open ? '🔓' : '🔒'} ${escapeHtml(f.name)}</h4>
-                <p>${open ? 'Aprovada • Toque para entrar' : 'Espaço trancado • Solicitar entrada'}</p>
-              </div>
-            `;
-          })
-          .join('');
+      const challengeList = document.getElementById('challengeFeedList');
+      if (challengeList) {
+        const challengePosts = postsFromFirebase.filter(p => p.isChallenge);
+        challengeList.innerHTML = challengePosts.length
+          ? challengePosts.map(p => renderPostCardHTML(p)).join('')
+          : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio desta semana ainda.</div>';
       }
 
-      if (activeFandomFilter) {
-        const fObj = appState.fandoms.find(x => x.name === activeFandomFilter);
-        const insideList = document.getElementById('insideFandomFeedList');
-
-        if (!fObj || !hasFandomAccess(fObj)) {
-          insideList.innerHTML = '<div class="glass-panel empty-state-box">Este fandom é trancado. Você não tem acesso.</div>';
-        } else {
-          const fPosts = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
-          insideList.innerHTML = fPosts.length
-            ? fPosts.map(p => renderPostCardHTML(p)).join('')
-            : `<div class="glass-panel empty-state-box">Nenhuma publicação em <strong>${escapeHtml(activeFandomFilter)}</strong> ainda.</div>`;
-        }
-      }
-
-      const frList = document.getElementById('friendsListContainer');
-      const activeFriends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
-
-      if (!activeFriends.length) {
-        frList.innerHTML = '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras.<br>Visite o perfil de alguém no feed e toque em "🎬 Quero assistir um dorama"!</div>';
-      } else {
-        frList.innerHTML = activeFriends
-          .map(fr => {
-            const uLive = usersDirectory.find(u => u.uid === fr.uid);
-            const av = uLive?.avatar || fr.avatar || './aconchego.png';
-            const nm = uLive?.name || fr.name;
-            const hd = uLive?.handle || fr.handle || '@coleguinha';
-            return `
-              <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-                <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(fr.uid)}','${escapeAttr(nm)}','${escapeAttr(hd)}')">
-                  <div class="avatar-container">
-                    <img src="${escapeAttr(av)}" onerror="this.src='./logo.png'" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--gold-accent);object-fit:cover;">
-                    ${renderOnlineDot(uLive)}
+      const fandomsGrid = document.getElementById('fandomsGridContainer');
+      if (fandomsGrid) {
+        fandomsGrid.innerHTML = appState.fandoms.length
+          ? appState.fandoms
+              .map(f => {
+                const isMember = hasFandomAccess(f);
+                return `
+                  <div class="glass-panel fandom-box-card" style="border:1.5px solid ${escapeAttr(f.borderColor || '#fbbf24')};" onclick="selectFandom('${escapeAttr(f.name)}')">
+                    <h4>
+                      <span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')};"></span>
+                      <span>${escapeHtml(f.name)}</span>
+                    </h4>
+                    <p>${isMember ? 'Acesso Liberado ✅' : '🔒 Espaço Trancado (Pedir entrada)'}</p>
                   </div>
-                  <div>
-                    <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(nm)}</div>
-                    <div class="notranslate" style="font-size:11px;color:var(--text-muted);">${escapeHtml(hd)} • 🎬 Assistindo doramas juntas</div>
-                  </div>
-                </div>
-                <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(fr.uid)}','${escapeAttr(nm)}')">Bate-papo</button>
-              </div>
-            `;
-          })
-          .join('');
+                `;
+              })
+              .join('')
+          : '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum Fandom criado ainda.<br>Toque em "+ Criar Fandom" para inaugurar o seu!</div>';
       }
 
-      updateNotifBadge();
-      renderPendingPreviewBars();
+      const insideFandomList = document.getElementById('insideFandomFeedList');
+      if (insideFandomList && activeFandomFilter) {
+        const fPosts = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
+        insideFandomList.innerHTML = fPosts.length
+          ? fPosts.map(p => renderPostCardHTML(p)).join('')
+          : `<div class="glass-panel empty-state-box">Bem-vinda ao espaço privado <strong>${escapeHtml(activeFandomFilter)}</strong>!</div>`;
+      }
+
+      const friendsList = document.getElementById('friendsListContainer');
+      if (friendsList) {
+        const myFriends = (appState.user.friends || []).filter(fr => !isUserBlocked(fr.handle, fr.uid));
+        friendsList.innerHTML = myFriends.length
+          ? myFriends
+              .map(fr => {
+                const frUserObj = usersDirectory.find(u => u.uid === fr.uid);
+                const liveAvatar = frUserObj?.avatar || fr.avatar || './aconchego.png';
+                const liveName = frUserObj?.name || fr.name;
+                const liveHandle = frUserObj?.handle || fr.handle || '@amiga';
+
+                return `
+                  <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(fr.uid)}','${escapeAttr(liveName)}','${escapeAttr(liveHandle)}')">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                      <div class="avatar-container">
+                        <img src="${escapeAttr(liveAvatar)}" onerror="this.src='./logo.png'" style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;">
+                        ${renderOnlineDot(frUserObj)}
+                      </div>
+                      <div>
+                        <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(liveName)}</div>
+                        <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(liveHandle)}</div>
+                      </div>
+                    </div>
+                    <button type="button" class="btn-pill-gold" style="padding:5px 12px;font-size:11.5px;" onclick="event.stopPropagation();openChatWith('${escapeAttr(fr.uid)}','${escapeAttr(liveName)}')">Bate-papo</button>
+                  </div>
+                `;
+              })
+              .join('')
+          : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras.<br>Visite o perfil de alguém e clique em <strong>"🎬 Quero assistir um dorama"</strong>!</div>';
+      }
     }
 
     let lastScrollY = window.scrollY;
     window.addEventListener('scroll', () => {
-      const currentY = window.scrollY;
-      const carousel = document.getElementById('carouselWrapper');
-      const topBarTitle = document.getElementById('topBarCenterTitle');
-      const isProfileView =
-        document.getElementById('view-meu-perfil').classList.contains('active') ||
-        document.getElementById('view-user-profile-feed').classList.contains('active');
-
-      if (!isProfileView) {
-        if (currentY > lastScrollY && currentY > 50) {
-          carousel.classList.add('scrolled');
-          if (topBarTitle) topBarTitle.classList.add('hidden-title');
-        } else if (currentY < lastScrollY) {
-          carousel.classList.remove('scrolled');
-          if (topBarTitle) topBarTitle.classList.remove('hidden-title');
-        }
+      if (document.body.classList.contains('full-game-mode')) return;
+      const cw = document.getElementById('carouselWrapper');
+      if (!cw || cw.classList.contains('hidden-in-profile')) return;
+      if (window.scrollY > 40) {
+        cw.classList.add('scrolled');
+      } else {
+        cw.classList.remove('scrolled');
       }
-      lastScrollY = currentY;
+      lastScrollY = window.scrollY;
     }, { passive: true });
 
-    applyUserTheme();
     startMidnightCountdown();
     initFirebaseSync();
     renderAll();
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js').catch(() => {});
-    }
   </script>
 </body>
 </html>
