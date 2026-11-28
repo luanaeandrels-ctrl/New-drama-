@@ -1398,6 +1398,62 @@
       border-radius: 50%;
       z-index: 3;
     }
+
+    .day-slot-block {
+      margin-bottom: 12px;
+    }
+
+    .day-slot-mount {
+      cursor: pointer;
+    }
+
+    .game-thumb-square {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid var(--gold-border);
+      flex-shrink: 0;
+    }
+
+    #fullGameStageOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 180;
+      background: var(--theme-color-accent) var(--custom-bg-url) no-repeat center center fixed;
+      background-size: cover;
+      overflow-y: auto;
+      padding: 16px 20px 36px;
+    }
+
+    body.full-game-mode #fullGameStageOverlay {
+      display: block;
+    }
+
+    body.full-game-mode .app-shell,
+    body.full-game-mode .unified-top-bar,
+    body.full-game-mode .floating-composer-wrapper,
+    body.full-game-mode .app-footer {
+      display: none !important;
+    }
+
+    .full-game-topbar {
+      max-width: 760px;
+      margin: 0 auto 14px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(14, 18, 34, 0.92);
+      border: 1px solid var(--gold-border);
+      border-radius: 16px;
+    }
+
+    #fullGameMountBody {
+      max-width: 760px;
+      margin: 0 auto;
+    }
   </style>
 </head>
 <body class="notranslate">
@@ -1720,7 +1776,99 @@
       </div>
       <div class="feed-list" id="friendsListContainer"></div>
     </section>
+
+    <section class="view-section" id="view-jogos">
+      <div class="glass-panel section-header-bar">
+        <span class="section-title">Jogos</span>
+        <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
+      </div>
+
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de segunda
+      ========================================================================
+      ========================================================================
+      -->
+      <div class="day-slot-block" id="slot-segunda">
+        <div class="day-slot-mount" id="mount-segunda" onclick="expandDayGameToFullTab('segunda')"></div>
+      </div>
+
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de terça
+      ========================================================================
+      ========================================================================
+      -->
+      <div class="day-slot-block" id="slot-terca">
+        <div class="day-slot-mount" id="mount-terca" onclick="expandDayGameToFullTab('terca')"></div>
+      </div>
+
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de quarta
+      ========================================================================
+      ========================================================================
+      -->
+      <div class="day-slot-block" id="slot-quarta">
+        <div class="day-slot-mount" id="mount-quarta" onclick="expandDayGameToFullTab('quarta')"></div>
+      </div>
+
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de quinta
+      ========================================================================
+      ========================================================================
+      -->
+      <div class="day-slot-block" id="slot-quinta">
+        <div class="day-slot-mount" id="mount-quinta" onclick="expandDayGameToFullTab('quinta')"></div>
+      </div>
+
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de sexta
+      ========================================================================
+      ========================================================================
+      -->
+      <div class="day-slot-block" id="slot-sexta">
+        <div class="day-slot-mount" id="mount-sexta" onclick="expandDayGameToFullTab('sexta')"></div>
+      </div>
+
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de sábado
+      ========================================================================
+      ========================================================================
+      -->
+      <div class="day-slot-block" id="slot-sabado">
+        <div class="day-slot-mount" id="mount-sabado" onclick="expandDayGameToFullTab('sabado')"></div>
+      </div>
+
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de domingo
+      ========================================================================
+      ========================================================================
+      -->
+      <div class="day-slot-block" id="slot-domingo">
+        <div class="day-slot-mount" id="mount-domingo" onclick="expandDayGameToFullTab('domingo')"></div>
+      </div>
+    </section>
   </div>
+
+  <section id="fullGameStageOverlay">
+    <div class="full-game-topbar">
+      <span class="section-title" id="fullGameStageTitle">Jogo</span>
+      <button type="button" class="btn-pill-gold" onclick="collapseFullGameStage()">Voltar</button>
+    </div>
+    <div id="fullGameMountBody"></div>
+  </section>
 
   <section class="view-section" id="view-chat">
     <div class="glass-panel chat-header-fixed" style="display:flex;align-items:center;justify-content:space-between;">
@@ -1761,6 +1909,149 @@
     <div id="lightboxMediaContainer" style="display:flex;justify-content:center;align-items:center;width:100%;"></div>
     <p class="lightbox-caption" id="lightboxCaption"></p>
   </div>
+
+  <script>
+    function pauseAllVideos() {
+      document.querySelectorAll('video').forEach(v => {
+        try { v.pause(); } catch (e) {}
+      });
+    }
+
+    const DAY_SLOT_TITLES = {
+      segunda: 'Segunda-feira',
+      terca: 'Terça-feira',
+      quarta: 'Quarta-feira',
+      quinta: 'Quinta-feira',
+      sexta: 'Sexta-feira',
+      sabado: 'Sábado',
+      domingo: 'Domingo'
+    };
+
+    let activeExpandedDayKey = null;
+
+    window.mountDayGame = function(dayKey, gameNode, options = {}) {
+      const mountEl = document.getElementById('mount-' + dayKey);
+      if (!mountEl || !gameNode) return;
+      mountEl.innerHTML = '';
+
+      if (options.thumbUrl) {
+        const wrap = document.createElement('div');
+        wrap.style.display = 'flex';
+        wrap.style.alignItems = 'center';
+        wrap.style.gap = '10px';
+        wrap.style.padding = '6px 0';
+
+        const img = document.createElement('img');
+        img.src = options.thumbUrl;
+        img.alt = '';
+        img.className = 'game-thumb-square';
+        img.onerror = function() { this.style.display = 'none'; };
+
+        const holder = document.createElement('div');
+        holder.style.flex = '1';
+        holder.style.minWidth = '0';
+        holder.appendChild(gameNode);
+
+        wrap.appendChild(img);
+        wrap.appendChild(holder);
+        mountEl.appendChild(wrap);
+      } else {
+        mountEl.appendChild(gameNode);
+      }
+    };
+
+    (function initAutoDayGameSlots() {
+      const days = ['segunda', 'terca', 'quarta', 'quinta', 'sexta', 'sabado', 'domingo'];
+
+      function hydrateDaySlot(dayKey) {
+        const slotEl = document.getElementById('slot-' + dayKey);
+        const mountEl = document.getElementById('mount-' + dayKey);
+        if (!slotEl || !mountEl) return;
+
+        const strayScripts = Array.from(slotEl.querySelectorAll('script'));
+        const strayNodes = Array.from(slotEl.children).filter(
+          el => !el.classList.contains('day-slot-mount') && el.tagName !== 'SCRIPT'
+        );
+
+        if (!strayScripts.length && !strayNodes.length) return;
+
+        let thumbUrl = '';
+        const box = document.createElement('div');
+        box.style.display = 'flex';
+        box.style.alignItems = 'center';
+        box.style.gap = '10px';
+        box.style.padding = '8px';
+        box.style.background = '#0e1222';
+        box.style.border = '1px solid var(--gold-border)';
+        box.style.borderRadius = '14px';
+
+        strayNodes.forEach(node => {
+          const foundImg = node.matches?.('img') ? node : node.querySelector?.('img');
+          if (foundImg && foundImg.src) thumbUrl = foundImg.src;
+          box.appendChild(node);
+        });
+
+        strayScripts.forEach(oldScript => {
+          const newScript = document.createElement('script');
+          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.textContent = oldScript.textContent;
+          oldScript.remove();
+          box.appendChild(newScript);
+        });
+
+        const mountedImg = box.querySelector('img');
+        if (mountedImg && mountedImg.src && !thumbUrl) thumbUrl = mountedImg.src;
+
+        if (thumbUrl) {
+          const thumb = document.createElement('img');
+          thumb.src = thumbUrl;
+          thumb.alt = '';
+          thumb.className = 'game-thumb-square';
+          thumb.onerror = function() { this.style.display = 'none'; };
+          box.prepend(thumb);
+        }
+
+        mountEl.innerHTML = '';
+        mountEl.appendChild(box);
+      }
+
+      days.forEach(hydrateDaySlot);
+    })();
+
+    window.expandDayGameToFullTab = function(dayKey) {
+      pauseAllVideos();
+      const mountEl = document.getElementById('mount-' + dayKey);
+      const stageBody = document.getElementById('fullGameMountBody');
+      const stageTitle = document.getElementById('fullGameStageTitle');
+      if (!mountEl || !stageBody || !mountEl.firstChild) return;
+
+      activeExpandedDayKey = dayKey;
+      stageTitle.textContent = DAY_SLOT_TITLES[dayKey] || 'Jogo';
+      stageBody.innerHTML = '';
+
+      while (mountEl.firstChild) {
+        stageBody.appendChild(mountEl.firstChild);
+      }
+
+      document.body.classList.add('full-game-mode');
+      window.scrollTo({ top: 0, behavior: 'instant' });
+    };
+
+    window.collapseFullGameStage = function() {
+      pauseAllVideos();
+      const stageBody = document.getElementById('fullGameMountBody');
+      if (activeExpandedDayKey && stageBody) {
+        const mountEl = document.getElementById('mount-' + activeExpandedDayKey);
+        if (mountEl) {
+          while (stageBody.firstChild) {
+            mountEl.appendChild(stageBody.firstChild);
+          }
+        }
+      }
+      activeExpandedDayKey = null;
+      document.body.classList.remove('full-game-mode');
+    };
+  </script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -4678,6 +4969,10 @@
     };
 
     window.switchView = function(viewName) {
+      pauseAllVideos();
+      if (document.body.classList.contains('full-game-mode')) {
+        collapseFullGameStage();
+      }
       activeVisitedUserUid = null;
       applyUserTheme();
 
