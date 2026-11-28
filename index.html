@@ -1886,30 +1886,79 @@
         <button class="btn-pill-gold" onclick="switchView('feed')">Feed</button>
       </div>
 
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de segunda
+      ========================================================================
+      ========================================================================
+      -->
       <div class="day-slot-block" id="slot-segunda">
         <div class="day-slot-mount" id="mount-segunda" onclick="expandDayGameToFullTab('segunda')"></div>
       </div>
 
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de terça
+      ========================================================================
+      ========================================================================
+      -->
       <div class="day-slot-block" id="slot-terca">
         <div class="day-slot-mount" id="mount-terca" onclick="expandDayGameToFullTab('terca')"></div>
       </div>
 
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de quarta
+      ========================================================================
+      ========================================================================
+      -->
       <div class="day-slot-block" id="slot-quarta">
         <div class="day-slot-mount" id="mount-quarta" onclick="expandDayGameToFullTab('quarta')"></div>
       </div>
 
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de quinta
+      ========================================================================
+      ========================================================================
+      -->
       <div class="day-slot-block" id="slot-quinta">
         <div class="day-slot-mount" id="mount-quinta" onclick="expandDayGameToFullTab('quinta')"></div>
       </div>
 
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de sexta
+      ========================================================================
+      ========================================================================
+      -->
       <div class="day-slot-block" id="slot-sexta">
         <div class="day-slot-mount" id="mount-sexta" onclick="expandDayGameToFullTab('sexta')"></div>
       </div>
 
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de sábado
+      ========================================================================
+      ========================================================================
+      -->
       <div class="day-slot-block" id="slot-sabado">
         <div class="day-slot-mount" id="mount-sabado" onclick="expandDayGameToFullTab('sabado')"></div>
       </div>
 
+      <!--
+      ========================================================================
+      ========================================================================
+      cole aqui o de domingo
+      ========================================================================
+      ========================================================================
+      -->
       <div class="day-slot-block" id="slot-domingo">
         <div class="day-slot-mount" id="mount-domingo" onclick="expandDayGameToFullTab('domingo')"></div>
       </div>
@@ -2730,29 +2779,69 @@
       return new Promise(res => {
         const v = document.createElement('video');
         v.preload = 'metadata';
-        v.onloadedmetadata = () => {
-          URL.revokeObjectURL(v.src);
-          res(v.duration || 0);
+        const srcUrl = URL.createObjectURL(file);
+        const cleanup = () => {
+          try { URL.revokeObjectURL(srcUrl); } catch (e) {}
         };
-        v.onerror = () => res(0);
-        v.src = URL.createObjectURL(file);
+        v.onloadedmetadata = () => {
+          const dur = v.duration || 0;
+          cleanup();
+          res(dur);
+        };
+        v.onerror = () => {
+          cleanup();
+          res(0);
+        };
+        v.src = srcUrl;
       });
     }
 
     function compressVideoOnce(file, scale, bitrate) {
       return new Promise(res => {
+        if (typeof MediaRecorder === 'undefined') {
+          res(file);
+          return;
+        }
+
         const v = document.createElement('video');
         v.muted = true;
         v.playsInline = true;
         v.preload = 'auto';
+        const srcUrl = URL.createObjectURL(file);
+        let settled = false;
+
+        const finish = outFile => {
+          if (settled) return;
+          settled = true;
+          try { URL.revokeObjectURL(srcUrl); } catch (e) {}
+          res(outFile);
+        };
+
+        const safetyTimer = setTimeout(() => finish(file), 45000);
 
         v.onloadedmetadata = () => {
+          const vw = v.videoWidth || 640;
+          const vh = v.videoHeight || 480;
           const c = document.createElement('canvas');
-          c.width = Math.max(2, Math.round(v.videoWidth * scale / 2) * 2);
-          c.height = Math.max(2, Math.round(v.videoHeight * scale / 2) * 2);
+          c.width = Math.max(2, Math.round((vw * scale) / 2) * 2);
+          c.height = Math.max(2, Math.round((vh * scale) / 2) * 2);
           const ctx = c.getContext('2d');
 
-          const stream = c.captureStream(30);
+          if (!ctx || typeof c.captureStream !== 'function') {
+            clearTimeout(safetyTimer);
+            finish(file);
+            return;
+          }
+
+          let stream;
+          try {
+            stream = c.captureStream(30);
+          } catch (e) {
+            clearTimeout(safetyTimer);
+            finish(file);
+            return;
+          }
+
           let rec;
           try {
             rec = new MediaRecorder(stream, {
@@ -2763,8 +2852,8 @@
             try {
               rec = new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
             } catch (e2) {
-              URL.revokeObjectURL(v.src);
-              res(file);
+              clearTimeout(safetyTimer);
+              finish(file);
               return;
             }
           }
@@ -2775,40 +2864,66 @@
           };
 
           rec.onstop = () => {
-            URL.revokeObjectURL(v.src);
+            clearTimeout(safetyTimer);
             const blob = new Blob(chunks, { type: 'video/webm' });
-            res(new File([blob], 'video.webm', { type: 'video/webm' }));
+            if (blob.size > 0) {
+              finish(new File([blob], 'video.webm', { type: 'video/webm' }));
+            } else {
+              finish(file);
+            }
           };
 
           let active = true;
           function drawFrame() {
             if (!active || v.paused || v.ended) return;
-            ctx.drawImage(v, 0, 0, c.width, c.height);
+            try { ctx.drawImage(v, 0, 0, c.width, c.height); } catch (e) {}
             requestAnimationFrame(drawFrame);
           }
 
           v.onended = () => {
             active = false;
-            if (rec.state !== 'inactive') rec.stop();
+            if (rec.state !== 'inactive') {
+              try { rec.stop(); } catch (e) { finish(file); }
+            }
           };
 
-          rec.start(250);
+          try {
+            rec.start(250);
+          } catch (e) {
+            clearTimeout(safetyTimer);
+            finish(file);
+            return;
+          }
+
           v.play()
             .then(() => drawFrame())
             .catch(() => {
               active = false;
-              if (rec.state !== 'inactive') rec.stop();
+              if (rec.state !== 'inactive') {
+                try { rec.stop(); } catch (e) { finish(file); }
+              } else {
+                clearTimeout(safetyTimer);
+                finish(file);
+              }
             });
         };
 
-        v.onerror = () => res(file);
-        v.src = URL.createObjectURL(file);
+        v.onerror = () => {
+          clearTimeout(safetyTimer);
+          finish(file);
+        };
+        v.src = srcUrl;
       });
     }
 
     function compressImageToTarget(file) {
       return new Promise(res => {
         const img = new Image();
+        const srcUrl = URL.createObjectURL(file);
+        const cleanup = () => {
+          try { URL.revokeObjectURL(srcUrl); } catch (e) {}
+        };
+
         img.onload = () => {
           let w = img.naturalWidth;
           let h = img.naturalHeight;
@@ -2824,10 +2939,12 @@
           const attempt = (q, s) => {
             tryQ(q, s, b => {
               if (!b) {
+                cleanup();
                 res(file);
                 return;
               }
               if (b.size <= MAX_FILE_BYTES || (q <= 0.35 && s <= 0.5)) {
+                cleanup();
                 res(new File([b], 'foto.jpg', { type: 'image/jpeg' }));
                 return;
               }
@@ -2836,6 +2953,7 @@
               } else if (s > 0.5) {
                 attempt(0.7, s * 0.7);
               } else {
+                cleanup();
                 res(new File([b], 'foto.jpg', { type: 'image/jpeg' }));
               }
             });
@@ -2843,8 +2961,11 @@
 
           attempt(0.85, 1);
         };
-        img.onerror = () => res(file);
-        img.src = URL.createObjectURL(file);
+        img.onerror = () => {
+          cleanup();
+          res(file);
+        };
+        img.src = srcUrl;
       });
     }
 
@@ -2910,11 +3031,17 @@
       const playSrc = normalizePlaybackUrl(rawUrl);
       const posterSrc = getVideoPosterUrl(rawUrl);
       const posterAttr = posterSrc ? ` poster="${escapeAttr(posterSrc)}"` : '';
-      return `<video src="${escapeAttr(playSrc)}"${posterAttr} ${extraAttrs} controls preload="auto" playsinline webkit-playsinline onloadeddata="if(this.currentTime===0){try{this.currentTime=0.1;}catch(e){}}"></video>`;
+      return `<video src="${escapeAttr(playSrc)}"${posterAttr} ${extraAttrs} controls preload="metadata" playsinline webkit-playsinline></video>`;
     }
 
     async function uploadMediaToCloudinary(file) {
-      const ready = await prepareMediaFile(file);
+      let ready = null;
+      try {
+        ready = await prepareMediaFile(file);
+      } catch (e) {
+        console.error(e);
+        ready = file;
+      }
       if (!ready) return null;
 
       const isVideo = ready.type.startsWith('video/');
@@ -2942,7 +3069,7 @@
         console.error(e);
         showSherBlussModal({
           title: 'Erro no upload',
-          htmlBody: 'Não foi possível enviar a mídia. Tente novamente com outro arquivo ou conexão estável.'
+          htmlBody: `Não foi possível enviar a mídia: ${escapeHtml(e.message || 'tente novamente')}.`
         });
         return null;
       }
@@ -4109,16 +4236,17 @@
 
     document.getElementById('profileEditAvatarFile').addEventListener('change', async event => {
       const file = event.target.files[0];
+      event.target.value = '';
       if (!file) return;
       if (!validMediaFile(file)) {
         showFileError(file);
         return;
       }
 
-      document.getElementById('profileAvatarLabel').textContent = '✅ Foto de perfil atualizada';
       const up = await uploadMediaToCloudinary(file);
       if (!up) return;
 
+      document.getElementById('profileAvatarLabel').textContent = '✅ Foto de perfil atualizada';
       appState.user.avatar = up.url;
       document.getElementById('myProfilePageAvatar').src = up.url;
       applyUserTheme();
@@ -4239,14 +4367,12 @@
 
     window.handleChatMediaSelected = async function(event) {
       const file = event.target.files[0];
+      event.target.value = '';
       if (!file) return;
       if (!activeChatUid) return;
 
       const up = await uploadMediaToCloudinary(file);
-      if (!up) {
-        event.target.value = '';
-        return;
-      }
+      if (!up) return;
 
       const cid = chatIdFor(appState.user.uid, activeChatUid);
       await setDoc(doc(db, "chats", cid), {
@@ -4263,7 +4389,6 @@
         mediaType: up.type,
         createdAt: serverTimestamp()
       });
-      event.target.value = '';
     };
 
     function renderMyAconchegoPosts() {
@@ -4668,6 +4793,7 @@
 
     window.previewBiasSquarePhoto = async function(event) {
       const file = event.target.files[0];
+      event.target.value = '';
       if (!file) return;
       if (!validMediaFile(file)) {
         showFileError(file);
@@ -5024,11 +5150,11 @@
 
     window.handleUniversalMediaSelected = async function(event) {
       const file = event.target.files[0];
+      event.target.value = '';
       if (!file) return;
 
       if (!validMediaFile(file)) {
         showFileError(file);
-        event.target.value = '';
         return;
       }
 
@@ -5036,15 +5162,14 @@
       if (!up) return;
 
       await submitPostDirectlyWithMedia(up.url, up.type, false);
-      event.target.value = '';
     };
 
     window.handleChallengeMediaSelected = async function(event) {
       const file = event.target.files[0];
+      event.target.value = '';
       if (!file) return;
 
       if (!validateChallengeSelectionAgainstRequest()) {
-        event.target.value = '';
         return;
       }
 
@@ -5053,21 +5178,16 @@
           title: 'Selecione seu Bias',
           htmlBody: 'Escolha seu Bias da sua lista acima ou cadastre um novo antes de enviar.'
         });
-        event.target.value = '';
         return;
       }
 
       if (!validMediaFile(file)) {
         showFileError(file);
-        event.target.value = '';
         return;
       }
 
       const up = await uploadMediaToCloudinary(file);
-      if (!up) {
-        event.target.value = '';
-        return;
-      }
+      if (!up) return;
 
       await submitPostDirectlyWithMedia(up.url, up.type, true);
     };
@@ -6048,177 +6168,171 @@
           : '🔓 Sem número específico exigido na diretriz atual';
       }
 
-      updateNotifBadge();
-      renderWeeklyPodiumCarousel();
+      const fGrid = document.getElementById('fandomsGridContainer');
+      const visibleFandoms = appState.fandoms.filter(f => !f.creatorUid || !isUserBlocked(null, f.creatorUid));
 
-      const grid = document.getElementById('fandomsGridContainer');
-      if (!appState.fandoms.length) {
-        grid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum Fandom particular criado ainda.</div>`;
-      } else {
-        grid.innerHTML = appState.fandoms
-          .map(f => {
-            const unlocked = hasFandomAccess(f);
-            return `
-              <div
-                class="glass-panel fandom-box-card"
-                style="border-color:${escapeAttr(f.borderColor || '#fbbf24')};"
-                onclick="selectFandom('${escapeAttr(f.name)}')"
-              >
-                <h4 style="color:var(--gold-accent);">
-                  <span class="fandom-dot" style="background-color:${escapeAttr(f.dotColor || '#fbbf24')};"></span>
-                  ${escapeHtml(f.name)}
-                </h4>
-                <p>${unlocked ? '🔓 Acesso Liberado' : '🔒 Solicitar Entrada'}</p>
-              </div>
-            `;
-          })
-          .join('');
-      }
+      fGrid.innerHTML = visibleFandoms.length
+        ? visibleFandoms
+            .map(f => {
+              const unlocked = hasFandomAccess(f);
+              const roleBadge = f.creatorUid === appState.user.uid
+                ? '👑 Criador'
+                : (f.admins && f.admins.includes(appState.user.uid) ? '🛡️ Admin' : '');
+              const memberCount = (f.members || []).length;
+
+              return `
+                <div
+                  class="glass-panel fandom-box-card"
+                  style="border-color:${escapeAttr(f.borderColor || '#fbbf24')};"
+                  onclick="selectFandom('${escapeAttr(f.name)}')"
+                >
+                  <h4 style="color:${escapeAttr(f.borderColor || '#fbbf24')};">
+                    <span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')};"></span>
+                    ${escapeHtml(f.name)}
+                    <span>${unlocked ? '🔓' : '🔒'}</span>
+                  </h4>
+                  <p>${memberCount} ${memberCount === 1 ? 'membro' : 'membros'} ${roleBadge ? '• ' + roleBadge : ''}</p>
+                </div>
+              `;
+            })
+            .join('')
+        : '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom criado ainda. Clique em "+ Criar Fandom".</div>';
+
+      const mainFeed = document.getElementById('mainFeedList');
+      const generalPosts = postsFromFirebase.filter(p =>
+        !isUserBlocked(p.authorHandle, p.authorUid) &&
+        !p.isPrivateFandom &&
+        (!p.fandom || p.fandom === 'Geral')
+      );
+      mainFeed.innerHTML = generalPosts.length
+        ? generalPosts.map(p => renderPostCardHTML(p)).join('')
+        : '<div class="glass-panel empty-state-box">Nenhuma publicação ainda. Seja a primeira a escrever no Sher Bluss!</div>';
 
       if (activeFandomFilter) {
-        const fo = appState.fandoms.find(f => f.name === activeFandomFilter);
-        if (!fo || !hasFandomAccess(fo)) {
-          closeCurrentFandom();
-          return;
+        const curFandom = appState.fandoms.find(x => x.name === activeFandomFilter);
+        if (!curFandom) {
+          activeFandomFilter = null;
+          if (document.getElementById('view-inside-fandom').classList.contains('active')) {
+            switchView('fandom');
+          }
+        } else {
+          const activeCountEl = document.getElementById('insideFandomActiveCount');
+          if (activeCountEl) {
+            const totalMembers = (curFandom.members || []).length;
+            const myRoleLabel = curFandom.creatorUid === appState.user.uid
+              ? '👑 Criador'
+              : (curFandom.admins && curFandom.admins.includes(appState.user.uid) ? '🛡️ Admin' : 'Membro');
+            activeCountEl.textContent = `${totalMembers} ${totalMembers === 1 ? 'participante' : 'participantes'} • ${myRoleLabel}`;
+          }
+
+          const inFeed = document.getElementById('insideFandomFeedList');
+          const fPosts = postsFromFirebase.filter(p =>
+            !isUserBlocked(p.authorHandle, p.authorUid) &&
+            (p.fandom === activeFandomFilter || p.fandomDocId === curFandom.id)
+          );
+          inFeed.innerHTML = fPosts.length
+            ? fPosts.map(p => renderPostCardHTML(p)).join('')
+            : '<div class="glass-panel empty-state-box">Nenhuma publicação neste fandom particular ainda.</div>';
         }
-
-        const filtered = postsFromFirebase.filter(p =>
-          !isUserBlocked(p.authorHandle, p.authorUid) &&
-          (p.fandom === activeFandomFilter || p.fandomId === activeFandomFilter || (fo.id && p.fandomDocId === fo.id))
-        );
-
-        document.getElementById('insideFandomFeedList').innerHTML = filtered.length
-          ? filtered.map(p => renderPostCardHTML(p)).join('')
-          : `<div class="empty-state-box">Este fandom está silencioso.</div>`;
       }
 
-      if (activeVisitedUserUid) {
-        const ups = postsFromFirebase.filter(p => p.authorUid === activeVisitedUserUid && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
-        document.getElementById('visitedProfileFeedList').innerHTML = ups.length
-          ? ups.map(p => renderPostCardHTML(p)).join('')
-          : `<div class="glass-panel empty-state-box">Esta coleguinha ainda não publicou nada no feed público.</div>`;
-      }
+      const cFeed = document.getElementById('challengeFeedList');
+      const cPosts = postsFromFirebase.filter(p => !isUserBlocked(p.authorHandle, p.authorUid) && p.isChallenge);
+      cFeed.innerHTML = cPosts.length
+        ? cPosts.map(p => renderPostCardHTML(p)).join('')
+        : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda.</div>';
 
-      if (!document.getElementById('globalSearchInput').value.trim()) {
-        const general = postsFromFirebase.filter(p => !isUserBlocked(p.authorHandle, p.authorUid) && !p.isChallenge && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
-        document.getElementById('mainFeedList').innerHTML = general.length
-          ? general.map(p => renderPostCardHTML(p)).join('')
-          : `<div class="glass-panel empty-state-box">Nenhuma postagem no feed ainda.</div>`;
-      }
+      const frContainer = document.getElementById('friendsListContainer');
+      const friends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
 
-      const cpf = postsFromFirebase.filter(p => p.isChallenge && !isUserBlocked(p.authorHandle, p.authorUid));
-      document.getElementById('challengeFeedList').innerHTML = cpf.length
-        ? cpf.map(p => renderPostCardHTML(p)).join('')
-        : `<div class="glass-panel empty-state-box">Nenhuma participação enviada para o desafio ainda.</div>`;
-
-      const friends = appState.user.friends || [];
-      document.getElementById('friendsListContainer').innerHTML = friends.length
+      frContainer.innerHTML = friends.length
         ? friends
             .map(f => {
-              const friendUser = usersDirectory.find(u => u.uid === f.uid);
+              const uObj = usersDirectory.find(u => u.uid === f.uid);
               return `
-                <div class="glass-panel" style="padding:14px;display:flex;align-items:center;justify-content:space-between;">
+                <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
                   <div
                     style="display:flex;align-items:center;gap:10px;cursor:pointer;"
-                    onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}','${escapeAttr(f.handle || '@amiga')}')"
+                    onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name)}','${escapeAttr(f.handle || '@coleguinha')}')"
                   >
                     <div class="avatar-container">
                       <img
-                        src="${escapeAttr(f.avatar || './amigos.png')}"
+                        src="${escapeAttr(f.avatar || './aconchego.png')}"
                         onerror="this.src='./logo.png'"
-                        style="width:46px;height:46px;border-radius:50%;border:1px solid var(--gold-border);object-fit:cover;"
+                        style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;"
                       >
-                      ${renderOnlineDot(friendUser)}
+                      ${renderOnlineDot(uObj)}
                     </div>
                     <div>
-                      <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
-                      <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">
-                        ${escapeHtml(f.handle || '@amiga')} • ${escapeHtml(f.status || 'Amizade ativa')}
-                      </div>
+                      <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
+                      <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(f.status || 'Assistindo doramas juntas')}</div>
                     </div>
                   </div>
-                  <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name || 'Amiga')}')">
+                  <button
+                    type="button"
+                    class="btn-pill-gold"
+                    onclick="event.stopPropagation();openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name)}')"
+                  >
                     Bate-papo
                   </button>
                 </div>
               `;
             })
             .join('')
-        : `<div class="glass-panel empty-state-box">Você ainda não tem amigas adicionadas.</div>`;
+        : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras. Toque no perfil de alguém e clique em "🎬 Quero assistir um dorama"!</div>';
+
+      renderWeeklyPodiumCarousel();
+      updateNotifBadge();
     }
 
-    function enableDesktopCarouselDrag(el) {
-      let isMouseDown = false;
-      let startX = 0;
-      let scrollLeftStart = 0;
-      let wasDragged = false;
+    let isDraggingCarousel = false;
+    let carouselStartX = 0;
+    let carouselScrollLeft = 0;
 
-      el.addEventListener('mousedown', e => {
-        if (e.button !== 0) return;
-        isMouseDown = true;
-        wasDragged = false;
-        startX = e.pageX - el.offsetLeft;
-        scrollLeftStart = el.scrollLeft;
-        el.classList.add('is-dragging');
+    (function initCarouselDragAndScroll() {
+      const carouselEl = document.getElementById('carouselWrapper');
+
+      carouselEl.addEventListener('pointerdown', e => {
+        isDraggingCarousel = true;
+        carouselStartX = e.clientX;
+        carouselScrollLeft = carouselEl.scrollLeft;
+        carouselEl.classList.add('is-dragging');
       });
 
-      window.addEventListener('mousemove', e => {
-        if (!isMouseDown) return;
-        const x = e.pageX - el.offsetLeft;
-        const walk = x - startX;
-        if (Math.abs(walk) > 6) wasDragged = true;
-        el.scrollLeft = scrollLeftStart - walk;
+      carouselEl.addEventListener('pointermove', e => {
+        if (!isDraggingCarousel) return;
+        const dx = e.clientX - carouselStartX;
+        carouselEl.scrollLeft = carouselScrollLeft - dx * 1.15;
       });
 
-      window.addEventListener('mouseup', () => {
-        if (!isMouseDown) return;
-        isMouseDown = false;
-        el.classList.remove('is-dragging');
-      });
-
-      el.addEventListener('click', e => {
-        if (wasDragged) {
-          e.preventDefault();
-          e.stopPropagation();
-          wasDragged = false;
-        }
-      }, true);
-
-      el.addEventListener('wheel', e => {
-        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
-          el.scrollLeft += e.deltaY;
-          e.preventDefault();
-        }
-      }, { passive: false });
-    }
-
-    const carouselWrapper = document.getElementById('carouselWrapper');
-    const topBarCenterTitle = document.getElementById('topBarCenterTitle');
-    enableDesktopCarouselDrag(carouselWrapper);
-
-    window.addEventListener('scroll', () => {
-      if (document.getElementById('view-meu-perfil').classList.contains('active')) return;
-      if (document.getElementById('view-user-profile-feed').classList.contains('active')) return;
-
-      if (window.scrollY > 36) {
-        carouselWrapper.classList.add('scrolled');
-        if (topBarCenterTitle) topBarCenterTitle.classList.add('hidden-title');
-      } else {
-        carouselWrapper.classList.remove('scrolled');
-        if (topBarCenterTitle) topBarCenterTitle.classList.remove('hidden-title');
+      function stopDrag() {
+        if (!isDraggingCarousel) return;
+        isDraggingCarousel = false;
+        carouselEl.classList.remove('is-dragging');
       }
-    }, { passive: true });
+
+      carouselEl.addEventListener('pointerup', stopDrag);
+      carouselEl.addEventListener('pointercancel', stopDrag);
+      carouselEl.addEventListener('pointerleave', stopDrag);
+
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY || 0;
+        const titleEl = document.getElementById('topBarCenterTitle');
+
+        if (y > 40) {
+          carouselEl.classList.add('scrolled');
+          titleEl.classList.add('hidden-title');
+        } else {
+          carouselEl.classList.remove('scrolled');
+          titleEl.classList.remove('hidden-title');
+        }
+      }, { passive: true });
+    })();
 
     applyUserTheme();
     startMidnightCountdown();
     initFirebaseSync();
     renderAll();
-
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(() => {});
-      });
-    }
   </script>
 </body>
 </html>
