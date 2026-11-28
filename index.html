@@ -291,7 +291,6 @@
       flex-shrink: 0;
     }
 
-    /* 1. Carrossel arrastável no desktop e celular */
     .main-carousel-wrapper {
       width: 100%;
       max-width: 760px;
@@ -460,7 +459,6 @@
       pointer-events: none;
     }
 
-    /* 2. Espaço redondo preparado para jogos.png */
     .jogos-round-slot {
       width: 70px;
       height: 70px;
@@ -862,6 +860,11 @@
       color: var(--text-muted);
     }
 
+    .post-time-pill {
+      color: var(--gold-accent);
+      font-weight: 600;
+    }
+
     .admin-badge {
       font-size: 9px;
       background: #141b34;
@@ -903,7 +906,6 @@
       background: #000;
     }
 
-    /* 3. Player de vídeo transparente e sem bolinha branca piscando */
     .sb-video-stage {
       position: relative;
       width: 100%;
@@ -954,12 +956,11 @@
       color: var(--gold-accent);
     }
 
-    /* Mini preview na barra de envio antes de enviar */
     .sb-pending-bar {
       display: none;
-      align-items: center;
+      flex-direction: column;
       gap: 8px;
-      padding: 6px 12px;
+      padding: 8px 12px;
       margin-bottom: 8px;
       background: #0e1222;
       border: 1px solid var(--gold-border);
@@ -969,6 +970,13 @@
 
     .sb-pending-bar.active {
       display: flex;
+    }
+
+    .sb-pending-top-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
     }
 
     .sb-pending-thumb-box {
@@ -1001,6 +1009,71 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .sb-compress-box {
+      width: 100%;
+      background: #141b34;
+      border: 1px solid var(--gold-border);
+      border-radius: 12px;
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sb-compress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      color: var(--gold-accent);
+      font-weight: 600;
+    }
+
+    .sb-compress-track {
+      width: 100%;
+      height: 7px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .sb-compress-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--gold-accent);
+      border-radius: 99px;
+      transition: width 0.25s ease;
+    }
+
+    .sb-compress-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-end;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .sb-toast-banner {
+      position: fixed;
+      top: 66px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 220;
+      background: #141b34;
+      border: 1px solid var(--gold-accent);
+      color: var(--gold-accent);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 7px 16px;
+      border-radius: 99px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, .5);
+      display: none;
+    }
+
+    .sb-toast-banner.visible {
+      display: block;
     }
 
     .comments-section-clean {
@@ -1595,6 +1668,8 @@
 </head>
 <body class="notranslate">
 
+  <div class="sb-toast-banner" id="sbToastBanner">Enviado!</div>
+
   <input type="file" id="aconchegoCoverInput" accept="image/*" style="display:none;">
   <input type="file" id="holdBiasPhotoInput" accept="image/*" style="display:none;">
 
@@ -1678,7 +1753,6 @@
         <span class="tab-label-clean">Amigos</span>
       </div>
 
-      <!-- Espaço redondo preparado para jogos.png -->
       <div class="carousel-item-clean tab-item-box" onclick="switchView('jogos')">
         <div class="jogos-round-slot" id="carouselJogosSlot" data-image-src="./jogos.png">
           <img id="carouselJogosImg" src="./jogos.png" alt="Jogos" onerror="this.onerror=null;this.src='./logo.png';">
@@ -2064,7 +2138,6 @@
       });
     }
 
-    // 1. Carrossel arrastável no computador (Desktop) e celular sem travar seleção ou cliques
     (function initDraggableCarousel() {
       const el = document.getElementById('carouselWrapper');
       if (!el) return;
@@ -2116,7 +2189,6 @@
       }, true);
     })();
 
-    // 3. Controle do player de vídeo transparente (sem bolinha branca piscando)
     window.toggleTransparentVideo = function(btnEl, event) {
       if (event) event.stopPropagation();
       const overlay = btnEl ? btnEl.closest('.sb-video-overlay') : null;
@@ -2338,11 +2410,69 @@
       'fdp', 'filho da puta', 'desgraca', 'desgraça', 'merda', 'bosta', 'corno', 'vagabunda'
     ];
 
-    // 4. Estado pendente de prévia e reset em caso de erro
+    const COMPRESSION_STEPS = [
+      { scale: 0.75, bitrate: 1200000, label: 'Tentativa 1 de 3' },
+      { scale: 0.55, bitrate: 750000, label: 'Tentativa 2 de 3' },
+      { scale: 0.40, bitrate: 450000, label: 'Tentativa 3 de 3 (última)' }
+    ];
+
+    let toastTimeoutId = null;
+    function showSentFeedbackToast(msg = 'Enviado!') {
+      const banner = document.getElementById('sbToastBanner');
+      if (!banner) return;
+      banner.textContent = msg;
+      banner.classList.add('visible');
+      if (toastTimeoutId) clearTimeout(toastTimeoutId);
+      toastTimeoutId = setTimeout(() => {
+        banner.classList.remove('visible');
+      }, 2200);
+    }
+
+    function formatPostTimestamp(post) {
+      let d = null;
+      if (post?.createdAt?.toDate) {
+        d = post.createdAt.toDate();
+      } else if (typeof post?.createdAt === 'number') {
+        d = new Date(post.createdAt);
+      }
+      if (!d || isNaN(d.getTime())) return '';
+      return d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    }
+
     let pendingUploadState = {
-      main: { file: null, url: '', isChallenge: false },
-      challenge: { file: null, url: '', isChallenge: true }
+      main: createEmptyPendingSlot(false),
+      challenge: createEmptyPendingSlot(true)
     };
+
+    function createEmptyPendingSlot(isChallenge) {
+      return {
+        file: null,
+        workingFile: null,
+        url: '',
+        isChallenge,
+        needsCompression: false,
+        attemptIndex: 0,
+        progress: 0,
+        statusText: '',
+        isCompressing: false,
+        readyToSend: false,
+        compressionExhausted: false
+      };
+    }
+
+    function resetComposerInputAndBar() {
+      const mainInp = document.getElementById('mainComposerInput');
+      if (mainInp) mainInp.value = '';
+      const mainSendBtn = document.getElementById('mainSendBtn');
+      if (mainSendBtn) {
+        mainSendBtn.disabled = false;
+        mainSendBtn.textContent = '➤';
+      }
+      const composerWrap = document.getElementById('floatingComposerWrapper');
+      if (composerWrap) {
+        composerWrap.classList.remove('expanded');
+      }
+    }
 
     function resetUploadAndComposerState() {
       ['universalMediaInput', 'challengeCameraInput', 'challengeGalleryInput', 'chatMediaInput'].forEach(id => {
@@ -2354,20 +2484,11 @@
         if (pendingUploadState[slotKey]?.url && pendingUploadState[slotKey].url.startsWith('blob:')) {
           try { URL.revokeObjectURL(pendingUploadState[slotKey].url); } catch (e) {}
         }
-        pendingUploadState[slotKey] = { file: null, url: '', isChallenge: slotKey === 'challenge' };
+        pendingUploadState[slotKey] = createEmptyPendingSlot(slotKey === 'challenge');
       });
 
       renderPendingPreviewBars();
-
-      const mainSendBtn = document.getElementById('mainSendBtn');
-      if (mainSendBtn) {
-        mainSendBtn.disabled = false;
-        mainSendBtn.textContent = '➤';
-      }
-      const composerWrap = document.getElementById('floatingComposerWrapper');
-      if (composerWrap) {
-        composerWrap.classList.remove('expanded');
-      }
+      resetComposerInputAndBar();
     }
 
     function showSpecificUploadError(title, message) {
@@ -2390,7 +2511,7 @@
       if (pendingUploadState[slotKey]?.url && pendingUploadState[slotKey].url.startsWith('blob:')) {
         try { URL.revokeObjectURL(pendingUploadState[slotKey].url); } catch (e) {}
       }
-      pendingUploadState[slotKey] = { file: null, url: '', isChallenge: slotKey === 'challenge' };
+      pendingUploadState[slotKey] = createEmptyPendingSlot(slotKey === 'challenge');
       if (slotKey === 'main') {
         const u = document.getElementById('universalMediaInput');
         if (u) u.value = '';
@@ -2416,33 +2537,135 @@
         const item = pendingUploadState[key];
         if (!bar) return;
 
-        if (!item || !item.file || !item.url) {
+        const activeFile = item?.workingFile || item?.file;
+        if (!item || !activeFile || !item.url) {
           bar.classList.remove('active');
           bar.innerHTML = '';
           return;
         }
 
-        const isVid = item.file.type.startsWith('video/');
+        const isVid = activeFile.type.startsWith('video/');
         const mediaTag = isVid
           ? `<video src="${escapeAttr(item.url)}" muted playsinline preload="metadata"></video>`
           : `<img src="${escapeAttr(item.url)}" alt="Prévia">`;
 
-        const sizeMb = (item.file.size / (1024 * 1024)).toFixed(1);
-        const actionBtn = key === 'main'
-          ? `<button type="button" class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="submitPost()">Enviar</button>`
-          : `<button type="button" class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="confirmChallengePendingUpload()">Enviar</button>`;
+        const sizeMb = (activeFile.size / (1024 * 1024)).toFixed(1);
+        const sendHandler = key === 'main' ? 'submitPost()' : 'confirmChallengePendingUpload()';
+
+        let compressSectionHtml = '';
+        if (item.needsCompression) {
+          let actionButtonsHtml = '';
+          if (item.isCompressing) {
+            actionButtonsHtml = `<span style="font-size:11px;color:var(--gold-accent);">Comprimindo...</span>`;
+          } else if (item.readyToSend) {
+            actionButtonsHtml = `<button type="button" class="btn-gold" style="width:auto;padding:5px 12px;font-size:11.5px;" onclick="${sendHandler}">Enviar vídeo</button>`;
+          } else if (item.attemptIndex < COMPRESSION_STEPS.length) {
+            const nextStep = COMPRESSION_STEPS[item.attemptIndex];
+            const btnLabel = item.attemptIndex === 0 ? 'Comprimir (1/3)' : 'Comprimir novamente';
+            actionButtonsHtml = `<button type="button" class="btn-pill-gold" style="padding:5px 12px;font-size:11.5px;" onclick="runNextCompressionStep('${key}')">${btnLabel} • ${escapeHtml(nextStep.label)}</button>`;
+          }
+
+          compressSectionHtml = `
+            <div class="sb-compress-box">
+              <div class="sb-compress-header">
+                <span>${escapeHtml(item.statusText || 'Vídeo acima de 25 MB')}</span>
+                <span>${Math.round(item.progress || 0)}%</span>
+              </div>
+              <div class="sb-compress-track">
+                <div class="sb-compress-fill" style="width:${Math.max(0, Math.min(100, item.progress || 0))}%;"></div>
+              </div>
+              <div class="sb-compress-actions">
+                ${actionButtonsHtml}
+              </div>
+            </div>
+          `;
+        }
+
+        const topSendBtn = !item.needsCompression
+          ? `<button type="button" class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="${sendHandler}">Enviar</button>`
+          : '';
 
         bar.innerHTML = `
-          <div class="sb-pending-thumb-box">${mediaTag}</div>
-          <div class="sb-pending-meta"><strong>${escapeHtml(item.file.name)}</strong> • ${sizeMb} MB</div>
-          ${actionBtn}
-          <button type="button" class="delicate-x-btn" onclick="clearPendingSlot('${key}')" title="Remover seleção">✕</button>
+          <div class="sb-pending-top-row">
+            <div class="sb-pending-thumb-box">${mediaTag}</div>
+            <div class="sb-pending-meta"><strong>${escapeHtml(activeFile.name)}</strong> • ${sizeMb} MB</div>
+            ${topSendBtn}
+            <button type="button" class="delicate-x-btn" onclick="clearPendingSlot('${key}')" title="Remover seleção">✕</button>
+          </div>
+          ${compressSectionHtml}
         `;
         bar.classList.add('active');
       });
     }
 
-    // Aceita arquivos de vídeo incluindo formatos/streams H.264
+    window.runNextCompressionStep = async function(slotKey) {
+      const item = pendingUploadState[slotKey];
+      if (!item || !item.workingFile || item.isCompressing) return;
+      if (item.attemptIndex >= COMPRESSION_STEPS.length) return;
+
+      const step = COMPRESSION_STEPS[item.attemptIndex];
+      item.isCompressing = true;
+      item.statusText = `${step.label} • comprimir...`;
+      item.progress = 20;
+      renderPendingPreviewBars();
+
+      let ticker = setInterval(() => {
+        if (!item.isCompressing) return;
+        item.progress = Math.min(90, (item.progress || 20) + 12);
+        renderPendingPreviewBars();
+      }, 260);
+
+      let compressed = null;
+      try {
+        compressed = await compressVideoOnce(item.workingFile, step.scale, step.bitrate);
+      } catch (e) {
+        compressed = null;
+      }
+
+      clearInterval(ticker);
+      item.isCompressing = false;
+      item.attemptIndex += 1;
+
+      if (!compressed || compressed === item.workingFile) {
+        item.progress = 100;
+        if (item.attemptIndex >= COMPRESSION_STEPS.length) {
+          showSpecificUploadError(
+            'Limite de 25 MB não atingido',
+            `Após 3 tentativas de compressão, o vídeo continua acima de 25 MB (${(item.workingFile.size / (1024 * 1024)).toFixed(1)} MB) ou não pôde ser reduzido.`
+          );
+          return;
+        }
+        item.statusText = `${step.label} concluída (${(item.workingFile.size / (1024 * 1024)).toFixed(1)} MB > 25 MB)`;
+        renderPendingPreviewBars();
+        return;
+      }
+
+      if (item.url && item.url.startsWith('blob:')) {
+        try { URL.revokeObjectURL(item.url); } catch (e) {}
+      }
+      item.workingFile = compressed;
+      item.url = URL.createObjectURL(compressed);
+      item.progress = 100;
+
+      if (compressed.size <= TOLERANCE_BYTES) {
+        item.readyToSend = true;
+        item.statusText = `Pronto! ${(compressed.size / (1024 * 1024)).toFixed(1)} MB (≤ 25 MB)`;
+        renderPendingPreviewBars();
+        return;
+      }
+
+      if (item.attemptIndex >= COMPRESSION_STEPS.length) {
+        showSpecificUploadError(
+          'Limite de 25 MB excedido',
+          `O vídeo ficou com ${(compressed.size / (1024 * 1024)).toFixed(1)} MB após as 3 tentativas de compressão (limite: 25 MB).`
+        );
+        return;
+      }
+
+      item.statusText = `${step.label} concluída: ${(compressed.size / (1024 * 1024)).toFixed(1)} MB (acima de 25 MB)`;
+      renderPendingPreviewBars();
+    };
+
     async function checkH264Compatibility(file) {
       if (!file || !file.type.startsWith('video/')) return { ok: true };
       return { ok: true };
@@ -3026,19 +3249,25 @@
             c.height = h;
             const ctx = c.getContext('2d');
             const stream = c.captureStream(30);
+            const mimeTypes = ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+            const supportedMime = mimeTypes.find(m => typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(m));
             const rec = new MediaRecorder(stream, {
-              mimeType: 'video/webm;codecs=vp9',
+              ...(supportedMime ? { mimeType: supportedMime } : {}),
               videoBitsPerSecond: bitrate
             });
             const chunks = [];
 
             rec.ondataavailable = e => {
-              if (e.data.size) chunks.push(e.data);
+              if (e.data && e.data.size) chunks.push(e.data);
             };
 
             rec.onstop = () => {
               URL.revokeObjectURL(v.src);
-              res(new File(chunks, 'video.webm', { type: 'video/webm' }));
+              if (!chunks.length) {
+                res(file);
+                return;
+              }
+              res(new File(chunks, 'video_comprimido.webm', { type: supportedMime || 'video/webm' }));
             };
 
             v.currentTime = 0;
@@ -3095,15 +3324,9 @@
 
         if (file.size > TOLERANCE_BYTES) {
           let cur = file;
-          const tries = [
-            [0.75, 1200000],
-            [0.55, 750000],
-            [0.4, 450000]
-          ];
-
-          for (let i = 0; i < 3; i++) {
+          for (let i = 0; i < COMPRESSION_STEPS.length; i++) {
             try {
-              cur = await compressVideoOnce(cur, tries[i][0], tries[i][1]);
+              cur = await compressVideoOnce(cur, COMPRESSION_STEPS[i].scale, COMPRESSION_STEPS[i].bitrate);
             } catch (compErr) {
               showSpecificUploadError(
                 'Erro na compressão do vídeo',
@@ -4397,6 +4620,7 @@
         mediaType: '',
         createdAt: serverTimestamp()
       });
+      showSentFeedbackToast('Enviado!');
     };
 
     window.handleChatMediaSelected = async function(event) {
@@ -4426,6 +4650,7 @@
         createdAt: serverTimestamp()
       });
       event.target.value = '';
+      showSentFeedbackToast('Enviado!');
     };
 
     function renderMyAconchegoPosts() {
@@ -5150,7 +5375,37 @@
       });
     };
 
-    // 3 & 4. Ao selecionar mídia, cria mini preview antes de enviar e valida tamanho/H.264
+    async function setupPendingSlotFromFile(slotKey, file) {
+      if (pendingUploadState[slotKey]?.url && pendingUploadState[slotKey].url.startsWith('blob:')) {
+        try { URL.revokeObjectURL(pendingUploadState[slotKey].url); } catch (e) {}
+      }
+
+      const previewUrl = URL.createObjectURL(file);
+      const isOverLimit = file.size > TOLERANCE_BYTES;
+
+      pendingUploadState[slotKey] = {
+        file: file,
+        workingFile: file,
+        url: previewUrl,
+        isChallenge: slotKey === 'challenge',
+        needsCompression: isOverLimit,
+        attemptIndex: 0,
+        progress: isOverLimit ? 0 : 100,
+        statusText: isOverLimit
+          ? `Arquivo acima de 25 MB (${(file.size / (1024 * 1024)).toFixed(1)} MB) • 3 tentativas disponíveis`
+          : 'Pronto para enviar',
+        isCompressing: false,
+        readyToSend: !isOverLimit,
+        compressionExhausted: false
+      };
+
+      if (slotKey === 'main') {
+        const wrap = document.getElementById('floatingComposerWrapper');
+        if (wrap) wrap.classList.add('expanded');
+      }
+      renderPendingPreviewBars();
+    }
+
     window.handleUniversalMediaSelected = async function(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -5170,20 +5425,7 @@
         }
       }
 
-      if (pendingUploadState.main?.url && pendingUploadState.main.url.startsWith('blob:')) {
-        try { URL.revokeObjectURL(pendingUploadState.main.url); } catch (e) {}
-      }
-
-      const previewUrl = URL.createObjectURL(file);
-      pendingUploadState.main = {
-        file: file,
-        url: previewUrl,
-        isChallenge: false
-      };
-
-      const wrap = document.getElementById('floatingComposerWrapper');
-      if (wrap) wrap.classList.add('expanded');
-      renderPendingPreviewBars();
+      await setupPendingSlotFromFile('main', file);
     };
 
     window.handleChallengeMediaSelected = async function(event) {
@@ -5220,28 +5462,23 @@
         }
       }
 
-      if (pendingUploadState.challenge?.url && pendingUploadState.challenge.url.startsWith('blob:')) {
-        try { URL.revokeObjectURL(pendingUploadState.challenge.url); } catch (e) {}
-      }
-
-      const previewUrl = URL.createObjectURL(file);
-      pendingUploadState.challenge = {
-        file: file,
-        url: previewUrl,
-        isChallenge: true
-      };
-      renderPendingPreviewBars();
+      await setupPendingSlotFromFile('challenge', file);
     };
 
     window.confirmChallengePendingUpload = async function() {
       const pending = pendingUploadState.challenge;
-      if (!pending || !pending.file) return;
+      if (!pending || !pending.workingFile) return;
       if (!validateChallengeSelectionAgainstRequest()) return;
+
+      if (pending.needsCompression && !pending.readyToSend) {
+        await runNextCompressionStep('challenge');
+        return;
+      }
 
       const sendBtn = document.getElementById('mainSendBtn');
       if (sendBtn) sendBtn.disabled = true;
 
-      const up = await uploadMediaToCloudinary(pending.file);
+      const up = await uploadMediaToCloudinary(pending.workingFile);
       if (!up) {
         if (sendBtn) sendBtn.disabled = false;
         return;
@@ -5291,10 +5528,10 @@
           comments: []
         });
 
-        if (input) input.value = '';
         resetUploadAndComposerState();
         saveLocal();
         renderAll();
+        showSentFeedbackToast('Enviado!');
       } catch (e) {
         showSpecificUploadError(
           'Erro ao publicar',
@@ -5446,10 +5683,15 @@
     window.submitPost = async function() {
       requireAuthForAction(async () => {
         const pendingMain = pendingUploadState.main;
-        if (pendingMain && pendingMain.file) {
+        if (pendingMain && pendingMain.workingFile) {
+          if (pendingMain.needsCompression && !pendingMain.readyToSend) {
+            await runNextCompressionStep('main');
+            return;
+          }
+
           const sendBtn = document.getElementById('mainSendBtn');
           if (sendBtn) sendBtn.disabled = true;
-          const up = await uploadMediaToCloudinary(pendingMain.file);
+          const up = await uploadMediaToCloudinary(pendingMain.workingFile);
           if (!up) {
             if (sendBtn) sendBtn.disabled = false;
             return;
@@ -5464,7 +5706,7 @@
         const text = input.value.trim();
 
         if (!text) {
-          document.getElementById('floatingComposerWrapper').classList.remove('expanded');
+          resetComposerInputAndBar();
           return;
         }
 
@@ -5516,10 +5758,10 @@
             comments: []
           });
 
-          input.value = '';
           resetUploadAndComposerState();
           saveLocal();
           renderAll();
+          showSentFeedbackToast('Enviado!');
         } catch (e) {
           showSpecificUploadError(
             'Erro ao enviar',
@@ -5661,6 +5903,7 @@
 
         try {
           await updateDoc(doc(db, "posts", postId), { comments: post.comments });
+          showSentFeedbackToast('Enviado!');
         } catch (e) {
           showSherBlussModal({
             title: 'Erro',
@@ -5854,11 +6097,11 @@
                   switchView('fandom');
                   showSherBlussModal({
                     title: 'Fandom Excluído 🌸',
-                    htmlBody: `O fandom <strong>${escapeHtml(fandomName)}</strong> foi apagado com sucesso.`
+                    htmlBody: `O fandom <strong>${escapeHtml(fandomName)}</strong> foi removido.`
                   });
                 } catch (e) {
                   showSherBlussModal({
-                    title: 'Erro',
+                    title: 'Erro ao Excluir',
                     htmlBody: escapeHtml(e.message)
                   });
                 }
@@ -5869,251 +6112,214 @@
       });
     };
 
-    window.approveFandomRequestFromModal = async function(fandomName, requesterUid) {
-      const f = appState.fandoms.find(x => x.name === fandomName);
-      if (!f || !isFandomModerator(f)) return;
-      const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
-      try {
-        await updateDoc(doc(db, "fandoms", f.id), {
-          members: arrayUnion(requesterUid, ADMIN_UID),
-          pendingRequests: updatedReqs
-        });
-        openManageAdminsModal(fandomName);
-      } catch (e) {
-        showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
-      }
-    };
-
-    window.rejectFandomRequestFromModal = async function(fandomName, requesterUid) {
-      const f = appState.fandoms.find(x => x.name === fandomName);
-      if (!f || !isFandomModerator(f)) return;
-      const updatedReqs = (f.pendingRequests || []).filter(r => r.uid !== requesterUid);
-      try {
-        await updateDoc(doc(db, "fandoms", f.id), {
-          pendingRequests: updatedReqs
-        });
-        openManageAdminsModal(fandomName);
-      } catch (e) {
-        showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
-      }
-    };
-
-    window.toggleFandomAdminRole = async function(fandomName, targetUid) {
-      const f = appState.fandoms.find(x => x.name === fandomName);
-      if (!f || !isFandomModerator(f)) return;
-      if (targetUid === f.creatorUid) return;
-
-      const currentAdmins = Array.isArray(f.admins) ? [...f.admins] : [];
-      const isCurrentlyAdmin = currentAdmins.includes(targetUid);
-      const nextAdmins = withAdminMember(
-        isCurrentlyAdmin
-          ? currentAdmins.filter(id => id !== targetUid)
-          : [...currentAdmins, targetUid]
-      );
-
-      try {
-        await updateDoc(doc(db, "fandoms", f.id), {
-          admins: nextAdmins,
-          members: arrayUnion(targetUid, ADMIN_UID)
-        });
-        openManageAdminsModal(fandomName);
-      } catch (e) {
-        showSherBlussModal({ title: 'Erro', htmlBody: escapeHtml(e.message) });
-      }
-    };
-
-    window.banMemberFromFandom = async function(fandomName, targetUid) {
-      const f = appState.fandoms.find(x => x.name === fandomName);
-      if (!f || !isFandomModerator(f)) return;
-      if (targetUid === f.creatorUid || targetUid === ADMIN_UID) return;
-
-      const nextMembers = withAdminMember((f.members || []).filter(id => id !== targetUid));
-      const nextAdmins = withAdminMember((f.admins || []).filter(id => id !== targetUid));
-      const nextPending = (f.pendingRequests || []).filter(r => r.uid !== targetUid);
-
-      try {
-        await updateDoc(doc(db, "fandoms", f.id), {
-          members: nextMembers,
-          admins: nextAdmins,
-          pendingRequests: nextPending
-        });
-
-        const fandomPosts = postsFromFirebase.filter(p => p.fandom === fandomName || p.fandomDocId === f.id);
-        for (const post of fandomPosts) {
-          if (Array.isArray(post.memberUids) && post.memberUids.includes(targetUid)) {
-            await updateDoc(doc(db, "posts", post.id), {
-              memberUids: arrayRemove(targetUid)
-            }).catch(() => {});
-          }
-        }
-
-        openManageAdminsModal(fandomName);
-      } catch (e) {
-        showSherBlussModal({ title: 'Erro ao banir', htmlBody: escapeHtml(e.message) });
-      }
+    window.closeCurrentFandom = function() {
+      activeFandomFilter = null;
+      switchView('fandom');
     };
 
     window.openManageAdminsModal = function(fandomName) {
       const f = appState.fandoms.find(x => x.name === fandomName);
       if (!f) return;
 
-      const canModerate = isFandomModerator(f);
-      const pending = Array.isArray(f.pendingRequests) ? f.pendingRequests : [];
-      const memberIds = Array.from(new Set([...(f.members || []), ...(f.admins || []), ...(f.creatorUid ? [f.creatorUid] : [])]));
+      const members = withAdminMember(f.members || []);
+      const admins = withAdminMember(f.admins || [f.creatorUid]);
 
-      let pendingHtml = '';
-      if (canModerate && pending.length) {
-        pendingHtml = `
-          <div style="margin-bottom:14px;">
-            <p style="font-size:11.5px;font-weight:700;color:var(--gold-accent);margin-bottom:6px;">📩 Solicitações pendentes (${pending.length})</p>
-            ${pending.map(req => {
-              const u = usersDirectory.find(x => x.uid === req.uid);
-              const displayName = req.name || u?.name || `Membro (${req.uid.slice(0, 5)})`;
-              return `
-                <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;background:#141b34;padding:8px 10px;border-radius:10px;margin-bottom:6px;border:1px solid var(--gold-border);">
-                  <span style="font-size:12.5px;font-weight:600;flex:1;">${escapeHtml(displayName)}</span>
-                  <div style="display:flex;gap:6px;">
-                    <button type="button" class="btn-pill-gold" style="padding:3px 9px;font-size:11px;" onclick="approveFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Aprovar</button>
-                    <button type="button" class="btn-danger-pill" style="padding:3px 9px;font-size:11px;" onclick="rejectFandomRequestFromModal('${escapeAttr(fandomName)}','${escapeAttr(req.uid)}')">Recusar</button>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-        `;
-      }
-
-      const membersHtml = memberIds.length
-        ? memberIds.map(uid => {
-            const u = usersDirectory.find(x => x.uid === uid);
-            const uname = uid === appState.user.uid
-              ? `${appState.user.name} (Você)`
-              : (u?.name || `Membro (${uid.slice(0, 5)})`);
-            const isCreator = uid === f.creatorUid;
-            const isCoAdmin = Array.isArray(f.admins) && f.admins.includes(uid);
-            const roleTag = isCreator ? '👑 Criador' : (isCoAdmin ? '🛡️ Admin' : 'Membro');
-
-            const actionsHtml = canModerate && !isCreator && uid !== ADMIN_UID
-              ? `
-                <div style="display:flex;gap:6px;flex-shrink:0;">
-                  <button type="button" class="btn-pill-gold" style="padding:3px 8px;font-size:10.5px;" onclick="toggleFandomAdminRole('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">${isCoAdmin ? 'Tirar Admin' : 'Tornar Admin'}</button>
-                  <button type="button" class="btn-danger-pill" style="padding:3px 8px;font-size:10.5px;" onclick="banMemberFromFandom('${escapeAttr(fandomName)}','${escapeAttr(uid)}')">Banir</button>
-                </div>
-              `
-              : '';
-
-            return `
-              <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;background:#0e1222;padding:8px 10px;border-radius:10px;margin-bottom:6px;border:1px solid var(--gold-border);">
-                <div style="min-width:0;flex:1;">
-                  <div style="font-size:12.5px;font-weight:600;color:var(--text-main);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(uname)}</div>
-                  <div style="font-size:10.5px;color:var(--gold-accent);">${roleTag}</div>
-                </div>
-                ${actionsHtml}
+      let listHtml = members
+        .map(uid => {
+          const u = usersDirectory.find(x => x.uid === uid) || { name: 'Coleguinha', handle: '@coleguinha' };
+          const isAdmin = admins.includes(uid);
+          return `
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;background:#141b34;border-radius:10px;margin-bottom:6px;">
+              <div>
+                <strong style="font-size:12.5px;color:var(--gold-accent);">${escapeHtml(u.name)}</strong>
+                <span style="font-size:10.5px;color:var(--text-muted);display:block;">${escapeHtml(u.handle)}</span>
               </div>
-            `;
-          }).join('')
-        : '<p style="font-size:12px;color:var(--text-muted);">Nenhum membro registrado.</p>';
+              <button type="button" class="${isAdmin ? 'btn-gold' : 'btn-pill-gold'}" style="padding:4px 10px;font-size:11px;width:auto;" onclick="toggleFandomAdminRole('${escapeAttr(f.id)}','${escapeAttr(uid)}',${isAdmin})">
+                ${isAdmin ? '🛡️ Admin' : 'Tornar Admin'}
+              </button>
+            </div>
+          `;
+        })
+        .join('');
 
       showSherBlussModal({
-        title: `Membros & Admins • ${escapeHtml(fandomName)}`,
-        htmlBody: `
-          ${pendingHtml}
-          <p style="font-size:11.5px;font-weight:700;color:var(--gold-accent);margin-bottom:6px;">👥 Participantes (${memberIds.length})</p>
-          <div>${membersHtml}</div>
-        `,
+        title: `Moderadores • ${escapeHtml(fandomName)}`,
+        htmlBody: listHtml || '<p style="font-size:12px;">Nenhum membro ainda.</p>',
         buttons: [{ label: 'Fechar', primary: true, onClick: closeSherBlussModal }]
       });
     };
 
-    window.closeCurrentFandom = function() {
-      activeFandomFilter = null;
-      switchView('fandom');
+    window.toggleFandomAdminRole = async function(fandomId, uid, currentlyAdmin) {
+      if (currentlyAdmin && uid === ADMIN_UID) return;
+      try {
+        await updateDoc(doc(db, "fandoms", fandomId), {
+          admins: currentlyAdmin ? arrayRemove(uid) : arrayUnion(uid)
+        });
+        openManageAdminsModal(activeFandomFilter);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+
+    window.openLightbox = function(src, type, caption) {
+      const overlay = document.getElementById('nativeMediaLightbox');
+      const container = document.getElementById('lightboxMediaContainer');
+      document.getElementById('lightboxCaption').textContent = caption || '';
+
+      container.innerHTML = type === 'video'
+        ? `<div class="sb-video-stage" style="max-width:92vw;"><video src="${escapeAttr(src)}" loop playsinline class="lightbox-media" style="max-height:82vh;"></video><div class="sb-video-overlay"><button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button></div></div>`
+        : `<img src="${escapeAttr(src)}" class="lightbox-media">`;
+
+      overlay.classList.add('open');
+    };
+
+    window.closeLightbox = function() {
+      pauseAllVideos();
+      document.getElementById('nativeMediaLightbox').classList.remove('open');
+      document.getElementById('lightboxMediaContainer').innerHTML = '';
     };
 
     function applyUserTheme() {
-      const accent = appState.user.accentColor || '#fbbf24';
-      document.documentElement.style.setProperty('--gold-accent', accent);
-      document.documentElement.style.setProperty('--gold-border', hexToRgba(accent, 0.45));
-      document.documentElement.style.setProperty(
-        '--custom-bg-url',
-        appState.user.customBgUrl ? `url('${appState.user.customBgUrl}')` : `url('./fundo.png')`
-      );
+      const c = appState.user.accentColor || '#fbbf24';
+      document.documentElement.style.setProperty('--gold-accent', c);
+      document.documentElement.style.setProperty('--gold-border', hexToRgba(c, 0.45));
 
-      if (!activeVisitedUserUid) {
-        const av = document.getElementById('headerUserAvatar');
-        if (av) av.src = appState.user.avatar || './aconchego.png';
-      }
+      const bg = appState.user.customBgUrl ? `url('${appState.user.customBgUrl}')` : `url('./fundo.png')`;
+      document.documentElement.style.setProperty('--custom-bg-url', bg);
 
-      const p1 = document.getElementById('podiumImg1');
-      if (p1 && !p1.dataset.bound) {
-        p1.dataset.bound = "1";
-        p1.onerror = function() { this.src = './logo.png'; };
+      const av = document.getElementById('headerUserAvatar');
+      if (av && !activeVisitedUserUid) {
+        av.src = appState.user.avatar || './aconchego.png';
       }
-      updateNotifBadge();
     }
 
     function updateNotifBadge() {
       const badge = document.getElementById('notifBadge');
       const countEl = document.getElementById('notifBadgeCount');
-      const count = (appState.notifications || []).length;
+      const count = appState.notifications ? appState.notifications.length : 0;
+
       if (count > 0) {
-        countEl.textContent = count;
         badge.style.display = 'flex';
+        countEl.textContent = count > 9 ? '9+' : String(count);
       } else {
         badge.style.display = 'none';
       }
     }
 
-    function renderAll() {
-      const directiveText = getCurrentDayDirective();
-      document.getElementById('carouselChallengeText').textContent = directiveText;
-      document.getElementById('weeklyDirectiveText').textContent = directiveText;
+    function renderPostCardHTML(post) {
+      if (isUserBlocked(post.authorHandle, post.authorUid)) return '';
 
-      const reqNum = extractRequestedChallengeNumber(directiveText);
-      const bannerEl = document.getElementById('requiredNumberBanner');
-      if (bannerEl) {
-        bannerEl.textContent = reqNum ? `Número exigido no desafio: #${reqNum}` : '';
+      const isAdminPost = post.authorUid === ADMIN_UID;
+      const isLiked = appState.user.uid && (post.likedBy || []).includes(appState.user.uid);
+      const isOwnPost = appState.user.loggedIn && post.authorUid === appState.user.uid;
+      const timeLabel = formatPostTimestamp(post);
+
+      let mediaHtml = '';
+      if (post.media) {
+        const cap = `${post.author} • ${post.fandom || 'Geral'}`;
+        mediaHtml = post.mediaType === 'video'
+          ? `<div class="sb-video-stage"><video src="${escapeAttr(post.media)}" loop playsinline preload="metadata" class="post-media"></video><div class="sb-video-overlay"><button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button></div></div>`
+          : `<img src="${escapeAttr(post.media)}" class="post-media" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(cap)}')">`;
       }
 
-      document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
+      const commentsHtml = (post.comments || [])
+        .map((raw, idx) => {
+          const c = normalizeComment(raw);
+          if (!c) return '';
+          const canDelComment =
+            isModAdminUser() ||
+            isOwnPost ||
+            (appState.user.loggedIn && c.authorUid && c.authorUid === appState.user.uid);
+          const delBtn = canDelComment
+            ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})">✕</button>`
+            : '';
+          const label = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ` : '';
+          return `<div class="comment-item-clean"><span style="flex:1;">${label}${escapeHtml(c.text)}</span>${delBtn}</div>`;
+        })
+        .join('');
+
+      const rankTag = post.isChallenge && post.challengeBiasRank ? ` • ${post.challengeBiasRank}` : '';
+      const challengeTag = post.isChallenge ? ` • 🌸 Desafio${rankTag}` : '';
+      const fandomTag = post.fandom && post.fandom !== 'Geral' ? ` • 🔒 ${post.fandom}` : '';
+      const clockSpan = timeLabel ? ` • <span class="post-time-pill">${escapeHtml(timeLabel)}</span>` : '';
+
+      return `
+        <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
+          <div class="post-header">
+            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid || '')}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
+              <div class="avatar-container">
+                <img src="${escapeAttr(post.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" class="post-avatar">
+                ${renderOnlineDot(usersDirectory.find(u => u.uid === post.authorUid))}
+              </div>
+              <div>
+                <div class="post-author-name">${escapeHtml(post.author)} ${isAdminPost ? '<span class="admin-badge">ADM</span>' : ''}</div>
+                <div class="post-meta notranslate">${escapeHtml(post.authorHandle || '@usuaria')}${fandomTag}${challengeTag}${clockSpan}</div>
+              </div>
+            </div>
+            <button type="button" class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>
+          </div>
+          ${post.text ? `<p class="post-text">${escapeHtml(post.text)}</p>` : ''}
+          ${mediaHtml}
+          <div class="post-actions-clean">
+            <button type="button" class="like-umbrella-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikeUmbrella('${escapeAttr(post.id)}')">
+              <span>🌸</span>
+              <span>${post.likes || 0}</span>
+            </button>
+          </div>
+          <div class="comments-section-clean">
+            ${commentsHtml}
+            <div class="comment-input-row">
+              <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Comentar (use @arroba para marcar)...">
+              <button type="button" class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">OK</button>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    function renderAll() {
+      const directive = getCurrentDayDirective();
+      document.getElementById('carouselChallengeText').textContent = directive;
+      document.getElementById('weeklyDirectiveText').textContent = directive;
+
+      const requiredNum = extractRequestedChallengeNumber(directive);
+      const reqBanner = document.getElementById('requiredNumberBanner');
+      if (reqBanner) {
+        reqBanner.textContent = requiredNum
+          ? `Número exigido hoje: #${requiredNum} — selecione o participante da posição #${requiredNum} da sua lista.`
+          : '';
+      }
+
+      document.getElementById('dailyVotesCounter').textContent = `${3 - appState.dailyVotes.used}/3`;
 
       renderWeeklyPodiumCarousel();
 
       const feedList = document.getElementById('mainFeedList');
-      const publicPosts = postsFromFirebase.filter(p =>
-        !isUserBlocked(p.authorHandle, p.authorUid) &&
-        !p.isPrivateFandom &&
-        (!p.fandom || p.fandom === 'Geral')
-      );
+      const mainPosts = postsFromFirebase.filter(p => !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral'));
 
-      if (!publicPosts.length) {
-        feedList.innerHTML = `<div class="glass-panel empty-state-box">Nenhuma publicação ainda. Toque no botão ➤ para escrever no <strong translate="no">Sher Bluss</strong>.</div>`;
+      if (!mainPosts.length) {
+        feedList.innerHTML = `<div class="glass-panel empty-state-box">Nenhuma publicação ainda no <strong translate="no">Sher Bluss</strong>.<br>Seja a primeira a publicar!</div>`;
       } else {
-        feedList.innerHTML = publicPosts.map(p => renderPostCardHTML(p)).join('');
+        feedList.innerHTML = mainPosts.map(p => renderPostCardHTML(p)).join('');
       }
 
-      const challengeList = document.getElementById('challengeFeedList');
-      const cPosts = postsFromFirebase.filter(p =>
-        p.isChallenge &&
-        !isUserBlocked(p.authorHandle, p.authorUid)
-      );
-
-      challengeList.innerHTML = cPosts.length
-        ? cPosts.map(p => renderPostCardHTML(p)).join('')
-        : `<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda. Seja a primeira!</div>`;
+      const cFeed = document.getElementById('challengeFeedList');
+      const chPosts = postsFromFirebase.filter(p => p.isChallenge);
+      cFeed.innerHTML = chPosts.length
+        ? chPosts.map(p => renderPostCardHTML(p)).join('')
+        : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda. Selecione seu Bias acima e envie!</div>';
 
       const fGrid = document.getElementById('fandomsGridContainer');
       if (!appState.fandoms.length) {
-        fGrid.innerHTML = `<div class="glass-panel empty-state-box" style="grid-column:1 / -1;">Nenhum Fandom criado ainda. Toque em <strong>+ Criar Fandom</strong>.</div>`;
+        fGrid.innerHTML = '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom particular criado ainda. Toque em "+ Criar Fandom" acima!</div>';
       } else {
         fGrid.innerHTML = appState.fandoms
           .map(f => {
-            const unlocked = hasFandomAccess(f);
-            const hasPending = (f.creatorUid === appState.user.uid || (f.admins && f.admins.includes(appState.user.uid))) && f.pendingRequests && f.pendingRequests.length > 0;
+            const open = hasFandomAccess(f);
             return `
-              <div class="glass-panel fandom-box-card" onclick="selectFandom('${escapeAttr(f.name)}')">
-                <h4><span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')};"></span>${escapeHtml(f.name)} ${unlocked ? '🔓' : '🔒'}</h4>
-                <p>${unlocked ? 'Espaço Privado Liberado' : (hasPending ? '📩 Solicitação Pendente' : 'Trancado • Pedir Acesso')}</p>
+              <div class="glass-panel fandom-box-card" style="border-color:${escapeAttr(f.borderColor || 'var(--gold-border)')};" onclick="selectFandom('${escapeAttr(f.name)}')">
+                <h4><span class="fandom-dot" style="background:${escapeAttr(f.dotColor || 'var(--gold-accent)')};"></span>${open ? '🔓' : '🔒'} ${escapeHtml(f.name)}</h4>
+                <p>${open ? 'Aprovada • Toque para entrar' : 'Espaço trancado • Solicitar entrada'}</p>
               </div>
             `;
           })
@@ -6121,159 +6327,83 @@
       }
 
       if (activeFandomFilter) {
-        const fPosts = postsFromFirebase.filter(p =>
-          !isUserBlocked(p.authorHandle, p.authorUid) &&
-          p.fandom === activeFandomFilter
-        );
-        document.getElementById('insideFandomFeedList').innerHTML = fPosts.length
-          ? fPosts.map(p => renderPostCardHTML(p)).join('')
-          : `<div class="glass-panel empty-state-box">Nenhuma publicação privada neste Fandom ainda.</div>`;
+        const fObj = appState.fandoms.find(x => x.name === activeFandomFilter);
+        const insideList = document.getElementById('insideFandomFeedList');
+
+        if (!fObj || !hasFandomAccess(fObj)) {
+          insideList.innerHTML = '<div class="glass-panel empty-state-box">Este fandom é trancado. Você não tem acesso.</div>';
+        } else {
+          const fPosts = postsFromFirebase.filter(p => p.fandom === activeFandomFilter);
+          insideList.innerHTML = fPosts.length
+            ? fPosts.map(p => renderPostCardHTML(p)).join('')
+            : `<div class="glass-panel empty-state-box">Nenhuma publicação em <strong>${escapeHtml(activeFandomFilter)}</strong> ainda.</div>`;
+        }
       }
 
-      const friendsContainer = document.getElementById('friendsListContainer');
-      const myFriends = (appState.user.friends || []).filter(fr => !isUserBlocked(fr.handle, fr.uid));
+      const frList = document.getElementById('friendsListContainer');
+      const activeFriends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
 
-      if (!myFriends.length) {
-        friendsContainer.innerHTML = `<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras. Toque no perfil de alguém e clique em <strong>🎬 Quero assistir um dorama</strong>!</div>`;
+      if (!activeFriends.length) {
+        frList.innerHTML = '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras.<br>Visite o perfil de alguém no feed e toque em "🎬 Quero assistir um dorama"!</div>';
       } else {
-        friendsContainer.innerHTML = myFriends
+        frList.innerHTML = activeFriends
           .map(fr => {
-            const liveUser = usersDirectory.find(u => u.uid === fr.uid);
-            const onlineDot = renderOnlineDot(liveUser);
+            const uLive = usersDirectory.find(u => u.uid === fr.uid);
+            const av = uLive?.avatar || fr.avatar || './aconchego.png';
+            const nm = uLive?.name || fr.name;
+            const hd = uLive?.handle || fr.handle || '@coleguinha';
             return `
-              <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(fr.uid)}','${escapeAttr(fr.name)}','${escapeAttr(fr.handle || '@coleguinha')}')">
-                <div style="display:flex;align-items:center;gap:10px;">
+              <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+                <div style="display:flex;align-items:center;gap:10px;cursor:pointer;" onclick="visitUserProfile('${escapeAttr(fr.uid)}','${escapeAttr(nm)}','${escapeAttr(hd)}')">
                   <div class="avatar-container">
-                    <img src="${escapeAttr(fr.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--gold-accent);object-fit:cover;">
-                    ${onlineDot}
+                    <img src="${escapeAttr(av)}" onerror="this.src='./logo.png'" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--gold-accent);object-fit:cover;">
+                    ${renderOnlineDot(uLive)}
                   </div>
                   <div>
-                    <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(fr.name)}</div>
-                    <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(fr.status || 'Assistindo doramas juntas')}</div>
+                    <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(nm)}</div>
+                    <div class="notranslate" style="font-size:11px;color:var(--text-muted);">${escapeHtml(hd)} • 🎬 Assistindo doramas juntas</div>
                   </div>
                 </div>
-                <span style="font-size:12px;color:var(--gold-accent);">Ver Perfil</span>
+                <button class="btn-pill-gold" onclick="openChatWith('${escapeAttr(fr.uid)}','${escapeAttr(nm)}')">Bate-papo</button>
               </div>
             `;
           })
           .join('');
       }
+
+      updateNotifBadge();
+      renderPendingPreviewBars();
     }
 
-    function renderPostCardHTML(post) {
-      const isLiked = (post.likedBy || []).includes(appState.user.uid);
-      const isAdminAuthor = post.authorUid === ADMIN_UID;
-      const canDeleteCommentPermission = isModAdminUser() || (appState.user.loggedIn && post.authorUid === appState.user.uid);
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const currentY = window.scrollY;
+      const carousel = document.getElementById('carouselWrapper');
+      const topBarTitle = document.getElementById('topBarCenterTitle');
+      const isProfileView =
+        document.getElementById('view-meu-perfil').classList.contains('active') ||
+        document.getElementById('view-user-profile-feed').classList.contains('active');
 
-      let mediaHTML = '';
-      if (post.media) {
-        if (post.mediaType === 'video') {
-          mediaHTML = `
-            <div class="sb-video-stage">
-              <video class="post-media" src="${escapeAttr(post.media)}" preload="metadata" playsinline></video>
-              <div class="sb-video-overlay">
-                <button type="button" class="sb-video-play-btn" onclick="toggleTransparentVideo(this,event)" title="Reproduzir vídeo">▶</button>
-              </div>
-            </div>
-          `;
-        } else {
-          mediaHTML = `<img class="post-media" src="${escapeAttr(post.media)}" onclick="openLightbox('${escapeAttr(post.media)}','image','${escapeAttr(post.author)}')">`;
+      if (!isProfileView) {
+        if (currentY > lastScrollY && currentY > 50) {
+          carousel.classList.add('scrolled');
+          if (topBarTitle) topBarTitle.classList.add('hidden-title');
+        } else if (currentY < lastScrollY) {
+          carousel.classList.remove('scrolled');
+          if (topBarTitle) topBarTitle.classList.remove('hidden-title');
         }
       }
-
-      const commentsArray = post.comments || [];
-      let commentsHTML = '<div class="comments-section-clean">';
-      commentsArray.forEach((rawC, idx) => {
-        const c = normalizeComment(rawC);
-        if (!c) return;
-        const canDelThis = canDeleteCommentPermission || (appState.user.loggedIn && c.authorUid && c.authorUid === appState.user.uid);
-        const delBtn = canDelThis
-          ? `<button class="delicate-x-btn" style="font-size:12px;" onclick="confirmDeleteComment('${escapeAttr(post.id)}',${idx})" title="Apagar comentário">✕</button>`
-          : '';
-        const authorPrefix = c.authorName ? `<strong>${escapeHtml(c.authorName)}</strong>: ` : '';
-        commentsHTML += `<div class="comment-item-clean"><span style="flex:1;">${authorPrefix}${escapeHtml(c.text)}</span>${delBtn}</div>`;
-      });
-
-      commentsHTML += `
-        <div class="comment-input-row">
-          <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Escreva um comentário..." onkeydown="if(event.key==='Enter'){event.preventDefault();submitInlineComment('${escapeAttr(post.id)}')}">
-          <button class="btn-pill-gold" style="padding:4px 10px;font-size:11px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">Enviar</button>
-        </div>
-      </div>`;
-
-      const liveAuthor = usersDirectory.find(u => u.uid === post.authorUid);
-      const onlineDot = renderOnlineDot(liveAuthor);
-      const isChallenge = !!post.isChallenge;
-      const challengeDayLabel = isChallenge ? (post.challengeDay || getChallengeDayLabel(post.createdAt?.toDate ? post.createdAt.toDate() : new Date())) : '';
-      const challengeRankLabel = isChallenge ? (post.challengeBiasRank || '') : '';
-      const challengeTitle = isChallenge ? (post.biasName || 'Participante do Desafio') : '';
-
-      const challengeHeaderBlock = isChallenge
-        ? `
-          <div style="font-size:11px;font-weight:700;color:var(--gold-accent);margin-bottom:4px;text-transform:uppercase;">
-            ${escapeHtml(challengeDayLabel)}${challengeRankLabel ? ` • ${escapeHtml(challengeRankLabel)}` : ''}
-          </div>
-          <div style="font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:6px;">
-            ${escapeHtml(challengeTitle)}
-          </div>
-        `
-        : '';
-
-      return `
-        <article class="post-card-clean" id="post_card_${escapeAttr(post.id)}">
-          <div class="post-header">
-            <div class="post-author-box" onclick="visitUserProfile('${escapeAttr(post.authorUid || '')}','${escapeAttr(post.author)}','${escapeAttr(post.authorHandle || '@usuaria')}')">
-              <div class="avatar-container">
-                <img class="post-avatar" src="${escapeAttr(post.avatar || './aconchego.png')}" onerror="this.src='./logo.png'">
-                ${onlineDot}
-              </div>
-              <div>
-                <div class="post-author-name">${escapeHtml(post.author)} ${isAdminAuthor ? '<span class="admin-badge">ADM</span>' : ''}</div>
-                <div class="post-meta notranslate">${escapeHtml(post.authorHandle || '@usuaria')} ${post.fandom && post.fandom !== 'Geral' ? '• ' + escapeHtml(post.fandom) : ''}</div>
-              </div>
-            </div>
-            <button class="post-dots-btn" onclick="openPostThreeDotsMenu('${escapeAttr(post.id)}')" title="Opções">•••</button>
-          </div>
-          ${challengeHeaderBlock}
-          ${post.text ? `<p class="post-text">${escapeHtml(post.text)}</p>` : ''}
-          ${mediaHTML}
-          <div class="post-actions-clean">
-            <button class="like-umbrella-btn ${isLiked ? 'liked' : ''}" onclick="toggleLikeUmbrella('${escapeAttr(post.id)}')">
-              <span>🌸</span>
-              <span>${post.likes || 0}</span>
-            </button>
-          </div>
-          ${commentsHTML}
-        </article>
-      `;
-    }
-
-    window.openLightbox = function(mediaUrl, mediaType, caption) {
-      pauseAllVideos();
-      const c = document.getElementById('lightboxMediaContainer');
-      c.innerHTML = mediaType === 'video'
-        ? `<video class="lightbox-media" src="${escapeAttr(mediaUrl)}" controls autoplay playsinline></video>`
-        : `<img class="lightbox-media" src="${escapeAttr(mediaUrl)}">`;
-      document.getElementById('lightboxCaption').textContent = caption || '';
-      document.getElementById('nativeMediaLightbox').classList.add('open');
-    };
-
-    window.closeLightbox = function() {
-      pauseAllVideos();
-      document.getElementById('lightboxMediaContainer').innerHTML = '';
-      document.getElementById('nativeMediaLightbox').classList.remove('open');
-    };
-
-    window.addEventListener('scroll', () => {
-      const cw = document.getElementById('carouselWrapper');
-      if (window.scrollY > 40) cw.classList.add('scrolled');
-      else cw.classList.remove('scrolled');
-    });
+      lastScrollY = currentY;
+    }, { passive: true });
 
     applyUserTheme();
     startMidnightCountdown();
     initFirebaseSync();
     renderAll();
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    }
   </script>
 </body>
 </html>
