@@ -2811,6 +2811,54 @@
       });
     }
 
+    function waitForVideoFrameReady(videoEl) {
+      return new Promise(resolve => {
+        let done = false;
+        const finish = () => {
+          if (done) return;
+          done = true;
+          resolve();
+        };
+
+        if (typeof videoEl.requestVideoFrameCallback === 'function') {
+          try {
+            videoEl.requestVideoFrameCallback(() => finish());
+          } catch (e) {}
+        }
+
+        const onReady = () => finish();
+        videoEl.addEventListener('loadeddata', onReady, { once: true });
+        videoEl.addEventListener('canplay', onReady, { once: true });
+
+        if (videoEl.readyState >= 2) {
+          requestAnimationFrame(finish);
+        }
+
+        setTimeout(finish, 1500);
+      });
+    }
+
+    function pickSupportedVideoMimeType() {
+      if (typeof MediaRecorder === 'undefined') return '';
+      const candidates = [
+        'video/webm;codecs=vp9,opus',
+        'video/webm;codecs=vp9',
+        'video/webm;codecs=vp8,opus',
+        'video/webm;codecs=vp8',
+        'video/webm',
+        'video/mp4'
+      ];
+      if (typeof MediaRecorder.isTypeSupported !== 'function') {
+        return 'video/webm;codecs=vp9';
+      }
+      for (const mime of candidates) {
+        try {
+          if (MediaRecorder.isTypeSupported(mime)) return mime;
+        } catch (e) {}
+      }
+      return '';
+    }
+
     function compressVideoOnce(file, scale, bitrate) {
       return new Promise(res => {
         if (typeof MediaRecorder === 'undefined') {
@@ -2820,33 +2868,48 @@
 
         const v = document.createElement('video');
         v.muted = true;
+        v.defaultMuted = true;
+        v.volume = 0;
         v.playsInline = true;
+        v.setAttribute('playsinline', '');
+        v.setAttribute('webkit-playsinline', '');
+        v.crossOrigin = 'anonymous';
         v.preload = 'auto';
         const srcUrl = URL.createObjectURL(file);
         let settled = false;
+        let rafId = null;
+        let rvfcId = null;
 
         const finish = (outFile, compressed) => {
           if (settled) return;
           settled = true;
+          if (rafId !== null) cancelAnimationFrame(rafId);
+          if (rvfcId !== null && typeof v.cancelVideoFrameCallback === 'function') {
+            try { v.cancelVideoFrameCallback(rvfcId); } catch (e) {}
+          }
+          try { v.pause(); } catch (e) {}
           try { URL.revokeObjectURL(srcUrl); } catch (e) {}
           res({ file: outFile, compressed });
         };
 
-        const safetyTimer = setTimeout(() => finish(file, false), 30000);
+        const safetyTimer = setTimeout(() => finish(file, false), 45000);
 
-        v.onloadedmetadata = () => {
+        v.onloadedmetadata = async () => {
           const vw = v.videoWidth || 640;
           const vh = v.videoHeight || 480;
           const c = document.createElement('canvas');
           c.width = Math.max(2, Math.round((vw * scale) / 2) * 2);
           c.height = Math.max(2, Math.round((vh * scale) / 2) * 2);
-          const ctx = c.getContext('2d');
+          const ctx = c.getContext('2d', { alpha: false });
 
           if (!ctx || typeof c.captureStream !== 'function') {
             clearTimeout(safetyTimer);
             finish(file, false);
             return;
           }
+
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(0, 0, c.width, c.height);
 
           let stream;
           try {
@@ -2857,12 +2920,15 @@
             return;
           }
 
+          const chosenMime = pickSupportedVideoMimeType();
+          const outMime = chosenMime.startsWith('video/mp4') ? 'video/mp4' : 'video/webm';
+          const outExt = outMime === 'video/mp4' ? 'video.mp4' : 'video.webm';
+
           let rec;
           try {
-            rec = new MediaRecorder(stream, {
-              mimeType: 'video/webm;codecs=vp9',
-              videoBitsPerSecond: bitrate
-            });
+            const opts = { videoBitsPerSecond: bitrate };
+            if (chosenMime) opts.mimeType = chosenMime;
+            rec = new MediaRecorder(stream, opts);
           } catch (e) {
             try {
               rec = new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
@@ -2874,32 +2940,56 @@
           }
 
           const chunks = [];
+          let hasNonBlackFrame = false;
+
           rec.ondataavailable = e => {
             if (e.data && e.data.size > 0) chunks.push(e.data);
           };
 
           rec.onstop = () => {
             clearTimeout(safetyTimer);
-            const blob = new Blob(chunks, { type: 'video/webm' });
-            if (blob.size > 0) {
-              finish(new File([blob], 'video.webm', { type: 'video/webm' }), true);
+            const blob = new Blob(chunks, { type: rec.mimeType || outMime });
+            if (blob.size > 0 && hasNonBlackFrame) {
+              finish(new File([blob], outExt, { type: blob.type || outMime }), true);
             } else {
               finish(file, false);
             }
           };
 
           let active = true;
-          function drawFrame() {
-            if (!active || v.paused || v.ended) return;
-            try { ctx.drawImage(v, 0, 0, c.width, c.height); } catch (e) {}
-            requestAnimationFrame(drawFrame);
-          }
+
+          const paintCurrentFrame = () => {
+            if (!active || v.ended) return;
+            try {
+              if (v.readyState >= 2 && v.videoWidth > 0 && v.videoHeight > 0) {
+                ctx.drawImage(v, 0, 0, c.width, c.height);
+                hasNonBlackFrame = true;
+              }
+            } catch (e) {}
+          };
+
+          const loopFrame = () => {
+            if (!active || v.ended) return;
+            paintCurrentFrame();
+            if (typeof v.requestVideoFrameCallback === 'function') {
+              try {
+                rvfcId = v.requestVideoFrameCallback(() => loopFrame());
+              } catch (e) {
+                rafId = requestAnimationFrame(loopFrame);
+              }
+            } else {
+              rafId = requestAnimationFrame(loopFrame);
+            }
+          };
 
           v.onended = () => {
             active = false;
-            if (rec.state !== 'inactive') {
-              try { rec.stop(); } catch (e) { finish(file, false); }
-            }
+            paintCurrentFrame();
+            setTimeout(() => {
+              if (rec.state !== 'inactive') {
+                try { rec.stop(); } catch (e) { finish(file, false); }
+              }
+            }, 120);
           };
 
           try {
@@ -2910,8 +3000,13 @@
             return;
           }
 
+          await waitForVideoFrameReady(v);
+          paintCurrentFrame();
+
           v.play()
-            .then(() => drawFrame())
+            .then(() => {
+              loopFrame();
+            })
             .catch(() => {
               active = false;
               if (rec.state !== 'inactive') {
@@ -2984,30 +3079,11 @@
       });
     }
 
-    function askConfirmSendUnsuccessfulCompression(fileToSend) {
-      return new Promise(resolve => {
-        showSherBlussModal({
-          title: 'Compressão sem êxito',
-          htmlBody: 'Seu vídeo foi tentado comprimir várias vezes, não teve êxito. Deseja enviar mesmo assim?',
-          buttons: [
-            {
-              label: 'Não enviar',
-              primary: false,
-              onClick: () => {
-                closeSherBlussModal();
-                resolve(null);
-              }
-            },
-            {
-              label: 'Enviar mesmo assim',
-              primary: true,
-              onClick: () => {
-                closeSherBlussModal();
-                resolve(fileToSend);
-              }
-            }
-          ]
-        });
+    function showLimitReachedBlockModal(lastSizeBytes) {
+      const mbStr = ((lastSizeBytes || 0) / (1024 * 1024)).toFixed(2);
+      showSherBlussModal({
+        title: 'Limite de MB atingido',
+        htmlBody: `Não foi possível enviar o seu vídeo porque atingiu o limite de MB (${escapeHtml(mbStr)} MB).`
       });
     }
 
@@ -3051,8 +3127,8 @@
         }
 
         if (!succeededUnderLimit) {
-          const confirmed = await askConfirmSendUnsuccessfulCompression(out);
-          return confirmed;
+          showLimitReachedBlockModal(out ? out.size : file.size);
+          return null;
         }
 
         return out;
@@ -6193,13 +6269,9 @@
           <div class="comments-section-clean">
             ${commentsHtml}
             <div class="comment-input-row">
-              <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Responder...">
-              <button
-                class="btn-gold"
-                style="width:auto;padding:4px 12px;font-size:11.5px;"
-                onclick="submitInlineComment('${escapeAttr(post.id)}')"
-              >
-                Enviar
+              <input type="text" id="inlineCommentInput_${escapeAttr(post.id)}" class="comment-input-clean" placeholder="Escreva um comentário...">
+              <button class="btn-pill-gold" style="padding:5px 11px;font-size:11px;" onclick="submitInlineComment('${escapeAttr(post.id)}')">
+                Comentar
               </button>
             </div>
           </div>
@@ -6207,205 +6279,177 @@
       `;
     }
 
-    document.addEventListener('keypress', e => {
-      if (e.target && e.target.classList && e.target.classList.contains('comment-input-clean') && e.key === 'Enter') {
-        const id = e.target.id.replace('inlineCommentInput_', '');
-        submitInlineComment(id);
-      }
-    });
-
     function renderAll() {
-      const cur = getCurrentDayDirective();
-      document.getElementById('weeklyDirectiveText').textContent = cur;
-      document.getElementById('carouselChallengeText').textContent = cur;
-      document.getElementById('dailyVotesCounter').textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
+      const dir = getCurrentDayDirective();
+      document.getElementById('weeklyDirectiveText').textContent = dir;
+      document.getElementById('carouselChallengeText').textContent = dir;
 
-      const reqNum = extractRequestedChallengeNumber(cur);
+      const reqNum = extractRequestedChallengeNumber(dir);
       const bannerEl = document.getElementById('requiredNumberBanner');
       if (bannerEl) {
         bannerEl.textContent = reqNum
-          ? `🔒 Trava ativa para o desafio: posição #${reqNum}`
-          : '🔓 Sem número específico exigido na diretriz atual';
+          ? `Posição exigida pelo desafio atual: #${reqNum}`
+          : 'Este desafio aceita qualquer posição da sua lista.';
       }
 
-      const fGrid = document.getElementById('fandomsGridContainer');
-      const visibleFandoms = appState.fandoms.filter(f => !f.creatorUid || !isUserBlocked(null, f.creatorUid));
+      const today = new Date().toDateString();
+      if (appState.dailyVotes.date !== today) {
+        appState.dailyVotes = { date: today, used: 0 };
+      }
 
-      fGrid.innerHTML = visibleFandoms.length
-        ? visibleFandoms
-            .map(f => {
-              const unlocked = hasFandomAccess(f);
-              const roleBadge = f.creatorUid === appState.user.uid ? '👑 Criadora' : unlocked ? '🔓 Membro' : '🔒 Particular';
-              return `
-                <div
-                  class="fandom-box-card"
-                  style="border:1.5px solid ${escapeAttr(f.borderColor || '#fbbf24')}"
-                  onclick="selectFandom('${escapeAttr(f.name)}')"
-                >
-                  <h4>
-                    <span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')}"></span>
-                    ${escapeHtml(f.name)}
-                  </h4>
-                  <p>${roleBadge} • Toque para entrar</p>
-                </div>
-              `;
-            })
-            .join('')
-        : '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom particular criado ainda.</div>';
+      const counterEl = document.getElementById('dailyVotesCounter');
+      if (counterEl) counterEl.textContent = `${Math.max(0, 3 - appState.dailyVotes.used)}/3`;
 
-      const publicFeedPosts = postsFromFirebase.filter(
-        p => !isUserBlocked(p.authorHandle, p.authorUid) && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral')
-      );
+      updateNotifBadge();
+      renderWeeklyPodiumCarousel();
 
-      const mainList = document.getElementById('mainFeedList');
-      mainList.innerHTML = publicFeedPosts.length
-        ? publicFeedPosts.map(p => renderPostCardHTML(p)).join('')
-        : '<div class="glass-panel empty-state-box">Nenhuma publicação no feed ainda.</div>';
+      const mainFeed = document.getElementById('mainFeedList');
+      const publicPosts = postsFromFirebase.filter(p => !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral') && !isUserBlocked(p.authorHandle, p.authorUid));
 
-      const challengePosts = postsFromFirebase.filter(p => !isUserBlocked(p.authorHandle, p.authorUid) && p.isChallenge);
-      const chalList = document.getElementById('challengeFeedList');
-      chalList.innerHTML = challengePosts.length
+      if (!publicPosts.length) {
+        mainFeed.innerHTML = `<div class="glass-panel empty-state-box">Nenhuma publicação ainda. Toque na setinha ➤ no canto inferior direito e escreva a primeira mensagem!</div>`;
+      } else {
+        mainFeed.innerHTML = publicPosts.map(p => renderPostCardHTML(p)).join('');
+      }
+
+      const challengeFeed = document.getElementById('challengeFeedList');
+      const challengePosts = postsFromFirebase.filter(p => p.isChallenge && !isUserBlocked(p.authorHandle, p.authorUid));
+      challengeFeed.innerHTML = challengePosts.length
         ? challengePosts.map(p => renderPostCardHTML(p)).join('')
-        : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda. Seja o primeiro!</div>';
+        : `<div class="glass-panel empty-state-box">Nenhuma foto de desafio ainda. Escolha seu Bias da sua lista e envie!</div>`;
+
+      const fGrid = document.getElementById('fandomsGridContainer');
+      if (!appState.fandoms.length) {
+        fGrid.innerHTML = '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom particular criado ainda.</div>';
+      } else {
+        fGrid.innerHTML = appState.fandoms
+          .map(f => {
+            const unlocked = hasFandomAccess(f);
+            const hasPending = (isFandomModerator(f)) && f.pendingRequests && f.pendingRequests.length > 0;
+            const pendingBadge = hasPending
+              ? `<span style="background:var(--gold-accent);color:#060a1e;font-size:10px;font-weight:800;padding:2px 7px;border-radius:99px;display:inline-block;margin-top:4px;">${f.pendingRequests.length} pendente(s)</span>`
+              : '';
+            return `
+              <div class="glass-panel fandom-box-card" style="border-color:${escapeAttr(f.borderColor || '#fbbf24')};" onclick="selectFandom('${escapeAttr(f.name)}')">
+                <h4><span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')};"></span> ${escapeHtml(f.name)}</h4>
+                <p>${unlocked ? '🔓 Desbloqueado • Entrar' : '🔒 Privado • Solicitar'}</p>
+                ${pendingBadge}
+              </div>
+            `;
+          })
+          .join('');
+      }
 
       if (activeFandomFilter) {
         const fObj = appState.fandoms.find(x => x.name === activeFandomFilter);
-        const fPosts = postsFromFirebase.filter(
-          p => !isUserBlocked(p.authorHandle, p.authorUid) && (p.fandom === activeFandomFilter || (fObj && p.fandomDocId === fObj.id))
-        );
+        const fPosts = postsFromFirebase.filter(p => (p.fandom === activeFandomFilter || (fObj && p.fandomDocId === fObj.id)) && !isUserBlocked(p.authorHandle, p.authorUid));
         document.getElementById('insideFandomFeedList').innerHTML = fPosts.length
           ? fPosts.map(p => renderPostCardHTML(p)).join('')
-          : `<div class="glass-panel empty-state-box">Nenhuma publicação particular em <strong>${escapeHtml(activeFandomFilter)}</strong> ainda.</div>`;
+          : `<div class="glass-panel empty-state-box">Nenhuma publicação privada dentro de ${escapeHtml(activeFandomFilter)} ainda.</div>`;
       }
 
-      const friendsListEl = document.getElementById('friendsListContainer');
-      const myFriends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
-
-      friendsListEl.innerHTML = myFriends.length
-        ? myFriends
-            .map(f => {
-              const fUser = usersDirectory.find(u => u.uid === f.uid);
+      const friendsContainer = document.getElementById('friendsListContainer');
+      const friends = appState.user.friends || [];
+      friendsContainer.innerHTML = friends.length
+        ? friends
+            .filter(fr => !isUserBlocked(fr.handle, fr.uid))
+            .map(fr => {
+              const liveUser = usersDirectory.find(u => u.uid === fr.uid);
               return `
-                <div
-                  class="glass-panel"
-                  style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;"
-                  onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name)}','${escapeAttr(f.handle || '@coleguinha')}')"
-                >
-                  <div style="display:flex;align-items:center;gap:12px;">
+                <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;">
+                  <div
+                    style="display:flex;align-items:center;gap:12px;cursor:pointer;flex:1;min-width:0;"
+                    onclick="visitUserProfile('${escapeAttr(fr.uid)}','${escapeAttr(fr.name)}','${escapeAttr(fr.handle || '@coleguinha')}')"
+                  >
                     <div class="avatar-container">
-                      <img
-                        src="${escapeAttr(f.avatar || './aconchego.png')}"
-                        onerror="this.src='./logo.png'"
-                        style="width:46px;height:46px;border-radius:50%;border:1.5px solid var(--gold-accent);object-fit:cover;"
-                      >
-                      ${renderOnlineDot(fUser)}
+                      <img src="${escapeAttr(fr.avatar || './aconchego.png')}" onerror="this.src='./logo.png'" style="width:44px;height:44px;border-radius:50%;border:1.5px solid var(--gold-accent);object-fit:cover;">
+                      ${renderOnlineDot(liveUser)}
                     </div>
-                    <div>
-                      <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
-                      <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(f.handle || '@coleguinha')}</div>
+                    <div style="min-width:0;">
+                      <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(fr.name)}</div>
+                      <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(fr.handle || '@coleguinha')} • ${escapeHtml(fr.status || 'Amiga de dorama')}</div>
                     </div>
                   </div>
-                  <div style="display:flex;gap:6px;align-items:center;">
-                    <button
-                      type="button"
-                      class="btn-gold"
-                      style="width:auto;padding:5px 11px;font-size:11.5px;"
-                      onclick="event.stopPropagation();openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name)}')"
-                    >
-                      Bate-papo
-                    </button>
-                    <button
-                      type="button"
-                      class="btn-pill-gold"
-                      style="padding:5px 10px;font-size:11px;"
-                      onclick="event.stopPropagation();visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name)}','${escapeAttr(f.handle || '@coleguinha')}')"
-                    >
-                      Ver Perfil
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    class="btn-pill-gold"
+                    style="padding:6px 12px;font-size:11.5px;flex-shrink:0;"
+                    onclick="openChatWith('${escapeAttr(fr.uid)}','${escapeAttr(fr.name)}')"
+                  >
+                    Bate-papo
+                  </button>
                 </div>
               `;
             })
             .join('')
-        : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras. Visite o perfil de alguém e clique em <strong>"🎬 Quero assistir um dorama"</strong>!</div>';
-
-      renderWeeklyPodiumCarousel();
-      updateNotifBadge();
+        : `<div class="glass-panel empty-state-box">Nenhuma amiga na sua lista ainda. Visite o perfil de alguém e toque em <strong>"🎬 Quero assistir um dorama"</strong>!</div>`;
     }
 
-    (function initCarouselDragScroll() {
-      const el = document.getElementById('carouselWrapper');
-      if (!el) return;
+    (function enableDragToScrollCarousel() {
+      const slider = document.getElementById('carouselWrapper');
+      if (!slider) return;
 
-      let isDown = false, startX = 0, scrollLeft = 0, moved = false;
+      let isMouseDown = false;
+      let startX = 0;
+      let scrollLeftStart = 0;
+      let hasDragged = false;
 
-      el.addEventListener('pointerdown', e => {
-        if (e.pointerType === 'mouse' && e.button !== 0) return;
-        isDown = true;
-        moved = false;
-        startX = e.clientX;
-        scrollLeft = el.scrollLeft;
-        el.classList.add('is-dragging');
+      slider.addEventListener('mousedown', e => {
+        if (e.button !== 0) return;
+        isMouseDown = true;
+        hasDragged = false;
+        slider.classList.add('is-dragging');
+        startX = e.pageX - slider.offsetLeft;
+        scrollLeftStart = slider.scrollLeft;
       });
 
-      window.addEventListener('pointermove', e => {
-        if (!isDown) return;
-        const dx = e.clientX - startX;
-        if (Math.abs(dx) > 4) moved = true;
-        el.scrollLeft = scrollLeft - dx;
+      window.addEventListener('mousemove', e => {
+        if (!isMouseDown) return;
+        const x = e.pageX - slider.offsetLeft;
+        const walk = (x - startX) * 1.4;
+        if (Math.abs(walk) > 4) hasDragged = true;
+        if (hasDragged) {
+          e.preventDefault();
+          slider.scrollLeft = scrollLeftStart - walk;
+        }
       });
 
-      window.addEventListener('pointerup', () => {
-        if (!isDown) return;
-        isDown = false;
-        el.classList.remove('is-dragging');
-        if (moved) {
-          const swallowClick = ev => {
+      window.addEventListener('mouseup', () => {
+        if (!isMouseDown) return;
+        isMouseDown = false;
+        slider.classList.remove('is-dragging');
+        if (hasDragged) {
+          const preventClickOnce = ev => {
             ev.preventDefault();
             ev.stopPropagation();
           };
-          el.addEventListener('click', swallowClick, { capture: true, once: true });
-          setTimeout(() => el.removeEventListener('click', swallowClick, { capture: true }), 50);
+          slider.addEventListener('click', preventClickOnce, { capture: true, once: true });
+          setTimeout(() => slider.removeEventListener('click', preventClickOnce, { capture: true }), 50);
         }
       });
 
-      el.addEventListener('dragstart', e => e.preventDefault());
+      slider.addEventListener('dragstart', e => e.preventDefault());
     })();
 
-    (function initScrollCarouselAutoHide() {
-      const topBar = document.getElementById('unifiedTopBar');
-      const titleEl = document.getElementById('topBarCenterTitle');
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+      const currentY = window.scrollY;
       const carousel = document.getElementById('carouselWrapper');
-      let lastTop = 0;
+      const titleCenter = document.getElementById('topBarCenterTitle');
+      const isProfileActive = document.getElementById('view-meu-perfil').classList.contains('active') || document.getElementById('view-user-profile-feed').classList.contains('active');
 
-      function update() {
-        const currentTop = topBar ? topBar.getBoundingClientRect().top : 0;
-        const winY = window.scrollY || window.pageYOffset || 0;
-
-        if (currentTop > 0 && currentTop !== lastTop) {
-          lastTop = currentTop;
-          document.querySelectorAll('.view-section').forEach(sec => {
-            if (sec.id !== 'view-chat') {
-              sec.style.paddingTop = (currentTop + 46) + 'px';
-            }
-          });
-        }
-
-        if (titleEl) {
-          if (winY > 12) titleEl.classList.add('hidden-title');
-          else titleEl.classList.remove('hidden-title');
-        }
-
-        if (carousel) {
-          if (winY > 25) carousel.classList.add('scrolled');
-          else carousel.classList.remove('scrolled');
+      if (!isProfileActive) {
+        if (currentY > 120) {
+          carousel.classList.add('scrolled');
+          if (titleCenter) titleCenter.classList.add('hidden-title');
+        } else {
+          carousel.classList.remove('scrolled');
+          if (titleCenter) titleCenter.classList.remove('hidden-title');
         }
       }
 
-      window.addEventListener('scroll', update, { passive: true });
-      window.addEventListener('resize', update);
-      update();
-    })();
+      lastScrollY = currentY;
+    });
 
     applyUserTheme();
     startMidnightCountdown();
