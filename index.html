@@ -73,7 +73,7 @@
       --gold-border: rgba(251, 191, 36, .45);
       --gold-accent: #fbbf24;
       --text-main: #f8fafc;
-      --text-muted: rgba(226, 232, 240, .72);
+      --text-muted: rgba(226, 232, 40, .72);
       --danger: #f43f5e;
       --theme-color-accent: #060a1e;
       --custom-bg-url: url('./fundo.png');
@@ -1982,7 +1982,7 @@
     <div id="chatMessagesList" class="chat-list"></div>
 
     <div class="chat-composer">
-      <button type="button" class="composer-plus-btn" onclick="document.getElementById('chatMediaInput').click()" title="Foto / Vídeo">
+      <button type="button" class="composer-plus-btn" onclick="openChatMediaPicker()" title="Foto / Vídeo">
         +
       </button>
       <input type="file" id="chatMediaInput" accept="image/*,video/*" style="display:none;">
@@ -2080,6 +2080,12 @@
     const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
     const LONG_PRESS_DURATION_MS = 10000;
     const SCROLL_CANCEL_THRESHOLD_PX = 4;
+
+    function resetFileInputSafely(inputId) {
+      const el = document.getElementById(inputId);
+      if (!el) return;
+      try { el.value = ''; } catch (e) {}
+    }
 
     function pauseAllVideos(exceptVideo = null) {
       document.querySelectorAll('video').forEach(vid => {
@@ -2488,7 +2494,15 @@
         }
 
         const inputId = sourceType === 'camera' ? 'challengeCameraInput' : 'challengeGalleryInput';
+        resetFileInputSafely(inputId);
         document.getElementById(inputId).click();
+      });
+    };
+
+    window.openChatMediaPicker = function() {
+      requireAuthForAction(() => {
+        resetFileInputSafely('chatMediaInput');
+        document.getElementById('chatMediaInput').click();
       });
     };
 
@@ -2564,14 +2578,15 @@
     window.triggerBiasPhotoOnlyChange = function(docId) {
       pendingHoldBiasDocId = docId;
       closeSherBlussModal();
+      resetFileInputSafely('holdBiasPhotoInput');
       document.getElementById('holdBiasPhotoInput').click();
     };
 
     document.getElementById('holdBiasPhotoInput').addEventListener('change', async event => {
-      const file = event.target.files[0];
+      const file = event.target.files && event.target.files[0];
       const docId = pendingHoldBiasDocId;
       pendingHoldBiasDocId = null;
-      event.target.value = '';
+      resetFileInputSafely('holdBiasPhotoInput');
       if (!file || !docId) return;
 
       const item = findBiasRecordByDocId(docId);
@@ -2799,7 +2814,7 @@
     function compressVideoOnce(file, scale, bitrate) {
       return new Promise(res => {
         if (typeof MediaRecorder === 'undefined') {
-          res(file);
+          res({ file, compressed: false });
           return;
         }
 
@@ -2810,14 +2825,14 @@
         const srcUrl = URL.createObjectURL(file);
         let settled = false;
 
-        const finish = outFile => {
+        const finish = (outFile, compressed) => {
           if (settled) return;
           settled = true;
           try { URL.revokeObjectURL(srcUrl); } catch (e) {}
-          res(outFile);
+          res({ file: outFile, compressed });
         };
 
-        const safetyTimer = setTimeout(() => finish(file), 45000);
+        const safetyTimer = setTimeout(() => finish(file, false), 30000);
 
         v.onloadedmetadata = () => {
           const vw = v.videoWidth || 640;
@@ -2829,7 +2844,7 @@
 
           if (!ctx || typeof c.captureStream !== 'function') {
             clearTimeout(safetyTimer);
-            finish(file);
+            finish(file, false);
             return;
           }
 
@@ -2838,7 +2853,7 @@
             stream = c.captureStream(30);
           } catch (e) {
             clearTimeout(safetyTimer);
-            finish(file);
+            finish(file, false);
             return;
           }
 
@@ -2853,7 +2868,7 @@
               rec = new MediaRecorder(stream, { videoBitsPerSecond: bitrate });
             } catch (e2) {
               clearTimeout(safetyTimer);
-              finish(file);
+              finish(file, false);
               return;
             }
           }
@@ -2867,9 +2882,9 @@
             clearTimeout(safetyTimer);
             const blob = new Blob(chunks, { type: 'video/webm' });
             if (blob.size > 0) {
-              finish(new File([blob], 'video.webm', { type: 'video/webm' }));
+              finish(new File([blob], 'video.webm', { type: 'video/webm' }), true);
             } else {
-              finish(file);
+              finish(file, false);
             }
           };
 
@@ -2883,7 +2898,7 @@
           v.onended = () => {
             active = false;
             if (rec.state !== 'inactive') {
-              try { rec.stop(); } catch (e) { finish(file); }
+              try { rec.stop(); } catch (e) { finish(file, false); }
             }
           };
 
@@ -2891,7 +2906,7 @@
             rec.start(250);
           } catch (e) {
             clearTimeout(safetyTimer);
-            finish(file);
+            finish(file, false);
             return;
           }
 
@@ -2900,17 +2915,17 @@
             .catch(() => {
               active = false;
               if (rec.state !== 'inactive') {
-                try { rec.stop(); } catch (e) { finish(file); }
+                try { rec.stop(); } catch (e) { finish(file, false); }
               } else {
                 clearTimeout(safetyTimer);
-                finish(file);
+                finish(file, false);
               }
             });
         };
 
         v.onerror = () => {
           clearTimeout(safetyTimer);
-          finish(file);
+          finish(file, false);
         };
         v.src = srcUrl;
       });
@@ -2969,6 +2984,33 @@
       });
     }
 
+    function askConfirmSendUnsuccessfulCompression(fileToSend) {
+      return new Promise(resolve => {
+        showSherBlussModal({
+          title: 'Compressão sem êxito',
+          htmlBody: 'Seu vídeo foi tentado comprimir várias vezes, não teve êxito. Deseja enviar mesmo assim?',
+          buttons: [
+            {
+              label: 'Não enviar',
+              primary: false,
+              onClick: () => {
+                closeSherBlussModal();
+                resolve(null);
+              }
+            },
+            {
+              label: 'Enviar mesmo assim',
+              primary: true,
+              onClick: () => {
+                closeSherBlussModal();
+                resolve(fileToSend);
+              }
+            }
+          ]
+        });
+      });
+    }
+
     async function prepareMediaFile(file) {
       if (!file) return null;
       if (!validMediaFile(file)) {
@@ -2997,12 +3039,22 @@
         ];
 
         let out = file;
+        let succeededUnderLimit = false;
+
         for (const t of tries) {
-          out = await compressVideoOnce(file, t.scale, t.bitrate);
-          if (out.size <= TOLERANCE_BYTES) {
-            return out;
+          const res = await compressVideoOnce(file, t.scale, t.bitrate);
+          out = res.file;
+          if (res.compressed && out.size <= TOLERANCE_BYTES) {
+            succeededUnderLimit = true;
+            break;
           }
         }
+
+        if (!succeededUnderLimit) {
+          const confirmed = await askConfirmSendUnsuccessfulCompression(out);
+          return confirmed;
+        }
+
         return out;
       }
 
@@ -3040,7 +3092,11 @@
         ready = await prepareMediaFile(file);
       } catch (e) {
         console.error(e);
-        ready = file;
+        showSherBlussModal({
+          title: 'Erro ao preparar mídia',
+          htmlBody: `Não foi possível processar o arquivo: ${escapeHtml(e.message || 'tente novamente')}.`
+        });
+        return null;
       }
       if (!ready) return null;
 
@@ -3732,7 +3788,8 @@
     };
 
     window.handleProfileBackgroundSelected = function(event) {
-      const file = event.target.files[0];
+      const file = event.target.files && event.target.files[0];
+      resetFileInputSafely('profileBgFile');
       if (!file) return;
       if (!validMediaFile(file)) {
         showFileError(file);
@@ -3804,16 +3861,17 @@
     window.triggerAconchegoCoverChange = function(targetId, event) {
       if (event) event.stopPropagation();
       coverUploadTargetId = targetId;
+      resetFileInputSafely('aconchegoCoverInput');
       document.getElementById('aconchegoCoverInput').click();
     };
 
     document.getElementById('aconchegoCoverInput').addEventListener('change', async event => {
-      const file = event.target.files[0];
+      const file = event.target.files && event.target.files[0];
+      resetFileInputSafely('aconchegoCoverInput');
       if (!file) return;
 
       if (!validMediaFile(file)) {
         showFileError(file);
-        event.target.value = '';
         return;
       }
 
@@ -3832,7 +3890,6 @@
         await saveUserDataToFirestore();
       };
       reader.readAsDataURL(file);
-      event.target.value = '';
     });
 
     window.openCreateAconchegoSubgroupModal = function() {
@@ -4235,8 +4292,8 @@
     document.getElementById('profileColorWheel').addEventListener('input', e => applyCustomAccentColor(e.target.value));
 
     document.getElementById('profileEditAvatarFile').addEventListener('change', async event => {
-      const file = event.target.files[0];
-      event.target.value = '';
+      const file = event.target.files && event.target.files[0];
+      resetFileInputSafely('profileEditAvatarFile');
       if (!file) return;
       if (!validMediaFile(file)) {
         showFileError(file);
@@ -4366,8 +4423,8 @@
     };
 
     window.handleChatMediaSelected = async function(event) {
-      const file = event.target.files[0];
-      event.target.value = '';
+      const file = event.target.files && event.target.files[0];
+      resetFileInputSafely('chatMediaInput');
       if (!file) return;
       if (!activeChatUid) return;
 
@@ -4792,8 +4849,8 @@
     };
 
     window.previewBiasSquarePhoto = async function(event) {
-      const file = event.target.files[0];
-      event.target.value = '';
+      const file = event.target.files && event.target.files[0];
+      resetFileInputSafely('biasFrontalFile');
       if (!file) return;
       if (!validMediaFile(file)) {
         showFileError(file);
@@ -5144,13 +5201,14 @@
 
     window.openMediaActionSheet = function() {
       requireAuthForAction(() => {
+        resetFileInputSafely('universalMediaInput');
         document.getElementById('universalMediaInput').click();
       });
     };
 
     window.handleUniversalMediaSelected = async function(event) {
-      const file = event.target.files[0];
-      event.target.value = '';
+      const file = event.target.files && event.target.files[0];
+      resetFileInputSafely('universalMediaInput');
       if (!file) return;
 
       if (!validMediaFile(file)) {
@@ -5165,8 +5223,9 @@
     };
 
     window.handleChallengeMediaSelected = async function(event) {
-      const file = event.target.files[0];
-      event.target.value = '';
+      const file = event.target.files && event.target.files[0];
+      resetFileInputSafely('challengeCameraInput');
+      resetFileInputSafely('challengeGalleryInput');
       if (!file) return;
 
       if (!validateChallengeSelectionAgainstRequest()) {
@@ -5232,8 +5291,9 @@
         });
 
         if (input) input.value = '';
-        document.getElementById('challengeCameraInput').value = '';
-        document.getElementById('challengeGalleryInput').value = '';
+        resetFileInputSafely('challengeCameraInput');
+        resetFileInputSafely('challengeGalleryInput');
+        resetFileInputSafely('universalMediaInput');
         document.getElementById('floatingComposerWrapper').classList.remove('expanded');
         saveLocal();
         renderAll();
@@ -6175,158 +6235,176 @@
         ? visibleFandoms
             .map(f => {
               const unlocked = hasFandomAccess(f);
-              const roleBadge = f.creatorUid === appState.user.uid
-                ? '👑 Criador'
-                : (f.admins && f.admins.includes(appState.user.uid) ? '🛡️ Admin' : '');
-              const memberCount = (f.members || []).length;
-
+              const roleBadge = f.creatorUid === appState.user.uid ? '👑 Criadora' : unlocked ? '🔓 Membro' : '🔒 Particular';
               return `
                 <div
-                  class="glass-panel fandom-box-card"
-                  style="border-color:${escapeAttr(f.borderColor || '#fbbf24')};"
+                  class="fandom-box-card"
+                  style="border:1.5px solid ${escapeAttr(f.borderColor || '#fbbf24')}"
                   onclick="selectFandom('${escapeAttr(f.name)}')"
                 >
-                  <h4 style="color:${escapeAttr(f.borderColor || '#fbbf24')};">
-                    <span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')};"></span>
+                  <h4>
+                    <span class="fandom-dot" style="background:${escapeAttr(f.dotColor || '#fbbf24')}"></span>
                     ${escapeHtml(f.name)}
-                    <span>${unlocked ? '🔓' : '🔒'}</span>
                   </h4>
-                  <p>${memberCount} ${memberCount === 1 ? 'membro' : 'membros'} ${roleBadge ? '• ' + roleBadge : ''}</p>
+                  <p>${roleBadge} • Toque para entrar</p>
                 </div>
               `;
             })
             .join('')
-        : '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom criado ainda. Clique em "+ Criar Fandom".</div>';
+        : '<div class="glass-panel empty-state-box" style="grid-column:1/-1;">Nenhum fandom particular criado ainda.</div>';
 
-      const mainFeed = document.getElementById('mainFeedList');
-      const generalPosts = postsFromFirebase.filter(p =>
-        !isUserBlocked(p.authorHandle, p.authorUid) &&
-        !p.isPrivateFandom &&
-        (!p.fandom || p.fandom === 'Geral')
+      const publicFeedPosts = postsFromFirebase.filter(
+        p => !isUserBlocked(p.authorHandle, p.authorUid) && !p.isPrivateFandom && (!p.fandom || p.fandom === 'Geral')
       );
-      mainFeed.innerHTML = generalPosts.length
-        ? generalPosts.map(p => renderPostCardHTML(p)).join('')
-        : '<div class="glass-panel empty-state-box">Nenhuma publicação ainda. Seja a primeira a escrever no Sher Bluss!</div>';
+
+      const mainList = document.getElementById('mainFeedList');
+      mainList.innerHTML = publicFeedPosts.length
+        ? publicFeedPosts.map(p => renderPostCardHTML(p)).join('')
+        : '<div class="glass-panel empty-state-box">Nenhuma publicação no feed ainda.</div>';
+
+      const challengePosts = postsFromFirebase.filter(p => !isUserBlocked(p.authorHandle, p.authorUid) && p.isChallenge);
+      const chalList = document.getElementById('challengeFeedList');
+      chalList.innerHTML = challengePosts.length
+        ? challengePosts.map(p => renderPostCardHTML(p)).join('')
+        : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda. Seja o primeiro!</div>';
 
       if (activeFandomFilter) {
-        const curFandom = appState.fandoms.find(x => x.name === activeFandomFilter);
-        if (!curFandom) {
-          activeFandomFilter = null;
-          if (document.getElementById('view-inside-fandom').classList.contains('active')) {
-            switchView('fandom');
-          }
-        } else {
-          const activeCountEl = document.getElementById('insideFandomActiveCount');
-          if (activeCountEl) {
-            const totalMembers = (curFandom.members || []).length;
-            const myRoleLabel = curFandom.creatorUid === appState.user.uid
-              ? '👑 Criador'
-              : (curFandom.admins && curFandom.admins.includes(appState.user.uid) ? '🛡️ Admin' : 'Membro');
-            activeCountEl.textContent = `${totalMembers} ${totalMembers === 1 ? 'participante' : 'participantes'} • ${myRoleLabel}`;
-          }
-
-          const inFeed = document.getElementById('insideFandomFeedList');
-          const fPosts = postsFromFirebase.filter(p =>
-            !isUserBlocked(p.authorHandle, p.authorUid) &&
-            (p.fandom === activeFandomFilter || p.fandomDocId === curFandom.id)
-          );
-          inFeed.innerHTML = fPosts.length
-            ? fPosts.map(p => renderPostCardHTML(p)).join('')
-            : '<div class="glass-panel empty-state-box">Nenhuma publicação neste fandom particular ainda.</div>';
-        }
+        const fObj = appState.fandoms.find(x => x.name === activeFandomFilter);
+        const fPosts = postsFromFirebase.filter(
+          p => !isUserBlocked(p.authorHandle, p.authorUid) && (p.fandom === activeFandomFilter || (fObj && p.fandomDocId === fObj.id))
+        );
+        document.getElementById('insideFandomFeedList').innerHTML = fPosts.length
+          ? fPosts.map(p => renderPostCardHTML(p)).join('')
+          : `<div class="glass-panel empty-state-box">Nenhuma publicação particular em <strong>${escapeHtml(activeFandomFilter)}</strong> ainda.</div>`;
       }
 
-      const cFeed = document.getElementById('challengeFeedList');
-      const cPosts = postsFromFirebase.filter(p => !isUserBlocked(p.authorHandle, p.authorUid) && p.isChallenge);
-      cFeed.innerHTML = cPosts.length
-        ? cPosts.map(p => renderPostCardHTML(p)).join('')
-        : '<div class="glass-panel empty-state-box">Nenhuma participação no desafio ainda.</div>';
+      const friendsListEl = document.getElementById('friendsListContainer');
+      const myFriends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
 
-      const frContainer = document.getElementById('friendsListContainer');
-      const friends = (appState.user.friends || []).filter(f => !isUserBlocked(f.handle, f.uid));
-
-      frContainer.innerHTML = friends.length
-        ? friends
+      friendsListEl.innerHTML = myFriends.length
+        ? myFriends
             .map(f => {
-              const uObj = usersDirectory.find(u => u.uid === f.uid);
+              const fUser = usersDirectory.find(u => u.uid === f.uid);
               return `
-                <div class="glass-panel" style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;">
-                  <div
-                    style="display:flex;align-items:center;gap:10px;cursor:pointer;"
-                    onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name)}','${escapeAttr(f.handle || '@coleguinha')}')"
-                  >
+                <div
+                  class="glass-panel"
+                  style="padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;"
+                  onclick="visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name)}','${escapeAttr(f.handle || '@coleguinha')}')"
+                >
+                  <div style="display:flex;align-items:center;gap:12px;">
                     <div class="avatar-container">
                       <img
                         src="${escapeAttr(f.avatar || './aconchego.png')}"
                         onerror="this.src='./logo.png'"
-                        style="width:42px;height:42px;border-radius:50%;border:1px solid var(--gold-accent);object-fit:cover;"
+                        style="width:46px;height:46px;border-radius:50%;border:1.5px solid var(--gold-accent);object-fit:cover;"
                       >
-                      ${renderOnlineDot(uObj)}
+                      ${renderOnlineDot(fUser)}
                     </div>
                     <div>
-                      <div style="font-size:13.5px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
-                      <div style="font-size:11px;color:var(--text-muted);">${escapeHtml(f.status || 'Assistindo doramas juntas')}</div>
+                      <div style="font-size:14px;font-weight:700;color:var(--gold-accent);">${escapeHtml(f.name)}</div>
+                      <div class="notranslate" style="font-size:11.5px;color:var(--text-muted);">${escapeHtml(f.handle || '@coleguinha')}</div>
                     </div>
                   </div>
-                  <button
-                    type="button"
-                    class="btn-pill-gold"
-                    onclick="event.stopPropagation();openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name)}')"
-                  >
-                    Bate-papo
-                  </button>
+                  <div style="display:flex;gap:6px;align-items:center;">
+                    <button
+                      type="button"
+                      class="btn-gold"
+                      style="width:auto;padding:5px 11px;font-size:11.5px;"
+                      onclick="event.stopPropagation();openChatWith('${escapeAttr(f.uid)}','${escapeAttr(f.name)}')"
+                    >
+                      Bate-papo
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-pill-gold"
+                      style="padding:5px 10px;font-size:11px;"
+                      onclick="event.stopPropagation();visitUserProfile('${escapeAttr(f.uid)}','${escapeAttr(f.name)}','${escapeAttr(f.handle || '@coleguinha')}')"
+                    >
+                      Ver Perfil
+                    </button>
+                  </div>
                 </div>
               `;
             })
             .join('')
-        : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras. Toque no perfil de alguém e clique em "🎬 Quero assistir um dorama"!</div>';
+        : '<div class="glass-panel empty-state-box">Você ainda não adicionou amigas dorameiras. Visite o perfil de alguém e clique em <strong>"🎬 Quero assistir um dorama"</strong>!</div>';
 
       renderWeeklyPodiumCarousel();
       updateNotifBadge();
     }
 
-    let isDraggingCarousel = false;
-    let carouselStartX = 0;
-    let carouselScrollLeft = 0;
+    (function initCarouselDragScroll() {
+      const el = document.getElementById('carouselWrapper');
+      if (!el) return;
 
-    (function initCarouselDragAndScroll() {
-      const carouselEl = document.getElementById('carouselWrapper');
+      let isDown = false, startX = 0, scrollLeft = 0, moved = false;
 
-      carouselEl.addEventListener('pointerdown', e => {
-        isDraggingCarousel = true;
-        carouselStartX = e.clientX;
-        carouselScrollLeft = carouselEl.scrollLeft;
-        carouselEl.classList.add('is-dragging');
+      el.addEventListener('pointerdown', e => {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        isDown = true;
+        moved = false;
+        startX = e.clientX;
+        scrollLeft = el.scrollLeft;
+        el.classList.add('is-dragging');
       });
 
-      carouselEl.addEventListener('pointermove', e => {
-        if (!isDraggingCarousel) return;
-        const dx = e.clientX - carouselStartX;
-        carouselEl.scrollLeft = carouselScrollLeft - dx * 1.15;
+      window.addEventListener('pointermove', e => {
+        if (!isDown) return;
+        const dx = e.clientX - startX;
+        if (Math.abs(dx) > 4) moved = true;
+        el.scrollLeft = scrollLeft - dx;
       });
 
-      function stopDrag() {
-        if (!isDraggingCarousel) return;
-        isDraggingCarousel = false;
-        carouselEl.classList.remove('is-dragging');
+      window.addEventListener('pointerup', () => {
+        if (!isDown) return;
+        isDown = false;
+        el.classList.remove('is-dragging');
+        if (moved) {
+          const swallowClick = ev => {
+            ev.preventDefault();
+            ev.stopPropagation();
+          };
+          el.addEventListener('click', swallowClick, { capture: true, once: true });
+          setTimeout(() => el.removeEventListener('click', swallowClick, { capture: true }), 50);
+        }
+      });
+
+      el.addEventListener('dragstart', e => e.preventDefault());
+    })();
+
+    (function initScrollCarouselAutoHide() {
+      const topBar = document.getElementById('unifiedTopBar');
+      const titleEl = document.getElementById('topBarCenterTitle');
+      const carousel = document.getElementById('carouselWrapper');
+      let lastTop = 0;
+
+      function update() {
+        const currentTop = topBar ? topBar.getBoundingClientRect().top : 0;
+        const winY = window.scrollY || window.pageYOffset || 0;
+
+        if (currentTop > 0 && currentTop !== lastTop) {
+          lastTop = currentTop;
+          document.querySelectorAll('.view-section').forEach(sec => {
+            if (sec.id !== 'view-chat') {
+              sec.style.paddingTop = (currentTop + 46) + 'px';
+            }
+          });
+        }
+
+        if (titleEl) {
+          if (winY > 12) titleEl.classList.add('hidden-title');
+          else titleEl.classList.remove('hidden-title');
+        }
+
+        if (carousel) {
+          if (winY > 25) carousel.classList.add('scrolled');
+          else carousel.classList.remove('scrolled');
+        }
       }
 
-      carouselEl.addEventListener('pointerup', stopDrag);
-      carouselEl.addEventListener('pointercancel', stopDrag);
-      carouselEl.addEventListener('pointerleave', stopDrag);
-
-      window.addEventListener('scroll', () => {
-        const y = window.scrollY || 0;
-        const titleEl = document.getElementById('topBarCenterTitle');
-
-        if (y > 40) {
-          carouselEl.classList.add('scrolled');
-          titleEl.classList.add('hidden-title');
-        } else {
-          carouselEl.classList.remove('scrolled');
-          titleEl.classList.remove('hidden-title');
-        }
-      }, { passive: true });
+      window.addEventListener('scroll', update, { passive: true });
+      window.addEventListener('resize', update);
+      update();
     })();
 
     applyUserTheme();
